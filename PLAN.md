@@ -93,6 +93,24 @@ shim; nanoda (second kernel, Rust) is not built, `enable_nanoda` is false. For t
 audited endpoints the statement text must stay character-for-character identical
 between the two files.
 
+CI: `.github/workflows/comparator.yml` runs the fully sandboxed audit on every push to
+this repository. It recreates the `packagesDir` path on the runner, installs the
+toolchain without compiling any project code, fetches the Mathlib cache, settles the
+trusted dependency tree with an unsandboxed `lake build Mathlib` (Comparator's sandbox
+denies writes to the shared `packagesDir`, so all dependency bookkeeping must land
+beforehand), builds comparator, lean4export and landrun at pinned commits, and probes
+the sandbox before
+running Comparator inside a `systemd-run` unit with `RestrictAddressFamilies=~AF_UNIX`,
+`IPAddressDeny=any` and `NoNewPrivileges=yes`, the noninteractive form of the README's
+documented guard. Probe facts worth not re-deriving: landrun parses flags past the
+command name, so every payload sits behind `--`; the network probes connect to a live
+listener on an ephemeral loopback port, since the runner silently drops packets to
+closed well-known ports; Landlock denies a TCP connect with an immediate `EACCES`,
+while `IPAddressDeny` drops packets, so a denied connect inside the unit surfaces as
+`EPERM` or a timeout; landrun's network denial is a warning only, since `--best-effort`
+drops the network domain on kernels without it, and the unit's denial is the strict
+check that carries the audit's network isolation.
+
 ## The statement layer
 
 `Solution.lean` is the formal statement of the paper: 84 endpoints named
