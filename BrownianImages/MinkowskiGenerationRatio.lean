@@ -46,6 +46,7 @@ variable {iota : Type*} [Fintype iota] [Nonempty iota] (S : System iota)
 variable {Omega : Type*} [MeasurableSpace Omega]
 variable {P : Measure Omega} {W : ℝ≥0 → Omega → Plane}
 
+omit [Nonempty iota] in
 /-- Centering the generation-cylinder scaling identity preserves equality in
 distribution. -/
 theorem IsPlanarBrownian.identDistrib_centeredBrownianGenerationTubeProfile
@@ -90,6 +91,7 @@ theorem IsPlanarBrownian.identDistrib_centeredBrownianGenerationTubeProfile
         (v - S.generationHalfLogRatio k w) omega) P P
   exact h.trans hright
 
+omit [Nonempty iota] in
 /-- `L²` membership transfers from the delayed full profile to a generation
 cylinder. -/
 theorem IsPlanarBrownian.memLp_centeredBrownianGenerationTubeProfile
@@ -112,6 +114,7 @@ theorem IsPlanarBrownian.memLp_centeredBrownianGenerationTubeProfile
   exact (hW.identDistrib_centeredBrownianGenerationTubeProfile
     S hmu k w v).memLp_iff.mpr hright
 
+omit [Nonempty iota] in
 /-- The generation-cylinder `L²` norm is the natural weight times the norm of
 the delayed full centered profile. -/
 theorem IsPlanarBrownian.eLpNorm_centeredBrownianGenerationTubeProfile
@@ -138,6 +141,7 @@ theorem IsPlanarBrownian.eLpNorm_centeredBrownianGenerationTubeProfile
 
 set_option maxHeartbeats 2000000
 
+omit [Nonempty iota] in
 /-- An exponential `L²` bound for the full centered profile yields almost-sure
 convergence of every fixed generation-cylinder centered profile along the
 reconstruction radii. -/
@@ -180,7 +184,7 @@ theorem IsPlanarBrownian.ae_tendsto_centeredBrownianGenerationTubeProfile
           eLpNorm (centeredBrownianTubeProfile W P hmu.compactAttractor s u) 2 P ≤
           ENNReal.ofReal p *
             ENNReal.ofReal (C * Real.exp (-gamma * u)) :=
-        mul_le_mul_left' hb _
+        mul_le_mul_right hb _
       _ = ENNReal.ofReal ((p * C) * Real.exp (-gamma * u)) := by
         rw [← ENNReal.ofReal_mul hp.le]
         congr 1
@@ -436,6 +440,7 @@ theorem tendsto_natCast_sub_period_sub_of_uniform_lattice
     ring
   · simp
 
+omit [Nonempty iota] in
 /-- Arithmeticity places every generation delay in the corresponding lattice. -/
 theorem System.generationHalfLogRatio_mem_zmultiples
     (h : ℝ) (harith : S.TubeArithmetic h)

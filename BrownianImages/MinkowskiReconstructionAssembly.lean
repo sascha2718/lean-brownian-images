@@ -99,6 +99,8 @@ theorem IsNatural.tubeReconstructsOccupation_of_renewal_alternatives
     exact hmu.tubeReconstructsOccupation_of_tubeArithmetic
       hW S hs0 hs1 hsep hdim hh ha hperiodic huniform
 
+omit [Nonempty iota] in
+omit [IsProbabilityMeasure P] in
 /-- Once pathwise tube reconstruction has been obtained, its Borel realization is
 formal and uses no additional analytic input. -/
 theorem IsNatural.minkowskiReconstruction_of_pathwise

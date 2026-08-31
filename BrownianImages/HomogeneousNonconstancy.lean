@@ -337,7 +337,7 @@ theorem homSource_interval {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
       _ = _ := by
         rw [← Real.exp_add]
         congr 2
-        ring]
+        ring_nf]
   rw [htailReal]
   ring
 
@@ -637,7 +637,7 @@ theorem homogeneous_G_not_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
           _ = _ := by
             rw [← Real.exp_add]
             congr 1
-            ring
+            ring_nf
   have hzero : Tendsto (fun v : ℝ => M * Real.exp ((s - 1) * v)) atTop (𝓝 0) := by
     have hneg : s - 1 < 0 := by linarith
     have ht : Tendsto (fun v : ℝ => (s - 1) * v) atTop atBot :=
@@ -712,7 +712,6 @@ theorem exists_homogeneous_periodic_profile {lam : ℝ} (hlam0 : 0 < lam)
   · obtain ⟨n, hn⟩ := exists_nat_gt ((homogeneousStart lam - x) / Real.log lam⁻¹)
     have hnx : homogeneousStart lam ≤ x + n * Real.log lam⁻¹ := by
       have := (div_lt_iff₀ hp).1 hn
-      push_cast
       linarith
     have hshiftg : g (x + n * Real.log lam⁻¹) = g x := hgper.nat_mul n x
     rw [← hshiftg, hgeq _ hnx]

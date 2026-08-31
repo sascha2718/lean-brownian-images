@@ -36,7 +36,7 @@ theorem sq_le_scale_mul_add_inv_mul_cube {x T : ℝ} (hx : 0 ≤ x)
   have hid : T * x + T⁻¹ * x ^ 3 - 2 * x ^ 2 =
       T⁻¹ * x * (T - x) ^ 2 := by
     field_simp [hT.ne']
-    <;> ring
+    ring
   rw [← hid] at hfactor
   nlinarith [sq_nonneg x]
 

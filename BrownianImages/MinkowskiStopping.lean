@@ -37,20 +37,24 @@ def stoppingMap (S : System iota) :
   | 0, _ => id
   | Nat.succ k, w => S.stoppingMap k w.1 ∘ S.map w.2
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingMap_zero (w : GenerationWord iota 0) :
     S.stoppingMap 0 w = id := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingMap_succ (k : ℕ) (w : GenerationWord iota (k + 1)) :
     S.stoppingMap (k + 1) w = S.stoppingMap k w.1 ∘ S.map w.2 := rfl
 
+omit [Nonempty iota] in
 theorem continuous_stoppingMap :
     ∀ (k : ℕ) (w : GenerationWord iota k), Continuous (S.stoppingMap k w)
   | 0, _ => continuous_id
   | Nat.succ k, w =>
       (continuous_stoppingMap k w.1).comp (S.continuous_map w.2)
 
+omit [Nonempty iota] in
 /-- Every prefix map preserves the ambient unit interval. -/
 theorem mapsTo_stoppingMap_unitInterval :
     ∀ (k : ℕ) (w : GenerationWord iota k),
@@ -59,6 +63,7 @@ theorem mapsTo_stoppingMap_unitInterval :
   | Nat.succ k, w =>
       (mapsTo_stoppingMap_unitInterval k w.1).comp (S.mapsTo w.2)
 
+omit [Nonempty iota] in
 /-- The prefix map has the product contraction ratio recorded by
 `generationRatio`. -/
 theorem stoppingMap_sub :
@@ -74,6 +79,7 @@ theorem stoppingMap_sub :
       simp only [System.map]
       ring
 
+omit [Nonempty iota] in
 /-- Affine normal form of a prefix map. -/
 theorem stoppingMap_eq_zero_add_ratio_mul
     (k : ℕ) (w : GenerationWord iota k) (x : ℝ) :
@@ -82,6 +88,7 @@ theorem stoppingMap_eq_zero_add_ratio_mul
   have h := S.stoppingMap_sub k w x 0
   simpa [add_comm] using (sub_eq_iff_eq_add.mp h)
 
+omit [Nonempty iota] in
 /-- Prefix cylinders remain inside the invariant attractor. -/
 theorem IsAttractor.mapsTo_stoppingMap {K : Set ℝ} (hK : S.IsAttractor K) :
     ∀ (k : ℕ) (w : GenerationWord iota k), MapsTo (S.stoppingMap k w) K K
@@ -95,6 +102,7 @@ def IsAttractor.stoppingCylinder {K : Set ℝ} (hK : S.IsAttractor K)
   hK.toNonemptyCompacts.map (S.stoppingMap k w)
     (S.continuous_stoppingMap k w)
 
+omit [Nonempty iota] in
 @[simp]
 theorem IsAttractor.coe_stoppingCylinder {K : Set ℝ}
     (hK : S.IsAttractor K) (k : ℕ) (w : GenerationWord iota k) :
@@ -102,6 +110,7 @@ theorem IsAttractor.coe_stoppingCylinder {K : Set ℝ}
   rw [IsAttractor.stoppingCylinder, NonemptyCompacts.coe_map,
     IsAttractor.coe_toNonemptyCompacts]
 
+omit [Nonempty iota] in
 /-- A cylinder is the union of its one-letter children, in elementwise form. -/
 theorem IsAttractor.exists_mem_stoppingCylinder_child {K : Set ℝ}
     (hK : S.IsAttractor K) {k : ℕ} {w : GenerationWord iota k}
@@ -150,31 +159,38 @@ def stoppingAnchor (w : StoppingWord iota) : NNReal :=
 def stoppingLength (w : StoppingWord iota) : NNReal :=
   ⟨S.stoppingRatio w, (S.generationRatio_pos w.1 w.2).le⟩
 
+omit [Nonempty iota] in
 @[simp]
 theorem coe_stoppingAnchor (w : StoppingWord iota) :
     (S.stoppingAnchor w : ℝ) = S.stoppingMap w.1 w.2 0 := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem coe_stoppingLength (w : StoppingWord iota) :
     (S.stoppingLength w : ℝ) = S.stoppingRatio w := rfl
 
+omit [Nonempty iota] in
 theorem stoppingLength_ne_zero (w : StoppingWord iota) :
     S.stoppingLength w ≠ 0 := by
   exact ne_of_gt (S.generationRatio_pos w.1 w.2)
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingRatio_root : S.stoppingRatio (stoppingRoot : StoppingWord iota) = 1 :=
   rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingWeight_root (s : ℝ) :
     S.stoppingWeight s (stoppingRoot : StoppingWord iota) = 1 := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingRatio_child (w : StoppingWord iota) (i : iota) :
     S.stoppingRatio (stoppingChild w i) =
       S.stoppingRatio w * S.ratio i := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingWeight_child (s : ℝ) (w : StoppingWord iota) (i : iota) :
     S.stoppingWeight s (stoppingChild w i) =
@@ -264,15 +280,18 @@ def stoppingLeafWord (S : System iota) (delta : ℝ) :
   | _, w, .stop _ => w
   | _, _, .branch _ _ leaf => S.stoppingLeafWord delta leaf
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingLeafWord_cutoff (delta : ℝ) (w : StoppingWord iota) :
     S.stoppingLeafWord delta (StoppingLeaves.cutoff w) = w := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingLeafWord_stop (delta : ℝ) {n : ℕ} {w : StoppingWord iota}
     (h : S.stoppingRatio w ≤ delta) :
     S.stoppingLeafWord delta (StoppingLeaves.stop (n := n) h) = w := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem stoppingLeafWord_branch (delta : ℝ) {n : ℕ}
     {w : StoppingWord iota} (h : ¬S.stoppingRatio w ≤ delta) (i : iota)
@@ -282,6 +301,7 @@ theorem stoppingLeafWord_branch (delta : ℝ) {n : ℕ}
 
 /-! ### Exact mass, cover, and scale properties -/
 
+omit [Nonempty iota] in
 /-- The natural weights of all leaves of a (possibly depth-truncated)
 stopping tree add up to the weight of its root. -/
 theorem sum_stoppingLeafWeight {s : ℝ} (hdim : S.IsDimension s) (delta : ℝ) :
@@ -336,6 +356,7 @@ theorem sum_stoppingLeafWeight {s : ℝ} (hdim : S.IsDimension s) (delta : ℝ) 
             simp only [stoppingWeight_child, ← Finset.mul_sum,
               S.sum_tubeWeight hdim, mul_one]
 
+omit [Nonempty iota] in
 /-- Every point of a prefix cylinder lies in a cylinder indexed by one of the
 stopping leaves. -/
 theorem IsAttractor.exists_stoppingLeaf_mem {K : Set ℝ}
@@ -404,11 +425,13 @@ theorem stoppingLeafRatio_le {delta : ℝ} {n : ℕ}
     (stoppingRoot : StoppingWord iota)
   simpa using hscale
 
+omit [Nonempty iota] in
 /-- Product weights are the `s`-powers of product ratios. -/
 theorem stoppingWeight_eq_ratio_rpow (s : ℝ) (w : StoppingWord iota) :
     S.stoppingWeight s w = S.stoppingRatio w ^ s :=
   S.generationWeight_eq_ratio_rpow s w.1 w.2
 
+omit [Nonempty iota] in
 /-- Exact stopping-antichain mass identity at the similarity dimension. -/
 theorem sum_stoppingLeafRatio_rpow {s : ℝ} (hdim : S.IsDimension s)
     (delta : ℝ) (n : ℕ) (w : StoppingWord iota) :
@@ -418,6 +441,7 @@ theorem sum_stoppingLeafRatio_rpow {s : ℝ} (hdim : S.IsDimension s)
   simpa only [← S.stoppingWeight_eq_ratio_rpow s] using
     S.sum_stoppingLeafWeight hdim delta n w
 
+omit [Nonempty iota] in
 /-- A leaf never contracts past one additional one-letter ratio after the
 threshold crossing. -/
 theorem min_stoppingRatio_mul_delta_le_leafRatio
@@ -446,6 +470,7 @@ theorem min_stoppingRatio_mul_delta_le_leafRatio
         (min_stoppingRatio_mul_delta_le_leafRatio hrmin0 hrmin1
           hdelta hmin leaf)
 
+omit [Nonempty iota] in
 /-- At the root, every stopping ratio is at least `rmin * delta`. -/
 theorem stoppingRatio_lower_of_leaf {rmin delta : ℝ}
     (hrmin0 : 0 ≤ rmin) (hrmin1 : rmin ≤ 1)

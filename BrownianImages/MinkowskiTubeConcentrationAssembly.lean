@@ -49,6 +49,7 @@ variable [Fintype iota] [Nonempty iota]
 
 /-! ### Independence of first-level tube masses -/
 
+omit [Nonempty iota] in
 /-- In an interval-separated system, the normalized tube masses of the
 first-level Brownian cylinders are mutually independent. -/
 theorem IsNatural.iIndepFun_normalizedTubeMass_brownianFirstLevelPiece
@@ -112,6 +113,7 @@ theorem IsNatural.iIndepFun_normalizedTubeMass_brownianFirstLevelPiece
 
 /-! ### Uniform profile `L²` input -/
 
+omit [Nonempty iota] in
 /-- The `q = 2` tube-moment estimate gives a uniform `L²` bound for the
 normalized tube profile on the nonnegative half-line. -/
 theorem IsNatural.exists_brownianTubeProfile_lpNorm_bound_of_tubeMomentsUpper

@@ -134,7 +134,7 @@ theorem ae_tendsto_zero_of_exponential_eLpNorm_bound
       congr 1
       rw [mul_pow, ← Real.exp_nat_mul]
       congr 1
-      ring
+      ring_nf
 
 /-- A scale-uniform exponential `L²` estimate on the nonnegative half-line gives
 the paper's almost-sure convergence along every fixed phase `n + t`.  A finite

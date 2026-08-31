@@ -72,14 +72,17 @@ def generationMap (S : System iota) : (k : ℕ) → GenerationWord iota k → �
   | 0, _ => id
   | Nat.succ k, w => S.map w.2 ∘ S.generationMap k w.1
 
+omit [Nonempty iota] in
 @[simp]
 theorem generationMap_zero (w : GenerationWord iota 0) :
     S.generationMap 0 w = id := rfl
 
+omit [Nonempty iota] in
 @[simp]
 theorem generationMap_succ (k : ℕ) (w : GenerationWord iota (Nat.succ k)) :
     S.generationMap (Nat.succ k) w = S.map w.2 ∘ S.generationMap k w.1 := rfl
 
+omit [Nonempty iota] in
 /-- Every finite-word similarity is continuous. -/
 theorem continuous_generationMap :
   ∀ (k : ℕ) (w : GenerationWord iota k), Continuous (S.generationMap k w)
@@ -97,6 +100,7 @@ def generationWeight (S : System iota) (s : ℝ) :
   | 0, _ => 1
   | Nat.succ k, w => S.generationWeight s k w.1 * S.tubeWeight s w.2
 
+omit [Nonempty iota] in
 /-- A finite-word similarity has the advertised product ratio. -/
 theorem generationMap_sub :
     ∀ (k : ℕ) (w : GenerationWord iota k) (x y : ℝ),
@@ -117,6 +121,7 @@ theorem generationMap_sub :
           rw [generationMap_sub k w x y]
         _ = (S.generationRatio k w * S.ratio i) * (x - y) := by ring
 
+omit [Nonempty iota] in
 /-- Product contraction ratios are strictly positive. -/
 theorem generationRatio_pos :
     ∀ (k : ℕ) (w : GenerationWord iota k), 0 < S.generationRatio k w
@@ -136,6 +141,7 @@ theorem generationRatio_le_maxRatio_pow :
         (Hutchinson.ratio_le_maxRatio S i) (S.ratio_pos i).le
         (pow_nonneg (Hutchinson.maxRatio_pos S).le k)
 
+omit [Nonempty iota] in
 /-- Product natural weights are strictly positive. -/
 theorem generationWeight_pos (s : ℝ) :
     ∀ (k : ℕ) (w : GenerationWord iota k), 0 < S.generationWeight s k w
@@ -143,11 +149,13 @@ theorem generationWeight_pos (s : ℝ) :
   | Nat.succ k, ⟨w, i⟩ =>
       mul_pos (generationWeight_pos s k w) (S.tubeWeight_pos s i)
 
+omit [Nonempty iota] in
 /-- Product natural weights are nonnegative. -/
 theorem generationWeight_nonneg (s : ℝ) (k : ℕ) (w : GenerationWord iota k) :
     0 ≤ S.generationWeight s k w :=
   (S.generationWeight_pos s k w).le
 
+omit [Nonempty iota] in
 /-- The recursive product weight is the `s`-power of the product similarity ratio. -/
 theorem generationWeight_eq_ratio_rpow (s : ℝ) :
     ∀ (k : ℕ) (w : GenerationWord iota k),
@@ -159,6 +167,7 @@ theorem generationWeight_eq_ratio_rpow (s : ℝ) :
         ← generationWeight_eq_ratio_rpow s k w]
       rfl
 
+omit [Nonempty iota] in
 /-- At the similarity dimension, the weights at every generation sum to one. -/
 theorem sum_generationWeight {s : ℝ} (hdim : S.IsDimension s) :
     ∀ k : ℕ, ∑ w : GenerationWord iota k, S.generationWeight s k w = 1
@@ -182,6 +191,7 @@ theorem sum_generationWeight {s : ℝ} (hdim : S.IsDimension s) :
 
 /-! ### Generation cylinders of an attractor -/
 
+omit [Nonempty iota] in
 /-- Each one-letter similarity maps an invariant attractor into itself. -/
 theorem IsAttractor.mapsTo_map {K : Set ℝ} (hK : S.IsAttractor K) (i : iota) :
     MapsTo (S.map i) K K := by
@@ -189,6 +199,7 @@ theorem IsAttractor.mapsTo_map {K : Set ℝ} (hK : S.IsAttractor K) (i : iota) :
   rw [hK.2.2.2]
   exact Set.mem_iUnion.2 ⟨i, x, hx, rfl⟩
 
+omit [Nonempty iota] in
 /-- Every finite-word similarity maps the attractor into itself. -/
 theorem IsAttractor.mapsTo_generationMap {K : Set ℝ} (hK : S.IsAttractor K) :
     ∀ (k : ℕ) (w : GenerationWord iota k), MapsTo (S.generationMap k w) K K
@@ -204,6 +215,7 @@ def IsAttractor.generationCylinder {K : Set ℝ} (hK : S.IsAttractor K)
   hK.toNonemptyCompacts.map (S.generationMap k w)
     (S.continuous_generationMap k w)
 
+omit [Nonempty iota] in
 @[simp]
 theorem IsAttractor.coe_generationCylinder {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) :
@@ -211,6 +223,7 @@ theorem IsAttractor.coe_generationCylinder {K : Set ℝ} (hK : S.IsAttractor K)
   rw [IsAttractor.generationCylinder, NonemptyCompacts.coe_map,
     IsAttractor.coe_toNonemptyCompacts]
 
+omit [Nonempty iota] in
 /-- Every generation cylinder is contained in the attractor. -/
 theorem IsAttractor.generationCylinder_subset {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) :
@@ -219,6 +232,7 @@ theorem IsAttractor.generationCylinder_subset {K : Set ℝ} (hK : S.IsAttractor 
   rintro _ ⟨x, hx, rfl⟩
   exact hK.mapsTo_generationMap S k w hx
 
+omit [Nonempty iota] in
 /-- Every point of the attractor has a preimage in some cylinder at every fixed
 generation. -/
 theorem IsAttractor.exists_generation_preimage {K : Set ℝ} (hK : S.IsAttractor K) :
@@ -232,6 +246,7 @@ theorem IsAttractor.exists_generation_preimage {K : Set ℝ} (hK : S.IsAttractor
       refine ⟨(w, i), z, hz, ?_⟩
       rw [generationMap_succ, Function.comp_apply, hwz, hiy]
 
+omit [Nonempty iota] in
 /-- The set-theoretic union of all generation-`k` cylinders is exactly the
 attractor. -/
 theorem IsAttractor.iUnion_generationCylinder {K : Set ℝ} (hK : S.IsAttractor K)
@@ -276,6 +291,7 @@ theorem IsAttractor.generationCompactUnion_eq {K : Set ℝ}
 def IsAttractor.baseAnchor {K : Set ℝ} (hK : S.IsAttractor K) : ℝ :=
   Classical.choose hK.2.1
 
+omit [Nonempty iota] in
 theorem IsAttractor.baseAnchor_mem {K : Set ℝ} (hK : S.IsAttractor K) :
     hK.baseAnchor S ∈ K :=
   Classical.choose_spec hK.2.1
@@ -286,6 +302,7 @@ def IsAttractor.generationAnchor {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) : ℝ :=
   S.generationMap k w (hK.baseAnchor S)
 
+omit [Nonempty iota] in
 /-- The chosen anchor belongs to its cylinder. -/
 theorem IsAttractor.generationAnchor_mem {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) :
@@ -329,6 +346,7 @@ def IsAttractor.generationQuadrature {K : Set ℝ} (hK : S.IsAttractor K)
   ∑ w : GenerationWord iota k,
     S.generationWeight s k w * f (hK.generationAnchor S k w)
 
+omit [Nonempty iota] in
 /-- Iterating Hutchinson's test-function operator expands as the finite sum over
 generation words. -/
 theorem iterate_testOp_apply_eq_generationSum (s : ℝ)
@@ -359,6 +377,7 @@ theorem iterate_testOp_apply_eq_generationSum (s : ℝ)
       intro i _
       ring
 
+omit [Nonempty iota] in
 /-- The generation quadrature is exactly the corresponding iterate of Hutchinson's
 operator at the fixed base anchor. -/
 theorem IsAttractor.generationQuadrature_eq_iterate_testOp {K : Set ℝ}
@@ -540,6 +559,7 @@ def IsAttractor.brownianGenerationAnchor {K : Set ℝ} (hK : S.IsAttractor K)
     (w : GenerationWord iota k) : Plane :=
   W (hK.generationAnchor S k w).toNNReal omega
 
+omit [MeasurableSpace Omega] in
 /-- On a continuous path, the finite union of the Brownian generation cylinders is
 exactly the Brownian image of the whole attractor. -/
 theorem IsAttractor.compactUnion_brownianGenerationCylinder_eq
@@ -550,8 +570,7 @@ theorem IsAttractor.compactUnion_brownianGenerationCylinder_eq
   apply le_antisymm
   · unfold compactUnion
     apply (Finset.sup'_le_iff Finset.univ_nonempty _).2
-    intro w _
-    intro x hx
+    intro w _ x hx
     change x ∈ (brownianImage W (hK.generationCylinder S k w) omega : Set Plane) at hx
     change x ∈ (brownianImage W hK.toNonemptyCompacts omega : Set Plane)
     rw [coe_brownianImage_of_continuous _ homega] at hx
@@ -573,6 +592,8 @@ theorem IsAttractor.compactUnion_brownianGenerationCylinder_eq
     rw [hK.coe_generationCylinder S k w]
     exact ⟨y, hy, hwy⟩
 
+omit [MeasurableSpace Omega] in
+omit [Nonempty iota] in
 /-- On a continuous path, the chosen Brownian anchor belongs to its Brownian
 generation cylinder. -/
 theorem IsAttractor.brownianGenerationAnchor_mem {K : Set ℝ}
@@ -587,6 +608,7 @@ theorem IsAttractor.brownianGenerationAnchor_mem {K : Set ℝ}
   unfold IsAttractor.brownianGenerationAnchor
   exact ⟨hK.generationAnchor S k w, hK.generationAnchor_mem S k w, rfl⟩
 
+omit [MeasurableSpace Omega] in
 /-- On a continuous path, the generation cylinders in the Brownian image have
 vanishing weighted mean diameter. -/
 theorem IsAttractor.tendsto_weighted_diam_brownianGenerationCylinder
@@ -603,6 +625,7 @@ theorem IsAttractor.tendsto_weighted_diam_brownianGenerationCylinder
   simpa only [IsAttractor.brownianGenerationCylinder,
     coe_brownianImage_of_continuous _ homega] using h
 
+omit [MeasurableSpace Omega] in
 /-- The weighted Brownian anchors converge against every bounded continuous test
 function to its occupation integral. -/
 theorem IsNatural.tendsto_brownianGenerationAnchor

@@ -268,7 +268,7 @@ theorem exists_expected_tubeMass_lower_of_frostman
       dsimp [c, a, b]
       rw [tubeExponent, Real.rpow_sub hr, Real.rpow_two]
       field_simp
-      <;> ring
+      ring
     _ ≤ ∫ omega, X omega ∂P := hmarkov
 
 namespace System

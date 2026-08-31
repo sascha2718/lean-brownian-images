@@ -27,6 +27,7 @@ variable {iota : Type u} [Fintype iota] [Nonempty iota] (S : System iota)
 
 /-! ### Stopping cylinders are affine time copies -/
 
+omit [Nonempty iota] in
 /-- A nested stopping cylinder is exactly the affine copy of the attractor
 with the word's left endpoint and product ratio. -/
 theorem IsAttractor.stoppingCylinder_eq_affineTimeCompact {K : Set ℝ}
@@ -40,6 +41,7 @@ theorem IsAttractor.stoppingCylinder_eq_affineTimeCompact {K : Set ℝ}
   intro t ht
   exact S.stoppingMap_eq_zero_add_ratio_mul w.1 w.2 t
 
+omit [Nonempty iota] in
 @[simp]
 theorem IsAttractor.stoppingCylinder_root {K : Set ℝ}
     (hK : S.IsAttractor K) :
@@ -56,6 +58,7 @@ theorem IsAttractor.stoppingCylinder_root {K : Set ℝ}
 variable {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
   {W : NNReal -> Omega -> Plane}
 
+omit [Nonempty iota] in
 /-- The Brownian image of a stopping cylinder lies in the normalized
 oscillation disc associated to its affine host interval. -/
 theorem IsAttractor.brownianStoppingCylinder_subset_disc
@@ -70,6 +73,7 @@ theorem IsAttractor.brownianStoppingCylinder_subset_disc
   exact affineBrownianCompactPiece_subset_intervalOscillation_disc
     (S.stoppingLength_ne_zero w) hKunit homega
 
+omit [Nonempty iota] in
 /-- At every sufficiently deep stopping level, the full Brownian attractor
 image is covered almost surely by the stopping oscillation discs. -/
 theorem IsPlanarBrownian.ae_stopping_disc_cover
@@ -120,7 +124,7 @@ already been reduced to the same unit-interval Brownian maximal moment. -/
 theorem IsPlanarBrownian.stopping_tube_moments
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     {K : Set ℝ} (hK : S.IsAttractor K) (hKunit : K ⊆ Set.Icc 0 1)
-    {s r q : ℝ} (hdim : S.IsDimension s) (hr : 0 < r) (hq : 1 ≤ q)
+    {s r q : ℝ} (_hdim : S.IsDimension s) (hr : 0 < r) (hq : 1 ≤ q)
     {n : ℕ} (hscale : Hutchinson.maxRatio S ^ n ≤ r ^ 2)
     (hunit : Integrable (fun omega =>
       (1 + standardBrownianRadius W omega) ^ (2 * q)) P) :
@@ -241,7 +245,7 @@ theorem stoppingLeaves_card_le {s delta : ℝ} (hdim : S.IsDimension s)
     (hs : 0 < s) {rmin : ℝ} (hrmin : 0 < rmin) (hrmin1 : rmin ≤ 1)
     (hmin : ∀ i, rmin ≤ S.ratio i) (hdelta : 0 < delta)
     (hdelta1 : delta ≤ 1) {n : ℕ}
-    (hscale : Hutchinson.maxRatio S ^ n ≤ delta) :
+    (_hscale : Hutchinson.maxRatio S ^ n ≤ delta) :
     (Fintype.card
       (S.StoppingLeaves delta n (stoppingRoot : StoppingWord iota)) : ℝ) ≤
       (rmin * delta) ^ (-s) := by

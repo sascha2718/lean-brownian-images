@@ -129,6 +129,7 @@ theorem tubeMass_and_tubeArea_le_pi_mul_sum_sq_of_disc_cover
 
 variable {Omega : Type*} [MeasurableSpace Omega]
 
+omit [MeasurableSpace Omega] in
 /-- On a continuous path, any finite family of anchors and oscillation radii
 covering the values at the prescribed time set gives the paper's sausage
 cover bound.  The hypotheses deliberately mention only the local oscillation
