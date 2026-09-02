@@ -173,7 +173,7 @@ import BrownianImages.MinkowskiCantorSetApplication
 #print axioms AbsorptionCutoff.Renewal.eq_tsum_integral_comp_sub_of_renewalEquation
 #print axioms AbsorptionCutoff.Renewal.tendsto_integral_comp_sub_convPow_zero
 
--- its hypotheses, discharged for `F = ∑ p_i δ_{a_i}`, and the one that is refuted
+-- its hypotheses, discharged for `ϑ = ∑ p_i δ_{a_i}`, and the one that is refuted
 #print axioms BrownianImages.System.expTransform_renewalLaw
 #print axioms BrownianImages.System.exists_expTransform_lt_one
 #print axioms BrownianImages.System.not_nonlattice_renewalLaw
@@ -326,14 +326,14 @@ import BrownianImages.MinkowskiCantorSetApplication
 #print axioms BrownianImages.expCorr_eq_integral_pairLaw
 #print axioms BrownianImages.gaussian_reduction
 
--- `thm:ahlfors`, and the Frostman bound it yields
+-- Internal Ahlfors regularity, and the Frostman bound it yields
 #print axioms BrownianImages.AhlforsRegular.measure_closedBall_le_of_isNatural
 #print axioms BrownianImages.AhlforsRegular.exists_le_measure_closedBall_of_isNatural
 #print axioms BrownianImages.AhlforsRegular.exists_isFrostman_of_isNatural
 #print axioms BrownianImages.exists_isAhlforsClosed
 #print axioms BrownianImages.exists_isAhlfors_cantor_pair
 
--- Hutchinson's theorem, and the two natural measures of `sec:setup`
+-- Hutchinson's theorem, and the two natural measures of `sec:renewal`
 #print axioms BrownianImages.Hutchinson.isCompact_attractorSet
 #print axioms BrownianImages.Hutchinson.isNatural_naturalMeasure
 #print axioms BrownianImages.Hutchinson.eq_attractorSet

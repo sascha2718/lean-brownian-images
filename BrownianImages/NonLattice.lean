@@ -35,7 +35,7 @@ set_option linter.unusedVariables false in
 /-- `thm:profile-asymptotics` as one statement, on the paper's hypotheses: the natural
 measures of the two systems and `eq:non-lattice`.  The renewal constant `C_B` of
 `eq:gb-limit` is carried through all three conclusions about `μ_B`: it is the limit of
-`G_B`, and `C_B ∫₀^∞ K` is the limit both of `H_B` and of the normalised correlation
+`G_B`, and `C_B ∫₀^∞ φ` is the limit both of `H_B` and of the normalised correlation
 integral. -/
 theorem thm_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)

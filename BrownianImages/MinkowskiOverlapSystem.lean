@@ -5,7 +5,7 @@ estimate.
 The probabilistic estimate is proved for two affine compact time sets around
 an oriented temporal gap.  Here interval separation supplies that orientation
 and a single positive lower bound for every gap.  Each cylinder is contained
-in the full attractor image, so the `q = 1` raw-sausage estimate for the full
+in the full attractor image, so the `q = 1` raw-neighbourhood estimate for the full
 image supplies both moment inputs.  The finite-family assembly then gives the
 multiple-counting defect estimate as well.
 -/

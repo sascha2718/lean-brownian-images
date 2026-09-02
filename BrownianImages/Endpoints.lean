@@ -11,8 +11,8 @@ composition of results from two or more of the modules above, in the shape
   into the dyadic summation.
 * `exists_periodic_profile`, `thm_smoothing_injective`,
   `lattice_correlation_oscillation`: the periodic profile `G̃_A` of `sec:renewal`, built
-  from `thm:cantor-values`, the Frostman regularity of `thm:ahlfors` and the shift
-  identity `eq:g-recursion`, and the two results that consume it.
+  from `thm:cantor-values`, the internal Frostman regularity result and the shift
+  identity `eq:g-recursion`, together with the two results that consume it.
 -/
 import BrownianImages.Rescaling
 import BrownianImages.Reduction

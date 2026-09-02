@@ -17,7 +17,7 @@ headline theorems for the comparator audit; the modules below carry what is prov
   `eq:monotone-fill`.
 * `Frostman`: the Frostman condition, the two ball conventions, atomlessness, and the
   pair-distance bound `eq:phi-frostman`.
-* `Kernel`: the smoothing kernel `K` of `eq:h-definition`, its logarithmic form, and
+* `Kernel`: the smoothing kernel `φ` of `eq:h-definition`, its logarithmic form, and
   the two-sided domination that puts it in `L¹(ℝ)`.
 * `SelfSimilar`: the theory of strongly separated self-similar systems: separation,
   dimensions and gaps of the named systems, the ratio `c` of `eq:c-definition`, and
@@ -33,7 +33,7 @@ headline theorems for the comparator audit; the modules below carry what is prov
 * `Renewal`: the key renewal theorem, vendored from Benny Avelin's `AbsorptionCutoff`
   under the Apache License 2.0; see `BrownianImages/Renewal.lean` for provenance.
 * `RenewalBridge`: the hypotheses of that theorem, discharged for the renewal measure
-  `F = ∑ p_i δ_{a_i}` of a self-similar system.  The only module that mentions the
+  `ϑ = ∑ p_i δ_{a_i}` of a self-similar system.  The only module that mentions the
   vendored namespace.
 * `GaussianFourPoint`: the mass half of `thm:endpoint-block-mass`, the independence of
   disjoint planar increments, and the planar return probability of
@@ -53,10 +53,10 @@ headline theorems for the comparator audit; the modules below carry what is prov
   the occupation law that follows from it.
 * `Reduction`: `thm:gaussian-reduction`, the Fubini interchange and the Gaussian
   transform of the pair-distance law.
-* `AhlforsRegular`: `thm:ahlfors`, Ahlfors regularity of the natural measure of a
-  strongly separated system, and the Frostman bound it yields at every centre.
+* `AhlforsRegular`: Ahlfors regularity of the natural measure of a strongly separated
+  system, used internally to obtain the Frostman bound at every centre.
 * `Hutchinson`: the coding map on `ℕ → ι`, Hutchinson's theorem for a general system,
-  and the two natural measures of `sec:setup`.
+  and the two natural measures of `sec:renewal`.
 * `CantorValues`: `thm:cantor-values`, the three exact values of `eq:cantor-values`.
 * `Rescaling`: `eq:smoothing`, the layer cake identity and the substitution `δ = r²η`,
   and the two conclusions of `thm:profile-asymptotics` about the correlation integral.
@@ -80,7 +80,7 @@ headline theorems for the comparator audit; the modules below carry what is prov
 * `TailHarmonic`: a bounded function harmonic on a tail for a step law with dense group
   converges, and `thm:non-lattice-limit` with it.
 * `KeyRenewalFourier`: `thm:non-lattice-limit` again, by the paper's own route.  The
-  vendored key renewal theorem asks for `Nonlattice`, which `F` fails; `FellerNonlattice`
+  vendored key renewal theorem asks for `Nonlattice`, which `ϑ` fails; `FellerNonlattice`
   is what its proof actually consumes and what `eq:non-lattice` supplies.
 * `ProfileAsymptotics`, `Separation`, `CantorApplication`: the conditional forms of
   `eq:gb-limit`, `thm:profile-asymptotics`, `thm:non-lattice-separation` and

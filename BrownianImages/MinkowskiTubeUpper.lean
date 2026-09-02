@@ -6,7 +6,7 @@ The paper covers the Brownian image by finitely many random discs.  This file
 separates the two parts of that argument which do not use a Brownian maximal
 inequality:
 
-* a compact set covered by discs has both its smoothed and raw sausage bounded
+* a compact set covered by discs has both its smoothed and raw neighbourhood area bounded
   by the sum of the areas of the enlarged discs;
 * the real `q`-moment of a finite nonnegative sum is bounded by the usual
   cardinality factor, with integrability and the expectation inequality kept
@@ -29,7 +29,7 @@ open scoped ENNReal NNReal Topology
 
 noncomputable section
 
-/-! ### Smoothed mass is bounded by raw sausage area -/
+/-! ### Smoothed mass is bounded by raw neighbourhood area -/
 
 /-- The triangular tube cut-off is pointwise bounded by the indicator of the
 open tube. -/
@@ -46,7 +46,7 @@ theorem tubeCutoff_le_tubeIndicator {r : ℝ} (hr : 0 < r)
       (tubeCutoff_eq_zero_iff hr F x).2 hdist]
 
 /-- The smoothed tube mass is no larger than the area of the raw open
-sausage at the same radius. -/
+neighbourhood at the same radius. -/
 theorem tubeMass_le_tubeArea {r : ℝ} (hr : 0 < r) (F : CompactPlane) :
     tubeMass r F ≤ tubeArea r F := by
   rw [tubeMass, ← integral_tubeIndicator]
@@ -56,7 +56,7 @@ theorem tubeMass_le_tubeArea {r : ℝ} (hr : 0 < r) (F : CompactPlane) :
 /-! ### A finite disc cover -/
 
 /-- Enlarging a finite cover of a compact set by closed discs gives a cover of
-its open sausage by correspondingly enlarged open discs. -/
+its open neighbourhood by correspondingly enlarged open discs. -/
 theorem thickening_subset_iUnion_ball_of_subset_iUnion_closedBall
     {J : Type*} [Fintype J] {F : CompactPlane}
     (center : J → Plane) (radius : J → ℝ) {r : ℝ}
@@ -73,7 +73,7 @@ theorem thickening_subset_iUnion_ball_of_subset_iUnion_closedBall
     dist x (center j) ≤ dist x y + dist y (center j) := dist_triangle _ _ _
     _ < r + radius j := by linarith
 
-/-- The raw sausage area of a compact set covered by finitely many closed
+/-- The raw neighbourhood area of a compact set covered by finitely many closed
 discs is bounded by the sum of the areas of the enlarged discs. -/
 theorem tubeArea_le_pi_mul_sum_sq_of_subset_iUnion_closedBall
     {J : Type*} [Fintype J] (F : CompactPlane)
@@ -131,7 +131,7 @@ variable {Omega : Type*} [MeasurableSpace Omega]
 
 omit [MeasurableSpace Omega] in
 /-- On a continuous path, any finite family of anchors and oscillation radii
-covering the values at the prescribed time set gives the paper's sausage
+covering the values at the prescribed time set gives the paper's neighbourhood
 cover bound.  The hypotheses deliberately mention only the local oscillation
 statement which the Brownian maximal inequality supplies. -/
 theorem brownianTube_cover_bound_of_continuous
@@ -211,7 +211,7 @@ theorem integrable_rpow_sum_and_integral_le
 
 /-- Expectation-level assembly of the finite disc cover.  Once each squared
 enlarged radius has an integrable `q`-moment, both the raw and smoothed random
-sausages have integrable `q`-moments with the same explicit bound.  This is the
+neighbourhoods have integrable `q`-moments with the same explicit bound.  This is the
 whole upper-moment proof after the stopping cover and the Brownian oscillation
 estimate have been supplied. -/
 theorem random_tube_moments_of_finite_disc_cover

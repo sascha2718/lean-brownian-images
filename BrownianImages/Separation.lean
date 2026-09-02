@@ -5,9 +5,9 @@ mutually singular Brownian occupation laws.
 
 The corollary is a composition of three steps.  Each normalised profile `G_i` converges
 to its own renewal constant `C_i`, which is `thm:non-lattice-limit`; `eq:hb-asymptotic`
-turns that into convergence of the expected profile `H_i` to `C_i ∫₀^∞ K`; and two
+turns that into convergence of the expected profile `H_i` to `C_i ∫₀^∞ φ`; and two
 distinct limits force `eq:profile-separation`, which is what `thm:main` consumes.  The
-middle step is `profile_asymptotics_nonLattice` and the strict positivity of `∫₀^∞ K` is
+middle step is `profile_asymptotics_nonLattice` and the strict positivity of `∫₀^∞ φ` is
 `integral_kern_pos`, so the only inputs still open are `thm:non-lattice-limit` and
 `thm:main` themselves.  Both are carried as explicit hypotheses, in the text
 `Challenge.lean` gives them, so that closing those endpoints discharges the hypotheses
@@ -70,7 +70,7 @@ each system, and `hmain` is `audit_main` at the ambient `W`, `P` and `s`, with t
 Frostman constants and its three hypotheses left quantified: the constants are produced
 inside the proof by `AhlforsRegular.exists_isFrostman_of_isNatural`.  Everything else is
 proved here: `eq:hb-asymptotic` moves the two limits from `G` to `H`, `integral_kern_pos`
-says the common factor `∫₀^∞ K` does not collapse them, and
+says the common factor `∫₀^∞ φ` does not collapse them, and
 `Separation.exists_separation_of_tendsto` turns the two distinct limits into
 `eq:profile-separation`. -/
 theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityMeasure P]
@@ -89,7 +89,7 @@ theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityM
       Tendsto (G s μ₂) atTop (𝓝 ((S₂.renewalMean s)⁻¹ * ∫ x : ℝ, S₂.renewalDefect s μ₂ x)))
     (hmain : ∀ {A₁ A₂ : ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂],
       IsFrostman s A₁ μ₁ → IsFrostman s A₂ μ₂ →
-      (∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|) →
+      (∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) →
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
   haveI := hμ₁.isProbabilityMeasure

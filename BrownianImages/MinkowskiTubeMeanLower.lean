@@ -1,12 +1,12 @@
 /-
 The lower-bound half of `thm:tube-moments`.
 
-The deterministic input compares the smoothed sausage at radius `2r` with half
-the area of the raw radius-`r` sausage.  The probabilistic input says that the
+The deterministic input compares the smoothed neighbourhood at radius `2r` with half
+the area of the raw radius-`r` neighbourhood.  The probabilistic input says that the
 occupation measure is carried by the compact Brownian image on every continuous
-sample path.  These facts, the correlation-to-sausage inequality, and a Markov
+sample path.  These facts, the correlation-to-neighbourhood inequality, and a Markov
 event split reduce the expected lower bound to the already proved Frostman
-correlation estimate.  Integrability of the smoothed sausage is kept explicit:
+correlation estimate.  Integrability of the smoothed neighbourhood is kept explicit:
 it is precisely the `q = 1` upper-moment input supplied by the other half of
 `thm:tube-moments`.
 -/
@@ -23,7 +23,7 @@ open scoped ENNReal NNReal Topology
 
 noncomputable section
 
-/-- On the raw radius-`r` sausage, the triangular cut-off at radius `2r` is at
+/-- On the raw radius-`r` neighbourhood, the triangular cut-off at radius `2r` is at
 least one half. -/
 theorem half_tubeIndicator_le_tubeCutoff_two_mul {r : ℝ} (hr : 0 < r)
     (F : CompactPlane) (x : Plane) :
@@ -40,7 +40,7 @@ theorem half_tubeIndicator_le_tubeCutoff_two_mul {r : ℝ} (hr : 0 < r)
   · rw [tubeIndicator, Set.indicator_of_notMem hx, mul_zero]
     exact tubeCutoff_nonneg _ _ _
 
-/-- Deterministic comparison of smoothed and raw sausages:
+/-- Deterministic comparison of smoothed and raw neighbourhoods:
 `M_{2r}(F) ≥ (1/2) |F_r|`. -/
 theorem half_tubeArea_le_tubeMass_two_mul {r : ℝ} (hr : 0 < r)
     (F : CompactPlane) :
@@ -217,7 +217,7 @@ theorem IsPlanarBrownian.ae_occupationCorr_pos
   exact ENNReal.toReal_pos hpos.ne' (corr_ne_top (occupation W mu omega) r)
 
 /-- The expectation-level lower bound, in the general Frostman form.  The sole
-extra analytic input is integrability of the radius-`r` smoothed sausage.  The
+extra analytic input is integrability of the radius-`r` smoothed neighbourhood.  The
 proof uses the event where occupation correlation is at most twice its mean;
 no unproved Jensen or reciprocal-integrability step is hidden here. -/
 theorem exists_expected_tubeMass_lower_of_frostman
@@ -279,7 +279,7 @@ set_option linter.unusedVariables false in
 /-- The lower half of `thm:tube-moments` for a separated self-similar natural
 measure.  `IsDimension` is carried to match the theorem's paper-level data;
 `IsNatural` already supplies the probability measure and compact attractor.
-Only the `q = 1` sausage integrability input from the upper-moment argument
+Only the `q = 1` neighbourhood integrability input from the upper-moment argument
 remains explicit. -/
 theorem IsNatural.exists_expected_tubeMass_lower_of_integrable
     (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}

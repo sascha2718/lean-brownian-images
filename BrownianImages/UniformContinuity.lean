@@ -3,7 +3,8 @@
 `H_μ` is uniformly continuous on `ℝ`.
 
 * `H_eq_Hlog`: the substitution `η = e^x` of `eq:h-definition`.
-* `tendsto_integral_logKern_sub`: translation is continuous in `L¹(ℝ)` for `k`.
+* `tendsto_integral_logKern_sub`: translation is continuous in `L¹(ℝ)` for the
+  logarithmic kernel.
 * `audit_profile_uniform_continuity`: the statement of `thm:profile-uniform-continuity`.
 -/
 import BrownianImages.Kernel
@@ -19,7 +20,7 @@ variable {s A : ℝ} {μ : Measure ℝ}
 /-! ### The substitution `η = e^x` -/
 
 /-- The substitution `η = e^x` in `eq:h-definition`:
-`H_μ(v) = ∫_ℝ k(x) G(2v - x) dx`. -/
+`H_μ(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
 theorem H_eq_Hlog (s : ℝ) (μ : Measure ℝ) (v : ℝ) : H s μ v = Hlog s μ v := by
   have himg : Real.exp '' (Set.univ : Set ℝ) = Set.Ioi 0 := by
     rw [Set.image_univ, Real.range_exp]

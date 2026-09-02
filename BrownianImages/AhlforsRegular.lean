@@ -1,6 +1,6 @@
 /-
-`sec:setup`, `thm:ahlfors`: the natural measure of a strongly separated self-similar
-system is Ahlfors regular of its similarity dimension.
+Internal proof infrastructure for `sec:renewal`: the natural measure of a strongly
+separated self-similar system is Ahlfors regular of its similarity dimension.
 
 The proof of the paper cuts the coding tree at the first level where the piece diameter
 drops below the radius.  The formalisation runs the same cut one step at a time.  Below
@@ -21,16 +21,16 @@ the support supplies.
   recursion and the propagation of the support condition through it.
 * `AhlforsRegular.exists_uniform_lower`: the mass of a fixed ball is bounded below
   uniformly over centres in the support, by compactness of the support.
-* `AhlforsRegular.measure_closedBall_le_of_isNatural`: the upper half of `eq:ahlfors`,
-  with the explicit constant `(2/ρ)^s`.
+* `AhlforsRegular.measure_closedBall_le_of_isNatural`: the upper Ahlfors bound, with
+  the explicit constant `(2/ρ)^s`.
 * `AhlforsRegular.exists_le_measure_closedBall_of_isNatural`: the lower half of
-  `eq:ahlfors`.
+  the Ahlfors estimate.
 * `AhlforsRegular.exists_isFrostman_of_isNatural`: the same upper bound read as
   `eq:frostman`, which is the Frostman hypothesis the later endpoints ask of `μ_A` and
   `μ_B`.
-* `exists_isAhlforsClosed`: `thm:ahlfors`, the endpoint `audit_ahlfors`.
-* `exists_isAhlfors_cantor_pair`: `thm:ahlfors` for `μ_A` and `μ_B`, the endpoint
-  `audit_ahlfors_named`.
+* `exists_isAhlforsClosed`: the internal endpoint `audit_ahlfors`.
+* `exists_isAhlfors_cantor_pair`: the corresponding result for `μ_A` and `μ_B`, the
+  internal endpoint `audit_ahlfors_named`.
 -/
 import BrownianImages.SelfSimilar
 import BrownianImages.Frostman
@@ -258,7 +258,7 @@ theorem exists_ratio_lower (S : System ι) [Nonempty ι] :
     fun i => Finset.inf'_le S.ratio (Finset.mem_univ i)⟩
   exact (Finset.lt_inf'_iff _).2 fun i _ => S.ratio_pos i
 
-/-- The upper half of `eq:ahlfors`, with the explicit constant `(2/ρ)^s`.  The stopping
+/-- The upper Ahlfors bound, with the explicit constant `(2/ρ)^s`.  The stopping
 construction is the induction on `n`: below the separation gap the ball meets a single
 piece, and the radius grows by the factor `q > 1` at every step, so after finitely many
 steps the radius reaches the stopping scale `ρ/2`, where the total mass one is the
@@ -332,7 +332,7 @@ theorem measure_closedBall_le_of_isNatural (hs : 0 < s) (hsep : S.StronglySepara
     linarith
   exact key n x r hr hn
 
-/-- The lower half of `eq:ahlfors`.  The same stopping construction, run down from a
+/-- The lower Ahlfors bound.  The same stopping construction, run down from a
 support point: the ball has positive mass at every scale, so it meets a single piece,
 and at the stopping scale `ρ/2` compactness of the support gives a mass bound uniform
 in the centre. -/
@@ -405,7 +405,7 @@ theorem exists_le_measure_closedBall_of_isNatural (hs : 0 < s)
     linarith
   exact key n x r hx hr0 (le_trans hr1 hB1) hn
 
-/-- `eq:ahlfors` weakens when the constant grows. -/
+/-- Ahlfors regularity weakens when the constant grows. -/
 theorem isAhlfors_mono {A A' : ℝ} (h : IsAhlfors s A μ) (hAA : A ≤ A') :
     IsAhlfors s A' μ := by
   obtain ⟨hA, hball⟩ := h
@@ -418,8 +418,8 @@ theorem isAhlfors_mono {A A' : ℝ} (h : IsAhlfors s A μ) (hAA : A ≤ A') :
     have hrs : (0:ℝ) ≤ r ^ s := (Real.rpow_pos_of_pos hr0 s).le
     nlinarith
 
-/-- The natural measure of a strongly separated system is `s`-Frostman.  The upper half
-of `eq:ahlfors` holds at every centre, not only in the support, and `IsNatural` carries
+/-- The natural measure of a strongly separated system is `s`-Frostman.  The upper
+Ahlfors bound holds at every centre, not only in the support, and `IsNatural` carries
 the support condition on `[0,1]`, so this is `eq:frostman` outright.  It is what the
 later endpoints read the Frostman hypothesis of `μ_A` and `μ_B` off. -/
 theorem exists_isFrostman_of_isNatural (hs : 0 < s) (hsep : S.StronglySeparated K ρ)
@@ -433,10 +433,9 @@ theorem exists_isFrostman_of_isNatural (hs : 0 < s) (hsep : S.StronglySeparated 
 end AhlforsRegular
 
 set_option linter.unusedVariables false in
-/-- `thm:ahlfors`, `eq:ahlfors`.  The natural measure of a strongly separated system is
-Ahlfors regular of its similarity dimension, in the closed-ball form.  This is the
-endpoint `audit_ahlfors`.  The dimension equation is a consequence of `IsNatural` and is
-carried only to match the shape of the endpoint. -/
+/-- The natural measure of a strongly separated system is Ahlfors regular of its
+similarity dimension, in the closed-ball form.  This is the internal endpoint
+`audit_ahlfors`.  The dimension equation is a consequence of `IsNatural`. -/
 theorem exists_isAhlforsClosed {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
     {ρ s : ℝ} (hs : 0 < s) (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
@@ -457,9 +456,8 @@ theorem exists_isAhlforsClosed {ι : Type*} [Fintype ι] (S : System ι) {K : Se
     nlinarith [le_trans (le_max_left ((2 / ρ) ^ s) c⁻¹)
       (le_max_right 1 (max ((2 / ρ) ^ s) c⁻¹))]
 
-/-- `thm:ahlfors` as the paper states it, for the two named measures `μ_A` and `μ_B` on
-the balls `B(x,ρ)`, with a single constant serving both.  This is the endpoint
-`audit_ahlfors_named`. -/
+/-- Ahlfors regularity for the two named measures `μ_A` and `μ_B`, with a single
+constant serving both.  This is the internal endpoint `audit_ahlfors_named`. -/
 theorem exists_isAhlfors_cantor_pair {KA : Set ℝ} {μA : Measure ℝ}
     (hA : cantorSystem.IsNatural KA sCantor μA)
     {KB : Set ℝ} {μB : Measure ℝ}
@@ -476,8 +474,8 @@ theorem exists_isAhlfors_cantor_pair {KA : Set ℝ} {μA : Measure ℝ}
     AhlforsRegular.isAhlfors_mono (hA₁.isAhlfors sCantor_pos.le) (le_max_left _ _),
     AhlforsRegular.isAhlfors_mono (hA₂.isAhlfors sCantor_pos.le) (le_max_right _ _)⟩
 
-/-- `thm:ahlfors` for the two measures in the parameter-uniform application, with one
-constant serving both. -/
+/-- Ahlfors regularity for the two measures in the parameter-uniform application, with
+one constant serving both. -/
 theorem exists_isAhlfors_homogeneous_pair {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2) {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)

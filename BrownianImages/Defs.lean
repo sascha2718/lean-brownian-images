@@ -8,13 +8,13 @@ paper is phrased in, collected so that every later module speaks the same langua
 * `Phi`, `pairLaw`: the pair-distance distribution `Φ` of `eq:phi-definition` and the
   law `dΦ` it is the distribution function of.
 * `G`: the normalised pair-distance profile of `eq:g-definition`.
-* `kern`, `logKern`: the smoothing kernel `K` of `eq:h-definition` and its
-  logarithmic form `k(x) = e^x K(e^x)`.
+* `kern`, `logKern`: the smoothing kernel `φ` of `eq:h-definition` and the function
+  `x ↦ e^x φ(e^x)` used after passing to logarithmic coordinates.
 * `H`: the expected profile `H_μ` of `eq:expected-profile`, in the integral form
   `eq:h-definition` the proofs use.
 * `IsFrostmanOpen`: the same condition in the shape `eq:frostman` writes it, open
   balls centred in `[0,1]`; `Frostman.lean` compares the two.
-* `IsAhlfors`, `IsAhlforsClosed`: `eq:ahlfors` on open and on closed balls.
+* `IsAhlfors`, `IsAhlforsClosed`: two-sided regularity on open and on closed balls.
 * `IsPlanarBrownian`, `occupation`, `occupationProb`: planar Brownian motion as a pair
   of independent real Brownian motions with continuous paths, the occupation measure
   `ν = W_*μ`, and its reading as a point of `𝒫(ℝ²)`.
@@ -26,8 +26,7 @@ paper is phrased in, collected so that every later module speaks the same langua
 * `varScale`: the variance scale `V_s` of `eq:variance-scale`.
 * `System`, with `IsAttractor`, `StronglySeparated`, `IsDimension`, `IsNatural`,
   `logRatio`, `NonArithmetic`: self-similar systems on `[0,1]` and their natural
-  measures, the objects of `sec:setup` and `sec:renewal`; the theory lives in
-  `SelfSimilar.lean`.
+  measures, the objects of `sec:renewal`; the theory lives in `SelfSimilar.lean`.
 * `homogeneousSystem`, `homogeneousDim`, `pairSystem`, `pairRatio`: the two systems of
   `thm:cantor-application` and the ratio `c` of `eq:c-definition`.
 
@@ -92,15 +91,15 @@ structure IsFrostmanOpen (s A : ℝ) (μ : Measure ℝ) : Prop where
     ∀ x ∈ Set.Icc (0:ℝ) 1, ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
       μ (Metric.ball x ρ) ≤ ENNReal.ofReal (A * ρ ^ s)
 
-/-- `eq:ahlfors`: two-sided regularity on the balls `B(x,ρ)` of the paper, centred in
-the support.  Support points are those charging every ball. -/
+/-- Two-sided Ahlfors regularity on open balls centred in the support.  Support points
+are those charging every ball. -/
 def IsAhlfors (s A : ℝ) (μ : Measure ℝ) : Prop :=
   1 ≤ A ∧ ∀ x : ℝ, (∀ ε > 0, μ (Metric.ball x ε) ≠ 0) → ∀ r : ℝ, 0 < r → r ≤ 1 →
     ENNReal.ofReal (A⁻¹ * r ^ s) ≤ μ (Metric.ball x r) ∧
       μ (Metric.ball x r) ≤ ENNReal.ofReal (A * r ^ s)
 
-/-- The same two-sided bound on closed balls, which is what the covering argument of
-`thm:ahlfors` produces; `IsAhlforsClosed.isAhlfors` compares the two. -/
+/-- The same two-sided bound on closed balls; `IsAhlforsClosed.isAhlfors` compares the
+two conventions. -/
 def IsAhlforsClosed (s A : ℝ) (μ : Measure ℝ) : Prop :=
   1 ≤ A ∧ ∀ x : ℝ, (∀ ε > 0, μ (Metric.ball x ε) ≠ 0) → ∀ r : ℝ, 0 < r → r ≤ 1 →
     ENNReal.ofReal (A⁻¹ * r ^ s) ≤ μ (Metric.closedBall x r) ∧
@@ -128,28 +127,29 @@ noncomputable def G (s : ℝ) (μ : Measure ℝ) (w : ℝ) : ℝ :=
 
 /-! ### The smoothing kernel and the expected profile -/
 
-/-- `eq:h-definition`: the smoothing kernel `K(η) = ½ η^{s-2} exp(-1/(2η))`. -/
+/-- `eq:h-definition`: the smoothing kernel `φ(η) = ½ η^{s-2} exp(-1/(2η))`. -/
 noncomputable def kern (s η : ℝ) : ℝ :=
   2⁻¹ * η ^ (s - 2) * Real.exp (-(2 * η)⁻¹)
 
-/-- The logarithmic form `k(x) = e^x K(e^x) = ½ e^{(s-1)x} exp(-e^{-x}/2)` of the
+/-- The logarithmic form `e^x φ(e^x) = ½ e^{(s-1)x} exp(-e^{-x}/2)` of the
 smoothing kernel, used in the proof of `thm:profile-uniform-continuity`. -/
 noncomputable def logKern (s x : ℝ) : ℝ :=
   2⁻¹ * Real.exp ((s - 1) * x) * Real.exp (-(2 * Real.exp x)⁻¹)
 
 /-- `eq:periodic-smoothing`: the Gaussian smoothing operator
-`Tg(v) = ∫₀^∞ K(η) g(2v - log η) dη`. -/
-noncomputable def smoothOp (s : ℝ) (g : ℝ → ℝ) (v : ℝ) : ℝ :=
-  ∫ η in Set.Ioi (0 : ℝ), kern s η * g (2 * v - Real.log η)
+`Tg(t) = ∫₀^∞ φ(η) g(2t - log η) dη`. -/
+noncomputable def smoothOp (s : ℝ) (g : ℝ → ℝ) (t : ℝ) : ℝ :=
+  ∫ η in Set.Ioi (0 : ℝ), kern s η * g (2 * t - Real.log η)
 
-/-- `eq:h-definition`: the expected profile `H_μ(v) = ∫₀^∞ K(η) G(2v - log η) dη`.
+/-- `eq:h-definition`: the expected profile `H_μ(t) = ∫₀^∞ φ(η) G(2t - log η) dη`.
 `eq:smoothing` identifies it with `eq:expected-profile`. -/
-noncomputable def H (s : ℝ) (μ : Measure ℝ) (v : ℝ) : ℝ :=
-  ∫ η in Set.Ioi (0 : ℝ), kern s η * G s μ (2 * v - Real.log η)
+noncomputable def H (s : ℝ) (μ : Measure ℝ) (t : ℝ) : ℝ :=
+  ∫ η in Set.Ioi (0 : ℝ), kern s η * G s μ (2 * t - Real.log η)
 
-/-- The expected profile in logarithmic coordinates, `H_μ(v) = ∫_ℝ k(x) G(2v - x) dx`. -/
-noncomputable def Hlog (s : ℝ) (μ : Measure ℝ) (v : ℝ) : ℝ :=
-  ∫ x : ℝ, logKern s x * G s μ (2 * v - x)
+/-- The expected profile in logarithmic coordinates,
+`H_μ(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
+noncomputable def Hlog (s : ℝ) (μ : Measure ℝ) (t : ℝ) : ℝ :=
+  ∫ x : ℝ, logKern s x * G s μ (2 * t - x)
 
 /-! ### Planar Brownian motion and the occupation measure -/
 
@@ -213,9 +213,9 @@ noncomputable def expCorr (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (μ : 
 
 /-! ### The empirical profile and the variance scale -/
 
-/-- `eq:y-definition`: the empirical profile `Y_ν(v) = e^{2sv} C_{e^{-v}}(ν)`. -/
-noncomputable def Yprofile (s : ℝ) (ν : Measure Plane) (v : ℝ) : ℝ :=
-  Real.exp (2 * s * v) * (corr ν (Real.exp (-v))).toReal
+/-- `eq:y-definition`: the empirical profile `Y_ν(t) = e^{2st} C_{e^{-t}}(ν)`. -/
+noncomputable def Yprofile (s : ℝ) (ν : Measure Plane) (t : ℝ) : ℝ :=
+  Real.exp (2 * s * t) * (corr ν (Real.exp (-t))).toReal
 
 /-- The `k`-th Fourier coefficient of a `q`-periodic function, normalised as in the
 proof of `thm:smoothing-injective`: `ĝ(k) = q⁻¹ ∫₀^q e^{-2πikx/q} g(x) dx`. -/
@@ -280,7 +280,7 @@ structure IsNatural (K : Set ℝ) (s : ℝ) (μ : Measure ℝ) : Prop where
   /-- Hutchinson's identity with weights `p_i = r_i^s`. -/
   selfSimilar : μ = ∑ i, ENNReal.ofReal (S.ratio i ^ s) • μ.map (S.map i)
 
-/-- The log-ratios `a_i = log(1/r_i)`, the atoms of the renewal measure `F`. -/
+/-- The log-ratios `a_i = log(1/r_i)`, the atoms of the renewal measure `ϑ`. -/
 noncomputable def logRatio (i : ι) : ℝ := Real.log (S.ratio i)⁻¹
 
 /-- The system is non-arithmetic: the additive group generated by the log-ratios is

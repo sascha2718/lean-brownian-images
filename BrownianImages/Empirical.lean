@@ -7,7 +7,7 @@ prefactor allows.  That is `eq:monotone-fill`, and it is what turns convergence 
 grid into uniform convergence on tails.
 
 * `corr_mono`: `C_r(ν)` is non-decreasing in `r`.
-* `Yprofile_le_of_le`: `Y_ν(w) ≤ e^{2s(w-v)} Y_ν(v)` for `v ≤ w`.
+* `Yprofile_le_of_le`: `Y_ν(u) ≤ e^{2s(u-t)} Y_ν(t)` for `t ≤ u`.
 * `monotone_fill`: `eq:monotone-fill`, the two-sided grid bound.
 -/
 import BrownianImages.Defs

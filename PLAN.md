@@ -138,10 +138,10 @@ complete conclusion, and once as the individual endpoints its proof and its cons
 use. The five bundles are `audit_thm_cantor_values`, `audit_thm_smoothing_injective`,
 `audit_thm_profile_asymptotics`, `audit_thm_gaussian_four_point`, `audit_thm_variance`.
 Three further endpoints restate a general Lean result in the narrower shape the tex uses:
-`audit_ahlfors_named` (the tex states `thm:ahlfors` for `μ_A` and `μ_B` only, on the
-balls `B(x,ρ)`), `audit_endpoint_block_mass_dyadic` (the tex needs only dyadic `β, η`,
+`audit_ahlfors_named` (the internal regularity endpoint for `μ_A` and `μ_B`),
+`audit_endpoint_block_mass_dyadic` (the tex needs only dyadic `β, η`,
 and carries both halves of the lemma), and `audit_profile_asymptotics_lattice_bigO`
-(the `O(e^{-2(1-s)v})` shape `eq:ha-asymptotic` is written in, against the uniform bound
+(the `O(e^{-2(1-s)t})` shape `eq:ha-asymptotic` is written in, against the uniform bound
 the proof produces). Where an endpoint is strictly more general than the tex, the
 tex-shaped wrapper is the one to check the correspondence against.
 
@@ -178,9 +178,9 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | occupation has full mass | `audit_isProbabilityMeasure_occupation` | **done**, `IsPlanarBrownian.ae_isProbabilityMeasure_occupation` |
 | `Law(W_*μ)` has total mass one | `audit_isProbabilityMeasure_occupationLaw` | **done**, `IsPlanarBrownian.isProbabilityMeasure_occupationLaw` |
 | occupation is measurable | `audit_aemeasurable_occupation` | **done**, `IsPlanarBrownian.aemeasurable_occupationProb` |
-| `thm:ahlfors` | `audit_ahlfors` | **done**, `exists_isAhlforsClosed` |
-| `eq:ahlfors`, the two ball conventions | `audit_ahlfors_conventions` | **done**, `IsAhlforsClosed.isAhlfors` |
-| `thm:ahlfors` for `μ_A`, `μ_B` | `audit_ahlfors_named` | **done**, `exists_isAhlfors_cantor_pair` |
+| internal Ahlfors regularity | `audit_ahlfors` | **done**, `exists_isAhlforsClosed` |
+| the two Ahlfors ball conventions | `audit_ahlfors_conventions` | **done**, `IsAhlforsClosed.isAhlfors` |
+| internal Ahlfors regularity for `μ_A`, `μ_B` | `audit_ahlfors_named` | **done**, `exists_isAhlfors_cantor_pair` |
 | `thm:gaussian-reduction` | `audit_gaussian_reduction` | **done**, `gaussian_reduction` |
 | `sec:setup`, atomlessness of `μ` | `audit_measure_singleton` | **done**, `IsFrostman.measure_singleton` |
 | `sec:setup`, atomlessness of `dΦ` | `audit_pairLaw_noAtoms` | **done**, `pairLaw_measure_singleton` |
@@ -188,7 +188,7 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `eq:frostman`, the two ball conventions | `audit_frostman_conventions` | **done**, `IsFrostman.isFrostmanOpen`, `IsFrostmanOpen.isFrostman` |
 | `eq:phi-frostman` | `audit_phi_le` | **done**, `phi_le` |
 | `eq:smoothing` | `audit_smoothing` | **done**, `smoothing` |
-| `sec:setup`, `K` integrable and `∫K > 0` | `audit_kern_integrable` | **done**, `kern_integrableOn`, `integral_kern_pos` |
+| `sec:setup`, `φ` integrable and `∫φ > 0` | `audit_kern_integrable` | **done**, `kern_integrableOn`, `integral_kern_pos` |
 | `thm:profile-uniform-continuity` | `audit_profile_uniform_continuity` | **done**, `profile_uniformContinuous` |
 | `thm:renewal-recursion` (Φ) | `audit_renewal_recursion` | **done**, `phi_recursion` |
 | `thm:renewal-recursion` (G) | `audit_g_recursion` | **done**, `g_recursion` |
@@ -196,10 +196,10 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `thm:non-lattice-limit`, exponential moment | `audit_exists_expTransform_lt_one` | **done**, `exists_expTransform_lt_one` |
 | `thm:non-lattice-limit` | `audit_non_lattice_limit` | **done**, `nonLatticeLimit` |
 | `eq:c-definition` | `audit_pairRatio` | **done**, `pairRatio_rpow`, `pairRatio_lt_half` |
-| `sec:setup`, the middle-thirds system | `audit_cantorSystem_facts` | **done**, `cantorSystem_isDimension`, `cantorSystem_stronglySeparated` |
-| `sec:setup`, the paired system | `audit_pairSystem_facts` | **done**, `pairSystem_isDimension`, `pairSystem_stronglySeparated` |
-| `sec:setup`, existence of `μ_A` | `audit_exists_cantor_measure` | **done**, `exists_unique_isNatural_cantorSystem` |
-| `sec:setup`, existence of `μ_B` | `audit_exists_pair_measure` | **done**, `exists_unique_isNatural_pairSystem` |
+| `sec:renewal`, the middle-thirds system | `audit_cantorSystem_facts` | **done**, `cantorSystem_isDimension`, `cantorSystem_stronglySeparated` |
+| `sec:renewal`, the paired system | `audit_pairSystem_facts` | **done**, `pairSystem_isDimension`, `pairSystem_stronglySeparated` |
+| `sec:renewal`, existence of `μ_A` | `audit_exists_cantor_measure` | **done**, `exists_unique_isNatural_cantorSystem` |
+| `sec:renewal`, existence of `μ_B` | `audit_exists_pair_measure` | **done**, `exists_unique_isNatural_pairSystem` |
 | `eq:non-lattice` is non-arithmeticity | `audit_pairSystem_nonArithmetic_iff` | **done**, `pairSystem_nonArithmetic_iff` |
 | `sec:renewal`, the periodic extension | `audit_exists_periodic_extension` | **done**, `exists_periodic_extension_of_shift` |
 | `sec:renewal`, `G̃_A` itself | `audit_exists_periodic_profile` | **done**, `exists_periodic_profile` |
@@ -280,7 +280,7 @@ Five gaps, each one a piece of the paper that has to be built here.
   the interval version for the homometric systems.
 - **No key renewal theorem for a lattice-supported non-arithmetic law: closed, and not
   where it was expected.** Mathlib carries no renewal theory at all, and the vendored
-  `AbsorptionCutoff` theorem does not apply to `F` as stated
+  `AbsorptionCutoff` theorem does not apply to `ϑ` as stated
   (`not_nonlattice_renewalLaw`).  `thm:non-lattice-limit` turns out not to need a key
   renewal theorem: cutting the renewal equation at any finite threshold `T` past the gap
   gives the exact identity `∫ z = ∑ᵢ pᵢ ∫_{T-aᵢ}^{T} G`, so if `G` converges the limit is
@@ -373,7 +373,7 @@ theorem tendsto_tsum_integral_comp_sub_of_driNorm {μ : Measure ℝ} [IsProbabil
       atTop (𝓝 ((∫ x, z x) / ((∫ x, x ∂μ : ℝ) : ℂ)))
 ```
 
-which reads as `eq:g-non-lattice-limit` verbatim. **It does not apply to `F` as stated**,
+which reads as `eq:g-non-lattice-limit` verbatim. **It does not apply to `ϑ` as stated**,
 and `not_nonlattice_renewalLaw` is the machine-checked reason. It is, however, usable
 after weakening its hypothesis: see the ledger below.
 
@@ -384,9 +384,9 @@ on `Nonlattice`. In particular the reduction that occupies the first half of the
 * `convPow`, `renewalMeasure`, `driNorm`, `cellSup`, `expTransform` and their algebra;
 * `eq_tsum_integral_comp_sub_of_renewalEquation` — the renewal equation `h = h⋆μ + ψ`
   iterated to `h y = ∑ₙ ∫ ψ(y − s) dμ^{*n}(s)`, which is exactly the paper's
-  "`G = z + F*G` iterates to `G = ∑_{n≥0} F^{*n}*z`". It needs the exponential moment,
+  "`G = z + ϑ*G` iterates to `G = ∑_{n≥0} ϑ^{*n}*z`". It needs the exponential moment,
   which `exists_expTransform_lt_one` supplies, and **no** non-lattice hypothesis;
-* `tendsto_integral_comp_sub_convPow_zero` — the terminal term `F^{*(N+1)}*G` vanishing.
+* `tendsto_integral_comp_sub_convPow_zero` — the terminal term `ϑ^{*(N+1)}*G` vanishing.
 
 For the pair-distance part of the paper, this reduction is closed in two ways below:
 the vendored theorem has been restated under Feller non-arithmeticity, and an independent
@@ -397,19 +397,19 @@ Choquet--Deny argument proves the same endpoint without the key renewal theorem.
 **`Nonlattice (S.renewalLaw s)` is false, for every self-similar system.**
 `AbsorptionCutoff.Renewal.Nonlattice μ` asks that `μ` charge no affine lattice `a + rℤ`.
 A measure carried by two atoms always charges one, taking `a` the first atom and `r` the
-gap, so `F` never satisfies it. `not_nonlattice_renewalLaw` proves this, and
+gap, so `ϑ` never satisfies it. `not_nonlattice_renewalLaw` proves this, and
 `System.exists_norm_charFun_renewalLaw_eq_one` sharpens it to the analytic level: at
-`t = 2π/(a₁ − a₀)` the atom phases align and `‖charFun F t‖ = 1`. So no route asking for
+`t = 2π/(a₁ − a₀)` the atom phases align and `‖charFun ϑ t‖ = 1`. So no route asking for
 `‖charFun‖ < 1` pointwise can work.
 
-**But the vendored theorem is stated far stronger than its proof uses, and `F` does
+**But the vendored theorem is stated far stronger than its proof uses, and `ϑ` does
 satisfy what the proof needs.** Of the 24 vendored declarations carrying `Nonlattice`,
 all but three merely forward it. It is consumed at two leaves only:
 `charFun_ne_one_of_nonlattice`, which needs `charFun μ t ≠ 1` for `t ≠ 0`, and that *is*
 Feller's hypothesis (`System.nonArithmetic_iff_charFun_ne_one` proves `eq:non-lattice` is
 exactly it, in both directions); and `norm_charFun_lt_one_of_nonlattice`, whose one live
 use sits inside a `filter_upwards`, so an almost everywhere statement suffices, and for
-`F` the set `{t : ‖charFun F t‖ = 1}` is contained in a lattice, hence countable and
+`ϑ` the set `{t : ‖charFun ϑ t‖ = 1}` is contained in a lattice, hence countable and
 null. Swapping `Nonlattice` for those two weaker conditions and re-running the chain
 does close `thm:non-lattice-limit` by the Fourier route; this was carried out and
 compiled, at the cost of restating and re-proving about 760 lines of vendored proof body,
@@ -442,7 +442,7 @@ block becoming two. **The patch is applied**, so the vendored chain carries
 a second time. The price is recorded under *The leaf is vendored*: the tree is no longer
 pristine, and re-syncing gained a step.
 
-Do not try to discharge `Nonlattice` for `F`, and do not weaken `System.NonArithmetic`
+Do not try to discharge `Nonlattice` for `ϑ`, and do not weaken `System.NonArithmetic`
 to try to meet it. What is needed is a different theorem: the key renewal theorem for
 non-arithmetic distributions that may be carried by a lattice. Feller vol. II §XI.1
 (1.10)–(1.17), or Gut, *Stopped Random Walks*, Thm. 6.6.
@@ -615,7 +615,7 @@ multiplier, and it is `audit_gamma_multiplier` that connects them.
 - **`positivity` does not see hypothesis-carried positivity.** Feed `0 < 2 * exp x` as
   a term where `Continuous.inv₀` asks for it.
 
-- **`thm:ahlfors` needs no antichain.** Below the separation gap a closed ball meets at
+- **The internal Ahlfors proof needs no antichain.** Below the separation gap a closed ball meets at
   most one piece `S_i K`, and a piece it misses pulls back into `Kᶜ`, hence to a null
   set, so Hutchinson's identity collapses to the single term
   `μ(B̄(x,r)) = r_i^s μ(B̄(S_i⁻¹x, r/r_i))`.  Iterating that step *is* the antichain: an
@@ -624,7 +624,7 @@ multiplier, and it is `audit_gamma_multiplier` that connects them.
   whole word and cylinder layer a literal formalisation would need, never appear.  The
   lower bound needs a mass bound uniform in the centre at the stopping scale, and that is
   compactness of the support, not Hutchinson uniqueness.
-- **`eq:ahlfors` is not `eq:frostman`.** `IsAhlfors` quantifies its upper bound over
+- **Ahlfors regularity is not the Frostman condition.** `IsAhlfors` quantifies its upper bound over
   support points only.  The recursion above gives the upper bound at every centre and
   every radius, so `AhlforsRegular.exists_isFrostman_of_isNatural` is what the later
   endpoints should read the Frostman hypothesis of `μ_A` and `μ_B` off.

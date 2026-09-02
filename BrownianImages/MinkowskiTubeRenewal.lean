@@ -308,7 +308,7 @@ theorem System.IsNatural.meanBrownianTubeDefectProfile_nonneg
 full profiles and of the raw first-level defect implies integrability at the
 current scale and gives the exact equation
 
-`m(v) = sum_i p_i m(v - beta_i) - d(v)`.
+`m(t) = sum_i p_i m(t - beta_i) - d(t)`.
 
 Thus the remaining analytic input is precisely an integrable exponentially
 decaying defect (plus the renewal-theorem passage), rather than any further

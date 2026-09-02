@@ -147,10 +147,10 @@ theorem IsFrostmanOpen.isFrostman {s A : ℝ} (hs : 0 ≤ s) [IsProbabilityMeasu
         (by positivity : (0:ℝ) ≤ (3:ℝ) ^ s * A)]
 
 
-/-! ### The two ball conventions for `eq:ahlfors` -/
+/-! ### The two ball conventions for Ahlfors regularity -/
 
-/-- The closed-ball form of `eq:ahlfors` gives the open-ball form the paper writes, at
-the constant `2^s A`: an open ball contains the closed ball of half the radius. -/
+/-- The closed-ball form of Ahlfors regularity gives the open-ball form at the constant
+`2^s A`: an open ball contains the closed ball of half the radius. -/
 theorem IsAhlforsClosed.isAhlfors {s A : ℝ} (hs : 0 ≤ s) (h : IsAhlforsClosed s A μ) :
     IsAhlfors s (2 ^ s * A) μ := by
   obtain ⟨hA, hball⟩ := h

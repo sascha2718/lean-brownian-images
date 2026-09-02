@@ -3,7 +3,7 @@
 `eq:g-non-lattice-limit`, the limit constant it computes, and the Choquet-Deny theorem
 for the walk the recursion `eq:g-recursion` drives.
 
-The vendored key renewal theorem does not apply to `F` (`not_nonlattice_renewalLaw`), so
+The vendored key renewal theorem does not apply to `ϑ` (`not_nonlattice_renewalLaw`), so
 what is proved here is everything on either side of the missing theorem.  Before it:
 the paper's analysis of `z`, that it vanishes above `log ρ⁻¹`, that it is non-negative
 because the off-diagonal blocks of the self-similar decomposition of `Φ` are, that it is
@@ -732,5 +732,4 @@ theorem nonLatticeLimit_of_tendsto {ι : Type*} [Fintype ι] [Nonempty ι] (S : 
   exact ⟨renewalConstant_pos S hs0 hsep hdim hμ, by rw [hval]; exact hC⟩
 
 end BrownianImages
-
 

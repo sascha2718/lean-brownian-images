@@ -5,12 +5,12 @@ smoothed profile, together with the analytic facts it rests on.
 * `exists_extrema_of_periodic`, `exists_bound_of_continuous_periodic`: a continuous
   function of positive period attains its extremes on one period, and is bounded.
 * `smoothOp_integrableOn`, `smoothOp_const`, `smoothOp_sub`: the linearity of `T`, on the
-  domination by `M·K` that makes the integrals converge.
+  domination by `M·φ` that makes the integrals converge.
 * `kernel_trivial_of_multiplier`, `injective_of_multiplier`,
   `nonconstant_of_multiplier`: `thm:smoothing-injective` reduced to the two multiplier
   facts `eq:fourier-multiplier` and `M_k ≠ 0`.
 * `continuous_smoothOp`: the smoothing operator of `eq:periodic-smoothing` preserves
-  continuity, by dominated convergence against `M·K`.
+  continuity, by dominated convergence against `M·φ`.
 * `exists_measure_closedBall_pos`, `phi_pos`, `G_pos`: `Φ(δ) > 0` for `δ > 0`, hence the
   strict positivity of `G`, which `sec:renewal` uses for the periodic profile.
 * `exists_periodic_profile_of_shift`: the periodic profile `G̃_A`, assembled from the
@@ -152,7 +152,7 @@ theorem nonconstant_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 
 /-! ### Continuity of the smoothing operator -/
 
 /-- The smoothing operator of `eq:periodic-smoothing` preserves continuity: the
-integrand is dominated by `M·K` with `K` integrable, so dominated convergence applies. -/
+integrand is dominated by `M·φ` with `φ` integrable, so dominated convergence applies. -/
 theorem continuous_smoothOp {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {g : ℝ → ℝ}
     (hg : Continuous g) {M : ℝ} (hM : ∀ x, |g x| ≤ M) : Continuous (smoothOp s g) := by
   show Continuous fun v => ∫ η in Set.Ioi (0:ℝ), kern s η * g (2 * v - Real.log η)

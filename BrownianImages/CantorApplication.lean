@@ -184,7 +184,7 @@ theorem cantor_application_of_endpoints {P : Measure Ω} [IsProbabilityMeasure P
       (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
       {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
       (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|),
+      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|),
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) := by
   haveI := hA.isProbabilityMeasure
@@ -222,7 +222,7 @@ theorem cantor_application_pair_of_endpoints {P : Measure Ω} [IsProbabilityMeas
       (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
       {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
       (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|),
+      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|),
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μB) :=
   cantor_application_of_endpoints hW hA _
@@ -254,7 +254,7 @@ theorem homogeneous_application_of_endpoints {P : Measure Ω} [IsProbabilityMeas
       (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
       {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
       (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|),
+      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|),
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) := by
   have hs0 := homogeneousDim_pos hlam0 hlam
@@ -294,7 +294,7 @@ theorem homogeneous_application_pair_of_endpoints {P : Measure Ω} [IsProbabilit
       (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
       {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
       (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|),
+      (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|),
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μB) :=
   homogeneous_application_of_endpoints hW hlam0 hlam hA _

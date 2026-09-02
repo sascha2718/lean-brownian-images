@@ -1,16 +1,17 @@
 /-
-The smoothing kernel of `eq:h-definition`, `K(η) = ½ η^{s-2} exp(-1/(2η))`, and its
-logarithmic form `k(x) = e^x K(e^x)`.  These are the estimates the proof of
+The smoothing kernel of `eq:h-definition`, `φ(η) = ½ η^{s-2} exp(-1/(2η))`, and its
+logarithmic form `x ↦ e^x φ(e^x)`.  These are the estimates the proof of
 `thm:profile-uniform-continuity` runs on, and the tail bound
-`K(η) ≤ ½ η^{s-2}` is what the proof of `thm:profile-asymptotics` uses.
+`φ(η) ≤ ½ η^{s-2}` is what the proof of `thm:profile-asymptotics` uses.
 
 * `kern_pos`, `logKern_pos`: strict positivity, needed for the positivity of the
   periodic profile `H̃_A`.
-* `logKern_eq`: the substitution `η = e^x` in the form `k(x) = e^x K(e^x)`.
-* `kern_integrableOn`, `integral_kern_pos`: `sec:setup`'s claim that `K` is integrable,
+* `logKern_eq`: the substitution `η = e^x` in the form `x ↦ e^x φ(e^x)`.
+* `kern_integrableOn`, `integral_kern_pos`: `sec:setup`'s claim that `φ` is integrable,
   "since it decays exponentially at `0` and as `η^{s-2}` at infinity, where `s < 1`",
-  and that `∫₀^∞ K > 0`, which is what makes the limit in `eq:hb-asymptotic` positive.
-* `logKern_le_exp_neg_mul_abs`: the two-sided domination `k(x) ≤ e^{-c|x|}`,
+  and that `∫₀^∞ φ > 0`, which is what makes the limit in `eq:hb-asymptotic` positive.
+* `logKern_le_exp_neg_mul_abs`: the two-sided domination
+  `e^x φ(e^x) ≤ e^{-c|x|}`,
   `c = min(s, 1-s)`, which is where `0 < s < 1` enters.  Its two halves,
   `logKern_le_of_nonneg` and `logKern_le_of_nonpos`, are the bounds `e^{-t} ≤ 1` and
   `e^{-t} ≤ 1/t`.
@@ -38,7 +39,7 @@ theorem logKern_pos (x : ℝ) : 0 < logKern s x := by
 
 /-! ### The substitution `η = e^x` -/
 
-/-- `k(x) = e^x K(e^x)`: the substitution `η = e^x` of the proof of
+/-- The identity used after the substitution `η = e^x` in the proof of
 `thm:profile-uniform-continuity`. -/
 theorem logKern_eq (x : ℝ) : logKern s x = Real.exp x * kern s (Real.exp x) := by
   have hrpow : (Real.exp x) ^ (s - 2) = Real.exp (x * (s - 2)) := by
@@ -80,8 +81,9 @@ theorem logKern_le_exp_mul (x : ℝ) : logKern s x ≤ Real.exp (s * x) := by
     _ = Real.exp ((s - 1) * x) * Real.exp x := by ring
     _ = Real.exp (s * x) := by rw [← Real.exp_add]; ring_nf
 
-/-- The two-sided domination `k(x) ≤ e^{-c|x|}` with `c = min(s, 1-s) > 0`.  This is
-where `0 < s < 1` enters: it is what makes `k` integrable on the whole line. -/
+/-- The two-sided domination `e^x φ(e^x) ≤ e^{-c|x|}` with
+`c = min(s, 1-s) > 0`.  This is where `0 < s < 1` enters: it makes the logarithmic
+kernel integrable on the whole line. -/
 theorem logKern_le_exp_neg_mul_abs (hs0 : 0 < s) (hs1 : s < 1) (x : ℝ) :
     logKern s x ≤ Real.exp (-min s (1 - s) * |x|) := by
   rcases le_total 0 x with hx | hx
@@ -131,9 +133,9 @@ theorem logKern_integrable (hs0 : 0 < s) (hs1 : s < 1) : Integrable (logKern s) 
   exact logKern_le_exp_neg_mul_abs hs0 hs1 x
 
 
-/-! ### Integrability of `K` on `(0, ∞)` -/
+/-! ### Integrability of `φ` on `(0, ∞)` -/
 
-/-- Near infinity: `e^{-t} ≤ 1` gives `K(η) ≤ ½ η^{s-2}`, and `s - 2 < -1`. -/
+/-- Near infinity: `e^{-t} ≤ 1` gives `φ(η) ≤ ½ η^{s-2}`, and `s - 2 < -1`. -/
 theorem kern_le_rpow {η : ℝ} (hη : 0 < η) : kern s η ≤ 2⁻¹ * η ^ (s - 2) := by
   have hexp : Real.exp (-(2 * η)⁻¹) ≤ 1 :=
     Real.exp_le_one_iff.mpr (neg_nonpos.mpr (by positivity))
@@ -143,7 +145,7 @@ theorem kern_le_rpow {η : ℝ} (hη : 0 < η) : kern s η ≤ 2⁻¹ * η ^ (s 
     _ ≤ (2⁻¹ * η ^ (s - 2)) * 1 := mul_le_mul_of_nonneg_left hexp hpos.le
     _ = 2⁻¹ * η ^ (s - 2) := by ring
 
-/-- Near zero: `e^{-t} ≤ 1/t` gives `K(η) ≤ η^{s-1}`, and `s - 1 > -1`. -/
+/-- Near zero: `e^{-t} ≤ 1/t` gives `φ(η) ≤ η^{s-1}`, and `s - 1 > -1`. -/
 theorem kern_le_rpow_of_small {η : ℝ} (hη : 0 < η) : kern s η ≤ η ^ (s - 1) := by
   have hx : (0:ℝ) < (2 * η)⁻¹ := by positivity
   have hexp : Real.exp (-(2 * η)⁻¹) ≤ 2 * η := by
@@ -171,7 +173,7 @@ theorem continuousOn_kern (s : ℝ) : ContinuousOn (kern s) (Set.Ioi 0) := by
   unfold kern
   exact (continuousAt_const.mul (Real.continuousAt_rpow_const η (s - 2) (Or.inl hη'))).mul hexp
 
-/-- `sec:setup`: `K` is integrable on `(0, ∞)` for `0 < s < 1`. -/
+/-- `sec:setup`: `φ` is integrable on `(0, ∞)` for `0 < s < 1`. -/
 theorem kern_integrableOn (hs0 : 0 < s) (hs1 : s < 1) :
     MeasureTheory.IntegrableOn (kern s) (Set.Ioi 0) := by
   have hmeas : ∀ t : Set ℝ, t ⊆ Set.Ioi 0 → MeasurableSet t →
@@ -199,7 +201,7 @@ theorem kern_integrableOn (hs0 : 0 < s) (hs1 : s < 1) :
   have := hsmall.union hlarge
   rwa [Set.Ioc_union_Ioi_eq_Ioi (by norm_num : (0:ℝ) ≤ 1)] at this
 
-/-- `∫₀^∞ K > 0`: this is what makes the limit of `eq:hb-asymptotic` strictly
+/-- `∫₀^∞ φ > 0`: this is what makes the limit of `eq:hb-asymptotic` strictly
 positive. -/
 theorem integral_kern_pos (hs0 : 0 < s) (hs1 : s < 1) :
     0 < ∫ η in Set.Ioi (0:ℝ), kern s η := by
@@ -218,7 +220,7 @@ theorem integral_kern_pos (hs0 : 0 < s) (hs1 : s < 1) :
 /-! ### Positivity of the smoothing operator -/
 
 /-- `sec:smoothing`: `Tg` is strictly positive when `g` is.  The integrand is positive
-and integrable, dominated by `M·K`, and `K` is integrable with `(0,∞)` of positive
+and integrable, dominated by `M·φ`, and `φ` is integrable with `(0,∞)` of positive
 measure.  This is the positivity of `H̃_A` the paper records after
 `thm:smoothing-injective`. -/
 theorem smoothOp_pos (hs0 : 0 < s) (hs1 : s < 1) {g : ℝ → ℝ} (hg : Continuous g)

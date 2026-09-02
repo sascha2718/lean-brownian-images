@@ -2,7 +2,7 @@
 `sec:reconstruction` of `BrownianImagesComplete.tex`: measurability of the weak limit
 used to define the reconstruction map.
 
-The normalised sausages give measurable maps into `ProbabilityMeasure Plane`.  Their
+The normalised neighbourhoods give measurable maps into `ProbabilityMeasure Plane`.  Their
 limit is taken in the weak topology, whereas `ProbabilityMeasure Plane` initially
 carries Mathlib's Giry measurable structure.  `borel_probabilityMeasure_eq_giry`
 identifies the two structures.  The standard measurable-limit theorem for metrizable

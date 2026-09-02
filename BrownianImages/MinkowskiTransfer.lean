@@ -67,7 +67,7 @@ variable {Omega : Type*} [MeasurableSpace Omega]
 /-- Paper-shaped form of the measurable descent.  Here `RangeSpace` is to be
 instantiated with the measurable hyperspace of compact subsets of the plane,
 `range1` and `range2` with the two Brownian image sets, and `reconstruct` with the
-normalised-sausage limit from `thm:minkowski-reconstruction`.
+normalised-neighbourhood limit from `thm:minkowski-reconstruction`.
 
 If reconstruction returns the two occupation measures almost surely, singularity of
 their occupation laws implies singularity of the compact-range laws. -/

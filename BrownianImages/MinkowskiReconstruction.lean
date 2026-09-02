@@ -1,6 +1,6 @@
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: the axiom-free formal bridge from
-the analytic smoothed-sausage limit to singularity of compact Brownian image laws.
+the analytic smoothed-neighbourhood limit to singularity of compact Brownian image laws.
 
 The weak probability-measure space does not expose a complete-metrizable instance in
 the required measurable-limit API.  For the tube sequence this causes no gap.

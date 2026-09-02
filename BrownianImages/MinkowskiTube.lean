@@ -1,5 +1,5 @@
 /-
-`sec:reconstruction`: the deterministic smoothed-sausage construction used to recover an
+`sec:reconstruction`: the deterministic smoothed-neighbourhood construction used to recover an
 occupation measure from a nonempty compact image.
 
 The compact hyperspace is `NonemptyCompacts Plane`, with its Hausdorff metric.  For a positive
@@ -337,7 +337,7 @@ theorem tendsto_tubeRadius : Tendsto tubeRadius atTop (nhds 0) := by
   simpa [Function.comp_def] using
     Real.tendsto_exp_neg_atTop_nhds_zero.comp tendsto_natCast_atTop_atTop
 
-/-- The `n`th normalized smoothed-sausage approximation associated with a compact set. -/
+/-- The `n`th normalised smoothed-neighbourhood approximation associated with a compact set. -/
 noncomputable def tubeProbabilitySeq (n : ℕ) (F : CompactPlane) : ProbabilityMeasure Plane :=
   tubeProbability (tubeRadius n) (tubeRadius_pos n) F
 

@@ -3,10 +3,10 @@
 profile, `eq:hb-asymptotic` in the non-lattice case and `eq:ha-asymptotic` in the
 lattice case.
 
-* `profile_asymptotics_nonLattice`: dominated convergence against `A·K`.
+* `profile_asymptotics_nonLattice`: dominated convergence against `A·φ`.
 * `exists_lattice_bound`: the uniform bound behind `eq:ha-asymptotic`, at any exponent.
-  The two integrands agree where `2v - log η ≥ log 3`, and on the rest `K(η) ≤ ½η^{s-2}`,
-  which integrates to `T^{s-1}/(1-s)` with `T = e^{2v - log 3}`.
+  The two integrands agree where `2t - log η ≥ log 3`, and on the rest `φ(η) ≤ ½η^{s-2}`,
+  which integrates to `T^{s-1}/(1-s)` with `T = e^{2t - log 3}`.
 * `profile_asymptotics_lattice`, `profile_asymptotics_lattice_bigO`: the two shapes.
 
 Neither lattice statement needs a Frostman hypothesis on `μ_A`: boundedness of `G` comes
@@ -26,8 +26,8 @@ open scoped ENNReal NNReal Topology
 /-! ### `eq:hb-asymptotic`: the non-lattice limit -/
 
 /-- `thm:profile-asymptotics`, `eq:hb-asymptotic`: if `G` has the finite positive limit
-`C`, then `H` has the finite positive limit `C ∫₀^∞ K`.  Dominated convergence with the
-dominating function `A·K`, since `2v - log η → ∞` for every fixed `η > 0`. -/
+`C`, then `H` has the finite positive limit `C ∫₀^∞ φ`.  Dominated convergence with the
+dominating function `A·φ`, since `2t - log η → ∞` for every fixed `η > 0`. -/
 theorem profile_asymptotics_nonLattice {s C : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] {A : ℝ} (hμ : IsFrostman s A μ)
     (hCpos : 0 < C) (hC : Tendsto (G s μ) atTop (𝓝 C)) :
@@ -87,8 +87,8 @@ theorem exists_nonneg_bound_of_periodic {g : ℝ → ℝ} {p : ℝ} (hp : p ≠ 
 /-- The uniform bound behind `eq:ha-asymptotic`, for a general exponent and period: if `g` is a
 continuous `p`-periodic function agreeing with `G` above `a`, then the expected
 profile and the smoothed periodic profile differ by `O(e^{-2(1-s)v})`.  The two
-integrands agree where `2v - log η ≥ a`, and on the remaining range
-`η > e^{2v-a}` the kernel is at most `½ η^{s-2}`. -/
+integrands agree where `2t - log η ≥ a`, and on the remaining range
+`η > e^{2t-a}` the kernel is at most `½ η^{s-2}`. -/
 theorem exists_lattice_bound {s a p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] {g : ℝ → ℝ} (hg : Continuous g)
     (hp : p ≠ 0) (hper : Function.Periodic g p)

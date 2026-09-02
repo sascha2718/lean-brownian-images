@@ -44,7 +44,7 @@ noncomputable def freq (p : ℝ) (k : ℤ) : ℂ := 2 * Real.pi * Complex.I * k 
   simp [freq, Complex.div_re]
 
 /-- `eq:fourier-multiplier`: the `k`-th Fourier multiplier of the smoothing operator,
-`M_k = ∫₀^∞ K(η) η^{-2πik/p} dη`. -/
+`M_k = ∫₀^∞ φ(η) η^{-2πik/p} dη`. -/
 noncomputable def multInt (s p : ℝ) (k : ℤ) : ℂ :=
   ∫ η in Set.Ioi (0 : ℝ), (kern s η : ℂ) * (η : ℂ) ^ (-freq p k)
 
@@ -66,7 +66,7 @@ theorem gammaMult_ne_zero {s : ℝ} (hs : s < 1) (p : ℝ) (k : ℤ) : gammaMult
 
 /-! ### The period of `Tg` -/
 
-/-- `eq:periodic-smoothing`: smoothing halves the period.  The factor `2v` in the
+/-- `eq:periodic-smoothing`: smoothing halves the period.  The factor `2t` in the
 argument of `g` is what turns a `p`-periodic `g` into a `p/2`-periodic `Tg`, and it is
 why `eq:fourier-multiplier` takes the coefficient of `Tg` at period `p/2`. -/
 theorem smoothOp_periodic {s p : ℝ} {g : ℝ → ℝ} (hper : Function.Periodic g p) :

@@ -4,8 +4,8 @@
 The coefficient of `Tg` is taken at its own period `p/2` and that of `g` at `p`.  The
 proof is the paper's: shift the argument of `g` inside the period integral, which costs
 exactly the character at `log η` and leaves a bracket independent of `η`; substitute
-`u = 2v`; and swap the two integrals by Fubini, with integrability from the domination
-`|K(η) g(·)| ≤ M K(η)` on a finite measure in `v`.
+`u = 2t`; and swap the two integrals by Fubini, with integrability from the domination
+`|φ(η) g(·)| ≤ M φ(η)` on a finite measure in `t`.
 
 * `chr`: the character of `fourierCoeffP`, with `chr_log` identifying it at `log η` with
   the power `η^{-2πik/p}` of the multiplier integral.
@@ -101,7 +101,7 @@ theorem chr_shift {p : ℝ} (hp : 0 < p) (k : ℤ) {g : ℝ → ℝ}
     _ = chr p k c * ∫ v in (0:ℝ)..(p/2), chr p k (2 * v) * ((g (2 * v) : ℝ) : ℂ) :=
         intervalIntegral.integral_const_mul _ _
 
-/-- The substitution `u = 2v` turning the period integral of `Tg` at period `p/2` into
+/-- The substitution `u = 2t` turning the period integral of `Tg` at period `p/2` into
 the period integral of `g` at period `p`. -/
 theorem chr_double (p : ℝ) (k : ℤ) (g : ℝ → ℝ) :
     (∫ v in (0:ℝ)..(p/2), chr p k (2 * v) * ((g (2 * v) : ℝ) : ℂ))

@@ -7,16 +7,16 @@ The variance bound of `thm:variance` is an input here, not an output: the statem
 below carry the conclusion of `audit_variance` as an explicit hypothesis, in the text
 `Challenge.lean` gives it, so that closing that endpoint discharges the hypothesis
 mechanically.  The same holds for `audit_smoothing`, which identifies `𝔼 Y_μ(v)` with
-`H_μ(v)`, and for `audit_aemeasurable_occupation`, without which the empirical profile
+`H_μ(t)`, and for `audit_aemeasurable_occupation`, without which the empirical profile
 is not a random variable and no variance bound carries information.
 
-* `Concentration.exp_sq_mul_varScale`: the change of variable `r = e^{-v}` in
+* `Concentration.exp_sq_mul_varScale`: the change of variable `r = e^{-t}` in
   `eq:variance-scale`.
 * `y_variance_of_variance`: `eq:y-variance`.
 * `Concentration.exists_exp_bound`: the three regimes of `eq:y-variance` are dominated
   by a single exponential, so the grid sums are geometric.
 * `Concentration.memLp_Yprofile`, `Concentration.integral_Yprofile`: the empirical
-  profile is a bounded random variable with mean `H_μ(v)`.
+  profile is a bounded random variable with mean `H_μ(t)`.
 * `grid_convergence_of_y_variance`: `eq:grid-convergence`, by Chebyshev and
   Borel--Cantelli.
 * `Concentration.H_nonneg`, `Concentration.H_le`: the expected profile is bounded, the
@@ -44,14 +44,14 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 namespace Concentration
 
-/-! ### The change of variable `r = e^{-v}` -/
+/-! ### The change of variable `r = e^{-t}` -/
 
 /-- `exp x ^ 2 = exp (2x)`, the prefactor of `eq:y-definition` squared. -/
 theorem exp_sq (x : ℝ) : Real.exp x ^ 2 = Real.exp (2 * x) := by
   rw [two_mul, Real.exp_add, sq]
 
-/-- The change of variable `r = e^{-v}` in `eq:variance-scale`: the prefactor `e^{4sv}`
-of `eq:y-definition` turns `V_s(e^{-v})` into the three regimes of `eq:y-variance`. -/
+/-- The change of variable `r = e^{-t}` in `eq:variance-scale`: the prefactor `e^{4st}`
+of `eq:y-definition` turns `V_s(e^{-t})` into the three regimes of `eq:y-variance`. -/
 theorem exp_sq_mul_varScale (s v : ℝ) :
     Real.exp (2 * s * v) ^ 2 * varScale s (Real.exp (-v))
       = if s < 2⁻¹ then Real.exp (-(2 * s) * v)
@@ -156,7 +156,7 @@ theorem memLp_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
         exact mul_le_mul_of_nonneg_left hle (Real.exp_pos _).le
     _ = Real.exp (2 * s * v) := mul_one _
 
-/-- `𝔼 Y_μ(v) = H_μ(v)`: `eq:smoothing` read in the coordinate of `eq:y-definition`.
+/-- `𝔼 Y_μ(t) = H_μ(t)`: `eq:smoothing` read in the coordinate of `eq:y-definition`.
 The hypothesis is the conclusion of `audit_smoothing`. -/
 theorem integral_Yprofile {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     {s : ℝ} {μ : Measure ℝ}
@@ -178,7 +178,7 @@ set_option linter.unusedVariables false in
 /-- `eq:y-variance`: the variance bound of `thm:variance` in the exponential
 coordinate, with the three regimes `s < 1/2`, `s = 1/2`, `s > 1/2`.  The hypothesis
 `hvar` is the conclusion of `audit_variance`, and the change of variable is
-`r = e^{-v}`. -/
+`r = e^{-t}`. -/
 theorem y_variance_of_variance {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
@@ -502,7 +502,7 @@ line. -/
 theorem tailSet_subset_compl {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
     (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|) :
+    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) :
     tailSet s μ₁ ⊆ (tailSet s μ₂)ᶜ := by
   intro ν hν₁ hν₂
   obtain ⟨ε, hε, hV⟩ := hsep
@@ -577,7 +577,7 @@ theorem main_of_uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
       |Yprofile s (occupation W μ₁ ω) v - H s μ₁ v| ≤ ε)
     (hconc₂ : ∀ᵐ ω ∂P, ∀ ε > 0, ∃ V : ℝ, ∀ v ≥ V,
       |Yprofile s (occupation W μ₂ ω) v - H s μ₂ v| ≤ ε)
-    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|) :
+    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
   have hae₁ : ∀ᵐ ω ∂P, occupationProb W μ₁ ω ∈ Concentration.tailSet s μ₁ := by
     filter_upwards [hconc₁, hW.ae_occupationProb_toMeasure μ₁] with ω hω hωp

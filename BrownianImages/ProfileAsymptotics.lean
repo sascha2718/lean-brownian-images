@@ -2,7 +2,7 @@
 `sec:smoothing` of `BrownianImagesComplete.tex`: `eq:gb-limit` and
 `thm:profile-asymptotics` as one statement.
 
-`eq:gb-limit` is `thm:non-lattice-limit` read at the paired system.  The support of `F`
+`eq:gb-limit` is `thm:non-lattice-limit` read at the paired system.  The support of `ϑ`
 is `{log 2, log(1/c)}`, so `eq:non-lattice` is exactly the non-arithmetic hypothesis of
 that lemma: `pairSystem_nonArithmetic_iff` is the conversion, and
 `pairSystem_isDimension`, `pairSystem_stronglySeparated` and the attractor sitting in
@@ -11,7 +11,7 @@ that lemma: `pairSystem_nonArithmetic_iff` is the conversion, and
 The bundle `thm:profile-asymptotics` carries the renewal constant `C_B` of
 `eq:gb-limit` through all three conclusions about `μ_B`.  `profile_asymptotics_nonLattice`
 supplies `eq:hb-asymptotic` and `non_lattice_correlation_limit_const` the limit of the
-normalised correlation integral, with the same constant `C_B ∫₀^∞ K` in both; the `μ_A`
+normalised correlation integral, with the same constant `C_B ∫₀^∞ φ` in both; the `μ_A`
 half is `exists_periodic_profile`, `profile_asymptotics_lattice` and
 `lattice_correlation_oscillation`.
 
@@ -23,10 +23,10 @@ concrete alphabet `Fin 2` of the paired system can then no longer meet.  Nothing
 the endpoint being universe polymorphic, and `hlim` is discharged by the bare name
 `audit_non_lattice_limit` once that endpoint is proved.
 
-* `ProfileAsymptotics.exists_isFrostman_pair`: Frostman regularity of `μ_B`, off
-  `thm:ahlfors`.
+* `ProfileAsymptotics.exists_isFrostman_pair`: the internal Frostman regularity result
+  for `μ_B`.
 * `ProfileAsymptotics.non_lattice_correlation_limit_const`: the `μ_B` conclusion of
-  `thm:profile-asymptotics` with the limit named, `C ∫₀^∞ K` rather than some `L > 0`.
+  `thm:profile-asymptotics` with the limit named, `C ∫₀^∞ φ` rather than some `L > 0`.
 * `gb_limit_of_non_lattice_limit`: `eq:gb-limit`.
 * `thm_profile_asymptotics_of_non_lattice_limit`: `thm:profile-asymptotics`, bundled.
 -/
@@ -41,7 +41,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 namespace ProfileAsymptotics
 
-/-- `thm:ahlfors` for `μ_B`: the natural measure of the paired system is `s`-Frostman.
+/-- The natural measure `μ_B` of the paired system is `s`-Frostman.
 The paired system is strongly separated with gap `1/2 - c` on its attractor, which sits
 in `[0,1]`. -/
 theorem exists_isFrostman_pair {KB : Set ℝ} {μB : Measure ℝ}
@@ -54,7 +54,7 @@ theorem exists_isFrostman_pair {KB : Set ℝ} {μB : Measure ℝ}
 
 set_option linter.unusedVariables false in
 /-- `thm:profile-asymptotics`, the conclusion for `μ_B` with the limit named: the
-normalised expected correlation integral converges to `C ∫₀^∞ K`, the same constant
+normalised expected correlation integral converges to `C ∫₀^∞ φ`, the same constant
 `eq:hb-asymptotic` produces.  `audit_non_lattice_correlation_limit` asserts only that
 some positive limit exists; the bundle needs the value, so it is proved here from
 `eq:smoothing` and `eq:hb-asymptotic` directly. -/
@@ -109,7 +109,7 @@ set_option linter.unusedVariables false in
 /-- `thm:profile-asymptotics` as one statement, on the paper's hypotheses: the natural
 measures of the two systems and `eq:non-lattice`.  The renewal constant `C_B` of
 `eq:gb-limit` is carried through all three conclusions about `μ_B`: it is the limit of
-`G_B`, and `C_B ∫₀^∞ K` is the limit both of `H_B` and of the normalised correlation
+`G_B`, and `C_B ∫₀^∞ φ` is the limit both of `H_B` and of the normalised correlation
 integral.  `hlim` is the conclusion of `audit_non_lattice_limit`, which is open; the
 `μ_A` half does not use it. -/
 theorem thm_profile_asymptotics_of_non_lattice_limit

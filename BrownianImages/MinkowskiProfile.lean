@@ -1,6 +1,6 @@
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: notation for the raw and
-smoothed Brownian sausages and their logarithmically normalised profiles.
+smoothed Brownian neighbourhoods and their logarithmically normalised profiles.
 
 This file is deliberately definitional.  It gives the analytic lemmas of the paper a
 single, literal Lean vocabulary while keeping the deterministic Hausdorff-space
@@ -46,13 +46,13 @@ theorem measurable_tubeArea (r : ℝ) : Measurable (tubeArea r) := by
   · exact (isOpen_lt (Metric.lipschitz_infDist_pt (F : Set Plane)).continuous
       continuous_const).measurableSet
 
-/-- Raw sausage area of a compact Brownian image. -/
+/-- Raw neighbourhood area of a compact Brownian image. -/
 noncomputable def brownianTubeArea {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (K : NonemptyCompacts ℝ) (r : ℝ)
     (omega : Omega) : ℝ :=
   tubeArea r (brownianImage W K omega)
 
-/-- The fixed-radius raw Brownian sausage area is almost everywhere measurable. -/
+/-- The fixed-radius raw Brownian neighbourhood area is almost everywhere measurable. -/
 theorem IsPlanarBrownian.aemeasurable_brownianTubeArea
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
@@ -61,53 +61,53 @@ theorem IsPlanarBrownian.aemeasurable_brownianTubeArea
   (measurable_tubeArea r).comp_aemeasurable
     (hW.aemeasurable_brownianImage K)
 
-/-- The logarithmic radius `e⁻ᵛ`. -/
-noncomputable def tubeRadiusReal (v : ℝ) : ℝ :=
-  Real.exp (-v)
+/-- The logarithmic radius `e⁻ᵗ`. -/
+noncomputable def tubeRadiusReal (t : ℝ) : ℝ :=
+  Real.exp (-t)
 
-theorem tubeRadiusReal_pos (v : ℝ) : 0 < tubeRadiusReal v :=
+theorem tubeRadiusReal_pos (t : ℝ) : 0 < tubeRadiusReal t :=
   Real.exp_pos _
 
-/-- The normalised smoothed tube mass `e^{(2-2s)v} M_{e^{-v}}(F)`. -/
-noncomputable def normalizedTubeMass (s v : ℝ) (F : CompactPlane) : ℝ :=
-  Real.exp (tubeExponent s * v) * tubeMass (tubeRadiusReal v) F
+/-- The normalised smoothed tube mass `e^{(2-2s)t} M_{e^{-t}}(F)`. -/
+noncomputable def normalizedTubeMass (s t : ℝ) (F : CompactPlane) : ℝ :=
+  Real.exp (tubeExponent s * t) * tubeMass (tubeRadiusReal t) F
 
-theorem normalizedTubeMass_nonneg (s v : ℝ) (F : CompactPlane) :
-    0 ≤ normalizedTubeMass s v F :=
+theorem normalizedTubeMass_nonneg (s t : ℝ) (F : CompactPlane) :
+    0 ≤ normalizedTubeMass s t F :=
   mul_nonneg (Real.exp_pos _).le (tubeMass_nonneg _ _)
 
 /-- At a fixed logarithmic scale the normalised tube mass is continuous in the compact
 set. -/
-theorem continuous_normalizedTubeMass (s v : ℝ) :
-    Continuous (normalizedTubeMass s v) := by
-  exact continuous_const.mul (continuous_tubeMass (tubeRadiusReal_pos v))
+theorem continuous_normalizedTubeMass (s t : ℝ) :
+    Continuous (normalizedTubeMass s t) := by
+  exact continuous_const.mul (continuous_tubeMass (tubeRadiusReal_pos t))
 
-/-- The random normalised sausage profile `X(v)` of a compact Brownian image. -/
+/-- The random normalised neighbourhood profile `X(t)` of a compact Brownian image. -/
 noncomputable def brownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
-    (W : ℝ≥0 → Omega → Plane) (K : NonemptyCompacts ℝ) (s v : ℝ)
+    (W : ℝ≥0 → Omega → Plane) (K : NonemptyCompacts ℝ) (s t : ℝ)
     (omega : Omega) : ℝ :=
-  normalizedTubeMass s v (brownianImage W K omega)
+  normalizedTubeMass s t (brownianImage W K omega)
 
 /-- The fixed-scale Brownian tube profile is almost everywhere measurable. -/
 theorem IsPlanarBrownian.aemeasurable_brownianTubeProfile
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
-    (K : NonemptyCompacts ℝ) (s v : ℝ) :
-    AEMeasurable (brownianTubeProfile W K s v) P :=
-  (continuous_normalizedTubeMass s v).measurable.comp_aemeasurable
+    (K : NonemptyCompacts ℝ) (s t : ℝ) :
+    AEMeasurable (brownianTubeProfile W K s t) P :=
+  (continuous_normalizedTubeMass s t).measurable.comp_aemeasurable
     (hW.aemeasurable_brownianImage K)
 
-/-- The mean sausage profile `m(v) = E X(v)`. -/
+/-- The mean neighbourhood profile `m(t) = 𝔼 X(t)`. -/
 noncomputable def meanBrownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (P : Measure Omega)
-    (K : NonemptyCompacts ℝ) (s v : ℝ) : ℝ :=
-  ∫ omega, brownianTubeProfile W K s v omega ∂P
+    (K : NonemptyCompacts ℝ) (s t : ℝ) : ℝ :=
+  ∫ omega, brownianTubeProfile W K s t omega ∂P
 
 /-- The centred random profile used in the `L²` concentration lemma. -/
 noncomputable def centeredBrownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (P : Measure Omega)
-    (K : NonemptyCompacts ℝ) (s v : ℝ) (omega : Omega) : ℝ :=
-  brownianTubeProfile W K s v omega - meanBrownianTubeProfile W P K s v
+    (K : NonemptyCompacts ℝ) (s t : ℝ) (omega : Omega) : ℝ :=
+  brownianTubeProfile W K s t omega - meanBrownianTubeProfile W P K s t
 
 /-- Non-arithmeticity for the half-logarithmic tube-renewal steps `β_i`. -/
 def System.TubeNonArithmetic {iota : Type*} [Fintype iota]

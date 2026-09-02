@@ -68,7 +68,7 @@ theorem main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → P
     (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
     (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|) :
+    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
   main_of_uniform_concentration hW hs0 hs1 h₁ h₂ (hW.aemeasurable_occupationProb μ₁)
     (hW.aemeasurable_occupationProb μ₂) (uniform_concentration hW hs0 hs1 h₁)

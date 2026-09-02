@@ -1,6 +1,6 @@
 /-
-`sec:setup` and `sec:renewal`: the theory of strongly separated self-similar systems
-on `[0,1]` and their natural `s`-dimensional measures.
+`sec:renewal`: the theory of strongly separated self-similar systems on `[0,1]` and
+their natural `s`-dimensional measures.
 
 The objects themselves, `System` with `IsAttractor`, `StronglySeparated`,
 `IsDimension`, `IsNatural`, `logRatio` and `NonArithmetic`, together with
@@ -16,7 +16,7 @@ proofs need beyond the definitions:
   `eq:c-definition` solves `c^s = 1 - 2^{-s}` and lies in `(0, 1/2)`.
 * `pairSystem_nonArithmetic_iff`: `eq:non-lattice` is exactly non-arithmeticity of
   the paired system.
-* `renewalConv`, `renewalDefect`, `renewalMean`: the renewal data `F * G`, `z = G - F*G`
+* `renewalConv`, `renewalDefect`, `renewalMean`: the renewal data `ϑ * G`, `z = G - ϑ * G`
   and `m = ∑ p_i a_i` of `thm:non-lattice-limit`.
 -/
 import BrownianImages.Cantor
@@ -52,17 +52,17 @@ theorem logRatio_pos (i : ι) : 0 < S.logRatio i := by
   rw [logRatio, Real.log_inv, neg_pos]
   exact Real.log_neg (S.ratio_pos i) (S.ratio_lt_one i)
 
-/-- The renewal convolution `F * g` of `thm:non-lattice-limit`, where
-`F = ∑ p_i δ_{a_i}`: `(F * g)(w) = ∑ p_i g(w - a_i)`. -/
+/-- The renewal convolution `ϑ * g` of `thm:non-lattice-limit`, where
+`ϑ = ∑ p_i δ_{a_i}`: `(ϑ * g)(w) = ∑ p_i g(w - a_i)`. -/
 noncomputable def renewalConv (s : ℝ) (g : ℝ → ℝ) (w : ℝ) : ℝ :=
   ∑ i, S.ratio i ^ s * g (w - S.logRatio i)
 
-/-- The renewal defect `z = G - F * G` of `thm:non-lattice-limit`, whose integral gives
+/-- The renewal defect `z = G - ϑ * G` of `thm:non-lattice-limit`, whose integral gives
 the limit constant `eq:g-non-lattice-limit`. -/
 noncomputable def renewalDefect (s : ℝ) (μ : Measure ℝ) (w : ℝ) : ℝ :=
   G s μ w - S.renewalConv s (G s μ) w
 
-/-- The renewal measure `F = ∑ p_i δ_{a_i}` of `thm:non-lattice-limit`, whose atoms are
+/-- The renewal measure `ϑ = ∑ p_i δ_{a_i}` of `thm:non-lattice-limit`, whose atoms are
 the log-ratios and whose weights are `p_i = r_i^s`.  This is the measure the key renewal
 theorem is applied to. -/
 noncomputable def renewalLaw (s : ℝ) : Measure ℝ :=
@@ -79,7 +79,7 @@ theorem sum_ofReal_ratio_rpow {s : ℝ} (hdim : S.IsDimension s) :
     (Real.rpow_pos_of_pos (S.ratio_pos i) s).le
   rw [← ENNReal.ofReal_sum_of_nonneg hnn, hdim, ENNReal.ofReal_one]
 
-/-- `F` is a probability measure exactly when the weights are the `s`-powers of the
+/-- `ϑ` is a probability measure exactly when the weights are the `s`-powers of the
 ratios and `s` is the similarity dimension. -/
 theorem isProbabilityMeasure_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
     IsProbabilityMeasure (S.renewalLaw s) := by
@@ -92,7 +92,7 @@ theorem isProbabilityMeasure_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
 /-- The renewal mean `m = ∑ p_i a_i` of `thm:non-lattice-limit`. -/
 noncomputable def renewalMean (s : ℝ) : ℝ := ∑ i, S.ratio i ^ s * S.logRatio i
 
-/-- The renewal mean is the first moment of `F`: this is the `∫ x ∂μ` the key renewal
+/-- The renewal mean is the first moment of `ϑ`: this is the `∫ x ∂μ` the key renewal
 theorem divides by. -/
 theorem integral_id_renewalLaw (s : ℝ) :
     ∫ x, x ∂(S.renewalLaw s) = S.renewalMean s := by
@@ -245,7 +245,7 @@ theorem pairRatio_rpow {s : ℝ} (hs : 0 < s) : (pairRatio s) ^ s = 1 - (2:ℝ) 
   rw [pairRatio, ← Real.rpow_mul (one_sub_two_rpow_pos hs).le, inv_mul_cancel₀ hs.ne',
     Real.rpow_one]
 
-/-- `c < 1/2`, the disjointness of the first-level hulls noted in `sec:setup`: `s < 1`
+/-- `c < 1/2`, the disjointness of the first-level hulls noted in `sec:renewal`: `s < 1`
 gives `1 - 2^{-s} < 2^{-s}`. -/
 theorem pairRatio_lt_half {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) : pairRatio s < 1/2 := by
   have hhalf : (1:ℝ)/2 < (2:ℝ) ^ (-s) := by

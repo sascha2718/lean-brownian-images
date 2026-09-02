@@ -255,8 +255,8 @@ theorem audit_phi_le {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ} [IsProbabilityM
     Phi μ δ ≤ A * δ ^ s :=
   phi_le hμ hδ0 hδ1
 
-/-- `eq:ahlfors` is written with the balls `B(x,ρ)`, while the covering argument of
-`thm:ahlfors` produces the bound on closed balls.  The two agree up to the constant. -/
+/-- The open-ball and closed-ball forms of Ahlfors regularity agree up to the
+constant. -/
 theorem audit_ahlfors_conventions {s A : ℝ} (hs : 0 ≤ s) {μ : Measure ℝ}
     (h : IsAhlforsClosed s A μ) : IsAhlfors s (2 ^ s * A) μ :=
   h.isAhlfors hs
@@ -272,7 +272,7 @@ theorem audit_kern_integrable {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
 /-! ### `sec:renewal`: the pair-distance renewal profiles -/
 
 /-- `thm:non-lattice-limit`: the two inputs the key renewal theorem consumes from the
-system.  `F` is a probability measure, and its first moment is the renewal mean `m`. -/
+system.  `ϑ` is a probability measure, and its first moment is the renewal mean `m`. -/
 theorem audit_renewalLaw {ι : Type*} [Fintype ι] (S : System ι) {s : ℝ}
     (hdim : S.IsDimension s) :
     IsProbabilityMeasure (S.renewalLaw s) ∧ ∫ x, x ∂(S.renewalLaw s) = S.renewalMean s :=
@@ -295,7 +295,7 @@ theorem audit_pairRatio {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     pairRatio_lt_half (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam),
     pairRatio_rpow (homogeneousDim_pos hlam0 hlam)⟩
 
-/-- `sec:setup`: the homogeneous system has similarity dimension
+/-- `sec:renewal`: the homogeneous system has similarity dimension
 `log 2 / log(1/λ)` and first-level gap `1-2λ`. -/
 theorem audit_cantorSystem_facts {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     (homogeneousSystem lam hlam0 hlam).IsDimension (homogeneousDim lam) ∧
@@ -304,7 +304,7 @@ theorem audit_cantorSystem_facts {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2
   ⟨homogeneousSystem_isDimension hlam0 hlam,
     fun _ hK => homogeneousSystem_stronglySeparated hlam0 hlam hK⟩
 
-/-- `sec:setup`: the paired system has similarity dimension `s` and is strongly
+/-- `sec:renewal`: the paired system has similarity dimension `s` and is strongly
 separated with gap `1/2 - c` on every subset of `[0,1]`. -/
 theorem audit_pairSystem_facts {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     (pairSystem (pairRatio s) (pairRatio_pos hs0)
@@ -359,7 +359,7 @@ theorem audit_fourier_uniqueness {p : ℝ} (hp : 0 < p) {g : ℝ → ℝ} (hg : 
     g x = 0 :=
   eq_zero_of_fourierCoeffP_eq_zero hp hg hper h x
 
-/-- `sec:smoothing`: the smoothed periodic profile is strictly positive, since `K > 0`
+/-- `sec:smoothing`: the smoothed periodic profile is strictly positive, since `φ > 0`
 and the profile is strictly positive on a period. -/
 theorem audit_smoothOp_pos {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {g : ℝ → ℝ}
     (hg : Continuous g) (hpos : ∀ x, 0 < g x) (hbdd : ∃ M, ∀ x, |g x| ≤ M) (v : ℝ) :
@@ -372,7 +372,7 @@ theorem audit_gammaMult_ne_zero {s : ℝ} (hs : s < 1) {p : ℝ} (hp : 0 < p) (k
     gammaMult s p k ≠ 0 :=
   gammaMult_ne_zero hs p k
 
-/-- `eq:periodic-smoothing`: `Tg` is `p/2`-periodic.  The factor `2v` in the argument of
+/-- `eq:periodic-smoothing`: `Tg` is `p/2`-periodic.  The factor `2t` in the argument of
 `g` is what halves the period, and it is why `eq:fourier-multiplier` takes the
 coefficient of `Tg` at period `p/2`. -/
 theorem audit_smoothOp_periodic {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
@@ -492,7 +492,7 @@ theorem audit_smoothing_nonconstant {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp 
   smoothOp_nonconstant hs0 hs1 hp hg hper hne
 
 /-- `thm:profile-asymptotics`, `eq:hb-asymptotic`.  In the non-arithmetic case the
-expected profile converges to `C ∫₀^∞ K`, and that limit is finite and strictly
+expected profile converges to `C ∫₀^∞ φ`, and that limit is finite and strictly
 positive. -/
 theorem audit_profile_asymptotics_non_lattice {s C : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] {A : ℝ} (hμ : IsFrostman s A μ)
@@ -565,18 +565,16 @@ theorem audit_aemeasurable_occupation {P : Measure Ω} [IsProbabilityMeasure P]
     AEMeasurable (occupationProb W μ) P :=
   hW.aemeasurable_occupationProb μ
 
-/-- `thm:ahlfors`, `eq:ahlfors`.  The natural measure of a strongly separated system is
-Ahlfors regular of its similarity dimension.  Support points are those charging every
-ball. -/
+/-- Internal Ahlfors-regularity endpoint for a strongly separated natural measure.
+Support points are those charging every ball. -/
 theorem audit_ahlfors {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {ρ s : ℝ}
     (hs : 0 < s) (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     ∃ A : ℝ, IsAhlforsClosed s A μ :=
   exists_isAhlforsClosed S hs hsep hdim hμ
 
-/-- `thm:ahlfors` as the paper states it: for the two named measures `μ_A` and `μ_B`,
-on the balls `B(x,ρ)`.  The general endpoint above is the same statement for every
-strongly separated system. -/
+/-- Internal Ahlfors-regularity endpoint for the two named measures `μ_A` and `μ_B`.
+The general endpoint above is the same statement for every strongly separated system. -/
 theorem audit_ahlfors_named {KA : Set ℝ} {μA : Measure ℝ}
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
@@ -611,14 +609,14 @@ theorem audit_smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 �
     expCorr W P μ r = r ^ (2 * s) * H s μ (Real.log r⁻¹) :=
   smoothing hW hs0 hs1 hμ hr0
 
-/-- `sec:setup`: the middle-thirds attractor and its natural measure exist and are
+/-- `sec:renewal`: the middle-thirds attractor and its natural measure exist and are
 unique.  This is Hutchinson's theorem for `cantorSystem`. -/
 theorem audit_exists_cantor_measure {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     ∃! p : Set ℝ × Measure ℝ,
       (homogeneousSystem lam hlam0 hlam).IsNatural p.1 (homogeneousDim lam) p.2 :=
   exists_unique_isNatural_homogeneousSystem hlam0 hlam
 
-/-- `sec:setup`: the paired attractor and its natural measure exist and are unique. -/
+/-- `sec:renewal`: the paired attractor and its natural measure exist and are unique. -/
 theorem audit_exists_pair_measure {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     ∃! p : Set ℝ × Measure ℝ,
       (pairSystem (pairRatio s) (pairRatio_pos hs0)
@@ -807,7 +805,7 @@ theorem audit_main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
     (hW : IsPlanarBrownian W P) {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ₁ μ₂ : Measure ℝ} [IsProbabilityMeasure μ₁] [IsProbabilityMeasure μ₂]
     (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
-    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ v ≥ V, ε ≤ |H s μ₁ v - H s μ₂ v|) :
+    (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
   main hW hs0 hs1 h₁ h₂ hsep
 
@@ -944,7 +942,7 @@ theorem audit_gb_limit {KB : Set ℝ} {μB : Measure ℝ}
 /-- `thm:profile-asymptotics` as one statement, on the paper's hypotheses: the natural
 measures of the two systems and `eq:non-lattice`.  The renewal constant `C_B` of
 `eq:gb-limit` is carried through all three conclusions about `μ_B`: it is the limit of
-`G_B`, and `C_B ∫₀^∞ K` is the limit both of `H_B` and of the normalised correlation
+`G_B`, and `C_B ∫₀^∞ φ` is the limit both of `H_B` and of the normalised correlation
 integral. -/
 theorem audit_thm_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)

@@ -1,5 +1,5 @@
 /-
-`sec:reconstruction`: deterministic algebra for smoothed planar sausages.
+`sec:reconstruction`: deterministic algebra for smoothed planar neighbourhoods.
 
 This file proves the finite-union, translation, and positive-dilation identities used in
 `eq:tube-union-scaling`.  It also defines the multiple-counting defect for a finite nonempty

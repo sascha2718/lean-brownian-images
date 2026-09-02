@@ -1,5 +1,5 @@
 /-
-`sec:setup`: Hutchinson's theorem for a self-similar system on `[0,1]`.
+Internal proof infrastructure for the self-similar systems of `sec:renewal`.
 
 Mathlib carries no iterated function systems, so the existence and uniqueness of the
 attractor and of the natural measure are built here, through the code space `ℕ → ι`.
@@ -19,7 +19,7 @@ push-forward of the Bernoulli measure with weights `p_i = r_i^s`.
   unique, which is Hutchinson's theorem in the shape `audit_exists_cantor_measure` asks
   for.
 * `exists_unique_isNatural_cantorSystem`, `exists_unique_isNatural_pairSystem`: the two
-  systems of `sec:setup`.
+  systems of `sec:renewal`.
 -/
 import BrownianImages.SelfSimilar
 import Mathlib.Probability.ProductMeasure
@@ -205,7 +205,7 @@ theorem tendsto_wordMap (S : System ι) (ω : ℕ → ι) {z : ℝ} (hz : z ∈ 
     squeeze_zero_norm hbound (tendsto_pow_maxRatio S)
   simpa using hdiff.add (tendsto_codeSeq S ω)
 
-/-- `sec:setup`: the coding map intertwines the shift with `S_i`, which is what makes
+/-- `sec:renewal`: the coding map intertwines the shift with `S_i`, which is what makes
 its range the attractor. -/
 theorem code_cons (S : System ι) (i : ι) (ω : ℕ → ι) :
     code S (cons i ω) = S.map i (code S ω) := by
@@ -519,7 +519,7 @@ theorem isProbabilityMeasure_naturalMeasure (S : System ι) {s : ℝ} (hdim : S.
   haveI := isProbabilityMeasure_codeLaw S hdim
   exact Measure.isProbabilityMeasure_map (measurable_code S).aemeasurable
 
-/-- `sec:setup`: the push-forward of the Bernoulli measure satisfies Hutchinson's
+/-- `sec:renewal`: the push-forward of the Bernoulli measure satisfies Hutchinson's
 identity `μ = ∑ r_i^s (S_i)_* μ`, the defining property of `System.IsNatural`. -/
 theorem naturalMeasure_selfSimilar (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     naturalMeasure S s
@@ -751,7 +751,7 @@ end Hutchinson
 /-- Hutchinson's theorem for a self-similar system on `[0,1]`: the attractor and the
 natural `s`-dimensional measure exist and are unique, as a pair.  This is what
 `audit_exists_cantor_measure` and `audit_exists_pair_measure` assert for the two systems
-of `sec:setup`. -/
+of `sec:renewal`. -/
 theorem System.exists_unique_isNatural {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {s : ℝ} (hdim : S.IsDimension s) :
     ∃! p : Set ℝ × Measure ℝ, S.IsNatural p.1 s p.2 := by
@@ -770,7 +770,7 @@ theorem System.exists_unique_isNatural {ι : Type*} [Fintype ι] [Nonempty ι] (
   · exact Hutchinson.eq_of_selfSimilar S hdim hKμ.selfSimilar
       (Hutchinson.naturalMeasure_selfSimilar S hdim) hKμ.support_Icc hnat.support_Icc
 
-/-- `sec:setup`, existence of `μ_A`: the middle-thirds attractor and its natural measure
+/-- `sec:renewal`, existence of `μ_A`: the middle-thirds attractor and its natural measure
 exist and are unique. -/
 theorem exists_unique_isNatural_cantorSystem :
     ∃! p : Set ℝ × Measure ℝ, cantorSystem.IsNatural p.1 sCantor p.2 :=
@@ -785,7 +785,7 @@ theorem exists_unique_isNatural_homogeneousSystem {lam : ℝ} (hlam0 : 0 < lam)
   (homogeneousSystem lam hlam0 hlam).exists_unique_isNatural
     (homogeneousSystem_isDimension hlam0 hlam)
 
-/-- `sec:setup`, existence of `μ_B`: the paired attractor and its natural measure exist
+/-- `sec:renewal`, existence of `μ_B`: the paired attractor and its natural measure exist
 and are unique. -/
 theorem exists_unique_isNatural_pairSystem {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     ∃! p : Set ℝ × Measure ℝ,
