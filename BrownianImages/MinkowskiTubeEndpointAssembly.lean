@@ -24,7 +24,7 @@ variable {Omega : Type*} [MeasurableSpace Omega]
 variable {iota : Type*}
 variable [Fintype iota] [Nonempty iota]
 
-/-- `thm:tube-moments`, with the Brownian maximal-moment input discharged. -/
+/-- `thm:neighbourhood-moments`, with the Brownian maximal-moment input discharged. -/
 theorem IsNatural.tubeMoments
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
@@ -56,7 +56,7 @@ theorem IsNatural.tubeMoments
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp
 
-/-- `thm:tube-overlap`, with both the tube moments and Brownian maximal input
+/-- `thm:neighbourhood-overlap`, with both the tube moments and Brownian maximal input
 discharged. -/
 theorem IsNatural.tubeOverlap
     {P : Measure Omega} [IsProbabilityMeasure P]
@@ -83,7 +83,7 @@ theorem IsNatural.tubeOverlap
   exact hmu.tubeOverlap_of_tubeMomentsUpper
     hW S hs0 hs1 hsep hdim hmom.1
 
-/-- The non-arithmetic branch of `thm:tube-renewal`, with the unit Brownian
+/-- The non-arithmetic branch of `thm:neighbourhood-renewal`, with the unit Brownian
 radius moments discharged. -/
 theorem IsNatural.meanBrownianTubeProfile_tendsto
     {P : Measure Omega} [IsProbabilityMeasure P]
@@ -109,7 +109,7 @@ universe u v
 variable {OmegaC : Type u} {iotaC : Type v} [MeasurableSpace OmegaC]
 variable [Fintype iotaC] [Nonempty iotaC]
 
-/-- `thm:tube-concentration`, with the unit Brownian radius moments
+/-- `thm:neighbourhood-concentration`, with the unit Brownian radius moments
 discharged. -/
 theorem IsNatural.tubeConcentration
     {P : Measure OmegaC} [IsProbabilityMeasure P]

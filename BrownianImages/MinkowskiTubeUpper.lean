@@ -1,6 +1,6 @@
 /-
 The deterministic and finite-moment assembly behind the upper half of
-`thm:tube-moments`.
+`thm:neighbourhood-moments`.
 
 The paper covers the Brownian image by finitely many random discs.  This file
 separates the two parts of that argument which do not use a Brownian maximal
@@ -112,7 +112,7 @@ theorem tubeArea_le_pi_mul_sum_sq_of_subset_iUnion_closedBall
       ring
 
 /-- The complete deterministic cover estimate used in
-`eq:tube-cover-bound`: the smoothed mass and the raw area are simultaneously
+`eq:neighbourhood-cover-bound`: the smoothed mass and the raw area are simultaneously
 bounded by the same sum of enlarged disc areas. -/
 theorem tubeMass_and_tubeArea_le_pi_mul_sum_sq_of_disc_cover
     {J : Type*} [Fintype J] (F : CompactPlane)
@@ -156,7 +156,7 @@ theorem brownianTube_cover_bound_of_continuous
 /-! ### Finite-family real-moment assembly -/
 
 /-- The convexity inequality in the exact real-exponent form used by
-`thm:tube-moments`. -/
+`thm:neighbourhood-moments`. -/
 theorem rpow_sum_le_card_factor
     {J : Type*} [Fintype J] (a : J → ℝ) {q : ℝ} (hq : 1 ≤ q)
     (ha : ∀ j, 0 ≤ a j) :
@@ -318,7 +318,7 @@ theorem random_tube_moments_of_finite_disc_cover
 
 /-! ### The abstract stopping-antichain count -/
 
-/-- The numerical core of `eq:tube-stopping-count`.  If the `s`-weights of a
+/-- The numerical core of `eq:neighbourhood-stopping-count`.  If the `s`-weights of a
 finite stopping family sum to one and every contraction ratio is bounded below
 by `rmin * delta`, its cardinality is at most `(rmin * delta)⁻ˢ`.
 

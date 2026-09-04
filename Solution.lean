@@ -74,12 +74,32 @@ theorem audit_brownianImageLaw_mutuallySingular_of_pathwise
   MinkowskiReconstruction.brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
     hW hpath₁ hpath₂ hoccupation
 
-/-- `thm:cantor-set-application`.  Under `eq:non-lattice`, the compact Brownian
-images of the homogeneous attractor and its paired competitor have mutually singular
-laws on the Hausdorff hyperspace.  Together with
-`audit_exceptional_parameters_countable`, this gives the final countable-exception
-assertion. -/
+/-- `thm:cantor-set-application`.  The compact Brownian image of the homogeneous
+attractor at any ratio `0 < λ < 1/2` and that of the attractor of every non-arithmetic
+system of the same dimension with pairwise disjoint first-level intervals have mutually
+singular laws on the Hausdorff hyperspace.  Pairwise disjoint first-level intervals are
+encoded by `System.IntervalSeparated`, which implies the strong separation that
+`thm:cantor-application` asks for. -/
 theorem audit_cantor_set_application {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
+    {KA : Set ℝ} {μA : Measure ℝ}
+    (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hsep : S.IntervalSeparated) (hna : S.NonArithmetic)
+    (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
+    (hμ : S.IsNatural K (homogeneousDim lam) μ) :
+    (brownianImageLaw W P hA.compactAttractor).MutuallySingular
+      (brownianImageLaw W P hμ.compactAttractor) :=
+  MinkowskiReconstruction.homogeneous_brownianImage_application
+    hW hlam0 hlam hA S hsep hna hdim hμ
+
+/-- The paired instance of `thm:cantor-set-application`, the last sentence of the
+corollary: under `eq:non-lattice`, the compact Brownian images of the homogeneous
+attractor and of `K_B` have mutually singular laws on the Hausdorff hyperspace.
+Together with `audit_exceptional_parameters_countable`, this gives the
+countable-exception assertion. -/
+theorem audit_cantor_set_application_pair {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
@@ -95,7 +115,7 @@ theorem audit_cantor_set_application {P : Measure Ω} [IsProbabilityMeasure P]
   MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional
     hW hlam0 hlam hA hB hnl
 
-/-- `eq:tube-union-scaling`.  The cut-off of a finite nonempty union is the
+/-- `eq:neighbourhood-union-scaling`.  The cut-off of a finite nonempty union is the
 pointwise maximum of the component cut-offs, and smoothed tube mass has the paper's
 affine planar scaling. -/
 theorem audit_tube_union_scaling {ι : Type*} [Fintype ι] [Nonempty ι]
@@ -108,7 +128,7 @@ theorem audit_tube_union_scaling {ι : Type*} [Fintype ι] [Nonempty ι]
         q ^ 2 * tubeMass (r / q) G :=
   ⟨tubeCutoff_compactUnion hr F x, tubeMass_translate_dilate hr hq a G⟩
 
-/-- `eq:tube-defect-elementary`.  The smoothed multiple-counting defect is
+/-- `eq:neighbourhood-defect-elementary`.  The smoothed multiple-counting defect is
 nonnegative and is bounded by the unordered sum of raw pairwise tube-intersection
 areas. -/
 theorem audit_tube_defect_elementary {ι : Type*} [Fintype ι] [Nonempty ι]
@@ -117,7 +137,7 @@ theorem audit_tube_defect_elementary {ι : Type*} [Fintype ι] [Nonempty ι]
       tubeDefect r F ≤ pairwiseTubeOverlapAreaSum r F :=
   ⟨tubeDefect_nonneg hr F, tubeDefect_le_pairwiseTubeOverlapAreaSum hr F⟩
 
-/-- `thm:tube-moments`, including the finiteness of every real expectation used in
+/-- `thm:neighbourhood-moments`, including the finiteness of every real expectation used in
 the inequalities.  The compact time set is the attractor carried by the natural
 measure. -/
 theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
@@ -142,7 +162,7 @@ theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
           ∫ ω, tubeMass r (brownianImage W hμ.compactAttractor ω) ∂P :=
   hμ.tubeMoments hW S hs0 hs1 hsep hdim
 
-/-- `thm:tube-overlap`, including integrability of the overlap and defect random
+/-- `thm:neighbourhood-overlap`, including integrability of the overlap and defect random
 variables.  One constant controls every distinct first-level pair and the resulting
 multiple-counting defect. -/
 theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
@@ -167,7 +187,7 @@ theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
         ≤ C * r ^ (2 * tubeExponent s) :=
   hμ.tubeOverlap hW S hs0 hs1 hsep hdim
 
-/-- `thm:tube-renewal`.  The real integrals defining the mean profile are required
+/-- `thm:neighbourhood-renewal`.  The real integrals defining the mean profile are required
 to be integrable.  Uniform convergence in the arithmetic case is written directly
 with its `ε`--`N` quantifiers on one period. -/
 theorem audit_tube_renewal {P : Measure Ω} [IsProbabilityMeasure P]
@@ -193,7 +213,7 @@ theorem audit_tube_renewal {P : Measure Ω} [IsProbabilityMeasure P]
                 (t + (n : ℝ) * h) - PK t| ≤ ε) :=
   hμ.tubeRenewal hW S hs0 hs1 hsep hdim
 
-/-- `thm:tube-concentration`.  Membership in `L²` is included explicitly before
+/-- `thm:neighbourhood-concentration`.  Membership in `L²` is included explicitly before
 the `eLpNorm` bound, and the final assertion has the paper's quantifier order: each
 fixed phase has its own almost-sure event. -/
 theorem audit_tube_concentration {P : Measure Ω} [IsProbabilityMeasure P]
@@ -409,7 +429,7 @@ theorem audit_conv_reflect (σ : Measure ℝ) [SFinite σ] :
 
 /-! ### Closed in the parallel pass -/
 
-/-- `eq:lattice-gap`: the oscillation `d_A` of the smoothed periodic profile over a
+/-- `sec:concentration`: the oscillation `d_A` of the smoothed periodic profile over a
 period is attained and strictly positive. -/
 theorem audit_lattice_gap {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     {g : ℝ → ℝ} (hg : Continuous g) (hper : Function.Periodic g p)
@@ -633,23 +653,6 @@ theorem audit_exists_periodic_profile {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam 
       (∀ x, 0 < g x) ∧ ∃ x y, g x ≠ g y :=
   homogeneous_periodic_profile hlam0 hlam hA
 
-/-- `thm:cantor-values`, `eq:cantor-values`.  The three exact values of the
-middle-thirds pair-distance distribution. -/
-theorem audit_cantor_values {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA) :
-    Phi μA (1/3) = 1/2 ∧ Phi μA (1/2) = 3/5 ∧ Phi μA (1/6) = 3/10 :=
-  cantor_values hA
-
-/-- `thm:cantor-values` as one statement: the three exact values together with the
-non-constancy they force. -/
-theorem audit_thm_cantor_values {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA) :
-    (Phi μA (1/3) = 1/2 ∧ Phi μA (1/2) = 3/5 ∧ Phi μA (1/6) = 3/10) ∧
-      ∀ w, Real.log 3 ≤ w →
-        ∃ w₁ ∈ Set.Icc w (w + Real.log 3), ∃ w₂ ∈ Set.Icc w (w + Real.log 3),
-          G sCantor μA w₁ ≠ G sCantor μA w₂ :=
-  thm_cantor_values hA
-
 /-- `thm:smoothing-injective` as one statement: injectivity of `T` on the continuous
 `p`-periodic functions, together with the named conclusion that `T G̃_A` is
 non-constant. -/
@@ -737,7 +740,7 @@ theorem audit_thm_gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
                     - overlap q.1 q.2.1 q.2.2.1 q.2.2.2 ^ 2))))) :=
   gaussian_four_point_bundled hW hs0 hs1 hμ hr
 
-/-- `thm:endpoint-block-mass`, `eq:endpoint-block-mass` and `eq:block-return-bound`.
+/-- `thm:endpoint-block-mass`, both halves.
 The `μ⁴`-mass of a dyadic block of ordered quadruples, and the joint return probability
 on that block.  `μ` sits on `[0,1]`, so reading the times through `Real.toNNReal` is the
 identity `μ⁴`-almost everywhere. -/
@@ -809,7 +812,7 @@ theorem audit_main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
   main hW hs0 hs1 h₁ h₂ hsep
 
-/-- `thm:variance`, `eq:variance`.  The four-point variance bound. -/
+/-- `thm:variance`.  The four-point variance bound. -/
 theorem audit_variance {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
@@ -860,9 +863,9 @@ theorem audit_uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
   uniform_concentration hW hs0 hs1 hμ
 
 /-- `thm:homometric-example`.  Two distinct strongly separated self-similar measures,
-Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, with equal signed
-convolutions `σ * σ̃`, hence identical pair-distance distributions and identical
-expected profiles. -/
+Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, whose attractors are
+not isometric, with equal signed convolutions `σ * σ̃`, hence identical pair-distance
+distributions and identical expected profiles. -/
 theorem audit_homometric_example :
     ∃ (KA KB : Set ℝ) (σA σB : Measure ℝ) (A : ℝ),
       (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsNatural KA tHom σA ∧
@@ -872,6 +875,7 @@ theorem audit_homometric_example :
       (homSystem digitFunB digitFunB_nonneg digitFunB_le).StronglySeparated KB (1/45) ∧
       tHom ∈ Set.Ioo (1/2 : ℝ) 1 ∧
       IsAhlfors tHom A σA ∧ IsAhlfors tHom A σB ∧
+      IsEmpty (KA ≃ᵢ KB) ∧
       σA.conv (reflect σA) = σB.conv (reflect σB) ∧
       (∀ δ : ℝ, Phi σA δ = Phi σB δ) ∧
       (∀ v : ℝ, H tHom σA v = H tHom σB v) :=

@@ -311,7 +311,7 @@ theorem tubeProbability_toMeasure {r : ℝ} (hr : 0 < r) (F : CompactPlane) :
   exact (tubeFiniteMeasure r hr F).toMeasure_normalize_eq_of_nonzero
     (tubeFiniteMeasure_ne_zero hr F)
 
-/-- The explicit density formula from `eq:tube-measure-definition`. -/
+/-- The explicit density formula from `eq:neighbourhood-measure-definition`. -/
 theorem tubeProbability_apply {r : ℝ} (hr : 0 < r) (F : CompactPlane) {s : Set Plane}
     (hs : MeasurableSet s) :
     (tubeProbability r hr F : Measure Plane) s =

@@ -66,7 +66,7 @@ theorem IsNatural.tubeMoments_of_standardRadiusMoments
 
 /-- Unit Brownian radius moments give all-scale integrability, continuity, and
 uniform positive lower and finite upper bounds for the mean normalized tube
-profile.  These are the first two conclusions of `thm:tube-renewal`. -/
+profile.  These are the first two conclusions of `thm:neighbourhood-renewal`. -/
 theorem IsNatural.meanTubeProfile_data_of_standardRadiusMoments
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)

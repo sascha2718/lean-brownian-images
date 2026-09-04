@@ -1,5 +1,5 @@
 /-
-The lower-bound half of `thm:tube-moments`.
+The lower-bound half of `thm:neighbourhood-moments`.
 
 The deterministic input compares the smoothed neighbourhood at radius `2r` with half
 the area of the raw radius-`r` neighbourhood.  The probabilistic input says that the
@@ -8,7 +8,7 @@ sample path.  These facts, the correlation-to-neighbourhood inequality, and a Ma
 event split reduce the expected lower bound to the already proved Frostman
 correlation estimate.  Integrability of the smoothed neighbourhood is kept explicit:
 it is precisely the `q = 1` upper-moment input supplied by the other half of
-`thm:tube-moments`.
+`thm:neighbourhood-moments`.
 -/
 import BrownianImages.MinkowskiCorrelationLower
 import BrownianImages.MinkowskiOverlapTranslation
@@ -276,7 +276,7 @@ namespace System
 variable {iota : Type*} [Fintype iota]
 
 set_option linter.unusedVariables false in
-/-- The lower half of `thm:tube-moments` for a separated self-similar natural
+/-- The lower half of `thm:neighbourhood-moments` for a separated self-similar natural
 measure.  `IsDimension` is carried to match the theorem's paper-level data;
 `IsNatural` already supplies the probability measure and compact attractor.
 Only the `q = 1` neighbourhood integrability input from the upper-moment argument
@@ -322,7 +322,7 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_q_one_upper
     (fun r hr hr1 => (hupper r hr hr1).1)
 
 set_option linter.unusedVariables false in
-/-- Direct bridge from the upper-moment half of `thm:tube-moments` to its lower
+/-- Direct bridge from the upper-moment half of `thm:neighbourhood-moments` to its lower
 half.  Taking `q = 1` supplies the only fact the Markov proof still needs,
 namely integrability of `M_r(R)`. -/
 theorem IsNatural.exists_expected_tubeMass_lower_of_tubeMomentUpper
@@ -358,7 +358,7 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_tubeMomentUpper
 
 set_option linter.unusedVariables false in
 /-- Once the upper moments are available, the complete statement of
-`thm:tube-moments` is obtained by pairing them with the preceding bridge. -/
+`thm:neighbourhood-moments` is obtained by pairing them with the preceding bridge. -/
 theorem IsNatural.tubeMoments_of_upper
     [Nonempty iota] (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
     (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)

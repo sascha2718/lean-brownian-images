@@ -699,7 +699,7 @@ theorem abs_renewalDefect_le {s : ℝ} (hs : 0 ≤ s) (hdim : S.IsDimension s) {
 
 /-- **The renewal defect is directly Riemann integrable.**  It vanishes above
 `log(1/ρ)` by `eq:g-recursion` and is dominated by `e^{sw}` below it, so the cell
-suprema of `eq:nd-dri-definition` form a geometric series.  This is the first of the two
+suprema in the vendored definition of `driNorm` form a geometric series.  This is the first of the two
 analytic facts `sec:renewal` proves about `z`. -/
 theorem driNorm_renewalDefect_ne_top {K : Set ℝ} {ρ s : ℝ} (hs : 0 < s)
     (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s) {μ : Measure ℝ}

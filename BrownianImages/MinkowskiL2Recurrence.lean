@@ -1,5 +1,5 @@
 /-
-`sec:reconstruction`, `thm:tube-concentration` of
+`sec:reconstruction`, `thm:neighbourhood-concentration` of
 `BrownianImagesComplete.tex`: the abstract `L²` step in the stochastic recurrence.
 
 This file isolates the Hilbert-space calculation from the Brownian tube estimates.

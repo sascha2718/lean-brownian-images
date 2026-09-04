@@ -11,7 +11,7 @@ composition of results from two or more of the modules above, in the shape
   into the dyadic summation.
 * `exists_periodic_profile`, `thm_smoothing_injective`,
   `lattice_correlation_oscillation`: the periodic profile `G̃_A` of `sec:renewal`, built
-  from `thm:cantor-values`, the internal Frostman regularity result and the shift
+  from the middle-thirds values of `CantorValues`, the internal Frostman regularity result and the shift
   identity `eq:g-recursion`, together with the two results that consume it.
 -/
 import BrownianImages.Rescaling
@@ -52,7 +52,7 @@ theorem non_lattice_correlation_limit {P : Measure Ω} [IsProbabilityMeasure P]
     (fun r hr => (gaussian_reduction hW hs0 hs1 hμ hr).2)
 
 set_option linter.unusedVariables false in
-/-- `thm:endpoint-block-mass`, `eq:endpoint-block-mass` and `eq:block-return-bound`.
+/-- `thm:endpoint-block-mass`, both halves.
 The `μ⁴`-mass of a dyadic block of ordered quadruples, and the joint return probability
 on that block.  `μ` sits on `[0,1]`, so reading the times through `Real.toNNReal` is the
 identity `μ⁴`-almost everywhere. -/

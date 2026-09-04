@@ -1,14 +1,14 @@
 # `BrownianImages`: the formalisation of `BrownianImagesComplete.tex`
 
 Mirrors "Pair-distance profiles and Minkowski reconstruction of planar Brownian images".
-The library is sorry-free and axiom-clean. `Solution.lean` carries 84 formal endpoints,
+The library is sorry-free and axiom-clean. `Solution.lean` carries 83 formal endpoints,
 all proved: the numbered results of the paper together with displayed claims that a
 later result cites or that carry a hypothesis of their own. `Challenge.lean` restates
 the headline theorems, `thm:main` and `thm:cantor-application`, with `sorry`, on
 Mathlib-only copies of the definitions their statements need, and the comparator audits
-those endpoints against `Solution.lean`. The axiom check `BrownianImages/AxCheck.lean`
-covers the library endpoints, all reporting `propext`, `Classical.choice`, `Quot.sound`
-or a subset.
+those endpoints against `Solution.lean`, replaying the proofs through the kernel and
+admitting only `propext`, `Classical.choice` and `Quot.sound`. The library declares no
+axiom of its own and bans `native_decide`, so every other endpoint uses the same three.
 
 The module index is the root module `BrownianImages.lean`. This file carries what that
 does not: the build setup, the statement layer, the state, the fidelity boundary, and
@@ -56,14 +56,14 @@ to be upgraded together.
 
 ```
 cd lean
-lake build                # the library, including the axiom check
+lake build                # the library
 lake build Challenge Solution
 ./comparator-audit.sh
 ```
 
 ### Comparator audit
 
-An independent check beside `AxCheck.lean`: `Challenge.lean` states the headline
+The audit of the headline theorems: `Challenge.lean` states the headline
 theorems with `sorry` on Mathlib-only copies of the definitions, `Solution.lean` proves
 them by the library declarations, and `comparator-audit.sh` runs
 `leanprover/comparator` on the pair (names in `comparator-config.json`): statement
@@ -113,7 +113,7 @@ check that carries the audit's network isolation.
 
 ## The statement layer
 
-`Solution.lean` is the formal statement of the paper: 84 endpoints named
+`Solution.lean` is the formal statement of the paper: 83 endpoints named
 `audit_<slug>`, in document order, each proved by a direct application of a library
 declaration. Adding a result to the paper means adding its statement there first; the
 design work is in the statement.
@@ -125,8 +125,8 @@ proofs, on Mathlib-only copies of the definitions the statements need: `thm:main
 `audit_cantor_application_pair` and `audit_exceptional_parameters_countable` covering
 its final sentence. It is not part of the library and not a default target, which is
 what lets it carry `sorry` while the library stays clean. The comparator configuration
-kernel-checks exactly these four; the other 80 endpoints are checked by
-`lake build Solution` together with the library's axiom check. The pair endpoint takes
+kernel-checks exactly these four; the other endpoints are checked by
+`lake build Solution`, and the library declares no axiom. The pair endpoint takes
 the ratio bounds `0 < c < 1/2` of `eq:c-definition` as hypotheses rather than citing
 `pairRatio_pos` and `pairRatio_lt_half`, so that no proof term appears in a statement
 and no lemma has to live in `Challenge.lean`; the hypotheses are provable, so nothing
@@ -135,8 +135,8 @@ is vacuous.
 **The correspondence is not one endpoint per theorem.** A theorem with several
 assertions appears twice: once as a bundled `audit_thm_*` endpoint carrying the paper's
 complete conclusion, and once as the individual endpoints its proof and its consumers
-use. The five bundles are `audit_thm_cantor_values`, `audit_thm_smoothing_injective`,
-`audit_thm_profile_asymptotics`, `audit_thm_gaussian_four_point`, `audit_thm_variance`.
+use. The four bundles are `audit_thm_smoothing_injective`, `audit_thm_profile_asymptotics`,
+`audit_thm_gaussian_four_point`, `audit_thm_variance`.
 Three further endpoints restate a general Lean result in the narrower shape the tex uses:
 `audit_ahlfors_named` (the internal regularity endpoint for `μ_A` and `μ_B`),
 `audit_endpoint_block_mass_dyadic` (the tex needs only dyadic `β, η`,
@@ -154,33 +154,34 @@ Two pairs separate what the paper asserts from what its proof produces:
 ## State
 
 Results and displayed claims of `BrownianImagesComplete.tex`, in document order, against
-the `Solution.lean` endpoint and what stands behind it. All 84 endpoints are proved.
+the `Solution.lean` endpoint and what stands behind it. All 83 endpoints are proved.
 `Challenge.lean` retains `sorry` only as the independent statement file for the four
 headline endpoints; no library or solution declaration uses `sorry`.
 
 | Result | Endpoint | State |
 | --- | --- | --- |
 | `thm:main` | `audit_main` | **done**, `main` |
-| `thm:cantor-application` | `audit_cantor_application` | **done**, `cantor_application` |
-| `thm:cantor-application`, named `μ_B` | `audit_cantor_application_pair` | **done**, `cantor_application_pair` |
+| `thm:cantor-application` | `audit_cantor_application` | **done**, `homogeneous_application` |
+| `thm:cantor-application`, named `μ_B` | `audit_cantor_application_pair` | **done**, `homogeneous_application_pair` |
 | countability of exceptional homogeneous parameters | `audit_exceptional_parameters_countable` | **done**, `exceptionalParameters_countable` |
 | `thm:minkowski-reconstruction` | `audit_minkowski_reconstruction` | **done**, `System.IsNatural.minkowskiReconstruction`; the non-arithmetic key-renewal limit and the arithmetic finite-delay periodic limit both feed the generation-cylinder quotient argument, giving pathwise recovery and a measurable reconstruction map from the compact Brownian image |
 | Borel recovery from the pathwise tube limit | `audit_borel_reconstruction_of_pathwise` | **done**, `MinkowskiReconstruction.exists_borel_reconstruction_of_pathwise` |
 | transfer from occupation-law singularity to compact-image-law singularity | `audit_brownianImageLaw_mutuallySingular_of_pathwise` | **done**, `MinkowskiReconstruction.brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction`; `brownianImageLaw_mutuallySingular_of_generation_tubeMassRatio` gives the direct self-similar generation-ratio form |
-| `thm:cantor-set-application` | `audit_cantor_set_application` | **done**, `MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the paired source by the non-arithmetic theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
-| `eq:tube-union-scaling` | `audit_tube_union_scaling` | **done**, `tubeCutoff_compactUnion`, `tubeMass_translate_dilate` |
-| `eq:tube-defect-elementary` | `audit_tube_defect_elementary` | **done**, `tubeDefect_nonneg`, `tubeDefect_le_pairwiseTubeOverlapAreaSum` |
-| `thm:tube-moments` | `audit_tube_moments` | **done**, `System.IsNatural.tubeMoments`; discrete-martingale maximal estimates give every unit Brownian-radius moment, and the stopping cover supplies the stated upper moments and positive lower mean |
-| `thm:tube-overlap` | `audit_tube_overlap` | **done**, `System.IsNatural.tubeOverlap`; the separated-cylinder Gaussian-density estimate and the tube moment bound give uniform pairwise overlap and total defect estimates with integrability |
-| `thm:tube-renewal` | `audit_tube_renewal` | **done**, `System.IsNatural.tubeRenewal`; the finite-delay law at the maximal lattice span has gcd one, its renewal masses converge, and the exact convolution identity yields uniform convergence on each arithmetic period |
-| `thm:tube-concentration` | `audit_tube_concentration` | **done**, `System.IsNatural.tubeConcentration`; interpolation between first and third moments controls the normalized defect in `L²`, delayed contraction gives exponential decay, and Borel--Cantelli gives every fixed phase |
+| `thm:cantor-set-application` | `audit_cantor_set_application` | **done**, `MinkowskiReconstruction.homogeneous_brownianImage_application`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the non-arithmetic interval-separated source by the general reconstruction theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
+| `thm:cantor-set-application`, named `K_B` | `audit_cantor_set_application_pair` | **done**, `MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional` |
+| `eq:neighbourhood-union-scaling` | `audit_tube_union_scaling` | **done**, `tubeCutoff_compactUnion`, `tubeMass_translate_dilate` |
+| `eq:neighbourhood-defect-elementary` | `audit_tube_defect_elementary` | **done**, `tubeDefect_nonneg`, `tubeDefect_le_pairwiseTubeOverlapAreaSum` |
+| `thm:neighbourhood-moments` | `audit_tube_moments` | **done**, `System.IsNatural.tubeMoments`; discrete-martingale maximal estimates give every unit Brownian-radius moment, and the stopping cover supplies the stated upper moments and positive lower mean |
+| `thm:neighbourhood-overlap` | `audit_tube_overlap` | **done**, `System.IsNatural.tubeOverlap`; the separated-cylinder Gaussian-density estimate and the tube moment bound give uniform pairwise overlap and total defect estimates with integrability |
+| `thm:neighbourhood-renewal` | `audit_tube_renewal` | **done**, `System.IsNatural.tubeRenewal`; the finite-delay law at the maximal lattice span has gcd one, its renewal masses converge, and the exact convolution identity yields uniform convergence on each arithmetic period |
+| `thm:neighbourhood-concentration` | `audit_tube_concentration` | **done**, `System.IsNatural.tubeConcentration`; interpolation between first and third moments controls the normalized defect in `L²`, delayed contraction gives exponential decay, and Borel--Cantelli gives every fixed phase |
 | the ambient σ-algebra on `𝒫(ℝ²)` | `audit_borel_eq_giry` | **done**, `borel_probabilityMeasure_eq_giry` |
 | occupation has full mass | `audit_isProbabilityMeasure_occupation` | **done**, `IsPlanarBrownian.ae_isProbabilityMeasure_occupation` |
 | `Law(W_*μ)` has total mass one | `audit_isProbabilityMeasure_occupationLaw` | **done**, `IsPlanarBrownian.isProbabilityMeasure_occupationLaw` |
 | occupation is measurable | `audit_aemeasurable_occupation` | **done**, `IsPlanarBrownian.aemeasurable_occupationProb` |
 | internal Ahlfors regularity | `audit_ahlfors` | **done**, `exists_isAhlforsClosed` |
 | the two Ahlfors ball conventions | `audit_ahlfors_conventions` | **done**, `IsAhlforsClosed.isAhlfors` |
-| internal Ahlfors regularity for `μ_A`, `μ_B` | `audit_ahlfors_named` | **done**, `exists_isAhlfors_cantor_pair` |
+| internal Ahlfors regularity for `μ_A`, `μ_B` | `audit_ahlfors_named` | **done**, `exists_isAhlfors_homogeneous_pair` |
 | `thm:gaussian-reduction` | `audit_gaussian_reduction` | **done**, `gaussian_reduction` |
 | `sec:setup`, atomlessness of `μ` | `audit_measure_singleton` | **done**, `IsFrostman.measure_singleton` |
 | `sec:setup`, atomlessness of `dΦ` | `audit_pairLaw_noAtoms` | **done**, `pairLaw_measure_singleton` |
@@ -194,18 +195,16 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `thm:renewal-recursion` (G) | `audit_g_recursion` | **done**, `g_recursion` |
 | `thm:non-lattice-limit`, the renewal inputs | `audit_renewalLaw` | **done**, `isProbabilityMeasure_renewalLaw`, `integral_id_renewalLaw` |
 | `thm:non-lattice-limit`, exponential moment | `audit_exists_expTransform_lt_one` | **done**, `exists_expTransform_lt_one` |
-| `thm:non-lattice-limit` | `audit_non_lattice_limit` | **done**, `nonLatticeLimit` |
+| `thm:non-lattice-limit` | `audit_non_lattice_limit` | **done**, `non_lattice_limit` |
 | `eq:c-definition` | `audit_pairRatio` | **done**, `pairRatio_rpow`, `pairRatio_lt_half` |
-| `sec:renewal`, the middle-thirds system | `audit_cantorSystem_facts` | **done**, `cantorSystem_isDimension`, `cantorSystem_stronglySeparated` |
+| `sec:renewal`, the homogeneous system | `audit_cantorSystem_facts` | **done**, `homogeneousSystem_isDimension`, `homogeneousSystem_stronglySeparated` |
 | `sec:renewal`, the paired system | `audit_pairSystem_facts` | **done**, `pairSystem_isDimension`, `pairSystem_stronglySeparated` |
-| `sec:renewal`, existence of `μ_A` | `audit_exists_cantor_measure` | **done**, `exists_unique_isNatural_cantorSystem` |
+| `sec:renewal`, existence of `μ_A` | `audit_exists_cantor_measure` | **done**, `exists_unique_isNatural_homogeneousSystem` |
 | `sec:renewal`, existence of `μ_B` | `audit_exists_pair_measure` | **done**, `exists_unique_isNatural_pairSystem` |
 | `eq:non-lattice` is non-arithmeticity | `audit_pairSystem_nonArithmetic_iff` | **done**, `pairSystem_nonArithmetic_iff` |
 | `sec:renewal`, the periodic extension | `audit_exists_periodic_extension` | **done**, `exists_periodic_extension_of_shift` |
-| `sec:renewal`, `G̃_A` itself | `audit_exists_periodic_profile` | **done**, `exists_periodic_profile` |
-| `thm:cantor-values` | `audit_cantor_values` | **done**, `cantor_values` |
-| `thm:cantor-values`, non-constancy | `audit_cantor_nonconstant` | **done**, `G_nonconstant_on_period` |
-| `thm:cantor-values`, bundled | `audit_thm_cantor_values` | **done**, `thm_cantor_values` |
+| `sec:renewal`, `G̃_A` itself | `audit_exists_periodic_profile` | **done**, `homogeneous_periodic_profile` |
+| `thm:homogeneous-nonconstancy` | `audit_cantor_nonconstant` | **done**, `HomogeneousNonconstancy.homogeneous_G_nonconstant_on_tail` |
 | `eq:periodic-smoothing`, `Tg` is `p/2`-periodic | `audit_smoothOp_periodic` | **done**, `smoothOp_periodic` |
 | `eq:periodic-smoothing`, `Tg` continuous and `p/2`-periodic | `audit_smoothOp_continuous_periodic` | **done**, `continuous_smoothOp` |
 | `sec:smoothing`, the coefficient is Mathlib's | `audit_fourierCoeffP_eq_fourierCoeffOn` | **done**, `fourierCoeffP_eq_fourierCoeffOn` |
@@ -217,15 +216,15 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `thm:smoothing-injective` | `audit_smoothing_injective` | **done**, `smoothOp_injective` |
 | `thm:smoothing-injective`, kernel form | `audit_smoothing_kernel_trivial` | **done**, `smoothOp_eq_zero` |
 | `thm:smoothing-injective`, consequence | `audit_smoothing_nonconstant` | **done**, `smoothOp_nonconstant` |
-| `thm:smoothing-injective`, bundled | `audit_thm_smoothing_injective` | **done**, `thm_smoothing_injective` |
+| `thm:smoothing-injective`, bundled | `audit_thm_smoothing_injective` | **done**, `thm_smoothing_injective_homogeneous` |
 | `sec:smoothing`, positivity of `H̃_A` | `audit_smoothOp_pos` | **done**, `smoothOp_pos` |
-| `eq:gb-limit` | `audit_gb_limit` | **done**, `gb_limit` |
+| `eq:gb-limit` | `audit_gb_limit` | **done**, `homogeneous_gb_limit` |
 | `thm:profile-asymptotics`, `eq:hb-asymptotic` | `audit_profile_asymptotics_non_lattice` | **done**, `profile_asymptotics_nonLattice` |
 | `thm:profile-asymptotics`, `μ_B` conclusion | `audit_non_lattice_correlation_limit` | **done**, `non_lattice_correlation_limit` |
-| `thm:profile-asymptotics`, `eq:ha-asymptotic` | `audit_profile_asymptotics_lattice` | **done**, `profile_asymptotics_lattice` |
-| `eq:ha-asymptotic` in big-`O` shape | `audit_profile_asymptotics_lattice_bigO` | **done**, `profile_asymptotics_lattice_bigO` |
-| `thm:profile-asymptotics`, `μ_A` conclusion | `audit_lattice_correlation_oscillation` | **done**, `lattice_correlation_oscillation` |
-| `thm:profile-asymptotics`, bundled | `audit_thm_profile_asymptotics` | **done**, `thm_profile_asymptotics` |
+| `thm:profile-asymptotics`, `eq:ha-asymptotic` | `audit_profile_asymptotics_lattice` | **done**, `exists_lattice_bound` |
+| `eq:ha-asymptotic` in big-`O` shape | `audit_profile_asymptotics_lattice_bigO` | **done**, `exists_lattice_bound` |
+| `thm:profile-asymptotics`, `μ_A` conclusion | `audit_lattice_correlation_oscillation` | **done**, `homogeneous_lattice_correlation_oscillation` |
+| `thm:profile-asymptotics`, bundled | `audit_thm_profile_asymptotics` | **done**, `homogeneous_thm_profile_asymptotics` |
 | `thm:non-lattice-separation` | `audit_non_lattice_separation` | **done**, `non_lattice_separation` |
 | `thm:gaussian-four-point`, independence | `audit_disjoint_increments_indep` | **done**, `disjoint_increments_indep` |
 | `thm:gaussian-four-point`, `eq:joint-return-bound` | `audit_gaussian_four_point` | **done**, `gaussian_four_point` |
@@ -241,9 +240,9 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `eq:grid-convergence` | `audit_grid_convergence` | **done**, `grid_convergence` |
 | `eq:monotone-fill` | `audit_monotone_fill` | **done**, `monotone_fill` |
 | `thm:uniform-concentration` | `audit_uniform_concentration` | **done**, `uniform_concentration` |
-| `eq:lattice-gap` | `audit_lattice_gap` | **done**, `smoothOp_gap` |
+| `sec:concentration`, the oscillation `d_A` | `audit_lattice_gap` | **done**, `smoothOp_gap` |
 | `sec:obstruction`, the signed convolution | `audit_conv_reflect` | **done**, `conv_reflect_eq_map_sub` |
-| `thm:homometric-example` | `audit_homometric_example` | **done**, `homometric_example` |
+| `thm:homometric-example` | `audit_homometric_example` | **done**, `homometric_example`, with the non-isometry of the attractors from `HomometricMeasures.isEmpty_isometryEquiv` |
 
 Proved outside the endpoint list, and load-bearing for it: the kernel layer
 (`kern_pos`, `logKern_eq`, `logKern_le_exp_neg_mul_abs`, `logKern_integrable`), the
@@ -339,8 +338,9 @@ Five gaps, each one a piece of the paper that has to be built here.
   Brownian stopping-cover moments, separated-cylinder overlaps, sharp centered-variance
   recurrence, delayed exponential contraction, and fixed-generation almost-sure quotient
   limits are now formalised.  The homogeneous source is reconstructed directly from its
-  one-delay recurrence and the paired source from the non-arithmetic renewal theorem, so
-  their compact Brownian image laws are proved mutually singular.  For an arbitrary
+  one-delay recurrence and every non-arithmetic interval-separated source from the
+  non-arithmetic renewal theorem, so the compact Brownian image laws are proved mutually
+  singular in the generality of `thm:cantor-set-application`.  For an arbitrary
   arithmetic system, the induced finite-delay law has gcd one at the maximal span;
   convergence of its renewal masses and the exact convolution identity give uniform
   convergence to a positive periodic mean profile and hence complete reconstruction.
@@ -460,9 +460,10 @@ their upstream namespace `AbsorptionCutoff.Renewal`, so nothing there is confusa
 declaration of this project, and `RenewalBridge.lean` is the only module of the library
 that mentions that namespace.
 
-It compiles against our Mathlib `v4.32.2` unchanged, in about 20 s. `AxCheck.lean` audits
-`tendsto_tsum_integral_comp_sub_of_driNorm` and its real variant here rather than taking
-the upstream README on trust: both report `propext`, `Classical.choice`, `Quot.sound`.
+It compiles against our Mathlib `v4.32.2` unchanged, in about 20 s.
+`tendsto_tsum_integral_comp_sub_of_driNorm` and its real variant sit in the dependency
+closure of `audit_cantor_application`, so the comparator's kernel replay and axiom audit
+cover them rather than taking the upstream README on trust.
 
 Re-syncing with upstream means refetching the six files at a newer commit, redoing the
 import rewrite, and reapplying the hypothesis weakening. The last step is the one that
@@ -544,18 +545,22 @@ Four further points where the Lean text reads differently from the tex, delibera
   the same, and is strictly weaker.  `audit_gaussian_four_point_ae` and the bundle keep
   the paper's scoping, and `FourPointBound.det_pos_of_ne_of_nondegenerate` is the
   unconditional determinant bound behind it.
-One statement is split between a probabilistic half and a finite half, and both are now
-proved.
+Two statements deserve a note on what their endpoints assert.
 
-- **`thm:cantor-values`.** `audit_cantor_values` is the three exact values.
-  `audit_cantor_nonconstant` is non-constancy on every period, and it takes
-  `Φ_A(1/3) = 1/2`, `Φ_A(1/6) = 3/10` and the shift identity `eq:g-recursion` as
-  hypotheses; `cantor_values` and `cantor_g_period` discharge all three.
+- **`thm:homogeneous-nonconstancy`.** `audit_cantor_nonconstant` is non-constancy of the
+  eventual periodic profile on every tail, for every `0 < λ < 1/2`, by the density
+  argument of `HomogeneousNonconstancy`.  The middle-thirds instance `λ = 1/3` is also
+  proved by the three exact values in `CantorValues` and `Cantor`; it has no endpoint of
+  its own, since the paper states only the general result.
 - **`thm:homometric-example`.** The endpoint asserts everything the proposition does:
   the two natural measures, their distinctness, strong separation with gap `1/45`,
-  Ahlfors regularity at `t = log 6 / log 30 ∈ (1/2,1)`, the equality of the signed
-  convolutions `σ * σ̃`, and the consequent equalities of `Φ` and `H`.  All of it is
-  proved.  The convolution equality goes through the observation that the difference law
+  Ahlfors regularity at `t = log 6 / log 30 ∈ (1/2,1)`, the non-isometry of the two
+  attractors as `IsEmpty (KA ≃ᵢ KB)`, the equality of the signed convolutions `σ * σ̃`,
+  and the consequent equalities of `Φ` and `H`.  All of it is proved.  The non-isometry
+  is the paper's argument: both attractors run from `0` to `85/87`, so an isometry from
+  one onto the other sends `0` to `0` or to `85/87` and is the identity or the
+  reflection, and each is excluded by a first-level interval, `S_4([0,1])` or
+  `S_5([0,1])`, that the attractor of `𝒜` reaches and the attractor of `ℬ` misses.  The convolution equality goes through the observation that the difference law
   of a self-similar measure is itself self-similar, for the 36 maps indexed by ordered
   digit pairs at dimension `2t`; homometry makes the two difference systems the same
   system, and Hutchinson uniqueness finishes.  The rescaling `(x - y + 1)/2` is not
@@ -570,8 +575,9 @@ the asymptotic shape `eq:ha-asymptotic` uses.
 ### What the comparator does not check
 
 Comparator compares the four headline endpoints of `Challenge.lean` with
-`Solution.lean` and replays their proofs through the kernel; the other 80 endpoints of
-`Solution.lean` rest on `lake build` and the library's axiom check.  It says nothing
+`Solution.lean` and replays their proofs through the kernel; the other endpoints of
+`Solution.lean` rest on `lake build`, on the absence of any `axiom` declaration in the
+library, and on the ban on `native_decide`.  It says nothing
 about whether `Challenge.lean` or `Solution.lean` states the paper.  That
 correspondence is a human obligation, and the traps above are exactly the places where a
 formal statement can look right and be false, or look right and be vacuous.  Reviewing a
@@ -587,7 +593,8 @@ multiplier, and it is `audit_gamma_multiplier` that connects them.
 
 - **`decide` handles the difference multiset.** The 36-element signed difference
   multiset of a six-element digit set reduces in the kernel without trouble.
-  `native_decide` is banned: it drags in `Lean.ofReduceBool` and breaks the axiom check.
+  `native_decide` is banned: it drags in `Lean.ofReduceBool`, a fourth axiom the
+  comparator does not admit.
 - **rpow numerics: raise to an integer power, do not substitute.** `2^{2/3} < 5/3`
   becomes `4 < 125/27` through `Real.rpow_natCast`, `Real.rpow_mul` and
   `lt_of_pow_lt_pow_left₀`. The same shape proves `s < 2/3` from `log 8 < log 9`.
@@ -646,8 +653,8 @@ multiplier, and it is `audit_gamma_multiplier` that connects them.
   rather than `overlap`, which is its absolute value, removes every case split on the
   orientation of the two intervals.
 - **The four dyadic sums factor.**
-  `min{1, λ/(β+η), λ²/(βη)} ≤ min{1,λ/β} · min{1,λ/η}` turns `eq:dyadic-master-sum` into a
-  product of two one-dimensional sums, so `eq:dyadic-elementary` and `eq:dyadic-critical`
+  `min{1, λ/(β+η), λ²/(βη)} ≤ min{1,λ/β} · min{1,λ/η}` turns the double dyadic sum of `thm:four-point-integral` into a
+  product of two one-dimensional sums, so the one-dimensional sums
   are one lemma `∑_j β^θ min(1, λ/β)` in three regimes, applied at `θ = s` and `θ = 2s`.
   Bound partial sums in `ℝ` and lift with `ENNReal.tsum_eq_iSup_sum'`, which avoids
   summability side conditions and truncated subtraction.
@@ -727,12 +734,11 @@ multiplier, and it is `audit_gamma_multiplier` that connects them.
 
 ## Not formalised
 
-`rem:conditionality`, the discussion after `thm:homometric-example`, and the
-introduction's account of the literature carry no statement and no endpoint. Nor do the
-purely arithmetic displays inside proofs: `eq:dyadic-master-sum`, `eq:dyadic-elementary`
-and `eq:dyadic-critical` are the four dyadic sums of `thm:four-point-integral` and are
-covered by that endpoint alone, and `eq:crossing-determinant` and
-`eq:nested-determinant` are proved in `FourPoint.lean` without an endpoint of their own.
+The discussion after `thm:homometric-example` and the introduction's account of the
+literature carry no statement and no endpoint. Nor do the purely arithmetic displays
+inside proofs: the four dyadic sums of `thm:four-point-integral` are covered by that
+endpoint alone, and `eq:crossing-determinant` and `eq:nested-determinant` are proved in
+`FourPoint.lean` without an endpoint of their own.
 The claim the project makes is coverage of every numbered result, plus the displayed
 claims that a later result cites or that carry a hypothesis of their own; it is not
 coverage of every display.

@@ -6,7 +6,7 @@ The Gaussian argument naturally proves one uniform estimate for every pair of
 different first-level cylinders.  `MinkowskiDefectExpectation` then supplies
 all remaining measurability, integrability, and finite-pair bookkeeping.  The
 result below isolates that exact boundary in the notation of
-`thm:tube-overlap`.
+`thm:neighbourhood-overlap`.
 -/
 import BrownianImages.MinkowskiDefectExpectation
 
@@ -24,7 +24,7 @@ variable [Fintype iota] [Nonempty iota]
 
 set_option linter.unusedVariables false in
 /-- Once the uniform distinct-pair estimate is known, the complete pair and
-multiple-defect conclusion of `thm:tube-overlap` follows. -/
+multiple-defect conclusion of `thm:neighbourhood-overlap` follows. -/
 theorem IsNatural.tubeOverlap_of_pairwise
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)

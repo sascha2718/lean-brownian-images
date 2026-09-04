@@ -1,5 +1,5 @@
 /-
-`eq:tube-correlation-lower-bound`: deterministic ball-mass and correlation
+`eq:neighbourhood-correlation-lower-bound`: deterministic ball-mass and correlation
 estimates behind the lower bound for the area of a compact set's tube.
 
 The proof is kept first in `ENNReal`.  This makes Tonelli's theorem available
@@ -280,7 +280,7 @@ theorem discArea_div_corr_le_tubeVolume
   discArea_div_corr_le_tubeVolume_of_ne_zero nu F hr hsupport
     (corr_two_mul_pos_of_support nu F hr hsupport).ne'
 
-/-- `eq:tube-correlation-lower-bound` in the real-valued notation of the paper.
+/-- `eq:neighbourhood-correlation-lower-bound` in the real-valued notation of the paper.
 The explicit nonzero-correlation hypothesis is the honest condition needed for
 division; finiteness follows automatically from probability mass one. -/
 theorem tubeArea_ge_discArea_div_corr_of_ne_zero
@@ -296,7 +296,7 @@ theorem tubeArea_ge_discArea_div_corr_of_ne_zero
     ENNReal.toReal_pow, ENNReal.toReal_ofReal hr.le,
     ENNReal.toReal_ofReal Real.pi_nonneg, mul_comm] using hreal
 
-/-- `eq:tube-correlation-lower-bound`, with correlation positivity derived from the
+/-- `eq:neighbourhood-correlation-lower-bound`, with correlation positivity derived from the
 probability and support assumptions. -/
 theorem tubeArea_ge_discArea_div_corr
     (nu : Measure Plane) [IsProbabilityMeasure nu] (F : CompactPlane)

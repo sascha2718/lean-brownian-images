@@ -2,9 +2,9 @@
 `sec:reconstruction`: deterministic algebra for smoothed planar neighbourhoods.
 
 This file proves the finite-union, translation, and positive-dilation identities used in
-`eq:tube-union-scaling`.  It also defines the multiple-counting defect for a finite nonempty
+`eq:neighbourhood-union-scaling`.  It also defines the multiple-counting defect for a finite nonempty
 family of compact sets and proves the smoothed- and raw-overlap forms of
-`eq:tube-defect-elementary`.  An unordered-pair sum is represented as half of the symmetric
+`eq:neighbourhood-defect-elementary`.  An unordered-pair sum is represented as half of the symmetric
 ordered distinct-pair sum, avoiding an arbitrary order on the index type.
 -/
 import BrownianImages.MinkowskiTube
@@ -137,7 +137,7 @@ theorem tubeMass_dilate {r q : ℝ} (hr : 0 < r) (hq : 0 < q) (F : CompactPlane)
   have hdim : Module.finrank ℝ Plane = 2 := by simp [Plane]
   simp only [hdim, smul_eq_mul]
 
-/-- The affine form of the tube scaling identity from `eq:tube-union-scaling`. -/
+/-- The affine form of the tube scaling identity from `eq:neighbourhood-union-scaling`. -/
 theorem tubeMass_translate_dilate {r q : ℝ} (hr : 0 < r) (hq : 0 < q)
     (a : Plane) (F : CompactPlane) :
     tubeMass r (translateCompact a (dilateCompact q F)) =
@@ -548,7 +548,7 @@ theorem tubeDefect_le_pairwiseSmoothedTubeOverlapSum {ι : Type*}
     (integrable_pairwiseTubeOverlapIntegrand hr F)
     (tubeDefectIntegrand_le_pairwiseTubeOverlapIntegrand hr F)
 
-/-- The raw-area form of `eq:tube-defect-elementary`: the smoothed mass defect is at most the sum
+/-- The raw-area form of `eq:neighbourhood-defect-elementary`: the smoothed mass defect is at most the sum
 of Lebesgue areas of pairwise intersections of the open radius-`r` thickenings. -/
 theorem tubeDefect_le_pairwiseTubeOverlapAreaSum {ι : Type*}
     [Fintype ι] [Nonempty ι] {r : ℝ} (hr : 0 < r) (F : ι → CompactPlane) :

@@ -3,7 +3,7 @@
 four-point variance bound to the headline result, and `thm:main` itself.
 
 Each step is the conditional theorem of `Concentration` fed with the endpoint below it:
-`eq:variance` from `VarianceCovariance`, `eq:smoothing` from `Endpoints`, and the
+`thm:variance` from `VarianceCovariance`, `eq:smoothing` from `Endpoints`, and the
 measurability of the occupation law from `JointMeasurability`.
 
 * `y_variance`: `eq:y-variance`, the variance bound in the exponential coordinate.

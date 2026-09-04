@@ -1,6 +1,6 @@
 /-
 `sec:reconstruction`: the final scalar ratio argument behind
-`eq:cylinder-tube-ratio`.
+`eq:cylinder-neighbourhood-ratio`.
 
 The stochastic estimates compare a cylinder profile and the full profile with two
 deterministic mean profiles.  If both random errors vanish, the two means become

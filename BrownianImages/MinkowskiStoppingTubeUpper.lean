@@ -1,6 +1,6 @@
 /-
 Assembly of the stopping-tree cover and Brownian scaling reduction for the
-upper half of `thm:tube-moments`.
+upper half of `thm:neighbourhood-moments`.
 
 All geometric, finite-sum, and self-similar stopping arguments are proved in
 this file and its imports.  The only analytic input left explicit in the final

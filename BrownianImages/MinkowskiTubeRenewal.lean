@@ -1,5 +1,5 @@
 /-
-`sec:reconstruction`, `thm:tube-renewal`: the expectation-level renewal identity for
+`sec:reconstruction`, `thm:neighbourhood-renewal`: the expectation-level renewal identity for
 the normalised Brownian tube profile.
 
 This file contains only the exact algebraic and probabilistic reduction.  The analytic

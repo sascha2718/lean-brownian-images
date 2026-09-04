@@ -1,15 +1,22 @@
 /-
-Almost-sure distinguishability of the two compact Brownian images in the
-homogeneous-versus-paired application.
+`thm:cantor-set-application`: almost-sure distinguishability of the compact Brownian
+image of the homogeneous attractor from that of any non-arithmetic attractor of the same
+dimension with pairwise disjoint first-level intervals, and its paired instance.
 
-The homogeneous source is reconstructed by its one-delay renewal equation.  The
-paired source is non-arithmetic under the logarithmic incommensurability
-hypothesis, so the general non-arithmetic reconstruction theorem applies.  The
-previous occupation-law singularity then descends through the two Borel
-reconstruction maps to singularity of the compact-image laws themselves.
+The homogeneous source is reconstructed by its one-delay renewal equation.  The other
+source is non-arithmetic, so the general reconstruction theorem applies to it.  The
+occupation-law singularity of `thm:cantor-application` then descends through the two
+Borel reconstruction maps to singularity of the compact-image laws themselves.
+
+* `homogeneous_brownianImage_application`: `thm:cantor-set-application`, the endpoint
+  `audit_cantor_set_application`.
+* `homogeneous_brownianImage_application_pair_unconditional`: its paired instance under
+  `eq:non-lattice`, the endpoint `audit_cantor_set_application_pair`.
 -/
 import BrownianImages.MinkowskiHomogeneousReconstruction
 import BrownianImages.MinkowskiReconstructionAssembly
+import BrownianImages.MinkowskiFullEndpointAssembly
+import BrownianImages.NonLattice
 
 namespace BrownianImages
 
@@ -22,9 +29,42 @@ namespace MinkowskiReconstruction
 
 variable {Omega : Type*} [MeasurableSpace Omega]
 
-/-- Unconditional compact-set version of the homogeneous-versus-paired
-application.  A generic compact Brownian image therefore determines which of the
-two source sets was used. -/
+/-- `thm:cantor-set-application`: the compact Brownian image of the homogeneous
+attractor at any ratio `0 < λ < 1/2` and that of the attractor of a non-arithmetic
+system of the same dimension with pairwise disjoint first-level intervals have mutually
+singular laws on the Hausdorff hyperspace.  The homogeneous source is reconstructed from
+its one-delay renewal equation, the non-arithmetic source by the general reconstruction
+theorem, and the occupation-law singularity of `thm:cantor-application` descends through
+the common Borel reconstruction map.  Interval separation implies the strong separation
+that `thm:cantor-application` asks for. -/
+theorem homogeneous_brownianImage_application
+    {P : Measure Omega} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
+    {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1 / 2)
+    {KA : Set ℝ} {muA : Measure ℝ}
+    (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) muA)
+    {iota : Type*} [Fintype iota] [Nonempty iota] (S : System iota) {K : Set ℝ}
+    (hsep : S.IntervalSeparated) (hna : S.NonArithmetic)
+    (hdim : S.IsDimension (homogeneousDim lam)) {mu : Measure ℝ}
+    (hmu : S.IsNatural K (homogeneousDim lam) mu) :
+    (brownianImageLaw W P hA.compactAttractor).MutuallySingular
+      (brownianImageLaw W P hmu.compactAttractor) := by
+  haveI := hA.isProbability
+  haveI := hmu.isProbability
+  obtain ⟨rho, hrho⟩ := hsep
+  have hoccupation : (occupationLaw W P muA).MutuallySingular (occupationLaw W P mu) :=
+    homogeneous_application hW hlam0 hlam hA S
+      (System.StronglySeparated.mono S hmu.attractor.2.2.1 hrho) hna hdim hmu
+  have hpathA := hA.tubeReconstructsOccupation_homogeneousSystem hW hlam0 hlam
+  have hpathK := hmu.tubeReconstructsOccupation hW S (homogeneousDim_pos hlam0 hlam)
+    (homogeneousDim_lt_one hlam0 hlam) ⟨rho, hrho⟩ hdim
+  exact brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
+    hW hpathA hpathK hoccupation
+
+/-- The paired instance of `thm:cantor-set-application`: under `eq:non-lattice` the
+compact Brownian images of the homogeneous attractor and of `K_B` have mutually singular
+laws.  A generic compact Brownian image therefore determines which of the two source
+sets was used. -/
 theorem homogeneous_brownianImage_application_pair_unconditional
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)

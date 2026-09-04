@@ -46,12 +46,12 @@ namespace Concentration
 
 /-! ### The change of variable `r = e^{-t}` -/
 
-/-- `exp x ^ 2 = exp (2x)`, the prefactor of `eq:y-definition` squared. -/
+/-- `exp x ^ 2 = exp (2x)`, the prefactor of `Y_μ` squared. -/
 theorem exp_sq (x : ℝ) : Real.exp x ^ 2 = Real.exp (2 * x) := by
   rw [two_mul, Real.exp_add, sq]
 
 /-- The change of variable `r = e^{-t}` in `eq:variance-scale`: the prefactor `e^{4st}`
-of `eq:y-definition` turns `V_s(e^{-t})` into the three regimes of `eq:y-variance`. -/
+of `Y_μ` turns `V_s(e^{-t})` into the three regimes of `eq:y-variance`. -/
 theorem exp_sq_mul_varScale (s v : ℝ) :
     Real.exp (2 * s * v) ^ 2 * varScale s (Real.exp (-v))
       = if s < 2⁻¹ then Real.exp (-(2 * s) * v)
@@ -156,7 +156,7 @@ theorem memLp_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
         exact mul_le_mul_of_nonneg_left hle (Real.exp_pos _).le
     _ = Real.exp (2 * s * v) := mul_one _
 
-/-- `𝔼 Y_μ(t) = H_μ(t)`: `eq:smoothing` read in the coordinate of `eq:y-definition`.
+/-- `𝔼 Y_μ(t) = H_μ(t)`: `eq:smoothing` read in the coordinate of `Y_μ`.
 The hypothesis is the conclusion of `audit_smoothing`. -/
 theorem integral_Yprofile {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     {s : ℝ} {μ : Measure ℝ}
@@ -479,7 +479,7 @@ def tailSet (s : ℝ) (μ : Measure ℝ) : Set (ProbabilityMeasure Plane) :=
     {ν | |Yprofile s ν.toMeasure ((q : ℚ) : ℝ) - H s μ ((q : ℚ) : ℝ)| ≤ 1/((k:ℝ)+1)}
 
 /-- The set is Borel: it is built from countable unions and countable intersections of
-the Borel maps `ν ↦ Y_ν(q)` of `eq:y-definition`. -/
+the Borel maps `ν ↦ Y_ν(q)` of `sec:concentration`. -/
 theorem measurableSet_tailSet (s : ℝ) (μ : Measure ℝ) : MeasurableSet (tailSet s μ) :=
   MeasurableSet.iInter fun _ => MeasurableSet.iUnion fun _ => MeasurableSet.iInter fun q =>
     measurableSet_le (((measurable_Yprofile s ((q : ℚ) : ℝ)).sub measurable_const).abs)

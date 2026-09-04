@@ -2,23 +2,22 @@
 `sec:variance` of `BrownianImagesComplete.tex`: the dyadic summation of
 `thm:four-point-integral` and the variance bound `thm:variance` that follows from it.
 
-The four dyadic sums `eq:dyadic-master-sum`, `eq:dyadic-elementary` and
-`eq:dyadic-critical` are the content here.  They factor: the master sum is a product of
+The four dyadic sums in the proof of `thm:four-point-integral` are the content here.  They factor: the master sum is a product of
 two one-dimensional sums, because
 `min {1, λ/(β+η), λ²/(βη)} ≤ min {1, λ/β} · min {1, λ/η}`, and each one-dimensional sum
 is a geometric series split at the dyadic scale nearest `λ`.
 
-* `min_mul_min_le`: the factorisation of the elementary bound `eq:block-return-bound`.
+* `min_mul_min_le`: the factorisation of the elementary return bound of `thm:endpoint-block-mass`.
 * `tsum_dyadic_lt_one`, `tsum_dyadic_eq_one`, `tsum_dyadic_gt_one`: the three regimes of
-  `eq:dyadic-elementary` and `eq:dyadic-critical`, the middle one carrying the
+  the one-dimensional dyadic sum, the middle one carrying the
   logarithm.
-* `tsum_master_le`: `eq:dyadic-master-sum`, summed against `eq:variance-scale`.
+* `tsum_master_le`: the double dyadic sum, summed against `eq:variance-scale`.
 * `measurePreserving_perm4`: `μ⁴` is invariant under permuting the four times, which is
   what lets the mass bound of `thm:endpoint-block-mass`, stated for ordered quadruples,
   be applied to every labelled arrangement.
 * `four_point_integral_of_block`: `thm:four-point-integral`, `eq:four-point-integral`,
   on the dyadic block bound of `thm:endpoint-block-mass`.
-* `variance_of_block`, `thm_variance_of_block`: `thm:variance`, `eq:variance`, on that
+* `variance_of_block`, `thm_variance_of_block`: `thm:variance`, on that
   bound and on the expansion of the variance over `μ⁴`.
 -/
 import BrownianImages.Frostman
@@ -176,7 +175,7 @@ theorem mul_rpow_sub_one {lam θ : ℝ} (h : 0 < lam) : lam * lam ^ (θ - 1) = l
     ring
   rwa [Real.rpow_one] at h1
 
-/-- `eq:dyadic-elementary`, the subcritical regime: for `0 < θ < 1` the dyadic sum
+/-- The one-dimensional dyadic sum, the subcritical regime: for `0 < θ < 1` the dyadic sum
 `∑ β^θ min(1, λ/β)` is `O(λ^θ)`. -/
 theorem tsum_dyadic_lt_one {θ : ℝ} (hθ0 : 0 < θ) (hθ1 : θ < 1) :
     ∃ D > 0, ∀ lam : ℝ, 0 < lam → lam ≤ 1 →
@@ -217,7 +216,7 @@ theorem tsum_dyadic_lt_one {θ : ℝ} (hθ0 : 0 < θ) (hθ1 : θ < 1) :
     linarith [h3 ▸ h2]
   nlinarith [hsplit, hhead, Real.rpow_nonneg h0.le θ]
 
-/-- `eq:dyadic-critical`, the critical regime: at `θ = 1` the dyadic sum carries the
+/-- The one-dimensional dyadic sum, the critical regime: at `θ = 1` the dyadic sum carries the
 logarithm, `O(λ(1 + log(1/λ)))`. -/
 theorem tsum_dyadic_eq_one :
     ∃ D > 0, ∀ lam : ℝ, 0 < lam → lam ≤ 1 →
@@ -263,7 +262,7 @@ theorem tsum_dyadic_eq_one :
       mul_nonneg h0.le hinv.le]
   linarith
 
-/-- `eq:dyadic-critical`, the supercritical regime: for `θ > 1` the dyadic sum is
+/-- The one-dimensional dyadic sum, the supercritical regime: for `θ > 1` the dyadic sum is
 `O(λ)`. -/
 theorem tsum_dyadic_gt_one {θ : ℝ} (hθ1 : 1 < θ) :
     ∃ D > 0, ∀ lam : ℝ, 0 < lam → lam ≤ 1 →
@@ -289,9 +288,9 @@ theorem tsum_dyadic_gt_one {θ : ℝ} (hθ1 : 1 < θ) :
 
 /-! ### The master sum -/
 
-/-- The elementary bound of `eq:block-return-bound` factors over the two scales:
+/-- The elementary return bound of `thm:endpoint-block-mass` factors over the two scales:
 `min {1, λ/(β+η), λ²/(βη)} ≤ min {1, λ/β} · min {1, λ/η}`.  This is what makes
-`eq:dyadic-master-sum` a product of two one-dimensional sums. -/
+the double dyadic sum a product of two one-dimensional sums. -/
 theorem min_mul_min_le {β η lam : ℝ} (hβ : 0 < β) (hη : 0 < η) (hlam : 0 < lam) :
     min 1 (min (lam / (β + η)) (lam ^ 2 / (β * η))) ≤ min 1 (lam / β) * min 1 (lam / η) := by
   rcases le_or_gt β lam with hb | hb <;> rcases le_or_gt η lam with he | he
@@ -332,7 +331,7 @@ theorem sq_rpow {r : ℝ} (hr : 0 < r) (c : ℝ) : (r ^ 2) ^ c = r ^ (2 * c) := 
   rw [← Real.rpow_natCast r 2, ← Real.rpow_mul hr.le]
   norm_num
 
-/-- `eq:dyadic-master-sum`: the double dyadic sum of `thm:four-point-integral`, bounded
+/-- The double dyadic sum of `thm:four-point-integral`, bounded
 by the variance scale `eq:variance-scale`.  The three regimes of `V_s` are the three
 regimes of the `η`-sum: `2s < 1`, `2s = 1` and `2s > 1`. -/
 theorem tsum_master_le {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
@@ -928,7 +927,7 @@ open FourPointIntegral in
 integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
 `thm:endpoint-block-mass` at the dyadic values, `audit_endpoint_block_mass_dyadic`; the
 proof is the covering of the overlap set by the permuted dyadic blocks and the four
-dyadic sums `eq:dyadic-master-sum`. -/
+dyadic sums of `thm:four-point-integral`. -/
 theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
     [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ}
     (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
@@ -1074,7 +1073,7 @@ theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Meas
         congr 1
         ring
 
-/-- `thm:variance`, `eq:variance`: the four-point variance bound.  Two inputs.  The first
+/-- `thm:variance`: the four-point variance bound.  Two inputs.  The first
 is the dyadic block bound of `thm:endpoint-block-mass`, which `four_point_integral_of_block`
 turns into `eq:four-point-integral`.  The second, `hcov`, is the opening sentence of the
 proof of `thm:variance`: expanding the variance and applying Fubini writes it as the
@@ -1119,7 +1118,7 @@ theorem variance_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
   exact le_of_eq (ENNReal.toReal_ofReal
     (mul_nonneg hC0.le (FourPointIntegral.varScale_nonneg hr0 hr1)))
 
-/-- `thm:variance` as one statement: the bound of `eq:variance` together with the
+/-- `thm:variance` as one statement: the bound of `thm:variance` together with the
 `o(r^{4s})` consequence.  The second half is `varScale_div_tendsto_zero`; the first is
 `variance_of_block` and carries its two hypotheses. -/
 theorem thm_variance_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}

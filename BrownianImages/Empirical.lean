@@ -1,5 +1,5 @@
 /-
-`sec:concentration`: the empirical profile `Y_ν` of `eq:y-definition` and the
+`sec:concentration`: the empirical profile `Y_ν` of `sec:concentration` and the
 monotonicity that fills the grid in the proof of `thm:uniform-concentration`.
 
 `r ↦ C_r(ν)` is non-decreasing, so `Y_ν` cannot move faster than the exponential
@@ -32,7 +32,7 @@ variable [IsProbabilityMeasure ν]
 theorem corr_ne_top (r : ℝ) : corr ν r ≠ ⊤ := measure_ne_top _ _
 
 /-- The empirical profile grows at most like the exponential prefactor: this is the
-monotonicity of `r ↦ C_r` in the coordinate of `eq:y-definition`. -/
+monotonicity of `r ↦ C_r` in the coordinate of `Y_ν`. -/
 theorem Yprofile_le_of_le {v w : ℝ} (hvw : v ≤ w) :
     Yprofile s ν w ≤ Real.exp (2 * s * (w - v)) * Yprofile s ν v := by
   have hmono : corr ν (Real.exp (-w)) ≤ corr ν (Real.exp (-v)) :=

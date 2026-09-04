@@ -73,7 +73,7 @@ theorem ae_tendsto_zero_of_exponential_deviation_bound
 
 /-- A squared `L²` bound with exponential decay gives the summable deviation
 bound required by Borel--Cantelli.  This is the norm-to-almost-sure part of
-`thm:tube-concentration`; the separate analytic recurrence is responsible for
+`thm:neighbourhood-concentration`; the separate analytic recurrence is responsible for
 producing `hsq` for the centred tube profile. -/
 theorem ae_tendsto_zero_of_exponential_eLpNorm_sq_bound
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
@@ -180,7 +180,7 @@ theorem ae_tendsto_zero_along_phase_of_exponential_eLpNorm_bound
     (f := fun n : Nat => X ((n : Real) + t) omega) N]
   simpa only [Nat.cast_add] using homega
 
-/-- Paper-shaped form of the consequence in `thm:tube-concentration`: the stated
+/-- Paper-shaped form of the consequence in `thm:neighbourhood-concentration`: the stated
 exponential `L²` estimate for the centred Brownian tube profile already implies
 the almost-sure fixed-phase conclusion. -/
 theorem tubeGridConcentration_of_exponential_eLpNorm

@@ -1,5 +1,5 @@
 /-
-`thm:tube-renewal`: the non-arithmetic renewal-limit mechanism for the mean
+`thm:neighbourhood-renewal`: the non-arithmetic renewal-limit mechanism for the mean
 Brownian tube profile.
 
 The expectation identity in `MinkowskiTubeRenewal` has half-logarithmic steps

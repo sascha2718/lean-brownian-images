@@ -1,13 +1,13 @@
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: the dyadic block of ordered quadruples.
 
-`thm:endpoint-block-mass` has two halves.  The mass half `eq:endpoint-block-mass` is
+`thm:endpoint-block-mass` has two halves.  The mass half is
 `endpoint_block_mass_le` of `GaussianFourPoint.lean`, three applications of `eq:frostman`.
-The return half `eq:block-return-bound` is the four-point bound `eq:joint-return-bound`
+The return half is the four-point bound `eq:joint-return-bound`
 evaluated on the block: on `E_{β,η}` the determinant of either overlapping pairing is at
 least `βη/4` and the longer of the two intervals has length at least `(β+η)/4`, so the
 three terms of `eq:joint-return-bound` are dominated by the three terms of
-`eq:block-return-bound` with constant `2`.
+the return bound with constant `2`.
 
 `eq:joint-return-bound` itself is not proved here; it enters as the hypothesis `hfour`,
 whose text is that of the endpoint `audit_gaussian_four_point`.
@@ -15,7 +15,7 @@ whose text is that of the endpoint `audit_gaussian_four_point`.
 * `BlockMass.min_le_block`: the arithmetic of the three terms.
 * `BlockMass.overlap_crossing`, `BlockMass.overlap_nested`: the overlap of the two
   pairings of `eq:crossing-determinant` and `eq:nested-determinant` is `x₃ - x₂`.
-* `BlockMass.crossing_le`, `BlockMass.nested_le`: `eq:block-return-bound` for one
+* `BlockMass.crossing_le`, `BlockMass.nested_le`: the return bound for one
   pairing.
 * `endpoint_block_mass_of_four_point`, `endpoint_block_mass_dyadic_of_four_point`:
   `thm:endpoint-block-mass`, general and dyadic, conditional on `hfour`.
@@ -32,10 +32,10 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 namespace BlockMass
 
-/-! ### The arithmetic of `eq:block-return-bound` -/
+/-! ### The arithmetic of the return bound -/
 
 /-- The three terms of `eq:joint-return-bound` against the three terms of
-`eq:block-return-bound`: a determinant at least `βη/4` and a longer interval at least
+the return bound: a determinant at least `βη/4` and a longer interval at least
 `(β+η)/4` cost a factor `2`. -/
 theorem min_le_block {r β η D Δ z : ℝ} (hr : 0 < r) (hβ : 0 < β) (hη : 0 < η)
     (hdet : β * η / 4 ≤ Δ) (hlen : (β + η) / 4 ≤ D)
@@ -89,7 +89,7 @@ theorem overlap_nested {x₁ x₂ x₃ x₄ : ℝ} (h12 : x₁ < x₂) (h23 : x�
 variable {P : Measure Ω} {W : ℝ≥0 → Ω → Plane}
 
 set_option linter.unusedVariables false in
-/-- `eq:block-return-bound` for the crossing pairing `[x₁,x₃]`, `[x₂,x₄]`: the
+/-- The return bound of `thm:endpoint-block-mass` for the crossing pairing `[x₁,x₃]`, `[x₂,x₄]`: the
 determinant `eq:crossing-determinant` is at least `bh ≥ βη/4` and the longer interval is
 at least `(b+h)/2 ≥ (β+η)/4`. -/
 theorem crossing_le
@@ -131,7 +131,7 @@ theorem crossing_le
     (hfour hr (lt_of_lt_of_le (by positivity) hdet))
 
 set_option linter.unusedVariables false in
-/-- `eq:block-return-bound` for the nested pairing `[x₁,x₄]`, `[x₂,x₃]`: the determinant
+/-- The return bound of `thm:endpoint-block-mass` for the nested pairing `[x₁,x₄]`, `[x₂,x₃]`: the determinant
 `eq:nested-determinant` is exactly `bh ≥ βη/4` and the longer interval has length
 `b + h ≥ (β+η)/4`. -/
 theorem nested_le
@@ -176,7 +176,7 @@ end BlockMass
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
 set_option linter.unusedVariables false in
-/-- `thm:endpoint-block-mass`, `eq:endpoint-block-mass` and `eq:block-return-bound`,
+/-- `thm:endpoint-block-mass`, both halves,
 conditional on `eq:joint-return-bound`, which enters as the hypothesis `hfour` in the
 text of the endpoint `audit_gaussian_four_point`.  The constant is `max (A³) 2`: the mass
 half costs `A³`, three applications of `eq:frostman`, and the return half costs `2`. -/

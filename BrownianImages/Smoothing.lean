@@ -1,5 +1,5 @@
 /-
-`sec:concentration`: `eq:lattice-gap`, the gap between the extremes of a non-constant
+`sec:concentration`: the oscillation `d_A`, the gap between the extremes of a non-constant
 smoothed profile, together with the analytic facts it rests on.
 
 * `exists_extrema_of_periodic`, `exists_bound_of_continuous_periodic`: a continuous
@@ -15,8 +15,9 @@ smoothed profile, together with the analytic facts it rests on.
   strict positivity of `G`, which `sec:renewal` uses for the periodic profile.
 * `exists_periodic_profile_of_shift`: the periodic profile `G̃_A`, assembled from the
   shift identity, the continuity of `G_A` and the two exact values of
-  `thm:cantor-values`.
-* `audit_lattice_gap`: `eq:lattice-gap` itself.
+  the middle-thirds computation in `CantorValues`.
+* `smoothOp_gap`: the oscillation `d_A` is attained and positive, the endpoint
+  `audit_lattice_gap`.
 -/
 import BrownianImages.Kernel
 import BrownianImages.Frostman
@@ -227,9 +228,8 @@ theorem G_pos {s : ℝ} {μ : Measure ℝ} [IsProbabilityMeasure μ] (w : ℝ) :
 
 /-- The periodic profile `G̃_A` of `sec:renewal`, assembled from the shift identity
 `eq:g-recursion` for the middle-thirds system, the continuity of `G_A`, and the two
-exact values of `thm:cantor-values`.  Those three are open endpoints
-(`audit_g_recursion`, `audit_ahlfors_named` through `continuous_G`, and
-`audit_cantor_values`); everything downstream of them is here. -/
+exact values of the middle-thirds computation in `CantorValues`; everything downstream of
+them is here. -/
 theorem exists_periodic_profile_of_shift {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hcont : Continuous (G sCantor μ))
     (hshift : ∀ w, Real.log 3 < w → G sCantor μ w = G sCantor μ (w - Real.log 3))
@@ -253,9 +253,9 @@ theorem exists_periodic_profile_of_shift {μ : Measure ℝ} [IsProbabilityMeasur
       G_nonconstant_on_period h3 h6 hshift (le_refl (Real.log 3))
     exact ⟨w₁, w₂, by rw [hgeq _ hw₁.1, hgeq _ hw₂.1]; exact hne⟩
 
-/-! ### `eq:lattice-gap` -/
+/-! ### The oscillation `d_A` -/
 
-/-- `eq:lattice-gap`.  A continuous non-constant smoothed profile attains a strict
+/-- The oscillation `d_A` of `sec:concentration`.  A continuous non-constant smoothed profile attains a strict
 maximum and a strict minimum over a period, and the gap between them is positive. -/
 theorem smoothOp_gap {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     {g : ℝ → ℝ} (hg : Continuous g) (hper : Function.Periodic g p)

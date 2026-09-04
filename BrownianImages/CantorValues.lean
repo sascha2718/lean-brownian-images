@@ -1,6 +1,9 @@
 /-
-`thm:cantor-values` of `sec:renewal`: the three exact values `eq:cantor-values` of the
-middle-thirds pair-distance distribution, and the non-constancy of `G_A` they force.
+The middle-thirds instance `λ = 1/3` of `thm:homogeneous-nonconstancy`: the three exact
+values of the middle-thirds pair-distance distribution, and the non-constancy of `G_A` they
+force.  The paper proves non-constancy for every `0 < λ < 1/2` by the density argument of
+`HomogeneousNonconstancy`; this explicit computation is retained beside it and has no
+endpoint of its own.
 
 The computation is the self-similar decomposition of `μ_A × μ_A` into its four blocks.
 It runs on the difference mass `pairDiff μ T = (μ × μ){(x,y) : x - y ∈ T}` rather than on
@@ -19,8 +22,7 @@ here rather than an input to them.
 * `pairDiff_neg`: symmetry of the difference law, from `Measure.prod_swap`.
 * `measure_singleton_zero`: `μ_A{0} = 0`, read off the fixed point `S^A_0(0) = 0`; it is
   what kills the two off-diagonal blocks at `δ = 1/3`.
-* `phi_cantor_one_third`, `phi_cantor_half`, `phi_cantor_one_sixth`: the three values of
-  `eq:cantor-values`.
+* `phi_cantor_one_third`, `phi_cantor_half`, `phi_cantor_one_sixth`: the three exact values.
 * `cantor_g_period`: `eq:g-recursion` for the middle-thirds system, the shift identity
   `G_A(w) = G_A(w - log 3)` of the proof.
 * `cantor_values`, `thm_cantor_values`: the values alone, and the complete conclusion of
@@ -394,7 +396,7 @@ theorem pairDiff_Iic_neg_half (μ : Measure ℝ) [SFinite μ] :
 end CantorValues
 
 open CantorValues in
-/-- `eq:cantor-values`, the first value: agreeing first ternary digits give
+/-- The first exact value: agreeing first ternary digits give
 `|X - Y| ≤ 1/3`, differing ones give `|X - Y| ≥ 1/3`, with equality only at the corner
 of the unit square, which carries no mass. -/
 theorem phi_cantor_one_third {K : Set ℝ} {μ : Measure ℝ}
@@ -422,7 +424,7 @@ theorem phi_cantor_one_third {K : Set ℝ} {μ : Measure ℝ}
   norm_num
 
 open CantorValues in
-/-- `eq:cantor-values`, the second value.  The mass `q = P(X - Y ≥ 1/2)` satisfies
+/-- The second exact value.  The mass `q = P(X - Y ≥ 1/2)` satisfies
 `q = (1 - q)/4`, hence `q = 1/5` and `Φ_A(1/2) = 1 - 2q = 3/5`.  The closed and the open
 half line satisfy the same pair of equations, which is what gives the absence of an atom
 at `1/2` rather than assuming it. -/
@@ -472,7 +474,7 @@ theorem phi_cantor_half {K : Set ℝ} {μ : Measure ℝ}
   linarith
 
 open CantorValues in
-/-- `eq:cantor-values`, the third value.  Since `1/6` lies below the separation gap,
+/-- The third exact value.  Since `1/6` lies below the separation gap,
 `eq:phi-recursion` gives `Φ_A(1/6) = ½ Φ_A(1/2) = 3/10`. -/
 theorem phi_cantor_one_sixth {K : Set ℝ} {μ : Measure ℝ}
     (hA : cantorSystem.IsNatural K sCantor μ) : Phi μ (1/6) = 3/10 := by
@@ -510,15 +512,14 @@ theorem cantor_g_period {K : Set ℝ} {μ : Measure ℝ}
   simp only [cantorSystem_ratio, cantor_weight] at h
   linarith
 
-/-- `thm:cantor-values`, `eq:cantor-values`: the three exact values of the middle-thirds
-pair-distance distribution. -/
+/-- The three exact values of the middle-thirds pair-distance distribution. -/
 theorem cantor_values {KA : Set ℝ} {μA : Measure ℝ}
     (hA : cantorSystem.IsNatural KA sCantor μA) :
     Phi μA (1/3) = 1/2 ∧ Phi μA (1/2) = 3/5 ∧ Phi μA (1/6) = 3/10 :=
   ⟨phi_cantor_one_third hA, phi_cantor_half hA, phi_cantor_one_sixth hA⟩
 
-/-- `thm:cantor-values` as one statement: the three exact values together with the
-non-constancy they force on every period of `G_A`. -/
+/-- The middle-thirds instance of `thm:homogeneous-nonconstancy` as one statement: the
+three exact values together with the non-constancy they force on every period of `G_A`. -/
 theorem thm_cantor_values {KA : Set ℝ} {μA : Measure ℝ}
     (hA : cantorSystem.IsNatural KA sCantor μA) :
     (Phi μA (1/3) = 1/2 ∧ Phi μA (1/2) = 3/5 ∧ Phi μA (1/6) = 3/10) ∧

@@ -7,7 +7,7 @@ measure `μ_B` under `eq:non-lattice`.
 * `CantorApplication.exists_separation_of_oscillation`: a profile that oscillates by a
   fixed amount past every threshold separates, in the sense of `eq:profile-separation`,
   from a profile that converges.
-* `CantorApplication.exists_profile_oscillation`: `eq:ha-asymptotic` and `eq:lattice-gap`
+* `CantorApplication.exists_profile_oscillation`: `eq:ha-asymptotic` and the oscillation `d_A` of `sec:concentration`
   put the expected profile of `μ_A` in that first class, with the explicit gap `d_A/2`.
 * `cantor_application_of_endpoints`: `thm:cantor-application`, on `audit_main` and
   `audit_non_lattice_limit` as explicit hypotheses, each carrying the statement text of
@@ -54,10 +54,10 @@ theorem exists_separation_of_oscillation {H₁ H₂ : ℝ → ℝ} {d L : ℝ} (
     have h₂ := abs_lt.mp (not_le.mp hcon)
     linarith [h₁.1, h₁.2, h₂.1, h₂.2, hb₁.1, hb₁.2, hb₂.1, hb₂.2]
 
-/-- `eq:ha-asymptotic` and `eq:lattice-gap`: the expected profile of the middle-thirds
+/-- `eq:ha-asymptotic` and the oscillation `d_A` of `sec:concentration`: the expected profile of the middle-thirds
 measure oscillates by a fixed amount past every threshold.  The gap is half the
 oscillation `d_A` of the smoothed periodic profile `T G̃_A` over a period, which
-`eq:lattice-gap` makes strictly positive; the error term of `eq:ha-asymptotic` is below
+is strictly positive by `thm:smoothing-injective`; the error term of `eq:ha-asymptotic` is below
 `d_A/4` far out, and the extrema of `T G̃_A` recur at every period. -/
 theorem exists_profile_oscillation {KA : Set ℝ} {μA : Measure ℝ}
     (hA : cantorSystem.IsNatural KA sCantor μA) :

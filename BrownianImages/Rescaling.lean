@@ -338,7 +338,7 @@ theorem non_lattice_correlation_limit_of_gaussian_reduction {P : Measure Ω}
 set_option linter.unusedVariables false in
 /-- `thm:profile-asymptotics`, the conclusion for `μ_A`: the normalised expected
 correlation integral oscillates.  `eq:ha-asymptotic` puts `H_A` within `ε` of the
-`log 3 / 2`-periodic function `T G̃_A` far out, and `eq:lattice-gap` separates the
+`log 3 / 2`-periodic function `T G̃_A` far out, and the positive oscillation `d_A` of `sec:concentration` separates the
 extrema of `T G̃_A`; `eq:smoothing` converts the two sequences of times into two
 sequences of scales.  The hypotheses are the conclusion of `audit_smoothing`, quantified
 over `r`, and the conclusion of `audit_exists_periodic_profile`. -/

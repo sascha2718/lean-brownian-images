@@ -23,6 +23,11 @@ identity and `Hutchinson.eq_of_selfSimilar` identifies them.
   identity it induces on the difference law.
 * `diffMultiset_fin_eq`, `sum_diffMap_congr`, `diffLaw_eq`: the homometry as an equality
   of sums over ordered pairs, and the equality of the two difference laws.
+* `attractor_subset_Icc`, `fixed_mem_attractor`, `attractor_notMem_cyl`: the attractor
+  runs from `0` to `85/87`, contains the fixed point of each of its similarities, and
+  misses the first-level interval of every digit outside its digit set.
+* `not_exists_isometry_onto`, `isEmpty_isometryEquiv`: the two attractors are not
+  isometric, the paper's argument by the extreme points and two fixed points.
 * `homometric_example`: `thm:homometric-example`, the endpoint
   `audit_homometric_example`.
 -/
@@ -363,12 +368,186 @@ theorem measure_cyl_four_zero {KB : Set ℝ} {σB : Measure ℝ}
   measure_eq_zero_of_avoid hB fun i _ hx =>
     notMem_cyl (digitFunB_ne_four i) (map_mem_cyl i hx)
 
+/-! ### The attractors are not isometric -/
+
+/-- The fixed point `5d/87` of `S_d`. -/
+theorem hommap_fixed (d : ℤ) : hommap d (5 * (d : ℝ) / 87) = 5 * (d : ℝ) / 87 := by
+  unfold hommap; ring
+
+/-- `S_d` contracts the distance to its fixed point by the factor `1/30`. -/
+theorem hommap_sub_fixed (d : ℤ) (x : ℝ) :
+    hommap d x - 5 * (d : ℝ) / 87 = (x - 5 * (d : ℝ) / 87) / 30 := by
+  unfold hommap; ring
+
+/-- The iterates of `S_d` approach its fixed point geometrically. -/
+theorem iterate_hommap_sub_fixed (d : ℤ) (x : ℝ) (n : ℕ) :
+    (hommap d)^[n] x - 5 * (d : ℝ) / 87 = (1 / 30 : ℝ) ^ n * (x - 5 * (d : ℝ) / 87) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', hommap_sub_fixed, ih, pow_succ]
+    ring
+
+/-- The iterates of `S_d` converge to its fixed point. -/
+theorem tendsto_iterate_hommap (d : ℤ) (x : ℝ) :
+    Filter.Tendsto (fun n : ℕ => (hommap d)^[n] x) Filter.atTop
+      (nhds (5 * (d : ℝ) / 87)) := by
+  have h : Filter.Tendsto
+      (fun n : ℕ => (1 / 30 : ℝ) ^ n * (x - 5 * (d : ℝ) / 87) + 5 * (d : ℝ) / 87)
+      Filter.atTop (nhds (0 * (x - 5 * (d : ℝ) / 87) + 5 * (d : ℝ) / 87)) :=
+    ((tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)).mul_const _).add_const _
+  rw [zero_mul, zero_add] at h
+  refine h.congr fun n => ?_
+  rw [← iterate_hommap_sub_fixed]
+  ring
+
+/-- Each similarity of the system maps the attractor into itself. -/
+theorem map_mem_attractor {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17}
+    {K : Set ℝ} (hK : (homSystem d h0 h17).IsAttractor K) (i : Fin 6) {x : ℝ}
+    (hx : x ∈ K) : hommap (d i) x ∈ K := by
+  have hmem : (homSystem d h0 h17).map i x ∈ ⋃ j, (homSystem d h0 h17).map j '' K :=
+    Set.mem_iUnion.2 ⟨i, x, hx, rfl⟩
+  rw [← hK.2.2.2, homSystem_map] at hmem
+  exact hmem
+
+/-- Iterating one similarity keeps a point of the attractor inside it. -/
+theorem iterate_mem_attractor {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17}
+    {K : Set ℝ} (hK : (homSystem d h0 h17).IsAttractor K) (i : Fin 6) {x : ℝ}
+    (hx : x ∈ K) (n : ℕ) : (hommap (d i))^[n] x ∈ K := by
+  induction n with
+  | zero => simpa using hx
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
+    exact map_mem_attractor hK i ih
+
+/-- The fixed point of each similarity lies in the attractor: it is the limit of the
+iterates of any point of the attractor, and the attractor is closed. -/
+theorem fixed_mem_attractor {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17}
+    {K : Set ℝ} (hK : (homSystem d h0 h17).IsAttractor K) (i : Fin 6) :
+    5 * (d i : ℝ) / 87 ∈ K := by
+  obtain ⟨x, hx⟩ := hK.2.1
+  exact hK.1.isClosed.mem_of_tendsto (tendsto_iterate_hommap (d i) x)
+    (Filter.Eventually.of_forall fun n => iterate_mem_attractor hK i hx n)
+
+/-- The attractor lies in `[0, 85/87]`: every similarity maps `[0, a]` into
+`[0, S_17(a)]`, and the iterates of `S_17` starting from `1` decrease to `85/87`. -/
+theorem attractor_subset_Icc {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17}
+    {K : Set ℝ} (hK : (homSystem d h0 h17).IsAttractor K) :
+    K ⊆ Set.Icc (0 : ℝ) (85 / 87) := by
+  have hstep : ∀ n : ℕ, K ⊆ Set.Icc (0 : ℝ) ((hommap 17)^[n] 1) := by
+    intro n
+    induction n with
+    | zero => simpa using hK.2.2.1
+    | succ n ih =>
+      intro x hx
+      rw [hK.2.2.2, Set.mem_iUnion] at hx
+      obtain ⟨i, y, hy, rfl⟩ := hx
+      have hy' := ih hy
+      have hd0 : (0 : ℝ) ≤ (d i : ℝ) := by exact_mod_cast h0 i
+      have hd17 : (d i : ℝ) ≤ 17 := by exact_mod_cast h17 i
+      set a : ℝ := (hommap 17)^[n] 1 with ha
+      rw [homSystem_map, Function.iterate_succ_apply', ← ha]
+      unfold hommap
+      push_cast
+      constructor
+      · linarith [hy'.1]
+      · linarith [hy'.2]
+  intro x hx
+  refine ⟨(hstep 0 hx).1, ?_⟩
+  have hlim : Filter.Tendsto (fun n : ℕ => (hommap 17)^[n] 1) Filter.atTop
+      (nhds (85 / 87 : ℝ)) := by
+    have h := tendsto_iterate_hommap 17 1
+    have h' : (5 * ((17 : ℤ) : ℝ) / 87) = 85 / 87 := by norm_num
+    rwa [h'] at h
+  exact ge_of_tendsto' hlim fun n => (hstep n hx).2
+
+/-- The attractor misses the first-level interval of every digit outside its digit set. -/
+theorem attractor_notMem_cyl {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17}
+    {K : Set ℝ} (hK : (homSystem d h0 h17).IsAttractor K) {k : ℤ} (hk : ∀ i, d i ≠ k)
+    {x : ℝ} (hx : x ∈ K) : x ∉ cyl k := by
+  rw [hK.2.2.2, Set.mem_iUnion] at hx
+  obtain ⟨i, y, hy, rfl⟩ := hx
+  exact notMem_cyl (hk i) (map_mem_cyl i (hK.2.2.1 hy))
+
+/-- The digit `5` is not a digit of `ℬ`. -/
+theorem digitFunB_ne_five : ∀ i, digitFunB i ≠ 5 := by decide
+
+/-- `thm:homometric-example`: no isometry maps the attractor of `𝒜` onto the attractor
+of `ℬ`.  Both attractors have minimum `0` and maximum `85/87`, the fixed points of `S_0`
+and `S_17`, so an isometry from one onto the other sends `0` to `0` or to `85/87` and is
+then the identity or the reflection `x ↦ 85/87 - x`.  The identity would place the fixed
+point `20/87` of `S_4` in the attractor of `ℬ`, and the reflection would place
+`85/87 - 20/29 = 25/87`, the image of the fixed point of `S_12`, there; but that attractor
+meets neither `S_4([0,1])` nor `S_5([0,1])`, since `4, 5 ∉ ℬ`. -/
+theorem not_exists_isometry_onto {KA KB : Set ℝ}
+    (hA : (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsAttractor KA)
+    (hB : (homSystem digitFunB digitFunB_nonneg digitFunB_le).IsAttractor KB) :
+    ¬ ∃ f : KA → ℝ, Isometry f ∧ Set.range f = KB := by
+  rintro ⟨f, hf, hrange⟩
+  have hrangeB : ∀ x : KA, (f x : ℝ) ∈ KB := fun x => hrange ▸ Set.mem_range_self x
+  have hB87 : KB ⊆ Set.Icc (0 : ℝ) (85 / 87) := attractor_subset_Icc hB
+  have hfix : ∀ (i : Fin 6) (v : ℤ) (r : ℝ), digitFunA i = v → 5 * (v : ℝ) / 87 = r →
+      r ∈ KA := by
+    intro i v r hv hr
+    have h := fixed_mem_attractor hA i
+    rw [hv, hr] at h
+    exact h
+  have h0A : (0 : ℝ) ∈ KA := hfix 0 0 0 rfl (by norm_num)
+  have h85A : (85 / 87 : ℝ) ∈ KA := hfix 5 17 (85 / 87) rfl (by norm_num)
+  have h20A : (20 / 87 : ℝ) ∈ KA := hfix 2 4 (20 / 87) rfl (by norm_num)
+  have h60A : (20 / 29 : ℝ) ∈ KA := hfix 4 12 (20 / 29) rfl (by norm_num)
+  have hdist : ∀ x : KA, |(f x : ℝ) - f ⟨0, h0A⟩| = (x : ℝ) := by
+    intro x
+    have h := hf.dist_eq x ⟨0, h0A⟩
+    rw [Subtype.dist_eq, Real.dist_eq, Real.dist_eq] at h
+    rw [h]
+    change |(x : ℝ) - 0| = (x : ℝ)
+    rw [sub_zero, abs_of_nonneg (hA.2.2.1 x.2).1]
+  have hcase : (f ⟨0, h0A⟩ : ℝ) = 0 ∨ (f ⟨0, h0A⟩ : ℝ) = 85 / 87 := by
+    have h : |(f ⟨85 / 87, h85A⟩ : ℝ) - f ⟨0, h0A⟩| = 85 / 87 := hdist ⟨85 / 87, h85A⟩
+    have ha := hB87 (hrangeB ⟨0, h0A⟩)
+    have hb := hB87 (hrangeB ⟨85 / 87, h85A⟩)
+    rcases (abs_eq (by norm_num : (0 : ℝ) ≤ 85 / 87)).1 h with h' | h'
+    · left; linarith [ha.1, hb.2]
+    · right; linarith [ha.2, hb.1]
+  rcases hcase with ha0 | ha85
+  · have hx : |(f ⟨20 / 87, h20A⟩ : ℝ) - f ⟨0, h0A⟩| = 20 / 87 := hdist ⟨20 / 87, h20A⟩
+    rw [ha0, sub_zero, abs_of_nonneg (hB87 (hrangeB ⟨20 / 87, h20A⟩)).1] at hx
+    have hmem : (f ⟨20 / 87, h20A⟩ : ℝ) ∈ cyl 4 := by
+      rw [hx, cyl]
+      constructor <;> norm_num
+    exact attractor_notMem_cyl hB digitFunB_ne_four (hrangeB _) hmem
+  · have hx : |(f ⟨20 / 29, h60A⟩ : ℝ) - f ⟨0, h0A⟩| = 20 / 29 := hdist ⟨20 / 29, h60A⟩
+    rw [ha85] at hx
+    have hle : (f ⟨20 / 29, h60A⟩ : ℝ) - 85 / 87 ≤ 0 := by
+      linarith [(hB87 (hrangeB ⟨20 / 29, h60A⟩)).2]
+    rw [abs_of_nonpos hle] at hx
+    have hmem : (f ⟨20 / 29, h60A⟩ : ℝ) ∈ cyl 5 := by
+      have h25 : (f ⟨20 / 29, h60A⟩ : ℝ) = 25 / 87 := by linarith
+      rw [h25, cyl]
+      constructor <;> norm_num
+    exact attractor_notMem_cyl hB digitFunB_ne_five (hrangeB _) hmem
+
+/-- `thm:homometric-example`: the two attractors are not isometric. -/
+theorem isEmpty_isometryEquiv {KA KB : Set ℝ}
+    (hA : (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsAttractor KA)
+    (hB : (homSystem digitFunB digitFunB_nonneg digitFunB_le).IsAttractor KB) :
+    IsEmpty (KA ≃ᵢ KB) := by
+  refine ⟨fun e => not_exists_isometry_onto hA hB ⟨fun x => (e x : ℝ), ?_, ?_⟩⟩
+  · exact isometry_subtype_coe.comp e.isometry
+  · ext y
+    constructor
+    · rintro ⟨x, rfl⟩
+      exact (e x).2
+    · intro hy
+      exact ⟨e.symm ⟨y, hy⟩, by simp⟩
+
 end HomometricMeasures
 
 /-- `thm:homometric-example`.  Two distinct strongly separated self-similar measures,
-Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, with equal signed
-convolutions `σ * σ̃`, hence identical pair-distance distributions and identical
-expected profiles. -/
+Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, whose attractors are
+not isometric, with equal signed convolutions `σ * σ̃`, hence identical pair-distance
+distributions and identical expected profiles. -/
 theorem homometric_example :
     ∃ (KA KB : Set ℝ) (σA σB : Measure ℝ) (A : ℝ),
       (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsNatural KA tHom σA ∧
@@ -378,6 +557,7 @@ theorem homometric_example :
       (homSystem digitFunB digitFunB_nonneg digitFunB_le).StronglySeparated KB (1/45) ∧
       tHom ∈ Set.Ioo (1/2 : ℝ) 1 ∧
       IsAhlfors tHom A σA ∧ IsAhlfors tHom A σB ∧
+      IsEmpty (KA ≃ᵢ KB) ∧
       σA.conv (reflect σA) = σB.conv (reflect σB) ∧
       (∀ δ : ℝ, Phi σA δ = Phi σB δ) ∧
       (∀ v : ℝ, H tHom σA v = H tHom σB v) := by
@@ -416,6 +596,7 @@ theorem homometric_example :
       (le_max_left _ _),
     AhlforsRegular.isAhlfors_mono (hA₂.isAhlfors HomometricMeasures.tHom_pos.le)
       (le_max_right _ _),
+    HomometricMeasures.isEmpty_isometryEquiv hA.attractor hB.attractor,
     hconv, hphi, fun v => by simp only [H, G, hphi]⟩
   intro hab
   exact HomometricMeasures.measure_cyl_four_pos hA

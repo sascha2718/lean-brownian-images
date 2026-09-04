@@ -22,7 +22,7 @@ paper is phrased in, collected so that every later module speaks the same langua
   `sec:smoothing`.
 * `overlap`, `jointReturn`, `expCorr`: the overlap length, the joint return
   probability of `sec:variance`, and `S_μ(r) = 𝔼 C_r(ν)`.
-* `Yprofile`: the empirical profile `eq:y-definition`.
+* `Yprofile`: the empirical profile `Y_ν` of `sec:concentration`.
 * `varScale`: the variance scale `V_s` of `eq:variance-scale`.
 * `System`, with `IsAttractor`, `StronglySeparated`, `IsDimension`, `IsNatural`,
   `logRatio`, `NonArithmetic`: self-similar systems on `[0,1]` and their natural
@@ -213,7 +213,7 @@ noncomputable def expCorr (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (μ : 
 
 /-! ### The empirical profile and the variance scale -/
 
-/-- `eq:y-definition`: the empirical profile `Y_ν(t) = e^{2st} C_{e^{-t}}(ν)`. -/
+/-- `sec:concentration`: the empirical profile `Y_ν(t) = e^{2st} C_{e^{-t}}(ν)`. -/
 noncomputable def Yprofile (s : ℝ) (ν : Measure Plane) (t : ℝ) : ℝ :=
   Real.exp (2 * s * t) * (corr ν (Real.exp (-t))).toReal
 

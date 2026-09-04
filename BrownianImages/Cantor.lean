@@ -1,7 +1,9 @@
 /-
-`thm:cantor-values` of `sec:renewal`: the exact pair-distance values of the
-middle-thirds Cantor measure and the non-constancy they force on the periodic
-profile `G_A`.
+The middle-thirds instance `λ = 1/3` of `thm:homogeneous-nonconstancy`: the exact
+pair-distance values of the middle-thirds Cantor measure and the non-constancy they force
+on the periodic profile `G_A`.  The paper proves non-constancy for every `0 < λ < 1/2` by
+the density argument of `HomogeneousNonconstancy`; this explicit computation is retained
+beside it and has no endpoint of its own.
 
 The two probabilistic inputs, `Φ_A(1/3) = 1/2` and `Φ_A(1/6) = 3/10`, enter as
 hypotheses; everything downstream of them is proved here.
@@ -10,7 +12,7 @@ hypotheses; everything downstream of them is proved here.
 * `halfMass_eq`: the fixed-point computation `q = (1-q)/4`, hence `q = 1/5` and
   `Φ_A(1/2) = 1 - 2q = 3/5`.
 * `G_log_three`, `G_log_six`: the two values `G_A(log 3) = 1` and
-  `G_A(log 6) = (3/5)·2^s` of the proof of `thm:cantor-values`.
+  `G_A(log 6) = (3/5)·2^s` of the middle-thirds computation.
 * `G_log_six_lt_G_log_three`: the numeric separation `(3/5)·2^s < 1`, which is the
   non-constancy of the periodic profile.
 -/
@@ -58,7 +60,7 @@ theorem two_rpow_two_thirds_lt : (2 : ℝ) ^ ((2:ℝ)/3) < 5 / 3 := by
   refine lt_of_pow_lt_pow_left₀ 3 (by norm_num) ?_
   rw [hcube]; norm_num
 
-/-- The numeric separation `(3/5)·2^s < 1` of `thm:cantor-values`. -/
+/-- The numeric separation `(3/5)·2^s < 1` of the middle-thirds computation. -/
 theorem three_fifths_two_rpow_lt_one : (3/5 : ℝ) * (2:ℝ) ^ sCantor < 1 := by
   have h1 : (2:ℝ) ^ sCantor < (2:ℝ) ^ ((2:ℝ)/3) :=
     (Real.rpow_lt_rpow_left_iff (by norm_num)).mpr sCantor_lt_two_thirds
@@ -67,7 +69,7 @@ theorem three_fifths_two_rpow_lt_one : (3/5 : ℝ) * (2:ℝ) ^ sCantor < 1 := by
 
 /-! ### The mass of the far half -/
 
-/-- The fixed-point computation of the proof of `thm:cantor-values`: the mass
+/-- The fixed-point computation of the middle-thirds instance: the mass
 `q = P(X - Y ≥ 1/2)` satisfies `q = (1-q)/4`, hence `q = 1/5` and `Φ_A(1/2) = 1 - 2q`
 equals `3/5`. -/
 theorem halfMass_eq {q : ℝ} (hq : q = (1 - q) / 4) : q = 1/5 ∧ 1 - 2 * q = 3/5 := by
@@ -121,8 +123,8 @@ theorem G_add_nsmul_period {p : ℝ} (hp : 0 < p)
       rw [hcast, hper _ hgt, add_sub_cancel_right]
       exact ih
 
-/-- `thm:cantor-values`, the stated consequence: the periodic profile `G_A` is
-non-constant on every period.  The two exact values enter as hypotheses, and the shift
+/-- The middle-thirds instance of `thm:homogeneous-nonconstancy`: the periodic profile
+`G_A` is non-constant on every period.  The two exact values enter as hypotheses, and the shift
 identity `eq:g-recursion` for the middle-thirds system enters as `hper`. -/
 theorem G_nonconstant_on_period (h3 : Phi μ (1/3) = 1/2) (h6 : Phi μ (1/6) = 3/10)
     (hper : ∀ w, Real.log 3 < w → G sCantor μ w = G sCantor μ (w - Real.log 3))

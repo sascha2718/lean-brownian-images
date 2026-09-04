@@ -1,6 +1,6 @@
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: the variance expansion that opens the
-proof of `thm:variance`, `eq:variance`.
+proof of `thm:variance`.
 
 `C_r(W_*μ)` is the `μ × μ`-mass of the time pairs whose Brownian images are within `r`,
 so it is the mass of a section of one measurable set of `(ℝ × ℝ) × Ω`.  Squaring a
@@ -24,7 +24,7 @@ and the null set it exposes is where the modification is traded back for `W`.
   overlap of two non-degenerate intervals into their separation.
 * `VarianceCovariance.measure_inter_eq_mul_of_overlap_nonpos`: off the overlap set the
   two return events are independent, the degenerate time pairs included.
-* `variance_le_overlap_lintegral`: `eq:variance`, the variance expansion itself.
+* `variance_le_overlap_lintegral`: the variance expansion opening the proof of `thm:variance`.
 * `variance_four_point`, `variance_bundled`: `thm:variance`, unconditionally.
 -/
 import BrownianImages.Endpoints
@@ -94,7 +94,7 @@ theorem quadSet_section (V : ℝ≥0 → Ω → Plane) (r : ℝ) (ω : Ω) :
 
 /-- The identification of a pair of time pairs with a quadruple of times.  It carries
 `(μ × μ) × (μ × μ)` to `μ⁴`, which is what puts the two Fubini interchanges and the
-statement of `eq:variance` on the same measure. -/
+statement of the variance expansion on the same measure. -/
 def quadEquiv : ((ℝ × ℝ) × (ℝ × ℝ)) ≃ᵐ (ℝ × ℝ × ℝ × ℝ) := MeasurableEquiv.prodAssoc
 
 /-- `quadEquiv` reads off the four times in order. -/
@@ -158,7 +158,7 @@ theorem sq_lintegral_eq {P : Measure Ω} [IsProbabilityMeasure P] {V : ℝ≥0 �
 
 /-! ### The covariance vanishes off the overlap set -/
 
-/-- The order argument behind `eq:variance`: two intervals whose overlap length vanishes
+/-- The order argument behind the variance expansion: two intervals whose overlap length vanishes
 are separated, as soon as neither of them is a point.  This is the hypothesis of
 `disjoint_increments_indep`. -/
 theorem disjoint_of_min_max_le {α : Type*} [LinearOrder α] {m₁ M₁ m₂ M₂ : α}
@@ -191,7 +191,7 @@ theorem min_max_toNNReal_le {a b c d : ℝ} (h : ¬ 0 < overlap a b c d) :
   have hmono := Real.toNNReal_mono hle
   simpa only [Real.toNNReal_monotone.map_min, Real.toNNReal_monotone.map_max] using hmono
 
-/-- `eq:variance`, the vanishing of the covariance off the overlap set.  The two return
+/-- The vanishing of the covariance off the overlap set, in the proof of `thm:variance`.  The two return
 events are independent there: either a time pair reads as a single time, and its return
 event is everything, or both intervals are non-degenerate and separated, and
 `thm:gaussian-four-point` applies. -/
@@ -244,10 +244,10 @@ theorem jointReturn_eq_measure_inter (W : ℝ≥0 → Ω → Plane) (P : Measure
 
 end VarianceCovariance
 
-/-! ### `eq:variance` -/
+/-! ### The variance expansion of `thm:variance` -/
 
 open VarianceCovariance in
-/-- `thm:variance`, `eq:variance`: the variance expansion.  Expanding the variance and
+/-- `thm:variance`: the variance expansion.  Expanding the variance and
 interchanging the sample point with the times writes `Var(C_r)` as the `μ⁴`-integral of
 the covariance of the two return events; that covariance vanishes off the overlap set
 and is at most the joint return probability on it.
@@ -383,7 +383,7 @@ theorem variance_le_overlap_lintegral {P : Measure Ω} [IsProbabilityMeasure P]
     q.2.1.toNNReal q.2.2.toNNReal).symm
 
 set_option linter.unusedVariables false in
-/-- `thm:variance`, `eq:variance`: the four-point variance bound.  The dyadic block bound
+/-- `thm:variance`: the four-point variance bound.  The dyadic block bound
 of `thm:endpoint-block-mass` is summed by `thm:four-point-integral`, and the variance
 expansion above is what feeds the four-point integral. -/
 theorem variance_four_point {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
@@ -396,7 +396,7 @@ theorem variance_four_point {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ�
     fun r hr0 _ => variance_le_overlap_lintegral hW hr0
 
 set_option linter.unusedVariables false in
-/-- `thm:variance` as one statement: the bound of `eq:variance` together with the
+/-- `thm:variance` as one statement: the bound of `thm:variance` together with the
 `o(r^{4s})` consequence. -/
 theorem variance_bundled {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)

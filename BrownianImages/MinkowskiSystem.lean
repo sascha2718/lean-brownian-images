@@ -12,7 +12,7 @@ estimate.
 * `homogeneousSystem_intervalSeparated`, `pairSystem_intervalSeparated`: the two
   systems of the application satisfy this condition throughout `0 < λ < 1/2`.
 * `System.halfLogRatio`, `System.tubeWeight`, `tubeExponent`: the parameters
-  `β_i`, `p_i` and `α` of `eq:tube-parameters`.
+  `β_i`, `p_i` and `α` of `sec:reconstruction`.
 -/
 import BrownianImages.SelfSimilar
 import Mathlib.Topology.MetricSpace.Closeds
@@ -78,14 +78,14 @@ theorem IsNatural.coe_compactPiece {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
   exact hmu.attractor.coe_compactPiece S i
 
 /-- The half-logarithmic step `β_i = (1/2) log(1/r_i)` of
-`eq:tube-parameters`. -/
+`sec:reconstruction`. -/
 noncomputable def halfLogRatio (i : ι) : ℝ := (1 / 2 : ℝ) * S.logRatio i
 
 /-- Every half-logarithmic step is positive. -/
 theorem halfLogRatio_pos (i : ι) : 0 < S.halfLogRatio i := by
   exact mul_pos (by norm_num) (S.logRatio_pos i)
 
-/-- The natural cylinder weight `p_i = r_i^s` of `eq:tube-parameters`. -/
+/-- The natural cylinder weight `p_i = r_i^s` of `sec:reconstruction`. -/
 noncomputable def tubeWeight (s : ℝ) (i : ι) : ℝ := S.ratio i ^ s
 
 /-- At the similarity dimension, the natural cylinder weights sum to one. -/
@@ -103,7 +103,7 @@ theorem tubeWeight_lt_one {s : ℝ} (hs : 0 < s) (i : ι) : S.tubeWeight s i < 1
   exact Real.rpow_lt_one (S.ratio_pos i).le (S.ratio_lt_one i) hs
 
 /-- The square weights form a strict contraction.  This is the numerical input in the
-`L²` recursion of `thm:tube-concentration`. -/
+`L²` recursion of `thm:neighbourhood-concentration`. -/
 theorem sum_sq_tubeWeight_lt_one [Nonempty ι] {s : ℝ} (hs : 0 < s)
     (hdim : S.IsDimension s) :
     ∑ i, (S.tubeWeight s i) ^ 2 < 1 := by
@@ -120,7 +120,7 @@ theorem sum_sq_tubeWeight_lt_one [Nonempty ι] {s : ℝ} (hs : 0 < s)
 
 end System
 
-/-- The normalising exponent `α = 2 - 2s` of `eq:tube-parameters`. -/
+/-- The normalising exponent `α = 2 - 2s` of `sec:reconstruction`. -/
 def tubeExponent (s : ℝ) : ℝ := 2 - 2 * s
 
 /-- The tube exponent is positive throughout the range `0 < s < 1`. -/

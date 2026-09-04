@@ -1,5 +1,5 @@
 /-
-The arithmetic half of `thm:tube-renewal`.
+The arithmetic half of `thm:neighbourhood-renewal`.
 
 The continuous renewal library used elsewhere in the project contains only the
 non-arithmetic key renewal theorem.  This module isolates the genuinely discrete

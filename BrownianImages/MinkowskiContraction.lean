@@ -1,5 +1,5 @@
 /-
-`sec:reconstruction`, `thm:tube-concentration` of
+`sec:reconstruction`, `thm:neighbourhood-concentration` of
 `BrownianImagesComplete.tex`: the deterministic delayed contraction argument.
 
 The probabilistic estimates produce a nonnegative profile satisfying a square-root

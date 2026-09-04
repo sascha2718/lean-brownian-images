@@ -89,7 +89,7 @@ theorem IsNatural.meanBrownianTubeProfile_periodic_limit
         (fun x hx => (hrenewal x hx).2)
   exact ⟨PK, hPKperiodic, hPKbounds, hPKuniform⟩
 
-/-- `thm:tube-renewal`, including both the non-arithmetic and arithmetic
+/-- `thm:neighbourhood-renewal`, including both the non-arithmetic and arithmetic
 alternatives, with all Brownian moment and overlap inputs discharged. -/
 theorem IsNatural.tubeRenewal
     {P : Measure Omega} [IsProbabilityMeasure P]

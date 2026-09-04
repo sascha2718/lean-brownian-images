@@ -1,6 +1,6 @@
 /-
 Brownian scaling reduction for the maximal-oscillation input in
-`thm:tube-moments`.
+`thm:neighbourhood-moments`.
 
 Mathlib does not currently provide a continuous-time Brownian maximal-moment
 theorem.  This file proves everything around that missing theorem.  A

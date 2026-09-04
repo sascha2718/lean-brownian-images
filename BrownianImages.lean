@@ -13,7 +13,7 @@ headline theorems for the comparator audit; the modules below carry what is prov
   from one module.
 * `Occupation`: the occupation measure as a random point of `𝒫(ℝ²)`, and the almost
   sure facts that make it one.
-* `Empirical`: the empirical profile `eq:y-definition` and the grid monotonicity
+* `Empirical`: the empirical profile `Y_ν` of `sec:concentration` and the grid monotonicity
   `eq:monotone-fill`.
 * `Frostman`: the Frostman condition, the two ball conventions, atomlessness, and the
   pair-distance bound `eq:phi-frostman`.
@@ -22,8 +22,8 @@ headline theorems for the comparator audit; the modules below carry what is prov
 * `SelfSimilar`: the theory of strongly separated self-similar systems: separation,
   dimensions and gaps of the named systems, the ratio `c` of `eq:c-definition`, and
   the renewal data of `thm:non-lattice-limit`.
-* `Cantor`: the constants of `thm:cantor-values` and the non-constancy of the periodic
-  profile of the middle-thirds measure.
+* `Cantor`: the middle-thirds instance `λ = 1/3` of `thm:homogeneous-nonconstancy`, by
+  the exact pair-distance values of the middle-thirds measure.
 * `Homometric`: the finite content of `thm:homometric-example`, the homometry of the
   two digit sets and the common dimension `log 6 / log 30`.
 * `FourPoint`: the covariance determinants of the two overlapping pairings,
@@ -57,7 +57,7 @@ headline theorems for the comparator audit; the modules below carry what is prov
   system, used internally to obtain the Frostman bound at every centre.
 * `Hutchinson`: the coding map on `ℕ → ι`, Hutchinson's theorem for a general system,
   and the two natural measures of `sec:renewal`.
-* `CantorValues`: `thm:cantor-values`, the three exact values of `eq:cantor-values`.
+* `CantorValues`: the three exact middle-thirds pair-distance values behind `Cantor`.
 * `Rescaling`: `eq:smoothing`, the layer cake identity and the substitution `δ = r²η`,
   and the two conclusions of `thm:profile-asymptotics` about the correlation integral.
 * `FourPointBound`: `eq:joint-return-bound`, through the regression decomposition of the
@@ -69,11 +69,13 @@ headline theorems for the comparator audit; the modules below carry what is prov
   `thm:uniform-concentration` to `thm:main`.
 * `Endpoints`: the results the paper states that no single module proves, each a
   composition of two or more of the above in the shape `Challenge.lean` states it.
-* `VarianceCovariance`: `eq:variance`, the second moment of the correlation functional
+* `VarianceCovariance`: the variance expansion of `thm:variance`, the second moment of the
+  correlation functional
   as a `μ⁴`-mass, and the covariance killed off the overlap set.
 * `MainTheorem`: `sec:concentration` run to its end, from `eq:y-variance` to `thm:main`.
-* `HomometricMeasures`: `thm:homometric-example`, the two natural measures and the
-  equality of their signed convolutions, through the difference system.
+* `HomometricMeasures`: `thm:homometric-example`, the two natural measures, the
+  non-isometry of their attractors, and the equality of their signed convolutions,
+  through the difference system.
 * `KeyRenewal`: `thm:non-lattice-limit` reduced to convergence of `G` alone, by cutting
   the renewal equation at a finite threshold, together with Choquet-Deny for finitely
   supported laws.
@@ -135,9 +137,8 @@ headline theorems for the comparator audit; the modules below carry what is prov
 * `MinkowskiReconstructionAssembly`, `MinkowskiHomogeneousReconstruction`,
   `MinkowskiFullEndpointAssembly`, `MinkowskiCantorSetApplication`: reconstruction
   in both renewal regimes, direct homogeneous reconstruction from the one-delay
-  recurrence, and the final mutual singularity of the two compact Brownian image laws.
-* `AxCheck`: `#print axioms` on every endpoint of the library, the vendored key renewal
-  theorem included.
+  recurrence, and `thm:cantor-set-application`, the mutual singularity of the compact
+  Brownian image laws, with its paired instance.
 -/
 import BrownianImages.Defs
 import BrownianImages.Occupation
@@ -235,4 +236,3 @@ import BrownianImages.MinkowskiReconstructionAssembly
 import BrownianImages.MinkowskiHomogeneousReconstruction
 import BrownianImages.MinkowskiFullEndpointAssembly
 import BrownianImages.MinkowskiCantorSetApplication
-import BrownianImages.AxCheck

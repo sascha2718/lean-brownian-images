@@ -1,8 +1,8 @@
 /-
 `sec:setup` and `sec:variance` of `BrownianImagesComplete.tex`.
 
-* `endpoint_block_mass_le`: the mass half of `thm:endpoint-block-mass`,
-  `eq:endpoint-block-mass`, with the three Frostman applications behind it
+* `endpoint_block_mass_le`: the mass half of `thm:endpoint-block-mass`, with the three
+  Frostman applications behind it
   (`block_inner_le`, `block_mid_le`, `block_relaxed_le`).
 * `disjoint_increments_indep`: the first assertion of
   `thm:gaussian-four-point`, together with the two lemmas it rests on:
@@ -30,7 +30,7 @@ section BlockMass
 
 variable {s A : ℝ} {μ : Measure ℝ}
 
-/-- The inner two integrations of `eq:endpoint-block-mass`: with `x₂` fixed, the pairs
+/-- The inner two integrations of the mass bound of `thm:endpoint-block-mass`: with `x₂` fixed, the pairs
 `(x₃, x₄)` with `x₃` within `β` of `x₂` and `x₄` within `η` of `x₃`. -/
 theorem block_inner_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
     {β η : ℝ} (hβ0 : 0 < β) (hβ1 : β ≤ 1) (hη0 : 0 < η) (hη1 : η ≤ 1) (x₂ : ℝ) :
@@ -69,7 +69,7 @@ theorem block_inner_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
         gcongr
         exact hμ.measure_closedBall_le x₂ β hβ0 hβ1
 
-/-- The three inner integrations of `eq:endpoint-block-mass`: with `x₁` fixed, the
+/-- The three inner integrations of the mass bound of `thm:endpoint-block-mass`: with `x₁` fixed, the
 triples `(x₂, x₃, x₄)` with `x₂` within `η` of `x₁`, `x₃` within `β` of `x₂` and `x₄`
 within `η` of `x₃`. -/
 theorem block_mid_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
@@ -125,7 +125,7 @@ theorem block_mid_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
 
 /-- The Frostman bound applied three times: the `μ⁴`-mass of the quadruples with
 `|x₃ - x₂| ≤ β`, `|x₁ - x₂| ≤ η` and `|x₄ - x₃| ≤ η`, which is the block of
-`eq:endpoint-block-mass` with the ordering constraints dropped. -/
+`thm:endpoint-block-mass` with the ordering constraints dropped. -/
 theorem block_relaxed_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
     {β η : ℝ} (hβ0 : 0 < β) (hβ1 : β ≤ 1) (hη0 : 0 < η) (hη1 : η ≤ 1) :
     (μ.prod (μ.prod (μ.prod μ)))
@@ -160,7 +160,7 @@ theorem block_relaxed_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
     _ = ENNReal.ofReal (A * η ^ s) * ENNReal.ofReal (A * β ^ s)
           * ENNReal.ofReal (A * η ^ s) := by simp
 
-/-- `thm:endpoint-block-mass`, `eq:endpoint-block-mass`: the `μ⁴`-mass of the dyadic
+/-- `thm:endpoint-block-mass`, the mass half: the `μ⁴`-mass of the dyadic
 block of ordered quadruples is `O(β^s η^{2s})`.  On the block `x₃` lies within `β` of
 `x₂`, `x₁` within `η` of `x₂` and `x₄` within `η` of `x₃`; dropping the ordering
 constraints and integrating in that order applies `eq:frostman` three times, with
