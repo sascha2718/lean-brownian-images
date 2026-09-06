@@ -27,41 +27,13 @@ variable [TopologicalSpace T] [CompactSpace T] [Nonempty T] [MetricSpace E]
 noncomputable def compactRange (f : C(T, E)) : NonemptyCompacts E :=
   (⊤ : NonemptyCompacts T).map f f.continuous
 
+/-- The underlying set of the compact range of a continuous map on a compact space is
+its range. -/
 @[simp]
 theorem coe_compactRange (f : C(T, E)) :
     (compactRange f : Set E) = Set.range f := by
   rw [compactRange, NonemptyCompacts.coe_map, NonemptyCompacts.coe_top]
   exact image_univ
-
-/-- Taking the compact range is `1`-Lipschitz for the uniform metric on continuous
-maps and the Hausdorff metric on nonempty compact sets. -/
-theorem dist_compactRange_le (f g : C(T, E)) :
-    dist (compactRange f) (compactRange g) ≤ dist f g := by
-  rw [Metric.NonemptyCompacts.dist_eq, coe_compactRange, coe_compactRange]
-  refine Metric.hausdorffDist_le_of_mem_dist dist_nonneg ?_ ?_
-  · rintro _ ⟨t, rfl⟩
-    exact ⟨g t, mem_range_self t, ContinuousMap.dist_apply_le_dist t⟩
-  · rintro _ ⟨t, rfl⟩
-    refine ⟨f t, mem_range_self t, ?_⟩
-    simpa only [dist_comm] using
-      (ContinuousMap.dist_apply_le_dist (f := g) (g := f) t)
-
-/-- The compact-range map is `1`-Lipschitz. -/
-theorem lipschitzWith_compactRange :
-    LipschitzWith 1 (compactRange : C(T, E) → NonemptyCompacts E) := by
-  exact LipschitzWith.mk_one (dist_compactRange_le (T := T) (E := E))
-
-/-- The compact-range map is continuous for uniform convergence of paths and
-Hausdorff convergence of compact sets. -/
-theorem continuous_compactRange :
-    Continuous (compactRange : C(T, E) → NonemptyCompacts E) :=
-  lipschitzWith_compactRange.continuous
-
-/-- The compact-range map is Borel measurable. -/
-theorem measurable_compactRange [MeasurableSpace C(T, E)] [BorelSpace C(T, E)]
-    [MeasurableSpace (NonemptyCompacts E)] [BorelSpace (NonemptyCompacts E)] :
-    Measurable (compactRange : C(T, E) → NonemptyCompacts E) :=
-  continuous_compactRange.measurable
 
 end Deterministic
 
@@ -98,16 +70,20 @@ whole compact space tends to zero. -/
 noncomputable def finiteCompactApprox (n : ℕ) : NonemptyCompacts T :=
   Classical.choose (exists_finite_compactRange (T := T) ((n + 1 : ℝ)⁻¹) (by positivity))
 
+/-- The `n`-th finite approximant of a compact metric space is a finite set. -/
 theorem finite_finiteCompactApprox (n : ℕ) :
     (finiteCompactApprox (T := T) n : Set T).Finite :=
   (Classical.choose_spec
     (exists_finite_compactRange (T := T) ((n + 1 : ℝ)⁻¹) (by positivity))).1
 
+/-- The `n`-th finite approximant is within Hausdorff distance `1/(n+1)` of the whole
+space. -/
 theorem dist_finiteCompactApprox_le (n : ℕ) :
     dist (finiteCompactApprox (T := T) n) (⊤ : NonemptyCompacts T) ≤ (n + 1 : ℝ)⁻¹ :=
   (Classical.choose_spec
     (exists_finite_compactRange (T := T) ((n + 1 : ℝ)⁻¹) (by positivity))).2
 
+/-- The finite approximants converge to the whole space in the Hausdorff metric. -/
 theorem tendsto_finiteCompactApprox :
     Tendsto (finiteCompactApprox (T := T)) atTop (𝓝 (⊤ : NonemptyCompacts T)) := by
   rw [Metric.tendsto_atTop]
@@ -132,6 +108,7 @@ compact set. -/
 noncomputable def finiteRange (f : I → E) : NonemptyCompacts E :=
   ⟨⟨Set.range f, (Set.finite_range f).isCompact⟩, Set.range_nonempty f⟩
 
+/-- The underlying set of the finite range of a map on a finite type is its range. -/
 @[simp]
 theorem coe_finiteRange (f : I → E) : (finiteRange f : Set E) = Set.range f := rfl
 
@@ -143,6 +120,7 @@ theorem continuous_finiteRange :
   rw [NonemptyCompacts.isEmbedding_coe.continuous_iff]
   exact vietoris.continuous_range_of_finite
 
+/-- The finite range is a measurable function of the finitely many values. -/
 theorem measurable_finiteRange [MeasurableSpace (I → E)] [BorelSpace (I → E)]
     [MeasurableSpace (NonemptyCompacts E)] [BorelSpace (NonemptyCompacts E)] :
     Measurable (finiteRange : (I → E) → NonemptyCompacts E) :=
@@ -171,6 +149,7 @@ noncomputable def finiteImage (L : NonemptyCompacts T) (hL : (L : Set T).Finite)
     (f : T → E) : NonemptyCompacts E :=
   ⟨⟨f '' L, (hL.image f).isCompact⟩, L.nonempty.image f⟩
 
+/-- The underlying set of the finite image is the image of the finite set. -/
 @[simp]
 theorem coe_finiteImage (L : NonemptyCompacts T) (hL : (L : Set T).Finite)
     (f : T → E) : (finiteImage L hL f : Set E) = f '' L := rfl
@@ -238,17 +217,22 @@ function is not continuous.  On continuous functions this is exactly the range. 
 noncomputable def compactImageOfFunction (x₀ : E) (f : T → E) : NonemptyCompacts E :=
   compactRange (ContinuousMap.mkD f (ContinuousMap.const T x₀))
 
+/-- For a continuous map the compact image is the compact range, so the fallback at `x₀`
+never enters. -/
 theorem compactImageOfFunction_of_continuous (x₀ : E) {f : T → E}
     (hf : Continuous f) :
     compactImageOfFunction x₀ f = compactRange ⟨f, hf⟩ := by
   rw [compactImageOfFunction, ContinuousMap.mkD_of_continuous hf]
 
+/-- For a continuous map the underlying set of the compact image is the range. -/
 theorem coe_compactImageOfFunction_of_continuous (x₀ : E) {f : T → E}
     (hf : Continuous f) :
     (compactImageOfFunction x₀ f : Set E) = Set.range f := by
   rw [compactImageOfFunction_of_continuous x₀ hf, coe_compactRange]
   rfl
 
+/-- The images of the finite approximants under a continuous map converge to the compact
+image in the Hausdorff metric. -/
 theorem tendsto_finiteImage_compactImageOfFunction (x₀ : E) {f : T → E}
     (hf : Continuous f) :
     Tendsto
@@ -293,6 +277,7 @@ noncomputable instance measurableSpace_nonemptyCompacts_plane :
     MeasurableSpace (NonemptyCompacts Plane) :=
   borel (NonemptyCompacts Plane)
 
+/-- The hyperspace of nonempty compact subsets of the plane carries its Borel σ-algebra. -/
 instance borelSpace_nonemptyCompacts_plane : BorelSpace (NonemptyCompacts Plane) :=
   ⟨rfl⟩
 
@@ -336,14 +321,6 @@ theorem IsPlanarBrownian.aemeasurable_brownianImage (hW : IsPlanarBrownian W P)
     exact JointMeasurability.aemeasurable_eval hW t.1.toNNReal
   · filter_upwards [hW.ae_continuous] with ω hω
     exact hω.comp (continuous_real_toNNReal.comp continuous_subtype_val)
-
-/-- Almost surely, the bundled Brownian image has the expected underlying set. -/
-theorem IsPlanarBrownian.ae_coe_brownianImage (hW : IsPlanarBrownian W P)
-    (K : NonemptyCompacts ℝ) :
-    ∀ᵐ ω ∂P, (brownianImage W K ω : Set Plane) =
-      (fun t : ℝ ↦ W t.toNNReal ω) '' K := by
-  filter_upwards [hW.ae_continuous] with ω hω
-  exact coe_brownianImage_of_continuous K hω
 
 /-- The law of the compact Brownian image on the Hausdorff hyperspace. -/
 noncomputable def brownianImageLaw (W : ℝ≥0 → Ω → Plane) (P : Measure Ω)

@@ -4,10 +4,13 @@ profile, `eq:hb-asymptotic` in the non-lattice case and `eq:ha-asymptotic` in th
 lattice case.
 
 * `profile_asymptotics_nonLattice`: dominated convergence against `A·φ`.
+* `exists_nonneg_bound_of_periodic`: a continuous periodic function is bounded by a
+  non-negative constant, the bound the lattice case feeds into the kernel estimate.
 * `exists_lattice_bound`: the uniform bound behind `eq:ha-asymptotic`, at any exponent.
   The two integrands agree where `2t - log η ≥ log 3`, and on the rest `φ(η) ≤ ½η^{s-2}`,
-  which integrates to `T^{s-1}/(1-s)` with `T = e^{2t - log 3}`.
-* `profile_asymptotics_lattice`, `profile_asymptotics_lattice_bigO`: the two shapes.
+  which integrates to `T^{s-1}/(1-s)` with `T = e^{2t - log 3}`.  Read in the two shapes
+  the paper uses, it is the pair of endpoints `audit_profile_asymptotics_lattice` and
+  `audit_profile_asymptotics_lattice_bigO`.
 
 Neither lattice statement needs a Frostman hypothesis on `μ_A`: boundedness of `G` comes
 from `hagree` above `log 3` and `Φ ≤ 1` below it, and measurability from monotonicity
@@ -15,7 +18,7 @@ of `Φ`.
 -/
 import BrownianImages.Profile
 import BrownianImages.Kernel
-import BrownianImages.Cantor
+import BrownianImages.Periodic
 import BrownianImages.SelfSimilar
 
 namespace BrownianImages
@@ -221,33 +224,5 @@ theorem exists_lattice_bound {s a p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {μ : Mea
   have hne : s - 2 + 1 ≠ 0 := by intro h; linarith
   field_simp
   ring
-
-/-- `thm:profile-asymptotics`, `eq:ha-asymptotic`, as the uniform bound the proof
-produces. -/
-theorem profile_asymptotics_lattice {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA)
-    {g : ℝ → ℝ} (hg : Continuous g) (hper : Function.Periodic g (Real.log 3))
-    (hagree : ∀ w, Real.log 3 ≤ w → g w = G sCantor μA w) :
-    ∃ C > 0, ∀ v : ℝ, 0 ≤ v →
-      |H sCantor μA v - smoothOp sCantor g v|
-        ≤ C * Real.exp (-2 * (1 - sCantor) * v) := by
-  haveI := hA.isProbabilityMeasure
-  obtain ⟨C, hC0, hCbd⟩ :=
-    exists_lattice_bound sCantor_pos sCantor_lt_one (μ := μA) hg log_three_pos.ne' hper hagree
-  exact ⟨C, hC0, fun v _ => hCbd v⟩
-
-/-- `eq:ha-asymptotic` in the asymptotic shape the paper writes it. -/
-theorem profile_asymptotics_lattice_bigO {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA)
-    {g : ℝ → ℝ} (hg : Continuous g) (hper : Function.Periodic g (Real.log 3))
-    (hagree : ∀ w, Real.log 3 ≤ w → g w = G sCantor μA w) :
-    (fun v => H sCantor μA v - smoothOp sCantor g v)
-      =O[atTop] fun v => Real.exp (-2 * (1 - sCantor) * v) := by
-  haveI := hA.isProbabilityMeasure
-  obtain ⟨C, hC0, hCbd⟩ :=
-    exists_lattice_bound sCantor_pos sCantor_lt_one (μ := μA) hg log_three_pos.ne' hper hagree
-  refine isBigO_iff.mpr ⟨C, Eventually.of_forall fun v => ?_⟩
-  rw [Real.norm_eq_abs, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-  exact hCbd v
 
 end BrownianImages

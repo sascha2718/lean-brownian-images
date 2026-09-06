@@ -48,7 +48,6 @@ theorem length_ge_block {β η b h : ℝ} (hb : β / 2 < b) (hh : η / 2 < h) :
     (β + η) / 4 ≤ (b + h) / 2 := by
   linarith
 
-
 /-! ### The variance scale is `o(r^{4s})` -/
 
 /-- `x ↦ x^a` tends to `0` at `0` from the right, for `a > 0`. -/

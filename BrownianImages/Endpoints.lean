@@ -9,10 +9,13 @@ composition of results from two or more of the modules above, in the shape
 * `endpoint_block_mass`, `endpoint_block_mass_dyadic`, `four_point_integral`: the
   variance chain of `sec:variance`, `eq:joint-return-bound` fed through the block bound
   into the dyadic summation.
-* `exists_periodic_profile`, `thm_smoothing_injective`,
-  `lattice_correlation_oscillation`: the periodic profile `G̃_A` of `sec:renewal`, built
-  from the middle-thirds values of `CantorValues`, the internal Frostman regularity result and the shift
-  identity `eq:g-recursion`, together with the two results that consume it.
+* `homogeneous_periodic_profile`, `homogeneous_profile_asymptotics_lattice`,
+  `thm_smoothing_injective_homogeneous`, `homogeneous_lattice_correlation_oscillation`:
+  the periodic profile `G̃_A` of `sec:renewal` for every `0 < λ < 1/2`, built from the
+  non-constancy of `HomogeneousNonconstancy`, the internal Frostman regularity result
+  and the shift identity `eq:g-recursion`, together with the three results that consume
+  it: `eq:ha-asymptotic`, `thm:smoothing-injective` bundled, and the `μ_A` conclusion of
+  `thm:profile-asymptotics`.
 -/
 import BrownianImages.Rescaling
 import BrownianImages.Reduction
@@ -20,7 +23,7 @@ import BrownianImages.FourPointBound
 import BrownianImages.BlockMass
 import BrownianImages.FourPointIntegral
 import BrownianImages.AhlforsRegular
-import BrownianImages.CantorValues
+import BrownianImages.PairDifference
 import BrownianImages.HomogeneousNonconstancy
 
 namespace BrownianImages
@@ -30,7 +33,6 @@ open scoped ENNReal NNReal Topology
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-set_option linter.unusedVariables false in
 /-- `eq:smoothing`.  The exact rescaling `S_μ(r) = r^{2s} H_μ(log(1/r))`, for every
 `r > 0`. -/
 theorem smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
@@ -40,7 +42,6 @@ theorem smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω 
     expCorr W P μ r = r ^ (2 * s) * H s μ (Real.log r⁻¹) :=
   smoothing_of_gaussian_reduction hW hs0 hs1 hμ hr0 (gaussian_reduction hW hs0 hs1 hμ hr0).2
 
-set_option linter.unusedVariables false in
 /-- `thm:profile-asymptotics`, the conclusion for `μ_B`: the normalised expected
 correlation integral has a finite positive limit. -/
 theorem non_lattice_correlation_limit {P : Measure Ω} [IsProbabilityMeasure P]
@@ -49,9 +50,8 @@ theorem non_lattice_correlation_limit {P : Measure Ω} [IsProbabilityMeasure P]
     (hC : Tendsto (G s μ) atTop (𝓝 C)) (hCpos : 0 < C) :
     ∃ L > 0, Tendsto (fun r : ℝ => expCorr W P μ r / r ^ (2 * s)) (𝓝[>] 0) (𝓝 L) :=
   non_lattice_correlation_limit_of_gaussian_reduction hW hs0 hs1 hμ hC hCpos
-    (fun r hr => (gaussian_reduction hW hs0 hs1 hμ hr).2)
+    (fun _r hr => (gaussian_reduction hW hs0 hs1 hμ hr).2)
 
-set_option linter.unusedVariables false in
 /-- `thm:endpoint-block-mass`, both halves.
 The `μ⁴`-mass of a dyadic block of ordered quadruples, and the joint return probability
 on that block.  `μ` sits on `[0,1]`, so reading the times through `Real.toNNReal` is the
@@ -75,7 +75,6 @@ theorem endpoint_block_mass {P : Measure Ω} [IsProbabilityMeasure P]
             ≤ C * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) :=
   endpoint_block_mass_of_four_point hW hs hμ (fun hr hΔ => gaussian_four_point hW hr hΔ)
 
-set_option linter.unusedVariables false in
 /-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
 halves of the lemma. -/
 theorem endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure P]
@@ -101,7 +100,6 @@ theorem endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure P]
   endpoint_block_mass_dyadic_of_four_point hW hs hμ
     (fun hr hΔ => gaussian_four_point hW hr hΔ)
 
-set_option linter.unusedVariables false in
 /-- `thm:four-point-integral`, `eq:four-point-integral`.  The four dyadic sums, summed:
 the joint return probability integrates over the overlap set to `O(V_s(r))`. -/
 theorem four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
@@ -115,22 +113,6 @@ theorem four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
   four_point_integral_of_block hW hs0 hs1 hμ
     (endpoint_block_mass_dyadic_of_four_point hW hs0 hμ
       (fun hr hΔ => gaussian_four_point hW hr hΔ))
-
-set_option linter.unusedVariables false in
-/-- `sec:renewal`: the periodic profile `G̃_A` itself, the continuous `log 3`-periodic
-extension of `G_A` from `[log 3, 2 log 3]`, with the positivity and non-constancy the
-proof of `thm:profile-asymptotics` uses. -/
-theorem exists_periodic_profile {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA) :
-    ∃ g : ℝ → ℝ, Continuous g ∧ Function.Periodic g (Real.log 3) ∧
-      (∀ w, Real.log 3 ≤ w → g w = G sCantor μA w) ∧
-      (∀ x, 0 < g x) ∧ ∃ x y, g x ≠ g y := by
-  haveI := hA.isProbabilityMeasure
-  obtain ⟨A, hFrost⟩ := AhlforsRegular.exists_isFrostman_of_isNatural sCantor_pos
-    (cantorSystem_stronglySeparated hA.attractor.2.2.1) hA
-  obtain ⟨h3, -, h6⟩ := cantor_values hA
-  exact exists_periodic_profile_of_shift (continuous_G sCantor_pos hFrost)
-    (cantor_g_period hA) h3 h6
 
 /-- `thm:homogeneous-nonconstancy` and the paragraph following it, on the full range
 `0 < λ < 1/2`: the homogeneous natural measure has a positive non-constant periodic
@@ -178,41 +160,6 @@ theorem thm_smoothing_injective_homogeneous {lam : ℝ} (hlam0 : 0 < lam)
   exact ⟨g, hg, hper, hagree,
     smoothOp_nonconstant (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam)
       (log_inv_pos hlam0 hlam) hg hper hne⟩
-
-set_option linter.unusedVariables false in
-/-- `thm:smoothing-injective` as one statement: injectivity of `T` on the continuous
-`p`-periodic functions, together with the named conclusion that `T G̃_A` is
-non-constant. -/
-theorem thm_smoothing_injective {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA) :
-    (∀ g₁ g₂ : ℝ → ℝ, Continuous g₁ → Continuous g₂ → Function.Periodic g₁ (Real.log 3) →
-        Function.Periodic g₂ (Real.log 3) →
-        (∀ v, smoothOp sCantor g₁ v = smoothOp sCantor g₂ v) →
-        ∀ x, g₁ x = g₂ x) ∧
-      (∃ g : ℝ → ℝ, Continuous g ∧ Function.Periodic g (Real.log 3) ∧
-        (∀ w, Real.log 3 ≤ w → g w = G sCantor μA w) ∧
-        ∃ v w, smoothOp sCantor g v ≠ smoothOp sCantor g w) := by
-  refine ⟨fun g₁ g₂ hg₁ hg₂ hper₁ hper₂ h =>
-    smoothOp_injective sCantor_pos sCantor_lt_one log_three_pos hg₁ hg₂ hper₁ hper₂ h, ?_⟩
-  obtain ⟨g, hcont, hper, hagree, -, hne⟩ := exists_periodic_profile hA
-  exact ⟨g, hcont, hper, hagree,
-    smoothOp_nonconstant sCantor_pos sCantor_lt_one log_three_pos hcont hper hne⟩
-
-set_option linter.unusedVariables false in
-/-- `thm:profile-asymptotics`, the conclusion for `μ_A`: the normalised expected
-correlation integral oscillates, its lower limit strictly below its upper limit. -/
-theorem lattice_correlation_oscillation {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA) :
-    ∃ a b : ℝ, a < b ∧
-      (∀ R > 0, ∃ r, 0 < r ∧ r < R ∧ expCorr W P μA r ≤ a * r ^ (2 * sCantor)) ∧
-      (∀ R > 0, ∃ r, 0 < r ∧ r < R ∧ b * r ^ (2 * sCantor) ≤ expCorr W P μA r) := by
-  haveI := hA.isProbabilityMeasure
-  obtain ⟨A, hFrost⟩ := AhlforsRegular.exists_isFrostman_of_isNatural sCantor_pos
-    (cantorSystem_stronglySeparated hA.attractor.2.2.1) hA
-  exact lattice_correlation_oscillation_of_smoothing hW sCantor_pos sCantor_lt_one
-    log_three_pos (exists_periodic_profile hA)
-    (fun r hr => smoothing hW sCantor_pos sCantor_lt_one hFrost hr)
 
 /-- `thm:profile-asymptotics`, the oscillatory conclusion for the homogeneous measure
 for every `0 < λ < 1/2`. -/

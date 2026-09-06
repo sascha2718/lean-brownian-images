@@ -88,13 +88,12 @@ theorem overlap_nested {x₁ x₂ x₃ x₄ : ℝ} (h12 : x₁ < x₂) (h23 : x�
 
 variable {P : Measure Ω} {W : ℝ≥0 → Ω → Plane}
 
-set_option linter.unusedVariables false in
 /-- The return bound of `thm:endpoint-block-mass` for the crossing pairing `[x₁,x₃]`, `[x₂,x₄]`: the
 determinant `eq:crossing-determinant` is at least `bh ≥ βη/4` and the longer interval is
 at least `(b+h)/2 ≥ (β+η)/4`. -/
 theorem crossing_le
-    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (hr : 0 < r)
-      (hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
       (jointReturn W P r t u t' u').toReal
         ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
             (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|
@@ -130,13 +129,12 @@ theorem crossing_le
   exact min_le_block hr hβ hη hdet hlen
     (hfour hr (lt_of_lt_of_le (by positivity) hdet))
 
-set_option linter.unusedVariables false in
 /-- The return bound of `thm:endpoint-block-mass` for the nested pairing `[x₁,x₄]`, `[x₂,x₃]`: the determinant
 `eq:nested-determinant` is exactly `bh ≥ βη/4` and the longer interval has length
 `b + h ≥ (β+η)/4`. -/
 theorem nested_le
-    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (hr : 0 < r)
-      (hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
       (jointReturn W P r t u t' u').toReal
         ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
             (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|
@@ -175,16 +173,15 @@ end BlockMass
 /-! ### `thm:endpoint-block-mass` -/
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
-set_option linter.unusedVariables false in
 /-- `thm:endpoint-block-mass`, both halves,
 conditional on `eq:joint-return-bound`, which enters as the hypothesis `hfour` in the
 text of the endpoint `audit_gaussian_four_point`.  The constant is `max (A³) 2`: the mass
 half costs `A³`, three applications of `eq:frostman`, and the return half costs `2`. -/
 theorem endpoint_block_mass_of_four_point {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs : 0 < s)
+    {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ} (_hs : 0 < s)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
-    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (hr : 0 < r)
-      (hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
       (jointReturn W P r t u t' u').toReal
         ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
             (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|
@@ -223,15 +220,14 @@ theorem endpoint_block_mass_of_four_point {P : Measure Ω} [IsProbabilityMeasure
       le_trans (BlockMass.nested_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef⟩
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
-set_option linter.unusedVariables false in
 /-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
 halves of the lemma, conditional on `eq:joint-return-bound` as above.  Every `(1/2)^j`
 lies in `(0,1]`, so this is the general statement read at those values. -/
 theorem endpoint_block_mass_dyadic_of_four_point {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs : 0 < s)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
-    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (hr : 0 < r)
-      (hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
       (jointReturn W P r t u t' u').toReal
         ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
             (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|

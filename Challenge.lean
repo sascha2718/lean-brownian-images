@@ -13,7 +13,7 @@ Comparator compares these statements against the identically named declarations 
 `Solution.lean`, audits the axioms of the solution proofs, and replays them through
 the kernel.  The statement text must stay character-for-character identical to
 `Solution.lean`.  Comparator never compares against the tex: the correspondence with
-the document is a human obligation, and `PLAN.md` is where it is argued.
+the document is a human obligation, and `docs/correspondence.md` is where it is argued.
 
 Run from `lean/` with
 `lake env <comparator binary> comparator-config.json`.

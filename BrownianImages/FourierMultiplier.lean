@@ -29,6 +29,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 noncomputable def chr (p : ℝ) (k : ℤ) (x : ℝ) : ℂ :=
   Complex.exp (-(2 * Real.pi * Complex.I * k * x / p))
 
+/-- The character `e^{2πikx/p}` is multiplicative in `x`. -/
 theorem chr_add (p : ℝ) (k : ℤ) (x y : ℝ) :
     chr p k (x + y) = chr p k x * chr p k y := by
   rw [chr, chr, chr, ← Complex.exp_add]
@@ -36,12 +37,14 @@ theorem chr_add (p : ℝ) (k : ℤ) (x y : ℝ) :
   push_cast
   ring
 
+/-- The character is continuous. -/
 theorem chr_continuous (p : ℝ) (k : ℤ) : Continuous (chr p k) := by
   have h : Continuous fun x : ℝ =>
       -(2 * (Real.pi : ℂ) * Complex.I * (k : ℂ) * (x : ℂ) / (p : ℂ)) :=
     ((continuous_const.mul Complex.continuous_ofReal).div_const _).neg
   exact Complex.continuous_exp.comp h
 
+/-- The character has modulus one. -/
 theorem chr_norm (p : ℝ) (k : ℤ) (x : ℝ) : ‖chr p k x‖ = 1 := by
   have h : (-(2 * (Real.pi : ℂ) * Complex.I * (k : ℂ) * (x : ℂ) / (p : ℂ)))
       = ((-(2 * Real.pi * k * x / p) : ℝ) : ℂ) * Complex.I := by
@@ -49,6 +52,7 @@ theorem chr_norm (p : ℝ) (k : ℤ) (x : ℝ) : ‖chr p k x‖ = 1 := by
     ring
   rw [chr, h, Complex.norm_exp_ofReal_mul_I]
 
+/-- The character takes the value `1` at the period. -/
 theorem chr_period_one {p : ℝ} (hp : p ≠ 0) (k : ℤ) : chr p k p = 1 := by
   have hp' : (p : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hp
   have h : (-(2 * (Real.pi : ℂ) * Complex.I * (k : ℂ) * (p : ℂ) / (p : ℂ)))
@@ -58,6 +62,7 @@ theorem chr_period_one {p : ℝ} (hp : p ≠ 0) (k : ℤ) : chr p k p = 1 := by
     ring
   rw [chr, h, Complex.exp_int_mul_two_pi_mul_I]
 
+/-- The character is `p`-periodic. -/
 theorem chr_periodic {p : ℝ} (hp : p ≠ 0) (k : ℤ) : Function.Periodic (chr p k) p := by
   intro x
   rw [chr_add, chr_period_one hp, mul_one]
@@ -117,9 +122,12 @@ theorem chr_double (p : ℝ) (k : ℤ) (g : ℝ → ℝ) :
 noncomputable def fker (s p : ℝ) (k : ℤ) (g : ℝ → ℝ) (v η : ℝ) : ℂ :=
   chr p k (2 * v) * ((kern s η : ℝ) : ℂ) * ((g (2 * v - Real.log η) : ℝ) : ℂ)
 
+/-- `eq:h-definition`: the kernel `φ` is measurable. -/
 theorem measurable_kern (s : ℝ) : Measurable (kern s) := by
   unfold kern; fun_prop
 
+/-- The integrand of `eq:fourier-multiplier`, as a function of the pair `(v, η)`, is
+measurable. -/
 theorem measurable_uncurry_fker {s p : ℝ} (k : ℤ) {g : ℝ → ℝ} (hg : Continuous g) :
     Measurable (Function.uncurry (fker s p k g)) := by
   have h1 : Measurable fun z : ℝ × ℝ => chr p k (2 * z.1) :=
@@ -131,6 +139,9 @@ theorem measurable_uncurry_fker {s p : ℝ} (k : ℤ) {g : ℝ → ℝ} (hg : Co
       ((measurable_fst.const_mul 2).sub (Real.measurable_log.comp measurable_snd)))
   exact (h1.mul h2).mul h3
 
+/-- The integrand of `eq:fourier-multiplier` is integrable on `(0, p/2] × (0, ∞)`, by
+the domination `|g| ≤ M` and the integrability of the kernel; this licenses the Fubini
+interchange. -/
 theorem integrable_uncurry_fker {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (k : ℤ) {g : ℝ → ℝ} (hg : Continuous g) {M : ℝ} (hM : ∀ x, |g x| ≤ M) :
     Integrable (Function.uncurry (fker s p k g))

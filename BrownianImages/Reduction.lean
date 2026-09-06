@@ -8,9 +8,8 @@ the pair-distance law, first against `μ × μ` and then, by the pushforward
 `∫_ω (μ×μ)(A_ω) dP = ∫_{μ×μ} P(A_p)`, the planar return probability
 `IsPlanarBrownian.return_prob`, and the change of variables defining `pairLaw`.
 
-* `Reduction.exists_modification`, `Reduction.exists_jointly_measurable_modification`:
-  a jointly measurable version of the process, every path continuous, agreeing with `W`
-  off one null set.  This is what the Fubini step needs and what `IsBrownianReal` does
+* `Reduction.exists_modification`: a jointly measurable version of the process, every
+  path continuous, agreeing with `W` off one null set.  This is what the Fubini step needs and what `IsBrownianReal` does
   not give directly: it carries measurability of `W t` only up to a null set, one time
   at a time.
 * `expCorr_eq_integral_prod`: the first identity of `eq:gaussian-reduction`.
@@ -108,19 +107,6 @@ theorem exists_modification (hW : IsPlanarBrownian W P) :
     intro ω
     exact ((hcont ω).tendsto t).comp hxt
   exact ⟨V, hVmeas, hcont, M, hMmeas, hMnull, hVout⟩
-
-/-- The joint measurability the Fubini step needs, in the form a later user wants it:
-some version of the process is measurable in time and chance together, has every path
-continuous, and agrees with `W` at every time almost surely. -/
-theorem exists_jointly_measurable_modification (hW : IsPlanarBrownian W P) :
-    ∃ V : ℝ≥0 → Ω → Plane, Measurable (Function.uncurry V) ∧
-      (∀ ω, Continuous fun t => V t ω) ∧ ∀ᵐ ω ∂P, ∀ t, V t ω = W t ω := by
-  obtain ⟨V, hVmeas, hVcont, M, hMmeas, hMnull, hVW⟩ := exists_modification hW
-  refine ⟨V, measurable_uncurry_of_continuous_of_measurable hVcont hVmeas, hVcont, ?_⟩
-  rw [Filter.eventually_iff, mem_ae_iff]
-  refine measure_mono_null (fun ω hω => ?_) hMnull
-  by_contra hM
-  exact hω (hVW ω hM)
 
 /-- `eq:correlation-functional` for a pushforward: the correlation functional of `f_*μ`
 is the `μ × μ`-measure of the pairs whose images are within `r`. -/
@@ -264,13 +250,12 @@ theorem expCorr_eq_integral_pairLaw [IsProbabilityMeasure P] (hW : IsPlanarBrown
 
 end ExpCorr
 
-set_option linter.unusedVariables false in
 /-- `thm:gaussian-reduction`, `eq:gaussian-reduction`.  The expected correlation
 integral is the Gaussian transform of the pair-distance law, in both the `μ × μ` form
 and the Stieltjes form against `dΦ`.  The Frostman hypothesis is what makes `μ`
 atomless, so that the diagonal, where the exponent is undefined, is null. -/
 theorem gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (_hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {r : ℝ} (hr : 0 < r) :
     expCorr W P μ r
         = ∫ p : ℝ × ℝ, (1 - Real.exp (-(r ^ 2 / (2 * |p.1 - p.2|)))) ∂(μ.prod μ) ∧
@@ -279,5 +264,4 @@ theorem gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P]
   ⟨expCorr_eq_integral_prod hW hs0 hμ hr, expCorr_eq_integral_pairLaw hW hs0 hμ hr⟩
 
 end BrownianImages
-
 

@@ -3,7 +3,7 @@ Comparator solution file, and the formal statement of the paper: every numbered
 result of `BrownianImagesComplete.tex`, together with the displayed claims that a
 later result cites or that carry a hypothesis of their own, stated as `audit_*`
 endpoints and proved by the library declarations.  It is not every display:
-`PLAN.md` says which are covered by a neighbouring endpoint instead.
+`docs/correspondence.md` says which are covered by a neighbouring endpoint instead.
 
 `Challenge.lean` restates the headline theorems, `thm:main` and
 `thm:cantor-application`, on Mathlib-only copies of the definitions;
@@ -13,8 +13,8 @@ them through the kernel.  For the listed endpoints the statement text must stay
 character-for-character identical to `Challenge.lean`.
 -/
 import BrownianImages
-import BrownianImages.MinkowskiProfile
-import BrownianImages.MinkowskiReconstruction
+import BrownianImages.Minkowski.Profile
+import BrownianImages.Minkowski.Reconstruction
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
 set_option linter.unusedVariables false
@@ -317,7 +317,7 @@ theorem audit_pairRatio {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
 
 /-- `sec:renewal`: the homogeneous system has similarity dimension
 `log 2 / log(1/λ)` and first-level gap `1-2λ`. -/
-theorem audit_cantorSystem_facts {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
+theorem audit_homogeneousSystem_facts {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     (homogeneousSystem lam hlam0 hlam).IsDimension (homogeneousDim lam) ∧
       ∀ K : Set ℝ, K ⊆ Set.Icc 0 1 →
         (homogeneousSystem lam hlam0 hlam).StronglySeparated K (1 - 2 * lam) :=
@@ -575,6 +575,14 @@ theorem audit_isProbabilityMeasure_occupationLaw {P : Measure Ω} [IsProbability
     [IsProbabilityMeasure μ] : IsProbabilityMeasure (occupationLaw W P μ) :=
   hW.isProbabilityMeasure_occupationLaw μ
 
+/-- The law of the compact Brownian image is a probability measure, so the compact-image
+laws compared in `thm:cantor-set-application` have total mass one and their mutual
+singularity is not the vacuous statement about two zero measures. -/
+theorem audit_isProbabilityMeasure_brownianImageLaw {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) (K : NonemptyCompacts ℝ) :
+    IsProbabilityMeasure (brownianImageLaw W P K) :=
+  hW.isProbabilityMeasure_brownianImageLaw K
+
 /-- The occupation measure is a measurable function of the sample path, so
 `occupationLaw` is the law of `W_*μ` and not the junk value `Measure.map` returns on a
 non-measurable map.  Almost sure continuity of the paths, carried by
@@ -629,8 +637,8 @@ theorem audit_smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 �
     expCorr W P μ r = r ^ (2 * s) * H s μ (Real.log r⁻¹) :=
   smoothing hW hs0 hs1 hμ hr0
 
-/-- `sec:renewal`: the middle-thirds attractor and its natural measure exist and are
-unique.  This is Hutchinson's theorem for `cantorSystem`. -/
+/-- `sec:renewal`: the homogeneous attractor and its natural measure exist and are
+unique.  This is Hutchinson's theorem for `homogeneousSystem`. -/
 theorem audit_exists_cantor_measure {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     ∃! p : Set ℝ × Measure ℝ,
       (homogeneousSystem lam hlam0 hlam).IsNatural p.1 (homogeneousDim lam) p.2 :=

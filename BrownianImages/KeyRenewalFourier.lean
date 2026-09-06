@@ -15,7 +15,7 @@ those two, and `ϑ` satisfies it under `eq:non-lattice` even though it satisfies
 
 `FellerNonlattice` is defined in `BrownianImages/Renewal/Basic.lean` and the vendored
 chain carries it directly, so this module states no vendored declaration a second time.
-`Renewal/*.lean` records the change; `PLAN.md` records what it costs.
+`Renewal/*.lean` records the change and `docs/renewal-library.md` the account.
 
 * `fellerNonlattice_of_nonlattice`: `FellerNonlattice`, the hypothesis the vendored
   chain now carries, is weaker than the `Nonlattice` it replaced.
@@ -81,7 +81,6 @@ theorem charFun_renewalLaw (s t : ℝ) :
 
 end System
 
-
 namespace KeyRenewalFourier
 
 /-- **The equality case of the triangle inequality for a convex combination of unit
@@ -140,8 +139,6 @@ theorem eq_sum_of_norm_sum_eq_one {ι : Type*} [Fintype ι] {p : ι → ℝ} (hp
     exact zero_ne_one hcw
   have := (hone i).trans hcw.symm
   exact mul_left_cancel₀ hcne this
-
-
 
 /-- The lattice `{x : t x ∈ 2πℤ}` of periods of the character `x ↦ e^{itx}`, as an
 additive subgroup of the line. -/
@@ -405,7 +402,6 @@ theorem fellerNonlattice_of_nonlattice {μ : Measure ℝ}
     exact absurd ht
       (AbsorptionCutoff.Renewal.norm_charFun_lt_one_of_nonlattice hμ h0).ne
 
-
 namespace KeyRenewalFourier
 
 section KeyRenewalTheorem
@@ -586,36 +582,6 @@ theorem fellerNonlattice_renewalLaw [Nonempty ι] {s : ℝ} (hdim : S.IsDimensio
     AbsorptionCutoff.Renewal.FellerNonlattice (S.renewalLaw s) where
   charFun_ne_one := (nonArithmetic_iff_charFun_ne_one S hdim).mp hna
   countable_norm_charFun_eq_one := countable_norm_charFun_renewalLaw_eq_one S hdim hna
-
-open _root_.AbsorptionCutoff.Renewal in
-/-- **`eq:g-non-lattice-limit`, for the renewal law of a non-arithmetic system.**  The
-renewal series of a continuous, directly Riemann integrable forcing `z` converges to
-`m⁻¹ ∫ z`, with `m = ∑ p_i a_i` the renewal mean.  This is Feller's key renewal theorem
-at the increment law `ϑ = ∑ p_i δ_{a_i}` of `thm:non-lattice-limit`: the vendored
-theorem's `Nonlattice` hypothesis is false for `ϑ`, and what stands in its place is
-`FellerNonlattice`, which `eq:non-lattice` supplies.
-
-What separates this from `thm:non-lattice-limit` itself is the identification of `G`
-with its own renewal series, `G = ∑_n ϑ^{*n} * z` for `z = G - ϑ * G`, which is the
-first half of the proof in the tex. -/
-theorem tendsto_tsum_integral_renewalLaw [Nonempty ι] {s : ℝ} (hdim : S.IsDimension s)
-    (hna : S.NonArithmetic) {z : ℝ → ℝ} (hzc : Continuous z)
-    (hzd : AbsorptionCutoff.Renewal.driNorm (fun x => ‖z x‖ₑ) ≠ ∞) :
-    Filter.Tendsto
-      (fun y : ℝ => ∑' n : ℕ,
-        ∫ u, z (y - u) ∂(AbsorptionCutoff.Renewal.convPow (S.renewalLaw s) n))
-      Filter.atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, z x)) := by
-  haveI := S.isProbabilityMeasure_renewalLaw hdim
-  obtain ⟨θ, hθ, hlt⟩ := S.exists_expTransform_lt_one hdim
-  have hm : 0 < ∫ x, x ∂(S.renewalLaw s) := by
-    rw [S.integral_id_renewalLaw]
-    exact S.renewalMean_pos s
-  have hval : ((∫ x : ℝ, z x) / ∫ x, x ∂(S.renewalLaw s))
-      = (S.renewalMean s)⁻¹ * ∫ x : ℝ, z x := by
-    rw [S.integral_id_renewalLaw, div_eq_inv_mul]
-  rw [← hval]
-  exact tendsto_tsum_integral_comp_sub_of_driNorm_real
-    (S.fellerNonlattice_renewalLaw hdim hna) (S.memLp_id_renewalLaw hdim) hm hθ hlt hzc hzd
 
 /-- The renewal convolution `ϑ * g` of `thm:non-lattice-limit` is the integral against
 the renewal law: `(F * g)(y) = ∫ g(y - u) dF(u)`.  This is the bridge between the
@@ -999,7 +965,6 @@ theorem non_lattice_limit_of_integral_pos {ι : Type*} [Fintype ι] [Nonempty ι
   non_lattice_limit_of_driNorm S hs0 hsep hdim hna hμ
     (driNorm_renewalDefect_ne_top S hs0 hsep hdim hμ) hzpos
 
-set_option linter.unusedVariables false in
 /-- **`thm:non-lattice-limit`, `eq:g-non-lattice-limit`.**  In the non-arithmetic case
 the normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive,
 where `m = ∑ p_i a_i` is the renewal mean and `z = G - F * G` the renewal defect.
@@ -1010,7 +975,7 @@ the analytic condition `‖charFun ϑ t‖ < 1` behind it.  What replaces it is
 `FellerNonlattice`, which is what the Fourier proof actually consumes and what
 `eq:non-lattice` supplies. -/
 theorem non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
+    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (_hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧

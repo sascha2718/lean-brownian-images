@@ -1,6 +1,5 @@
 name = "brownianimages"
 defaultTargets = ["BrownianImages"]
-packagesDir = "/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages"
 
 [[require]]
 name = "mathlib"

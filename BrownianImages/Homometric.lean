@@ -28,8 +28,10 @@ def digitsA : Finset ℤ := {0, 1, 4, 10, 12, 17}
 /-- The digit set `ℬ = {0,1,8,11,13,17}`. -/
 def digitsB : Finset ℤ := {0, 1, 8, 11, 13, 17}
 
+/-- The digit set `𝒜` has six elements. -/
 theorem card_digitsA : digitsA.card = 6 := by decide
 
+/-- The digit set `ℬ` has six elements. -/
 theorem card_digitsB : digitsB.card = 6 := by decide
 
 /-- The two digit sets differ, so the two first-level supports differ and the two
@@ -76,8 +78,10 @@ theorem strong_separation {d d' : ℤ} (hne : d ≠ d') {x y : ℝ}
 /-- The common dimension `t = log 6 / log 30` of the two attractors. -/
 noncomputable def tHom : ℝ := Real.log 6 / Real.log 30
 
+/-- `log 6 > 0`. -/
 theorem log_six_pos : 0 < Real.log 6 := Real.log_pos (by norm_num)
 
+/-- `log 30 > 0`. -/
 theorem log_thirty_pos : 0 < Real.log 30 := Real.log_pos (by norm_num)
 
 /-- `t ∈ (1/2, 1)`.  The lower bound is `30 < 36`, the upper bound is `6 < 30`. -/
@@ -108,20 +112,28 @@ def digitFunA : Fin 6 → ℤ := ![0, 1, 4, 10, 12, 17]
 /-- The digits of `ℬ`, enumerated. -/
 def digitFunB : Fin 6 → ℤ := ![0, 1, 8, 11, 13, 17]
 
+/-- The digits of `𝒜` are non-negative. -/
 theorem digitFunA_nonneg : ∀ i, 0 ≤ digitFunA i := by decide
 
+/-- The digits of `𝒜` are at most `17`. -/
 theorem digitFunA_le : ∀ i, digitFunA i ≤ 17 := by decide
 
+/-- The digits of `ℬ` are non-negative. -/
 theorem digitFunB_nonneg : ∀ i, 0 ≤ digitFunB i := by decide
 
+/-- The digits of `ℬ` are at most `17`. -/
 theorem digitFunB_le : ∀ i, digitFunB i ≤ 17 := by decide
 
+/-- The enumeration of `𝒜` is injective. -/
 theorem digitFunA_injective : Function.Injective digitFunA := by decide
 
+/-- The enumeration of `ℬ` is injective. -/
 theorem digitFunB_injective : Function.Injective digitFunB := by decide
 
+/-- The enumeration of `𝒜` has the digit set as its range. -/
 theorem range_digitFunA : Finset.image digitFunA Finset.univ = digitsA := by decide
 
+/-- The enumeration of `ℬ` has the digit set as its range. -/
 theorem range_digitFunB : Finset.image digitFunB Finset.univ = digitsB := by decide
 
 /-- The self-similar system of `thm:homometric-example` attached to a digit set:
@@ -142,6 +154,7 @@ noncomputable def homSystem (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : �
     · show 1/30 * x + (d i : ℝ)/18 ≤ 1
       linarith
 
+/-- The maps of a homometric system are the affine maps `hommap` of its digits. -/
 theorem homSystem_map (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : ∀ i, d i ≤ 17)
     (i : Fin 6) (x : ℝ) : (homSystem d h0 h17).map i x = hommap (d i) x := by
   simp only [System.map, homSystem, hommap]

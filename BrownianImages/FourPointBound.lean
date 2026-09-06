@@ -804,13 +804,12 @@ theorem gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
   · exact ENNReal.toReal_le_of_le_ofReal (by positivity)
       (FourPointBound.jointReturn_le_det hW hr hΔ)
 
-set_option linter.unusedVariables false in
 /-- `thm:gaussian-four-point`, `eq:joint-return-bound` as the paper states it: outside a
 `μ⁴`-null set the determinant is positive and the bound holds.  The degenerate case
 `Δ = 0` forces the two unoriented intervals to agree, which is null for a Frostman
 measure. -/
 theorem gaussian_four_point_ae {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (_hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {r : ℝ} (hr : 0 < r) :
     ∀ᵐ q : ℝ × ℝ × ℝ × ℝ ∂(μ.prod (μ.prod (μ.prod μ))),
       0 < |q.2.1 - q.1| * |q.2.2.2 - q.2.2.1|

@@ -370,10 +370,6 @@ theorem measure_cyl_four_zero {KB : Set ℝ} {σB : Measure ℝ}
 
 /-! ### The attractors are not isometric -/
 
-/-- The fixed point `5d/87` of `S_d`. -/
-theorem hommap_fixed (d : ℤ) : hommap d (5 * (d : ℝ) / 87) = 5 * (d : ℝ) / 87 := by
-  unfold hommap; ring
-
 /-- `S_d` contracts the distance to its fixed point by the factor `1/30`. -/
 theorem hommap_sub_fixed (d : ℤ) (x : ℝ) :
     hommap d x - 5 * (d : ℝ) / 87 = (x - 5 * (d : ℝ) / 87) / 30 := by

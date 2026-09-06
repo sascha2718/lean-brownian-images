@@ -165,6 +165,7 @@ noncomputable def expNeg : ℝ → ℂ := fun x => (Real.exp (-x) : ℂ)
 /-- Its composition with the inversion, `x ↦ e^{-1/x}`. -/
 noncomputable def expNegInv : ℝ → ℂ := fun x => (Real.exp (-x⁻¹) : ℂ)
 
+/-- `expNegInv` is `expNeg` composed with inversion, by definition. -/
 theorem expNegInv_eq : expNegInv = fun x => expNeg x⁻¹ := rfl
 
 /-- Euler's integral as a Mellin transform: on the right half plane the Mellin transform

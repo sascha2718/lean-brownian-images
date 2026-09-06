@@ -5,7 +5,7 @@ renewal theorem of `BrownianImages.Renewal`.
 The vendored theorem
 `AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm` takes six
 hypotheses on the increment law.  This module discharges the ones that are properties of
-the renewal measure `ϑ = ∑ p_i δ_{a_i}` alone; `PLAN.md` tracks the rest.
+the renewal measure `ϑ = ∑ p_i δ_{a_i}` alone; `KeyRenewalFourier` discharges the rest.
 
 * `expTransform_renewalLaw`: the exponential transform of `ϑ` in closed form.
 * `exists_expTransform_lt_one`: the strict exponential moment.  Its content is that the
@@ -17,8 +17,9 @@ the renewal measure `ϑ = ∑ p_i δ_{a_i}` alone; `PLAN.md` tracks the rest.
   apply to a self-similar renewal measure.  What `thm:non-lattice-limit` needs is
   Feller's weaker condition, that the atoms lie on no lattice `dℤ` *through the origin*.
 
-This is the only module of the library that mentions the vendored namespace, so the
-dependency on third-party code is confined here.
+Beside `KeyRenewalFourier` and `Minkowski.TubeRenewalLimit`, which consume the key
+renewal theorem, this is the only module of the library that mentions the vendored
+namespace.
 -/
 import BrownianImages.SelfSimilar
 import BrownianImages.Renewal

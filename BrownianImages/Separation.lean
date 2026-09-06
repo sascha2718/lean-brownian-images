@@ -62,7 +62,6 @@ theorem exists_separation_of_tendsto {f₁ f₂ : ℝ → ℝ} {L₁ L₂ : ℝ}
 
 end Separation
 
-set_option linter.unusedVariables false in
 /-- `thm:non-lattice-separation`.  Two non-arithmetic systems whose renewal constants
 `eq:g-non-lattice-limit` differ have mutually singular Brownian occupation laws.  The
 hypotheses `hlim₁` and `hlim₂` are the conclusion of `audit_non_lattice_limit`, one for
@@ -74,12 +73,12 @@ says the common factor `∫₀^∞ φ` does not collapse them, and
 `Separation.exists_separation_of_tendsto` turns the two distinct limits into
 `eq:profile-separation`. -/
 theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
     (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {ρ₁ ρ₂ : ℝ}
     (hsep₁ : S₁.StronglySeparated K₁ ρ₁) (hsep₂ : S₂.StronglySeparated K₂ ρ₂)
-    (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
-    (hna₁ : S₁.NonArithmetic) (hna₂ : S₂.NonArithmetic)
+    (_hdim₁ : S₁.IsDimension s) (_hdim₂ : S₂.IsDimension s)
+    (_hna₁ : S₁.NonArithmetic) (_hna₂ : S₂.NonArithmetic)
     {μ₁ μ₂ : Measure ℝ} (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂)
     (hne : (S₁.renewalMean s)⁻¹ * ∫ x : ℝ, S₁.renewalDefect s μ₁ x
         ≠ (S₂.renewalMean s)⁻¹ * ∫ x : ℝ, S₂.renewalDefect s μ₂ x)

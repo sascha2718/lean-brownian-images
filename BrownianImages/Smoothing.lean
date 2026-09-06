@@ -13,16 +13,13 @@ smoothed profile, together with the analytic facts it rests on.
   continuity, by dominated convergence against `M·φ`.
 * `exists_measure_closedBall_pos`, `phi_pos`, `G_pos`: `Φ(δ) > 0` for `δ > 0`, hence the
   strict positivity of `G`, which `sec:renewal` uses for the periodic profile.
-* `exists_periodic_profile_of_shift`: the periodic profile `G̃_A`, assembled from the
-  shift identity, the continuity of `G_A` and the two exact values of
-  the middle-thirds computation in `CantorValues`.
 * `smoothOp_gap`: the oscillation `d_A` is attained and positive, the endpoint
   `audit_lattice_gap`.
 -/
 import BrownianImages.Kernel
 import BrownianImages.Frostman
 import BrownianImages.Periodic
-import BrownianImages.Cantor
+import BrownianImages.Periodic
 import BrownianImages.Multiplier
 
 namespace BrownianImages
@@ -78,6 +75,7 @@ theorem smoothOp_const (a v : ℝ) :
   simp only [smoothOp]
   exact integral_mul_const _ _
 
+/-- The smoothing operator is additive on bounded continuous inputs. -/
 theorem smoothOp_sub (hs0 : 0 < s) (hs1 : s < 1) {g₁ g₂ : ℝ → ℝ}
     (hg₁ : Continuous g₁) (hg₂ : Continuous g₂) {M₁ M₂ : ℝ}
     (hM₁ : ∀ x, |g₁ x| ≤ M₁) (hM₂ : ∀ x, |g₂ x| ≤ M₂) (v : ℝ) :
@@ -97,9 +95,11 @@ theorem fourierCoeffP_eq_zero_of_eq_zero {q : ℝ} {f : ℝ → ℝ} (h : ∀ x,
 /-! ### The reductions of `thm:smoothing-injective` to the multiplier facts -/
 
 -- `hs0`/`hs1` are kept on the reductions so their shape matches the endpoints they serve
-set_option linter.unusedVariables false
 
-theorem kernel_trivial_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
+/-- `thm:smoothing-injective`, kernel form, from the multiplier facts: a continuous
+`p`-periodic `g` with `Tg = 0` vanishes, since each Fourier coefficient of `g` is killed
+by a non-vanishing multiplier. -/
+theorem kernel_trivial_of_multiplier {s p : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1) (hp : 0 < p)
     {g : ℝ → ℝ} (hg : Continuous g) (hper : Function.Periodic g p)
     (hmult : ∀ k : ℤ,
       fourierCoeffP (p/2) (smoothOp s g) k = multInt s p k * fourierCoeffP p g k)
@@ -111,6 +111,8 @@ theorem kernel_trivial_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp
   rw [hmult k] at h0
   exact (mul_eq_zero.mp h0).resolve_left (hne k)
 
+/-- `thm:smoothing-injective` from the multiplier facts: `T` is injective on continuous
+`p`-periodic functions. -/
 theorem injective_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     (hmult : ∀ g : ℝ → ℝ, Continuous g → (∃ M, ∀ x, |g x| ≤ M) → Function.Periodic g p →
       ∀ k : ℤ, fourierCoeffP (p/2) (smoothOp s g) k = multInt s p k * fourierCoeffP p g k)
@@ -131,6 +133,8 @@ theorem injective_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 
     (hmult _ hdc hdbdd hdper) hne hzero
   exact fun x => sub_eq_zero.mp (hkey x)
 
+/-- `thm:smoothing-injective`, consequence: `T` sends a non-constant continuous
+`p`-periodic function to a non-constant one. -/
 theorem nonconstant_of_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     (hmult : ∀ g : ℝ → ℝ, Continuous g → (∃ M, ∀ x, |g x| ≤ M) → Function.Periodic g p →
       ∀ k : ℤ, fourierCoeffP (p/2) (smoothOp s g) k = multInt s p k * fourierCoeffP p g k)
@@ -223,35 +227,6 @@ theorem phi_pos {μ : Measure ℝ} [IsProbabilityMeasure μ] {δ : ℝ} (hδ : 0
 /-- `eq:g-definition`: the normalised profile is strictly positive. -/
 theorem G_pos {s : ℝ} {μ : Measure ℝ} [IsProbabilityMeasure μ] (w : ℝ) : 0 < G s μ w :=
   mul_pos (Real.exp_pos _) (phi_pos (Real.exp_pos _))
-
-/-! ### The periodic profile `G̃_A`, given the two open probabilistic inputs -/
-
-/-- The periodic profile `G̃_A` of `sec:renewal`, assembled from the shift identity
-`eq:g-recursion` for the middle-thirds system, the continuity of `G_A`, and the two
-exact values of the middle-thirds computation in `CantorValues`; everything downstream of
-them is here. -/
-theorem exists_periodic_profile_of_shift {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hcont : Continuous (G sCantor μ))
-    (hshift : ∀ w, Real.log 3 < w → G sCantor μ w = G sCantor μ (w - Real.log 3))
-    (h3 : Phi μ (1/3) = 1/2) (h6 : Phi μ (1/6) = 3/10) :
-    ∃ g : ℝ → ℝ, Continuous g ∧ Function.Periodic g (Real.log 3) ∧
-      (∀ w, Real.log 3 ≤ w → g w = G sCantor μ w) ∧
-      (∀ x, 0 < g x) ∧ ∃ x y, g x ≠ g y := by
-  have hp : (0:ℝ) < Real.log 3 := log_three_pos
-  obtain ⟨g, hgcont, hgper, hgeq⟩ :=
-    exists_periodic_extension_of_shift (p := Real.log 3) (a := Real.log 3) hp
-      hcont.continuousOn (fun w hw => hshift w (by linarith))
-  refine ⟨g, hgcont, hgper, hgeq, fun x => ?_, ?_⟩
-  · obtain ⟨n, hn⟩ := exists_nat_gt ((Real.log 3 - x) / Real.log 3)
-    have hnx : Real.log 3 ≤ x + n * Real.log 3 := by
-      have := (div_lt_iff₀ hp).mp hn
-      linarith
-    have hshiftg : g (x + n * Real.log 3) = g x := hgper.nat_mul n x
-    rw [← hshiftg, hgeq _ hnx]
-    exact G_pos _
-  · obtain ⟨w₁, hw₁, w₂, hw₂, hne⟩ :=
-      G_nonconstant_on_period h3 h6 hshift (le_refl (Real.log 3))
-    exact ⟨w₁, w₂, by rw [hgeq _ hw₁.1, hgeq _ hw₂.1]; exact hne⟩
 
 /-! ### The oscillation `d_A` -/
 

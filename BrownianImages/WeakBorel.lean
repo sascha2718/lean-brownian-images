@@ -32,24 +32,30 @@ open TopologicalSpace MeasurableSpace
 def piBasis : Set (Set Plane) :=
   Set.sInter '' {T : Set (Set Plane) | T.Finite ∧ T ⊆ countableBasis Plane ∧ T.Nonempty}
 
+/-- The π-system of finite intersections of basic open sets is countable. -/
 theorem piBasis_countable : piBasis.Countable := by
   refine Set.Countable.image ?_ _
   refine (Set.countable_setOf_finite_subset (countable_countableBasis Plane)).mono ?_
   rintro T ⟨h1, h2, _⟩
   exact ⟨h1, h2⟩
 
+/-- Every member of the π-system is open. -/
 theorem piBasis_isOpen {s : Set Plane} (hs : s ∈ piBasis) : IsOpen s := by
   obtain ⟨T, ⟨hfin, hsub, _⟩, rfl⟩ := hs
   exact hfin.isOpen_sInter fun t ht => isOpen_of_mem_countableBasis (hsub ht)
 
+/-- Every member of the π-system is measurable. -/
 theorem piBasis_measurable : ∀ s ∈ piBasis, MeasurableSet s :=
   fun _ hs => (piBasis_isOpen hs).measurableSet
 
+/-- Finite intersections of basic open sets form a π-system. -/
 theorem piBasis_isPiSystem : IsPiSystem piBasis := by
   rintro s ⟨T, ⟨hT1, hT2, hT3⟩, rfl⟩ t ⟨R, ⟨hR1, hR2, hR3⟩, rfl⟩ hne
   refine ⟨T ∪ R, ⟨hT1.union hR1, Set.union_subset hT2 hR2, hT3.inl⟩, ?_⟩
   rw [Set.sInter_union]
 
+/-- The π-system is a neighbourhood basis: every open set contains a member of it around
+each of its points. -/
 theorem piBasis_nhds :
     ∀ u : Set Plane, IsOpen u → ∀ x ∈ u, ∃ s ∈ piBasis, s ∈ 𝓝 x ∧ s ⊆ u := by
   intro u hu x hx
@@ -61,6 +67,7 @@ theorem piBasis_nhds :
 /-- The evaluation map into a countable product. -/
 def evalPi (ν : ProbabilityMeasure Plane) : piBasis → ℝ≥0 := fun i => ν i.1
 
+/-- Evaluation on the members of the π-system is measurable for the Giry σ-algebra. -/
 theorem measurable_evalPi : Measurable evalPi := by
   refine measurable_pi_lambda _ fun i => ?_
   show Measurable fun ν : ProbabilityMeasure Plane => ((ν : Measure Plane) i.1).toNNReal
@@ -76,6 +83,8 @@ theorem lowerSemicontinuous_apply {U : Set Plane} (hU : IsOpen U) :
     (μs := fun ν' : ProbabilityMeasure Plane => ν') (L := 𝓝 ν) tendsto_id hU
   exact eventually_lt_of_lt_liminf (lt_of_lt_of_le hy h)
 
+/-- Evaluation on a measurable set is Borel measurable for the weak topology, by a
+Dynkin induction from the portmanteau lower semicontinuity on open sets. -/
 theorem measurable_borel_apply {s : Set Plane} (hs : MeasurableSet s) :
     Measurable[borel (ProbabilityMeasure Plane)]
       (fun ν : ProbabilityMeasure Plane => (ν : Measure Plane) s) := by

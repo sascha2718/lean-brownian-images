@@ -162,6 +162,7 @@ theorem kern_le_rpow_of_small {η : ℝ} (hη : 0 < η) : kern s η ≤ η ^ (s 
     _ = η ^ (s - 2) * η := by ring
     _ = η ^ (s - 1) := hsplit
 
+/-- `eq:h-definition`: the kernel `φ` is continuous on `(0, ∞)`. -/
 theorem continuousOn_kern (s : ℝ) : ContinuousOn (kern s) (Set.Ioi 0) := by
   intro η hη
   have hη' : η ≠ 0 := ne_of_gt hη

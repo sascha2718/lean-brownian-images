@@ -16,7 +16,7 @@ Modified, twice:
      the `filter_upwards` that consumes it.  `Nonlattice`,
      `charFun_ne_one_of_nonlattice`, `norm_charFun_lt_one_of_nonlattice` and
      `tendsto_charFun_pow_of_nonlattice` are kept unchanged.
-     See `PLAN.md`, *Reusing the external renewal library*.
+     See `docs/renewal-library.md`.
 -/
 /-
 Copyright (c) 2026 Benny Avelin. All rights reserved.

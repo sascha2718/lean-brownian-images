@@ -18,8 +18,10 @@ open scoped ENNReal Topology
 
 variable {μ : Measure ℝ}
 
+/-- `eq:phi-definition`: `Φ` is non-negative. -/
 theorem phi_nonneg (δ : ℝ) : 0 ≤ Phi μ δ := ENNReal.toReal_nonneg
 
+/-- `eq:phi-definition`: `Φ` is monotone in `δ`. -/
 theorem phi_mono [SFinite μ] {δ δ' : ℝ} (h : δ ≤ δ') [IsFiniteMeasure μ] :
     Phi μ δ ≤ Phi μ δ' := by
   refine ENNReal.toReal_mono (measure_ne_top _ _) (measure_mono ?_)

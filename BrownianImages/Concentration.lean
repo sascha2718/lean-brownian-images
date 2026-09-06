@@ -174,14 +174,13 @@ end Concentration
 
 /-! ### `eq:y-variance` -/
 
-set_option linter.unusedVariables false in
 /-- `eq:y-variance`: the variance bound of `thm:variance` in the exponential
 coordinate, with the three regimes `s < 1/2`, `s = 1/2`, `s > 1/2`.  The hypothesis
 `hvar` is the conclusion of `audit_variance`, and the change of variable is
 `r = e^{-t}`. -/
 theorem y_variance_of_variance {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
+    {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1)
+    {μ : Measure ℝ} [IsProbabilityMeasure μ] (_hμ : IsFrostman s A μ)
     (hvar : ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
       variance (fun ω => (corr (occupation W μ ω) r).toReal) P
         ≤ C * varScale s r) :
@@ -209,7 +208,6 @@ theorem y_variance_of_variance {P : Measure Ω} [IsProbabilityMeasure P]
 
 /-! ### `eq:grid-convergence` -/
 
-set_option linter.unusedVariables false in
 /-- `eq:grid-convergence`: along the grid `v_{j,m} = j/m` the empirical profile
 converges to the expected profile almost surely.  Chebyshev's inequality turns
 `eq:y-variance` into a summable sequence of deviation probabilities, and the
@@ -218,7 +216,7 @@ are the conclusions of `audit_aemeasurable_occupation`, `audit_smoothing` and
 `audit_y_variance`. -/
 theorem grid_convergence_of_y_variance {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {m : ℕ} (hm : 0 < m)
+    {μ : Measure ℝ} [IsProbabilityMeasure μ] (_hμ : IsFrostman s A μ) {m : ℕ} (hm : 0 < m)
     (hmeas : AEMeasurable (occupationProb W μ) P)
     (hsmooth : ∀ r : ℝ, 0 < r → expCorr W P μ r = r ^ (2 * s) * H s μ (Real.log r⁻¹))
     (hyvar : ∃ C > 0, ∀ v : ℝ, 0 ≤ v →

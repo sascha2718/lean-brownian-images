@@ -18,8 +18,8 @@ push-forward of the Bernoulli measure with weights `p_i = r_i^s`.
 * `System.exists_unique_isNatural`: the pair `(K, μ)` of `System.IsNatural` exists and is
   unique, which is Hutchinson's theorem in the shape `audit_exists_cantor_measure` asks
   for.
-* `exists_unique_isNatural_cantorSystem`, `exists_unique_isNatural_pairSystem`: the two
-  systems of `sec:renewal`.
+* `exists_unique_isNatural_homogeneousSystem`, `exists_unique_isNatural_pairSystem`: the
+  two systems of `sec:renewal`.
 -/
 import BrownianImages.SelfSimilar
 import Mathlib.Probability.ProductMeasure
@@ -87,10 +87,6 @@ def tail (ω : ℕ → ι) : ℕ → ι := fun n => ω (n + 1)
 def cons (i : ι) (ω : ℕ → ι) : ℕ → ι
   | 0 => i
   | n + 1 => ω n
-
-omit [Fintype ι] in
-/-- The shift undoes the prefixing. -/
-theorem tail_cons (i : ι) (ω : ℕ → ι) : tail (cons i ω) = ω := rfl
 
 omit [Fintype ι] in
 /-- A word is its first letter prefixed to its tail. -/
@@ -769,12 +765,6 @@ theorem System.exists_unique_isNatural {ι : Type*} [Fintype ι] [Nonempty ι] (
   · exact Hutchinson.eq_attractorSet S hKμ.attractor
   · exact Hutchinson.eq_of_selfSimilar S hdim hKμ.selfSimilar
       (Hutchinson.naturalMeasure_selfSimilar S hdim) hKμ.support_Icc hnat.support_Icc
-
-/-- `sec:renewal`, existence of `μ_A`: the middle-thirds attractor and its natural measure
-exist and are unique. -/
-theorem exists_unique_isNatural_cantorSystem :
-    ∃! p : Set ℝ × Measure ℝ, cantorSystem.IsNatural p.1 sCantor p.2 :=
-  cantorSystem.exists_unique_isNatural cantorSystem_isDimension
 
 /-- Existence and uniqueness of the homogeneous equal-weight natural measure for every
 `0 < λ < 1/2`. -/

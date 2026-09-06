@@ -23,12 +23,15 @@ variable {s : ℝ} (ν : Measure Plane)
 theorem corr_mono {r r' : ℝ} (h : r ≤ r') : corr ν r ≤ corr ν r' :=
   measure_mono fun _ hp => lt_of_lt_of_le hp h
 
+/-- The empirical profile `Y_ν` of `sec:concentration` is non-negative. -/
 theorem Yprofile_nonneg (s : ℝ) (v : ℝ) : 0 ≤ Yprofile s ν v := by
   unfold Yprofile
   positivity
 
 variable [IsProbabilityMeasure ν]
 
+/-- The correlation functional `eq:correlation-functional` of a probability measure is
+finite. -/
 theorem corr_ne_top (r : ℝ) : corr ν r ≠ ⊤ := measure_ne_top _ _
 
 /-- The empirical profile grows at most like the exponential prefactor: this is the

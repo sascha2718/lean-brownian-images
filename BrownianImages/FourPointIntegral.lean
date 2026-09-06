@@ -921,7 +921,6 @@ theorem jointReturn_swap_pairs {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (
 
 end FourPointIntegral
 
-set_option linter.unusedVariables false in
 open FourPointIntegral in
 /-- `thm:four-point-integral`, `eq:four-point-integral`: the joint return probability
 integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
@@ -929,7 +928,7 @@ integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusio
 proof is the covering of the overlap set by the permuted dyadic blocks and the four
 dyadic sums of `thm:four-point-integral`. -/
 theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ}
+    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ}
     (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : IsFrostman s A μ)
     (hblock : ∃ C > 0, ∀ j l : ℕ,

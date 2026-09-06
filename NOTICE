@@ -1,0 +1,27 @@
+This repository contains third-party code.
+
+BrownianImages/Renewal/
+    Copyright (c) 2026 Benny Avelin.
+    Licensed under the Apache License, Version 2.0.
+    Source: https://github.com/BennyAvelin/AbsorptionCutoff
+    Commit: 41c45c6d72e979419e46224bb7b4be5cee31f2b5
+    Files:  AbsorptionCutoff/Supercritical/{Renewal, RenewalAbel, RenewalKernel,
+            RenewalSinc, RenewalApprox, RenewalEquation}.lean
+            (renamed to Basic, Abel, Kernel, Sinc, Approx, Equation).
+
+    Modifications, two:
+      (1) in Abel.lean, Sinc.lean, Approx.lean and Equation.lean the 'import' lines
+          were rewritten to the module paths of this project;
+      (2) in Basic.lean, Abel.lean, Sinc.lean, Approx.lean and Equation.lean the
+          'Nonlattice' hypothesis was weakened to 'FellerNonlattice', which is what
+          the proofs consume. Basic.lean gains that definition and one almost
+          everywhere consequence; the hypothesis is swapped in the declarations that
+          forward it; and three proof sites are adjusted. 'Nonlattice' and the three
+          lemmas proved from it are kept unchanged.
+    Kernel.lean is byte-identical to the original. No other change was made, and
+    each file carries this statement in its own header.
+
+    A copy of the Apache License 2.0 is at BrownianImages/Renewal/LICENSE.
+
+Everything else in this repository is the work of the repository author and is
+licensed under the Apache License, Version 2.0; see LICENSE.

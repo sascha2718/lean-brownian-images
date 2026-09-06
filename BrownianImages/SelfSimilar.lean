@@ -10,8 +10,12 @@ proofs need beyond the definitions:
 
 * `measurable_map`, `StronglySeparated.mono`, the `IsNatural` extractors and
   `logRatio_pos`.
-* `cantorSystem`: the middle-thirds system of `μ_A`, with the similarity dimensions
-  and separation gaps of all three named systems.
+* `log_two_pos`, `log_inv_pos`, `homogeneousDim_pos`, `homogeneousDim_lt_one`,
+  `rpow_homogeneousDim`: the similarity dimension `log 2 / log(1/λ)` of the homogeneous
+  system and its elementary bounds.
+* `homogeneousSystem_isDimension`, `homogeneousSystem_stronglySeparated`,
+  `pairSystem_isDimension`, `pairSystem_stronglySeparated`: the similarity dimensions
+  and separation gaps of the two systems of the application.
 * `pairRatio_rpow`, `pairRatio_pos`, `pairRatio_lt_half`: the ratio `c` of
   `eq:c-definition` solves `c^s = 1 - 2^{-s}` and lies in `(0, 1/2)`.
 * `pairSystem_nonArithmetic_iff`: `eq:non-lattice` is exactly non-arithmeticity of
@@ -19,10 +23,13 @@ proofs need beyond the definitions:
 * `renewalConv`, `renewalDefect`, `renewalMean`: the renewal data `ϑ * G`, `z = G - ϑ * G`
   and `m = ∑ p_i a_i` of `thm:non-lattice-limit`.
 -/
-import BrownianImages.Cantor
+import BrownianImages.Periodic
 import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 
 namespace BrownianImages
+
+/-- `log 2 > 0`, the positivity every dimension computation of `sec:renewal` starts from. -/
+theorem log_two_pos : 0 < Real.log 2 := Real.log_pos (by norm_num)
 
 open MeasureTheory
 
@@ -30,6 +37,7 @@ namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
+/-- Every map of a system is measurable, being affine. -/
 theorem measurable_map (i : ι) : Measurable (S.map i) := by
   unfold map; fun_prop
 
@@ -48,6 +56,7 @@ theorem IsNatural.support_Icc {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (h : S.IsNatural K s μ) : μ (Set.Icc (0:ℝ) 1)ᶜ = 0 :=
   measure_mono_null (Set.compl_subset_compl.mpr h.attractor.2.2.1) h.support
 
+/-- The log-ratios `a_i = log(1/r_i)` are positive. -/
 theorem logRatio_pos (i : ι) : 0 < S.logRatio i := by
   rw [logRatio, Real.log_inv, neg_pos]
   exact Real.log_neg (S.ratio_pos i) (S.ratio_lt_one i)
@@ -68,6 +77,8 @@ theorem is applied to. -/
 noncomputable def renewalLaw (s : ℝ) : Measure ℝ :=
   ∑ i, ENNReal.ofReal (S.ratio i ^ s) • Measure.dirac (S.logRatio i)
 
+/-- The renewal law evaluated on a set: the weighted sum of the Dirac masses at the
+log-ratios. -/
 theorem renewalLaw_apply (s : ℝ) (A : Set ℝ) :
     S.renewalLaw s A = ∑ i, ENNReal.ofReal (S.ratio i ^ s) * (Measure.dirac (S.logRatio i)) A := by
   simp [renewalLaw]
@@ -107,6 +118,7 @@ theorem integral_id_renewalLaw (s : ℝ) :
   rw [integral_smul_measure, integral_dirac, smul_eq_mul,
     ENNReal.toReal_ofReal (Real.rpow_pos_of_pos (S.ratio_pos i) s).le]
 
+/-- The renewal mean `m = ∑ p_i a_i` is positive. -/
 theorem renewalMean_pos (s : ℝ) [Nonempty ι] :
     0 < S.renewalMean s := by
   refine Finset.sum_pos' (fun i _ => ?_) ?_
@@ -121,18 +133,6 @@ end System
 
 /-! ### The systems of the application -/
 
-/-- The middle-thirds system `S^A_0(x) = x/3`, `S^A_1(x) = x/3 + 2/3` of `μ_A`. -/
-noncomputable def cantorSystem : System (Fin 2) where
-  ratio _ := 1/3
-  shift i := if i = 0 then 0 else 2/3
-  ratio_pos _ := by norm_num
-  ratio_lt_one _ := by norm_num
-  mapsTo i x hx := by
-    obtain ⟨h0, h1⟩ := hx
-    fin_cases i <;> constructor <;> simp <;> linarith
-
-/-! ### The middle-thirds system -/
-
 /-! ### The homogeneous system -/
 
 theorem log_inv_pos {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
@@ -140,10 +140,12 @@ theorem log_inv_pos {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
   rw [Real.log_pos_iff (inv_nonneg.mpr hlam0.le), one_lt_inv₀ hlam0]
   linarith
 
+/-- The homogeneous dimension `log 2 / log(1/λ)` is positive. -/
 theorem homogeneousDim_pos {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     0 < homogeneousDim lam :=
   div_pos log_two_pos (log_inv_pos hlam0 hlam)
 
+/-- The homogeneous dimension is below `1`, since `λ < 1/2`. -/
 theorem homogeneousDim_lt_one {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     homogeneousDim lam < 1 := by
   have hlog := log_inv_pos hlam0 hlam
@@ -170,16 +172,20 @@ theorem rpow_homogeneousDim {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
   rw [Real.exp_neg, Real.exp_log (by norm_num)]
   norm_num
 
+/-- `sec:renewal`: `log 2 / log(1/λ)` is the similarity dimension of the homogeneous
+system. -/
 theorem homogeneousSystem_isDimension {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     (homogeneousSystem lam hlam0 hlam).IsDimension (homogeneousDim lam) := by
   simp only [System.IsDimension, homogeneousSystem, Fin.sum_univ_two,
     rpow_homogeneousDim hlam0 hlam]
   norm_num
 
+/-- The first map of the homogeneous system is `x ↦ λx`. -/
 theorem homogeneousSystem_map_zero {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (x : ℝ) : (homogeneousSystem lam hlam0 hlam).map 0 x = lam * x := by
   simp [System.map, homogeneousSystem]
 
+/-- The second map of the homogeneous system is `x ↦ λx + 1 - λ`. -/
 theorem homogeneousSystem_map_one {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (x : ℝ) : (homogeneousSystem lam hlam0 hlam).map 1 x = lam * x + (1 - lam) := by
   simp [System.map, homogeneousSystem]
@@ -200,35 +206,10 @@ theorem homogeneousSystem_stronglySeparated {lam : ℝ} (hlam0 : 0 < lam)
     left
     nlinarith
 
+/-- `(1/2)^s = 2^{-s}`. -/
 theorem half_rpow (s : ℝ) : ((1:ℝ)/2) ^ s = (2:ℝ) ^ (-s) := by
   rw [one_div, Real.inv_rpow (by norm_num : (0:ℝ) ≤ 2),
     ← Real.rpow_neg (by norm_num : (0:ℝ) ≤ 2)]
-
-/-- `cantorSystem` has similarity dimension `s = log 2 / log 3`. -/
-theorem cantorSystem_isDimension : cantorSystem.IsDimension sCantor := by
-  have h : ((1:ℝ)/3) ^ sCantor = 1/2 := by
-    rw [one_div, Real.inv_rpow (by norm_num), rpow_three_sCantor]
-    norm_num
-  simp only [System.IsDimension, cantorSystem, Fin.sum_univ_two, h]
-  norm_num
-
-theorem cantorSystem_map_zero (x : ℝ) : cantorSystem.map 0 x = 1/3 * x := by
-  simp [System.map, cantorSystem]
-
-theorem cantorSystem_map_one (x : ℝ) : cantorSystem.map 1 x = 1/3 * x + 2/3 := by
-  simp [System.map, cantorSystem]
-
-/-- `cantorSystem` is strongly separated with gap `1/3` on every subset of `[0,1]`, so
-the separation hypothesis is never an extra assumption for `μ_A`. -/
-theorem cantorSystem_stronglySeparated {K : Set ℝ} (hK : K ⊆ Set.Icc 0 1) :
-    cantorSystem.StronglySeparated K (1/3) := by
-  refine ⟨by norm_num, fun i j hij x hx y hy => ?_⟩
-  obtain ⟨hx0, hx1⟩ := hK hx
-  obtain ⟨hy0, hy1⟩ := hK hy
-  have hij' : (i = 0 ∧ j = 1) ∨ (i = 1 ∧ j = 0) := by omega
-  rcases hij' with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-  · rw [cantorSystem_map_zero, cantorSystem_map_one, le_abs]; right; linarith
-  · rw [cantorSystem_map_one, cantorSystem_map_zero, le_abs]; left; linarith
 
 /-! ### The paired system -/
 
@@ -237,6 +218,7 @@ theorem one_sub_two_rpow_pos {s : ℝ} (hs : 0 < s) : 0 < 1 - (2:ℝ) ^ (-s) := 
     (Real.rpow_lt_rpow_left_iff (by norm_num)).mpr (by linarith)
   simpa using h
 
+/-- `eq:c-definition`: the ratio `c` is positive. -/
 theorem pairRatio_pos {s : ℝ} (hs : 0 < s) : 0 < pairRatio s :=
   Real.rpow_pos_of_pos (one_sub_two_rpow_pos hs) _
 
@@ -265,10 +247,12 @@ theorem pairSystem_isDimension {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
   rw [half_rpow, pairRatio_rpow hs0]
   ring
 
+/-- The first map of the paired system is `x ↦ x/2`. -/
 theorem pairSystem_map_zero {c : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (x : ℝ) :
     (pairSystem c hc0 hc).map 0 x = 1/2 * x := by
   simp [System.map, pairSystem]
 
+/-- The second map of the paired system is `x ↦ cx + 1 - c`. -/
 theorem pairSystem_map_one {c : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (x : ℝ) :
     (pairSystem c hc0 hc).map 1 x = c * x + (1 - c) := by
   simp [System.map, pairSystem]

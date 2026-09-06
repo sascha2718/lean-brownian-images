@@ -22,7 +22,6 @@ open scoped ENNReal NNReal Topology
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-set_option linter.unusedVariables false in
 /-- `eq:y-variance`: the variance bound of `thm:variance` in the exponential
 coordinate. -/
 theorem y_variance {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
@@ -35,7 +34,6 @@ theorem y_variance {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
                else Real.exp (-(2 * (1 - s)) * v)) :=
   y_variance_of_variance hW hs0 hs1 hμ (variance_four_point hW hs0 hs1 hμ)
 
-set_option linter.unusedVariables false in
 /-- `eq:grid-convergence`: along each grid `v_{j,m} = j/m` the empirical profile
 converges to the expected profile almost surely, by Chebyshev and Borel--Cantelli. -/
 theorem grid_convergence {P : Measure Ω} [IsProbabilityMeasure P]
@@ -47,7 +45,6 @@ theorem grid_convergence {P : Measure Ω} [IsProbabilityMeasure P]
   grid_convergence_of_y_variance hW hs0 hs1 hμ hm (hW.aemeasurable_occupationProb μ)
     (fun _ hr => smoothing hW hs0 hs1 hμ hr) (y_variance hW hs0 hs1 hμ)
 
-set_option linter.unusedVariables false in
 /-- `thm:uniform-concentration`, `eq:uniform-concentration`.  Almost surely the
 empirical profile converges to the expected profile, uniformly on tails. -/
 theorem uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
@@ -58,7 +55,6 @@ theorem uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
   uniform_concentration_of_grid_convergence hW hs0 hs1 hμ
     (fun _ hm => grid_convergence hW hs0 hs1 hμ hm)
 
-set_option linter.unusedVariables false in
 /-- `thm:main`.  Two `s`-Frostman measures whose expected profiles do not converge to
 one another have mutually singular Brownian occupation laws, as laws on `𝒫(ℝ²)`.  The
 hypothesis is `eq:profile-separation`, `limsup |H₁ - H₂| > 0`, written out for a

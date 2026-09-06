@@ -97,10 +97,6 @@ theorem quadSet_section (V : ℝ≥0 → Ω → Plane) (r : ℝ) (ω : Ω) :
 statement of the variance expansion on the same measure. -/
 def quadEquiv : ((ℝ × ℝ) × (ℝ × ℝ)) ≃ᵐ (ℝ × ℝ × ℝ × ℝ) := MeasurableEquiv.prodAssoc
 
-/-- `quadEquiv` reads off the four times in order. -/
-theorem quadEquiv_apply (q : (ℝ × ℝ) × (ℝ × ℝ)) :
-    quadEquiv q = (q.1.1, q.1.2, q.2.1, q.2.2) := rfl
-
 /-- `quadEquiv` carries `(μ × μ) × (μ × μ)` to `μ⁴`. -/
 theorem map_quadEquiv (μ : Measure ℝ) [SFinite μ] :
     Measure.map quadEquiv ((μ.prod μ).prod (μ.prod μ)) = μ.prod (μ.prod (μ.prod μ)) :=
@@ -382,7 +378,6 @@ theorem variance_le_overlap_lintegral {P : Measure Ω} [IsProbabilityMeasure P]
   exact (jointReturn_eq_measure_inter W P r q.1.1.toNNReal q.1.2.toNNReal
     q.2.1.toNNReal q.2.2.toNNReal).symm
 
-set_option linter.unusedVariables false in
 /-- `thm:variance`: the four-point variance bound.  The dyadic block bound
 of `thm:endpoint-block-mass` is summed by `thm:four-point-integral`, and the variance
 expansion above is what feeds the four-point integral. -/
@@ -393,9 +388,8 @@ theorem variance_four_point {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ�
       variance (fun ω => (corr (occupation W μ ω) r).toReal) P
         ≤ C * varScale s r :=
   variance_of_block hW hs0 hs1 hμ (endpoint_block_mass_dyadic hW hs0 hμ)
-    fun r hr0 _ => variance_le_overlap_lintegral hW hr0
+    fun _r hr0 _ => variance_le_overlap_lintegral hW hr0
 
-set_option linter.unusedVariables false in
 /-- `thm:variance` as one statement: the bound of `thm:variance` together with the
 `o(r^{4s})` consequence. -/
 theorem variance_bundled {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
@@ -405,6 +399,6 @@ theorem variance_bundled {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 
         variance (fun ω => (corr (occupation W μ ω) r).toReal) P ≤ C * varScale s r) ∧
       Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
   thm_variance_of_block hW hs0 hs1 hμ (endpoint_block_mass_dyadic hW hs0 hμ)
-    fun r hr0 _ => variance_le_overlap_lintegral hW hr0
+    fun _r hr0 _ => variance_le_overlap_lintegral hW hr0
 
 end BrownianImages

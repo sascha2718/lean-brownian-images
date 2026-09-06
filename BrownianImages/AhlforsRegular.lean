@@ -29,7 +29,7 @@ the support supplies.
   `eq:frostman`, which is the Frostman hypothesis the later endpoints ask of `μ_A` and
   `μ_B`.
 * `exists_isAhlforsClosed`: the internal endpoint `audit_ahlfors`.
-* `exists_isAhlfors_cantor_pair`: the corresponding result for `μ_A` and `μ_B`, the
+* `exists_isAhlfors_homogeneous_pair`: the corresponding result for `μ_A` and `μ_B`, the
   internal endpoint `audit_ahlfors_named`.
 -/
 import BrownianImages.SelfSimilar
@@ -432,12 +432,11 @@ theorem exists_isFrostman_of_isNatural (hs : 0 < s) (hsep : S.StronglySeparated 
 
 end AhlforsRegular
 
-set_option linter.unusedVariables false in
 /-- The natural measure of a strongly separated system is Ahlfors regular of its
 similarity dimension, in the closed-ball form.  This is the internal endpoint
 `audit_ahlfors`.  The dimension equation is a consequence of `IsNatural`. -/
 theorem exists_isAhlforsClosed {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
-    {ρ s : ℝ} (hs : 0 < s) (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s)
+    {ρ s : ℝ} (hs : 0 < s) (hsep : S.StronglySeparated K ρ) (_hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     ∃ A : ℝ, IsAhlforsClosed s A μ := by
   obtain ⟨c, hc, hlower⟩ :=
@@ -455,24 +454,6 @@ theorem exists_isAhlforsClosed {ι : Type*} [Fintype ι] (S : System ι) {K : Se
     have hrs : (0:ℝ) ≤ r ^ s := (Real.rpow_pos_of_pos hr0 s).le
     nlinarith [le_trans (le_max_left ((2 / ρ) ^ s) c⁻¹)
       (le_max_right 1 (max ((2 / ρ) ^ s) c⁻¹))]
-
-/-- Ahlfors regularity for the two named measures `μ_A` and `μ_B`, with a single
-constant serving both.  This is the internal endpoint `audit_ahlfors_named`. -/
-theorem exists_isAhlfors_cantor_pair {KA : Set ℝ} {μA : Measure ℝ}
-    (hA : cantorSystem.IsNatural KA sCantor μA)
-    {KB : Set ℝ} {μB : Measure ℝ}
-    (hB : (pairSystem (pairRatio sCantor) (pairRatio_pos sCantor_pos)
-      (pairRatio_lt_half sCantor_pos sCantor_lt_one)).IsNatural KB sCantor μB) :
-    ∃ A : ℝ, IsAhlfors sCantor A μA ∧ IsAhlfors sCantor A μB := by
-  obtain ⟨A₁, hA₁⟩ := exists_isAhlforsClosed cantorSystem sCantor_pos
-    (cantorSystem_stronglySeparated hA.attractor.2.2.1) cantorSystem_isDimension hA
-  obtain ⟨A₂, hA₂⟩ := exists_isAhlforsClosed _ sCantor_pos
-    (pairSystem_stronglySeparated (pairRatio_pos sCantor_pos)
-      (pairRatio_lt_half sCantor_pos sCantor_lt_one) hB.attractor.2.2.1)
-    (pairSystem_isDimension sCantor_pos sCantor_lt_one) hB
-  refine ⟨max (2 ^ sCantor * A₁) (2 ^ sCantor * A₂),
-    AhlforsRegular.isAhlfors_mono (hA₁.isAhlfors sCantor_pos.le) (le_max_left _ _),
-    AhlforsRegular.isAhlfors_mono (hA₂.isAhlfors sCantor_pos.le) (le_max_right _ _)⟩
 
 /-- Ahlfors regularity for the two measures in the parameter-uniform application, with
 one constant serving both. -/

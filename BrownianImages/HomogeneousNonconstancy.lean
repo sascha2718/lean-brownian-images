@@ -8,7 +8,7 @@ cross-law, and hence the signed difference law near zero, to have an `O(δ)` int
 bound.  Constancy also makes `Φ(δ)` live on the `δ^s` scale; since `s < 1`, the two bounds
 are incompatible.
 -/
-import BrownianImages.CantorValues
+import BrownianImages.PairDifference
 import BrownianImages.AhlforsRegular
 import BrownianImages.Smoothing
 import BrownianImages.Profile
@@ -20,34 +20,43 @@ open scoped ENNReal NNReal Topology
 
 namespace HomogeneousNonconstancy
 
-open CantorValues
+open PairDifference
 
 variable {K : Set ℝ} {μ : Measure ℝ}
 
+/-- The block `{u : λu + c ∈ T}`, the set of differences a pair of maps of the
+homogeneous system with shifts differing by `c` sends to `T`. -/
 def homBlockSet (lam c : ℝ) (T : Set ℝ) : Set ℝ :=
   (fun u : ℝ => lam * u + c) ⁻¹' T
 
+/-- A block of a measurable set is measurable. -/
 theorem measurableSet_homBlockSet (lam c : ℝ) {T : Set ℝ} (hT : MeasurableSet T) :
     MeasurableSet (homBlockSet lam c T) :=
   (measurable_const.mul measurable_id |>.add measurable_const) hT
 
+/-- Both maps of the homogeneous system contract by `λ`. -/
 theorem homogeneous_ratio {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) (i : Fin 2) :
     (homogeneousSystem lam hlam0 hlam).ratio i = lam := rfl
 
+/-- The first map of the homogeneous system has shift `0`. -/
 theorem homogeneous_shift_zero {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     (homogeneousSystem lam hlam0 hlam).shift 0 = 0 := by
   simp [homogeneousSystem]
 
+/-- The second map of the homogeneous system has shift `1 - λ`. -/
 theorem homogeneous_shift_one {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     (homogeneousSystem lam hlam0 hlam).shift 1 = 1 - lam := by
   simp [homogeneousSystem]
 
+/-- The weight `λ^s` of each map at the similarity dimension is `1/2`. -/
 theorem ofReal_homogeneous_weight {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     ENNReal.ofReal (lam ^ homogeneousDim lam) = 2⁻¹ := by
   rw [rpow_homogeneousDim hlam0 hlam, show (1:ℝ)/2 = (2:ℝ)⁻¹ by norm_num,
     ENNReal.ofReal_inv_of_pos (by norm_num)]
   norm_num
 
+/-- One map applied to the first coordinate: Hutchinson's identity in the second
+coordinate splits the section integral into the two blocks of `T`. -/
 theorem lintegral_homogeneous_map_decomp {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -95,6 +104,8 @@ theorem lintegral_homogeneous_map_decomp {lam : ℝ} (hlam0 : 0 < lam)
     ← pairDiff_eq_lintegral μ (measurableSet_homBlockSet _ _ hT),
     ← pairDiff_eq_lintegral μ (measurableSet_homBlockSet _ _ hT)]
 
+/-- The four-block decomposition of the difference mass under the homogeneous system,
+the engine of `thm:homogeneous-nonconstancy`. -/
 theorem pairDiff_homogeneous_decomp {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -118,9 +129,13 @@ theorem pairDiff_homogeneous_decomp {lam : ℝ} (hlam0 : 0 < lam)
   rw [h4]
   ring
 
+/-- The cross term of `thm:renewal-recursion` for the homogeneous system: the
+pair-distance distribution of two points in different first-level pieces. -/
 noncomputable def crossCDF (lam : ℝ) (μ : Measure ℝ) (δ : ℝ) : ℝ :=
   (pairDiff μ (homBlockSet lam (1 - lam) (Set.Icc (-δ) δ))).toReal
 
+/-- `thm:renewal-recursion` for the homogeneous system as a first-difference recursion:
+`Φ(δ) = ½ Φ(δ/λ) + ½ Φ_cross(δ)`. -/
 theorem phi_first_difference_recursion {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -161,18 +176,24 @@ theorem phi_first_difference_recursion {lam : ℝ} (hlam0 : 0 < lam)
   rw [phi_eq_pairDiff, phi_eq_pairDiff, crossCDF]
   linarith
 
+/-- The logarithmic cross-law: the law of `-log(1 - λ + λ(X - Y))` under `μ × μ`, under
+which the cross term becomes a tail mass. -/
 noncomputable def crossLogLaw (lam : ℝ) (μ : Measure ℝ) : Measure ℝ :=
   Measure.map (fun p : ℝ × ℝ => -Real.log (1 - lam + lam * (p.1 - p.2))) (μ.prod μ)
 
+/-- The logarithmic cross map is measurable. -/
 theorem measurable_crossLogMap (lam : ℝ) :
     Measurable (fun p : ℝ × ℝ => -Real.log (1 - lam + lam * (p.1 - p.2))) := by
   fun_prop
 
+/-- The logarithmic cross-law of a probability measure is a probability measure. -/
 instance crossLogLaw.isProbabilityMeasure (lam : ℝ) (μ : Measure ℝ)
     [IsProbabilityMeasure μ] : IsProbabilityMeasure (crossLogLaw lam μ) := by
   unfold crossLogLaw
   exact Measure.isProbabilityMeasure_map (measurable_crossLogMap lam).aemeasurable
 
+/-- The cross term at `δ = e^{-w}` is the tail mass of `[w, ∞)` under the logarithmic
+cross-law. -/
 theorem crossCDF_eq_crossLogLaw_Ici {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -212,10 +233,14 @@ theorem crossCDF_eq_crossLogLaw_Ici {lam : ℝ} (hlam0 : 0 < lam)
     rw [Real.exp_log hz0] at hze
     exact ⟨by linarith [Real.exp_pos (-w), hz0], hze⟩
 
+/-- The source of the homogeneous renewal equation: the one-step defect `G(w) - G(w -
+log(1/λ))` of the shift identity. -/
 noncomputable def homSource (lam : ℝ) (μ : Measure ℝ) (w : ℝ) : ℝ :=
   G (homogeneousDim lam) μ w -
     G (homogeneousDim lam) μ (w - Real.log lam⁻¹)
 
+/-- The source is a weighted tail of the logarithmic cross-law: `½ e^{sw}` times the
+mass of `[w, ∞)`. -/
 theorem homSource_eq {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     (w : ℝ) :
@@ -245,6 +270,8 @@ theorem homSource_eq {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
   rw [hδ, he, hrec]
   ring
 
+/-- `eq:g-definition`: the normalised profile vanishes at `-∞`, since `Φ ≤ 1` and
+`e^{sw} → 0`. -/
 theorem tendsto_G_atBot_zero {s : ℝ} (hs : 0 < s) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] : Tendsto (G s μ) atBot (𝓝 0) := by
   have hexp : Tendsto (fun w : ℝ => Real.exp (s * w)) atBot (𝓝 0) :=
@@ -252,6 +279,8 @@ theorem tendsto_G_atBot_zero {s : ℝ} (hs : 0 < s) {μ : Measure ℝ}
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hexp
     (fun w => G_nonneg w) (fun w => G_le_exp hs.le le_rfl)
 
+/-- The sources telescope: the sum of the one-step defects along `n` shifts is `G(w) -
+G(w - n log(1/λ))`. -/
 theorem sum_range_homSource (lam : ℝ) (μ : Measure ℝ) (w : ℝ) (n : ℕ) :
     ∑ i ∈ Finset.range n, homSource lam μ (w - i * Real.log lam⁻¹) =
       G (homogeneousDim lam) μ w -
@@ -268,6 +297,8 @@ theorem sum_range_homSource (lam : ℝ) (μ : Measure ℝ) (w : ℝ) (n : ℕ) :
       rw [harg]
       ring
 
+/-- The profile is the sum of its sources along the shifts, by telescoping and
+`tendsto_G_atBot_zero`. -/
 theorem hasSum_homSource {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     (w : ℝ) :
@@ -296,13 +327,7 @@ theorem hasSum_homSource {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     rw [homSource_eq hlam0 hlam hA]
     positivity
 
-theorem homogeneous_periodization {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
-    (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
-    (w : ℝ) :
-    G (homogeneousDim lam) μ w =
-      ∑' n : ℕ, homSource lam μ (w - n * Real.log lam⁻¹) :=
-  (hasSum_homSource hlam0 hlam hA w).tsum_eq.symm
-
+/-- A tail of the logarithmic cross-law splits at any later point. -/
 theorem crossLogLaw_Ici_eq_add_Ico (lam : ℝ) (μ : Measure ℝ) {a b : ℝ} (hab : a ≤ b) :
     crossLogLaw lam μ (Set.Ici a) = crossLogLaw lam μ (Set.Ico a b) +
       crossLogLaw lam μ (Set.Ici b) := by
@@ -313,6 +338,8 @@ theorem crossLogLaw_Ici_eq_add_Ico (lam : ℝ) (μ : Measure ℝ) {a b : ℝ} (h
   rw [← measure_union hd measurableSet_Ici,
     Set.Ico_union_Ici_eq_Ici hab]
 
+/-- The source at `a` minus the discounted source at `b` is the weighted mass of `[a,
+b)` under the logarithmic cross-law. -/
 theorem homSource_interval {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     {a b : ℝ} (hab : a ≤ b) :
@@ -341,6 +368,8 @@ theorem homSource_interval {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
   rw [htailReal]
   ring
 
+/-- If the profile is eventually constant, the logarithmic cross-law gives every
+interval `[a, b)` in `[0, ∞)` mass `O(b - a)`. -/
 theorem crossLogLaw_Ico_le_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -419,6 +448,7 @@ theorem crossLogLaw_Ico_le_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
       nlinarith
     _ = 2 * C * s * (b - a) := by ring
 
+/-- An atomless measure gives its difference law no atoms. -/
 theorem pairDiff_singleton_zero [IsProbabilityMeasure μ]
     (hatom : ∀ x : ℝ, μ {x} = 0) (d : ℝ) : pairDiff μ {d} = 0 := by
   rw [pairDiff_eq_lintegral μ (measurableSet_singleton d)]
@@ -431,6 +461,7 @@ theorem pairDiff_singleton_zero [IsProbabilityMeasure μ]
     constructor <;> intro h <;> linarith
   rw [hset, hatom]
 
+/-- For an atomless `μ` the logarithmic cross-law has no atoms. -/
 theorem crossLogLaw_singleton_zero {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -472,6 +503,8 @@ theorem crossLogLaw_singleton_zero {lam : ℝ} (hlam0 : 0 < lam)
     _ = pairDiff μ {d} := rfl
     _ = 0 := pairDiff_singleton_zero hatom d
 
+/-- For `δ` below the first-level gap, `Φ(δ)` is the mass of the interval `[-log(1 - λ +
+λδ), -log(1 - λ - λδ)]` under the logarithmic cross-law. -/
 theorem phi_eq_crossLogLaw_interval {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -519,6 +552,8 @@ theorem phi_eq_crossLogLaw_interval {lam : ℝ} (hlam0 : 0 < lam)
     dsimp [z] at hzlo hzhi
     constructor <;> nlinarith
 
+/-- An eventually constant profile forces `Φ(δ) ≤ Mδ` for small `δ`, through
+`phi_eq_crossLogLaw_interval` and `crossLogLaw_Ico_le_of_eventually_constant`. -/
 theorem phi_linear_bound_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
@@ -598,6 +633,9 @@ theorem phi_linear_bound_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     _ ≤ 2 * C * s * (4 * lam * δ / (1 - 2 * lam)) := by gcongr
     _ = (8 * C * s * lam / (1 - 2 * lam)) * δ := by ring
 
+/-- `thm:homogeneous-nonconstancy`, the core: the profile of the homogeneous natural
+measure is not eventually constant, since constancy would put `Φ(δ)` both on the `δ`
+scale and on the `δ^s` scale with `s < 1`. -/
 theorem homogeneous_G_not_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ) :
@@ -648,6 +686,8 @@ theorem homogeneous_G_not_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
   obtain ⟨v, hv, hv'⟩ := (hupper.and hlt).exists
   exact (not_lt_of_ge hv) hv'
 
+/-- `eq:g-recursion` for the homogeneous system: above `log(1/(1 - 2λ))` the profile
+satisfies the shift identity `G(w) = G(w - log(1/λ))`. -/
 theorem homogeneous_g_period {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ) :
     ∀ w, Real.log (1 - 2 * lam)⁻¹ < w →
@@ -665,6 +705,8 @@ theorem homogeneous_g_period {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     homogeneous_ratio hlam0 hlam 1, rpow_homogeneousDim hlam0 hlam] at h
   linarith
 
+/-- `thm:homogeneous-nonconstancy`: on every tail the profile of the homogeneous natural
+measure takes two distinct values.  The endpoint `audit_cantor_nonconstant`. -/
 theorem homogeneous_G_nonconstant_on_tail {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)

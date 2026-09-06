@@ -7,8 +7,8 @@ the two endpoint values agree.  This module supplies that extension in general, 
 lifting through `AddCircle p`, together with the elementary period arithmetic the
 lattice case needs.
 
-* `exists_period_representative`, `exists_nat_sub_mem_Ico`: every window of length `p`
-  meets every residue class modulo `p`, in the two directions the proofs use.
+* `exists_nat_sub_mem_Ico`: every window of length `p` meets every residue class modulo
+  `p`.
 * `shift_add_nsmul`: a shift identity above a threshold iterates upward.
 * `exists_periodic_extension`: a function continuous on `[a, a+p]` with equal endpoint
   values extends to a continuous `p`-periodic function on the line.
@@ -21,26 +21,6 @@ import BrownianImages.Defs
 namespace BrownianImages
 
 /-! ### Period arithmetic -/
-
-/-- Every window of length `p` above `a` contains a point congruent to `a` modulo `p`. -/
-theorem exists_period_representative {p a w : ℝ} (hp : 0 < p) (haw : a ≤ w + p) :
-    ∃ n : ℕ, a + n * p ∈ Set.Icc w (w + p) := by
-  by_cases h : w ≤ a
-  · exact ⟨0, by simp only [Set.mem_Icc, Nat.cast_zero, zero_mul, add_zero]; exact ⟨h, haw⟩⟩
-  · rw [not_le] at h
-    have hx0 : 0 ≤ (w - a) / p := div_nonneg (by linarith) hp.le
-    refine ⟨⌈(w - a) / p⌉₊, ?_⟩
-    simp only [Set.mem_Icc]
-    constructor
-    · have h2 : w - a ≤ (⌈(w - a) / p⌉₊ : ℝ) * p :=
-        (div_le_iff₀ hp).mp (Nat.le_ceil ((w - a) / p))
-      linarith
-    · have h1 : ((⌈(w - a) / p⌉₊ : ℕ) : ℝ) < (w - a) / p + 1 := Nat.ceil_lt_add_one hx0
-      have h2 : ((⌈(w - a) / p⌉₊ : ℕ) : ℝ) * p < ((w - a) / p + 1) * p :=
-        mul_lt_mul_of_pos_right h1 hp
-      have h3 : ((w - a) / p + 1) * p = (w - a) + p := by field_simp
-      rw [h3] at h2
-      linarith
 
 /-- Every point above `a` can be pulled back into `[a, a+p)` by a whole number of
 periods. -/

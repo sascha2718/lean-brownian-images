@@ -3,7 +3,7 @@
 is available only on a half line, and the convergence of `G` it gives.
 
 `eq:g-recursion` holds for `G` only above `log ρ⁻¹`, so `G` is not harmonic on the line
-and `KeyRenewal.const_of_harmonic` does not apply to it.  What is proved here is the
+and the Choquet-Deny theorem for the whole line does not apply to it.  What is proved here is the
 Choquet-Deny statement with the recursion restricted to a tail: a function bounded and
 continuous on `[T, ∞)` and satisfying `f(w) = ∑ p_i f(w - a_i)` at every `w > T`
 converges at `+∞`, as soon as the weights are positive with sum `1`, the steps are
@@ -29,9 +29,9 @@ Applied to `G` this closes `thm:non-lattice-limit`, the continuity of `G` coming
   bound, all above a barrier.
 * `TailHarmonic.uc_of_continuousOn`: a continuous tail-harmonic function is uniformly
   continuous on the tail.
-* `TailHarmonic.exists_tendsto_atTop`, `.exists_tendsto_atTop_of_uc`,
-  `.exists_tendsto_atTop_of_continuousOn`: the theorem itself, with the modulus of
-  continuity supplied in the elementary shape, as `UniformContinuousOn`, and not at all.
+* `TailHarmonic.exists_tendsto_atTop`, `.exists_tendsto_atTop_of_continuousOn`: the
+  theorem itself, with the modulus of continuity supplied in the elementary shape, and
+  not at all.
 * `exists_tendsto_G`, `nonLatticeLimit`: `eq:g-non-lattice-limit`.
 -/
 import BrownianImages.KeyRenewal
@@ -415,23 +415,6 @@ theorem exists_tendsto_atTop [Nonempty ι] {f : ℝ → ℝ} {T B : ℝ}
   have := hu z hz
   linarith
 
-/-- **Choquet-Deny on a tail**, with the uniform continuity in Mathlib's shape.  The
-hypotheses are those of `exists_tendsto_atTop`: `f` is bounded on `[T, ∞)`, uniformly
-continuous there, and satisfies `f(w) = ∑ p_i f(w - a_i)` at every `w > T`. -/
-theorem exists_tendsto_atTop_of_uc [Nonempty ι] {f : ℝ → ℝ} {T B : ℝ}
-    (hp : ∀ i, 0 < p i) (hpsum : ∑ i, p i = 1) (ha : ∀ i, 0 < a i)
-    (hdense : Dense ((AddSubgroup.closure (Set.range a) : AddSubgroup ℝ) : Set ℝ))
-    (hbdd : ∀ x, T ≤ x → |f x| ≤ B)
-    (huc : UniformContinuousOn f (Set.Ici T))
-    (hharm : ∀ w, T < w → f w = ∑ i, p i * f (w - a i)) :
-    ∃ C : ℝ, Tendsto f atTop (𝓝 C) := by
-  refine exists_tendsto_atTop hp hpsum ha hdense hbdd ?_ hharm
-  intro ε hε
-  obtain ⟨δ, hδ0, hδ⟩ := Metric.uniformContinuousOn_iff_le.mp huc ε hε
-  refine ⟨δ, hδ0, fun x hx y hy hxy => ?_⟩
-  have := hδ x hx y hy (by rwa [Real.dist_eq])
-  rwa [Real.dist_eq] at this
-
 /-- **Choquet-Deny on a tail**, with continuity in place of uniform continuity.  A
 function bounded and continuous on `[T, ∞)` and satisfying `f(w) = ∑ p_i f(w - a_i)` at
 every `w > T` converges at `+∞`: the recursion supplies its own modulus of continuity
@@ -473,12 +456,11 @@ theorem exists_tendsto_G {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     (B := A) (fun x _ => abs_G_le hs0 hA x) (continuous_G hs0 hA).continuousOn
     (fun w hw => g_recursion S hsep hμ hw)
 
-set_option linter.unusedVariables false in
 /-- `thm:non-lattice-limit`, `eq:g-non-lattice-limit`.  In the non-arithmetic case the
 normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive, where
 `m = ∑ p_i a_i` is the renewal mean and `z = G - F * G` the renewal defect. -/
 theorem nonLatticeLimit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
+    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (_hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
