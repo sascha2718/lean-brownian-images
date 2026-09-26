@@ -54,7 +54,7 @@ theorem measurableSet_tubeCauchySet : MeasurableSet tubeCauchySet := by
         (continuous_levyTubeProbabilitySeq N)).measurable measurable_const
   suffices tubeCauchySet = A by simpa [this] using hA
   ext F
-  simp only [tubeCauchySet, A, Set.mem_setOf_eq, Set.mem_iInter, Set.mem_iUnion]
+  simp only [tubeCauchySet, A, Set.mem_ofPred_eq, Set.mem_iInter, Set.mem_iUnion]
   constructor
   · intro h k
     have hpos : 0 < 1 / ((k : ℝ) + 1) := by positivity
@@ -97,7 +97,7 @@ theorem isCompact_tubeSupportSet (F : CompactPlane) :
     IsCompact {nu : ProbabilityMeasure Plane |
       (nu : Measure Plane) (Metric.cthickening 1 (F : Set Plane))ᶜ ≤ 0} := by
   simpa using
-    (isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    (isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le
       (u := fun _ ↦ 0) (K := fun _ ↦ Metric.cthickening 1 (F : Set Plane))
       tendsto_const_nhds (fun _ ↦ F.isCompact.cthickening) (Or.inr monotone_const))
 

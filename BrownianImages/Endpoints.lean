@@ -134,7 +134,7 @@ theorem homogeneous_profile_asymptotics_lattice {lam : ℝ} (hlam0 : 0 < lam)
       ∃ C : ℝ, 0 < C ∧ ∀ v : ℝ,
         |H (homogeneousDim lam) μA v - smoothOp (homogeneousDim lam) g v|
           ≤ C * Real.exp (-2 * (1 - homogeneousDim lam) * v) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨g, hg, hper, hagree, -, -⟩ := homogeneous_periodic_profile hlam0 hlam hA
   obtain ⟨C, hC0, hCbd⟩ := exists_lattice_bound
     (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam)
@@ -172,7 +172,7 @@ theorem homogeneous_lattice_correlation_oscillation {P : Measure Ω}
         expCorr W P μA r ≤ a * r ^ (2 * homogeneousDim lam)) ∧
       (∀ R > 0, ∃ r, 0 < r ∧ r < R ∧
         b * r ^ (2 * homogeneousDim lam) ≤ expCorr W P μA r) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨A, hFrost⟩ := AhlforsRegular.exists_isFrostman_of_isNatural
     (homogeneousDim_pos hlam0 hlam)
     (homogeneousSystem_stronglySeparated hlam0 hlam hA.attractor.2.2.1) hA

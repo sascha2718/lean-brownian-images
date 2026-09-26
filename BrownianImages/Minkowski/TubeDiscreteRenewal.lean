@@ -194,7 +194,7 @@ theorem renewalMass_eq_sum_of_totalLag_le [Nonempty iota] {n : ℕ}
   rw [renewalMass_succ]
   apply Finset.sum_congr rfl
   intro i _
-  simp only [if_pos ((F.lag_le_totalLag i).trans hn)]
+  simp only [ite_eq_left ((F.lag_le_totalLag i).trans hn)]
 
 /-- If a bounded solution of the finite-delay equation approaches its limsup
 along a cofinal sequence, then it also approaches the limsup one generating
@@ -454,7 +454,7 @@ theorem renewal_convolution_identity
               F.weight i * x (0 - F.lag i) else 0) = 0 := by
             apply Finset.sum_eq_zero
             intro i _
-            rw [if_neg]
+            rw [ite_eq_right]
             exact Nat.not_le_of_lt (F.lag_pos i)
           rw [hzero, zero_add]
           simp
@@ -491,14 +491,14 @@ theorem renewal_convolution_identity
                 apply Finset.sum_congr rfl
                 intro i _
                 by_cases hi : F.lag i ≤ N
-                · rw [if_pos hi]
+                · rw [ite_eq_left hi]
                   exact (sum_range_ite_lag_convolution N (F.lag i)
                     (F.lag_pos i) hi (F.weight i) F.renewalMass z).symm
-                · rw [if_neg hi]
+                · rw [ite_eq_right hi]
                   symm
                   apply Finset.sum_eq_zero
                   intro k hk
-                  rw [if_neg]
+                  rw [ite_eq_right]
                   omega
               _ = ∑ k ∈ Finset.range N, ∑ i,
                     if F.lag i ≤ N - k then
@@ -692,11 +692,11 @@ theorem cutoffRescaledTubeProfile_phase_eq_renewal_sum
       if S.tubeLag hh harith i ≤ q then
         S.tubeWeight s i * x (q - S.tubeLag hh harith i) else 0
     by_cases hi : S.tubeLag hh harith i ≤ q
-    · rw [if_pos hi]
+    · rw [ite_eq_left hi]
       congr 2
       rw [hlog i, Nat.cast_sub hi]
       ring
-    · rw [if_neg hi]
+    · rw [ite_eq_right hi]
       have harg :
           2 * ((t : ℝ) + (q : ℝ) * h) - S.logRatio i ≤ 0 := by
         rw [hlog i]

@@ -315,7 +315,7 @@ theorem exists_forall_norm_smoothed_sub_le {w : ℝ → ℂ} (hwc : Continuous w
     · have h2M : ‖w (x - u) - w x‖ ≤ 2 * M :=
         le_trans (norm_sub_le _ _) (by linarith [hM (x - u), hM x])
       have : Set.indicator {u : ℝ | δ < |u|} (smoothKernel a) u = smoothKernel a u := by
-        rw [Set.indicator_apply, if_pos (show u ∈ {u : ℝ | δ < |u|} from hu)]
+        rw [Set.indicator_apply, ite_eq_left (show u ∈ {u : ℝ | δ < |u|} from hu)]
       rw [hg]
       simp only [this]
       nlinarith [mul_nonneg hε.le hK0]
@@ -329,7 +329,7 @@ theorem exists_forall_norm_smoothed_sub_le {w : ℝ → ℂ} (hwc : Continuous w
         rw [dist_eq_norm] at this
         linarith
       have : Set.indicator {u : ℝ | δ < |u|} (smoothKernel a) u = 0 := by
-        rw [Set.indicator_apply, if_neg (show u ∉ {u : ℝ | δ < |u|} from hu)]
+        rw [Set.indicator_apply, ite_eq_right (show u ∉ {u : ℝ | δ < |u|} from hu)]
       rw [hg]
       simp only [this]
       nlinarith

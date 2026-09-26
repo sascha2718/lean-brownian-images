@@ -388,7 +388,7 @@ omit [Nonempty ι] in
 /-- The Bernoulli measure is a probability measure. -/
 theorem isProbabilityMeasure_codeLaw (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     IsProbabilityMeasure (codeLaw S s) := by
-  haveI := isProbabilityMeasure_digitLaw S hdim
+  have := isProbabilityMeasure_digitLaw S hdim
   exact inferInstanceAs (IsProbabilityMeasure (Measure.infinitePi _))
 
 omit [Nonempty ι] in
@@ -396,7 +396,7 @@ omit [Nonempty ι] in
 theorem codeLaw_pi (S : System ι) {s : ℝ} (hdim : S.IsDimension s) (F : Finset ℕ)
     (t : ℕ → Set ι) :
     codeLaw S s (Set.pi ↑F t) = ∏ n ∈ F, digitLaw S s (t n) := by
-  haveI := isProbabilityMeasure_digitLaw S hdim
+  have := isProbabilityMeasure_digitLaw S hdim
   exact Measure.infinitePi_pi _ (fun n _ => MeasurableSet.of_discrete)
 
 omit [Nonempty ι] in
@@ -405,8 +405,8 @@ first coordinate from the rest, in the form the Hutchinson identity consumes. -/
 theorem codeLaw_eq_sum (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     codeLaw S s = ∑ i, ENNReal.ofReal (S.ratio i ^ s) • (codeLaw S s).map (cons i) := by
   classical
-  haveI := isProbabilityMeasure_digitLaw S hdim
-  haveI := isProbabilityMeasure_codeLaw S hdim
+  have := isProbabilityMeasure_digitLaw S hdim
+  have := isProbabilityMeasure_codeLaw S hdim
   set ρ : Measure (ℕ → ι) := ∑ i, ENNReal.ofReal (S.ratio i ^ s) • (codeLaw S s).map (cons i)
     with hρ
   have key : ∀ (n : ℕ) (u : ℕ → Set ι),
@@ -431,7 +431,7 @@ theorem codeLaw_eq_sum (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
           = if i ∈ u 0 then Set.pi ↑(Finset.range n) (fun k => u (k + 1)) else ∅ := by
         intro i
         by_cases hi : i ∈ u 0
-        · rw [if_pos hi]
+        · rw [ite_eq_left hi]
           ext ω
           simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, Finset.mem_range]
           constructor
@@ -440,7 +440,7 @@ theorem codeLaw_eq_sum (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
             cases k with
             | zero => exact hi
             | succ m => exact h m (by omega)
-        · rw [if_neg hi]
+        · rw [ite_eq_right hi]
           ext ω
           simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, Finset.mem_range,
             Set.mem_empty_iff_false, iff_false]
@@ -452,8 +452,8 @@ theorem codeLaw_eq_sum (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
         intro i
         rw [Measure.map_apply (measurable_cons i) hms, hpre i]
         by_cases hi : i ∈ u 0
-        · rw [if_pos hi, Set.indicator_of_mem hi, Pi.one_apply, one_mul, codeLaw_pi S hdim]
-        · rw [if_neg hi, Set.indicator_of_notMem hi, measure_empty, zero_mul]
+        · rw [ite_eq_left hi, Set.indicator_of_mem hi, Pi.one_apply, one_mul, codeLaw_pi S hdim]
+        · rw [ite_eq_right hi, Set.indicator_of_notMem hi, measure_empty, zero_mul]
       simp only [hρ, Measure.coe_finsetSum, Finset.sum_apply, Measure.smul_apply, smul_eq_mul,
         hstep, ← mul_assoc]
       rw [← Finset.sum_mul, ← digitLaw_apply, Finset.prod_range_succ']
@@ -513,7 +513,7 @@ omit [Nonempty ι] in
 /-- The natural measure is a probability measure. -/
 theorem isProbabilityMeasure_naturalMeasure (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     IsProbabilityMeasure (naturalMeasure S s) := by
-  haveI := isProbabilityMeasure_codeLaw S hdim
+  have := isProbabilityMeasure_codeLaw S hdim
   unfold naturalMeasure
   exact inferInstance
 
@@ -601,7 +601,7 @@ theorem integral_testOp (S : System ι) {s : ℝ} {μ : Measure ℝ} [IsProbabil
   have hint : ∀ i ∈ (Finset.univ : Finset ι),
       Integrable (fun x => f x) (ENNReal.ofReal (S.ratio i ^ s) • μ.map (S.map i)) := by
     intro i _
-    haveI := hpm i
+    have := hpm i
     refine (integrable_smul_measure ?_ ENNReal.ofReal_ne_top).2
       (BoundedContinuousFunction.integrable _ f)
     simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
@@ -616,7 +616,7 @@ theorem integral_testOp (S : System ι) {s : ℝ} {μ : Measure ℝ} [IsProbabil
       ∫ x, f x ∂(ENNReal.ofReal (S.ratio i ^ s) • μ.map (S.map i))
         = ∫ x, S.ratio i ^ s * f (S.map i x) ∂μ := by
     intro i
-    haveI := hpm i
+    have := hpm i
     rw [integral_smul_measure, ENNReal.toReal_ofReal (hpos i).le, smul_eq_mul,
       integral_map (hmi i).aemeasurable f.continuous.aestronglyMeasurable, ← integral_const_mul]
   simp only [hterm]
@@ -716,7 +716,7 @@ theorem eq_of_selfSimilar (S : System ι) {s : ℝ} (hdim : S.IsDimension s)
         m = ∑ i, ENNReal.ofReal (S.ratio i ^ s) • m.map (S.map i) →
         m (Set.Icc (0:ℝ) 1)ᶜ = 0 → |∫ x, f x ∂m - g 0| ≤ ε := by
       intro m hm hmself hms
-      haveI := hm
+      have := hm
       have hae : ∀ᵐ x ∂m, ‖g x - g 0‖ ≤ ε := by
         have hIcc : ∀ᵐ x ∂m, x ∈ Set.Icc (0:ℝ) 1 := ae_iff.2 hms
         filter_upwards [hIcc] with x hx
@@ -753,15 +753,15 @@ theorem System.exists_unique_isNatural {ι : Type*} [Fintype ι] [Nonempty ι] (
     {s : ℝ} (hdim : S.IsDimension s) :
     ∃! p : Set ℝ × Measure ℝ, S.IsNatural p.1 s p.2 := by
   classical
-  letI : MeasurableSpace ι := ⊤
-  haveI : DiscreteMeasurableSpace ι := ⟨fun _ => trivial⟩
-  letI : TopologicalSpace ι := ⊥
-  haveI : DiscreteTopology ι := ⟨rfl⟩
+  let : MeasurableSpace ι := ⊤
+  have : DiscreteMeasurableSpace ι := ⟨fun _ => trivial⟩
+  let : TopologicalSpace ι := ⊥
+  have : DiscreteTopology ι := ⟨rfl⟩
   have hnat := Hutchinson.isNatural_naturalMeasure S hdim
   refine ⟨(Hutchinson.attractorSet S, Hutchinson.naturalMeasure S s), hnat, ?_⟩
   rintro ⟨K, μ⟩ hKμ
-  haveI := hKμ.isProbability
-  haveI := hnat.isProbability
+  have := hKμ.isProbability
+  have := hnat.isProbability
   refine Prod.ext ?_ ?_
   · exact Hutchinson.eq_attractorSet S hKμ.attractor
   · exact Hutchinson.eq_of_selfSimilar S hdim hKμ.selfSimilar

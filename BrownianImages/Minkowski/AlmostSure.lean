@@ -35,7 +35,7 @@ theorem ae_tendsto_zero_of_summable_deviations
     have hne : (∑' n : Nat, P (E n)) ≠ ∞ := by
       simpa only [E] using hsum _ hepsilon
     filter_upwards [ae_eventually_notMem hne] with omega homega
-    exact homega.mono fun n hn => by simpa only [E, Set.mem_setOf_eq, not_le] using hn
+    exact homega.mono fun n hn => by simpa only [E, Set.mem_ofPred_eq, not_le] using hn
   filter_upwards [ae_all_iff.mpr hthreshold] with omega homega
   rw [Metric.tendsto_atTop]
   intro epsilon hepsilon

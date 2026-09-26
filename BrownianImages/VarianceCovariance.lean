@@ -216,12 +216,12 @@ theorem measure_inter_eq_mul_of_overlap_nonpos {P : Measure Ω} [IsProbabilityMe
   have hA : {ω | dist (W a.toNNReal ω) (W b.toNNReal ω) < r}
       = (fun ω => W b.toNNReal ω - W a.toNNReal ω) ⁻¹' Metric.ball (0 : Plane) r := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, mem_ball_zero_iff, ← dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, mem_ball_zero_iff, ← dist_eq_norm]
     exact ⟨fun hx => by rwa [dist_comm], fun hx => by rwa [dist_comm]⟩
   have hB : {ω | dist (W c.toNNReal ω) (W d.toNNReal ω) < r}
       = (fun ω => W d.toNNReal ω - W c.toNNReal ω) ⁻¹' Metric.ball (0 : Plane) r := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, mem_ball_zero_iff, ← dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, mem_ball_zero_iff, ← dist_eq_norm]
     exact ⟨fun hx => by rwa [dist_comm], fun hx => by rwa [dist_comm]⟩
   rw [hA, hB]
   exact hindep.measure_inter_preimage_eq_mul _ _ measurableSet_ball measurableSet_ball
@@ -235,7 +235,7 @@ theorem jointReturn_eq_measure_inter (W : ℝ≥0 → Ω → Plane) (P : Measure
   unfold jointReturn
   congr 1
   ext ω
-  simp only [Set.mem_setOf_eq, Set.mem_inter_iff]
+  simp only [Set.mem_ofPred_eq, Set.mem_inter_iff]
   rw [dist_comm (W u ω) (W t ω), dist_comm (W u' ω) (W t' ω)]
 
 end VarianceCovariance

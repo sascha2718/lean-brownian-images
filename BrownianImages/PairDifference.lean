@@ -71,7 +71,7 @@ theorem pairDiff_neg (μ : Measure ℝ) [SFinite μ] {T : Set ℝ} (hT : Measura
   rw [Measure.map_apply measurable_swap (measurableSet_diffSet hT), pairDiff]
   congr 1
   ext p
-  simp only [Set.mem_preimage, Set.mem_setOf_eq, Prod.fst_swap, Prod.snd_swap, neg_sub]
+  simp only [Set.mem_preimage, Set.mem_ofPred_eq, Prod.fst_swap, Prod.snd_swap, neg_sub]
 
 /-! ### The unit square -/
 

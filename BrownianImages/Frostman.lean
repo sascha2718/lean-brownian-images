@@ -31,7 +31,7 @@ theorem phi_mono [SFinite μ] {δ δ' : ℝ} (h : δ ≤ δ') [IsFiniteMeasure �
 theorem mk_preimage_phiSet (x δ : ℝ) :
     Prod.mk x ⁻¹' {p : ℝ × ℝ | |p.1 - p.2| ≤ δ} = Metric.closedBall x δ := by
   ext y
-  simp only [Set.mem_preimage, Set.mem_setOf_eq, Metric.mem_closedBall, Real.dist_eq,
+  simp only [Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_closedBall, Real.dist_eq,
     abs_sub_comm x y]
 
 /-- The pair-distance mass is the average ball mass: the Fubini step of
@@ -237,7 +237,7 @@ theorem continuous_cdf_toReal {ν : Measure ℝ} [IsProbabilityMeasure ν]
 /-- `sec:setup`: `Φ` is continuous, since the pair-distance law has no atoms. -/
 theorem continuous_phi [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (h : IsFrostman s A μ) : Continuous (Phi μ) := by
-  haveI hprob : IsProbabilityMeasure (pairLaw μ) := by
+  have hprob : IsProbabilityMeasure (pairLaw μ) := by
     rw [pairLaw]
     exact inferInstance
   have hcont := continuous_cdf_toReal (ν := pairLaw μ) (pairLaw_measure_singleton hs h)

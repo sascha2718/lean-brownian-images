@@ -67,7 +67,7 @@ theorem centeredL2Norm_sum_le {Ω κ : Type*} [MeasurableSpace Ω] [Fintype κ]
     centeredL2Norm (fun ω => ∑ m, Y m ω) P ≤ ∑ m, centeredL2Norm (Y m) P := by
   unfold centeredL2Norm
   have hint : ∀ m, Integrable (Y m) P := fun m => (hY m).integrable one_le_two
-  rw [integral_finset_sum _ fun m _ => hint m]
+  rw [integral_finsetSum _ fun m _ => hint m]
   have heq : (fun ω => (∑ m, Y m ω) - ∑ m, ∫ x, Y m x ∂P)
       = ∑ m, (fun ω => Y m ω - ∫ x, Y m x ∂P) := by
     funext ω

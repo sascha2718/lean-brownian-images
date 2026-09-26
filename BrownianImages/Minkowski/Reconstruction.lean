@@ -213,7 +213,7 @@ theorem brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
     (hoccupation : (occupationLaw W P mu1).MutuallySingular
       (occupationLaw W P mu2)) :
     (brownianImageLaw W P K1).MutuallySingular (brownianImageLaw W P K2) := by
-  letI : BorelSpace (ProbabilityMeasure Plane) :=
+  let : BorelSpace (ProbabilityMeasure Plane) :=
     ⟨borel_probabilityMeasure_eq_giry.symm⟩
   obtain ⟨E, hE, hlaw1, hlaw2⟩ := hoccupation
   obtain ⟨A, hA, hclassifier⟩ :=

@@ -146,7 +146,7 @@ theorem integrable_uncurry_fker {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (k : ℤ) {g : ℝ → ℝ} (hg : Continuous g) {M : ℝ} (hM : ∀ x, |g x| ≤ M) :
     Integrable (Function.uncurry (fker s p k g))
       ((volume.restrict (Set.Ioc (0:ℝ) (p/2))).prod (volume.restrict (Set.Ioi (0:ℝ)))) := by
-  haveI : IsFiniteMeasure (volume.restrict (Set.Ioc (0:ℝ) (p/2))) := by
+  have : IsFiniteMeasure (volume.restrict (Set.Ioc (0:ℝ) (p/2))) := by
     constructor
     rw [Measure.restrict_apply_univ]
     simp

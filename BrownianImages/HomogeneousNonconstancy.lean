@@ -66,7 +66,7 @@ theorem lintegral_homogeneous_map_decomp {lam : ℝ} (hlam0 : 0 < lam)
           ((homogeneousSystem lam hlam0 hlam).shift i) T)
         + 2⁻¹ * pairDiff μ (homBlockSet lam
           ((homogeneousSystem lam hlam0 hlam).shift i - (1 - lam)) T) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hstep : ∀ x : ℝ, μ {y : ℝ | (homogeneousSystem lam hlam0 hlam).map i x - y ∈ T}
       = 2⁻¹ * μ {y : ℝ | x - y ∈ homBlockSet lam
           ((homogeneousSystem lam hlam0 hlam).shift i) T}
@@ -90,7 +90,7 @@ theorem lintegral_homogeneous_map_decomp {lam : ℝ} (hlam0 : 0 < lam)
         simp only [System.map]
         change lam * x + _ - (lam * y + _) = _
         ring
-      simp only [Set.mem_preimage, Set.mem_setOf_eq, homBlockSet, hval]
+      simp only [Set.mem_preimage, Set.mem_ofPred_eq, homBlockSet, hval]
     rw [hA.measure_eq_sum (homogeneousSystem lam hlam0 hlam) hmeas,
       Fin.sum_univ_two, hj 0, hj 1]
     rw [homogeneous_ratio hlam0 hlam 0, homogeneous_ratio hlam0 hlam 1,
@@ -115,7 +115,7 @@ theorem pairDiff_homogeneous_decomp {lam : ℝ} (hlam0 : 0 < lam)
         + pairDiff μ (homBlockSet lam (-(1 - lam)) T)
         + pairDiff μ (homBlockSet lam (1 - lam) T)
         + pairDiff μ (homBlockSet lam 0 T)) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have h4 : (4:ℝ≥0∞)⁻¹ = 2⁻¹ * 2⁻¹ := by
     rw [← ENNReal.mul_inv (Or.inl (by norm_num)) (Or.inl (by norm_num))]
     norm_num
@@ -141,7 +141,7 @@ theorem phi_first_difference_recursion {lam : ℝ} (hlam0 : 0 < lam)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     (δ : ℝ) :
     Phi μ δ = 1/2 * Phi μ (δ / lam) + 1/2 * crossCDF lam μ δ := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hdiag : homBlockSet lam 0 (Set.Icc (-δ) δ) = Set.Icc (-(δ / lam)) (δ / lam) := by
     ext u
     simp only [homBlockSet, Set.mem_preimage, Set.mem_Icc, add_zero]
@@ -199,7 +199,7 @@ theorem crossCDF_eq_crossLogLaw_Ici {lam : ℝ} (hlam0 : 0 < lam)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     (w : ℝ) :
     crossCDF lam μ (Real.exp (-w)) = (crossLogLaw lam μ (Set.Ici w)).toReal := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   rw [crossLogLaw, Measure.map_apply (measurable_crossLogMap lam) measurableSet_Ici]
   unfold crossCDF pairDiff
   apply congrArg ENNReal.toReal
@@ -304,7 +304,7 @@ theorem hasSum_homSource {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (w : ℝ) :
     HasSum (fun n : ℕ => homSource lam μ (w - n * Real.log lam⁻¹))
       (G (homogeneousDim lam) μ w) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hp := log_inv_pos hlam0 hlam
   rw [hasSum_iff_tendsto_nat_of_nonneg]
   · rw [show (fun n : ℕ => ∑ i ∈ Finset.range n,
@@ -346,7 +346,7 @@ theorem homSource_interval {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     homSource lam μ a - Real.exp (-(homogeneousDim lam * (b - a))) * homSource lam μ b =
       1/2 * Real.exp (homogeneousDim lam * a) *
         (crossLogLaw lam μ (Set.Ico a b)).toReal := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hfin (T : Set ℝ) : crossLogLaw lam μ T ≠ ⊤ := measure_ne_top _ _
   have htail := crossLogLaw_Ici_eq_add_Ico lam μ hab
   have htailReal := congrArg ENNReal.toReal htail
@@ -377,7 +377,7 @@ theorem crossLogLaw_Ico_le_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     (hconst : ∀ w, w₀ ≤ w → G (homogeneousDim lam) μ w = C)
     {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) :
     (crossLogLaw lam μ (Set.Ico a b)).toReal ≤ 2 * C * homogeneousDim lam * (b - a) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let s := homogeneousDim lam
   let p := Real.log lam⁻¹
   have hs0 : 0 < s := homogeneousDim_pos hlam0 hlam
@@ -457,7 +457,7 @@ theorem pairDiff_singleton_zero [IsProbabilityMeasure μ]
   intro x
   have hset : {y : ℝ | x - y ∈ ({d} : Set ℝ)} = {x - d} := by
     ext y
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff]
     constructor <;> intro h <;> linarith
   rw [hset, hatom]
 
@@ -466,7 +466,7 @@ theorem crossLogLaw_singleton_zero {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ)
     (hatom : ∀ x : ℝ, μ {x} = 0) (t : ℝ) : crossLogLaw lam μ {t} = 0 := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   rw [crossLogLaw, Measure.map_apply (measurable_crossLogMap lam) (measurableSet_singleton t)]
   let d : ℝ := (Real.exp (-t) - (1 - lam)) / lam
   have hsquare : ∀ᵐ p ∂μ.prod μ, p ∈ Set.Icc (0:ℝ) 1 ×ˢ Set.Icc (0:ℝ) 1 := by
@@ -513,7 +513,7 @@ theorem phi_eq_crossLogLaw_interval {lam : ℝ} (hlam0 : 0 < lam)
     Phi μ δ = (crossLogLaw lam μ
       (Set.Icc (-Real.log (1 - lam + lam * δ))
         (-Real.log (1 - lam - lam * δ)))).toReal := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   rw [Phi, crossLogLaw, Measure.map_apply (measurable_crossLogMap lam) measurableSet_Icc]
   apply congrArg ENNReal.toReal
   have hsquare : ∀ᵐ p ∂μ.prod μ, p ∈ Set.Icc (0:ℝ) 1 ×ˢ Set.Icc (0:ℝ) 1 := by
@@ -561,7 +561,7 @@ theorem phi_linear_bound_of_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     {w₀ C : ℝ} (hconst : ∀ w, w₀ ≤ w → G (homogeneousDim lam) μ w = C) :
     ∃ M > 0, ∀ δ : ℝ, 0 < δ → δ < min 1 ((1 - 2 * lam) / (2 * lam)) →
       Phi μ δ ≤ M * δ := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let s := homogeneousDim lam
   have hs0 : 0 < s := homogeneousDim_pos hlam0 hlam
   have hC0 : 0 < C := by
@@ -640,7 +640,7 @@ theorem homogeneous_G_not_eventually_constant {lam : ℝ} (hlam0 : 0 < lam)
     (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural K (homogeneousDim lam) μ) :
     ¬ ∃ w₀ C : ℝ, ∀ w, w₀ ≤ w → G (homogeneousDim lam) μ w = C := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   let s := homogeneousDim lam
   have hs0 : 0 < s := homogeneousDim_pos hlam0 hlam
   have hs1 : s < 1 := homogeneousDim_lt_one hlam0 hlam
@@ -734,7 +734,7 @@ theorem exists_homogeneous_periodic_profile {lam : ℝ} (hlam0 : 0 < lam)
     ∃ g : ℝ → ℝ, Continuous g ∧ Function.Periodic g (Real.log lam⁻¹) ∧
       (∀ w, homogeneousStart lam ≤ w → g w = G (homogeneousDim lam) μ w) ∧
       (∀ x, 0 < g x) ∧ ∃ x y, g x ≠ g y := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   have hs0 := homogeneousDim_pos hlam0 hlam
   have hp := log_inv_pos hlam0 hlam
   obtain ⟨A, hFrost⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0

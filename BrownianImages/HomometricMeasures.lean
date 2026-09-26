@@ -88,7 +88,7 @@ theorem notMem_cyl {k l : ℤ} (hkl : k ≠ l) {x : ℝ} (hxk : x ∈ cyl k) : x
 /-- The natural measure gives the unit interval full mass. -/
 theorem measure_Icc_eq_one {ι : Type*} [Fintype ι] {S : System ι} {K : Set ℝ} {s : ℝ}
     {σ : Measure ℝ} (hσ : S.IsNatural K s σ) : σ (Set.Icc (0:ℝ) 1) = 1 := by
-  haveI := hσ.isProbability
+  have := hσ.isProbability
   have h := measure_add_measure_compl (μ := σ) (measurableSet_Icc (a := (0:ℝ)) (b := 1))
   rw [hσ.support_Icc, add_zero, measure_univ] at h
   exact h
@@ -107,7 +107,7 @@ what makes the two measures of `thm:homometric-example` distinct. -/
 theorem le_measure_cyl {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17} {K : Set ℝ}
     {σ : Measure ℝ} (hσ : (homSystem d h0 h17).IsNatural K tHom σ) (i : Fin 6) :
     ENNReal.ofReal ((1/30 : ℝ) ^ tHom) ≤ σ (cyl (d i)) := by
-  haveI := hσ.isProbability
+  have := hσ.isProbability
   have hpre : σ ((homSystem d h0 h17).map i ⁻¹' cyl (d i)) = 1 := by
     refine le_antisymm (by
       simpa using prob_le_one (μ := σ) (s := (homSystem d h0 h17).map i ⁻¹' cyl (d i))) ?_
@@ -313,10 +313,10 @@ theorem diffLaw_eq {KA KB : Set ℝ} {σA σB : Measure ℝ}
     (hA : (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsNatural KA tHom σA)
     (hB : (homSystem digitFunB digitFunB_nonneg digitFunB_le).IsNatural KB tHom σB) :
     diffLaw σA = diffLaw σB := by
-  haveI := hA.isProbability
-  haveI := hB.isProbability
-  haveI := isProbabilityMeasure_diffLaw σA
-  haveI := isProbabilityMeasure_diffLaw σB
+  have := hA.isProbability
+  have := hB.isProbability
+  have := isProbabilityMeasure_diffLaw σA
+  have := isProbabilityMeasure_diffLaw σB
   have hidA := diffLaw_selfSimilar hA.selfSimilar
   have hidB := diffLaw_selfSimilar hB.selfSimilar
   have hconv : ∑ p : Fin 6 × Fin 6,
@@ -561,8 +561,8 @@ theorem homometric_example :
   obtain ⟨⟨KB, σB⟩, hB, -⟩ :=
     (homSystem digitFunB digitFunB_nonneg digitFunB_le).exists_unique_isNatural
       (HomometricMeasures.homSystem_isDimension _ _ _)
-  haveI := hA.isProbability
-  haveI := hB.isProbability
+  have := hA.isProbability
+  have := hB.isProbability
   have hsepA := homSystem_stronglySeparated digitFunA digitFunA_nonneg digitFunA_le
     digitFunA_injective hA.attractor.2.2.1
   have hsepB := homSystem_stronglySeparated digitFunB digitFunB_nonneg digitFunB_le

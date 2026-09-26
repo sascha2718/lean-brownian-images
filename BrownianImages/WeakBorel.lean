@@ -35,7 +35,7 @@ def piBasis : Set (Set Plane) :=
 /-- The π-system of finite intersections of basic open sets is countable. -/
 theorem piBasis_countable : piBasis.Countable := by
   refine Set.Countable.image ?_ _
-  refine (Set.countable_setOf_finite_subset (countable_countableBasis Plane)).mono ?_
+  refine (Set.countable_ofPred_finite_subset (countable_countableBasis Plane)).mono ?_
   rintro T ⟨h1, h2, _⟩
   exact ⟨h1, h2⟩
 
@@ -88,8 +88,8 @@ Dynkin induction from the portmanteau lower semicontinuity on open sets. -/
 theorem measurable_borel_apply {s : Set Plane} (hs : MeasurableSet s) :
     Measurable[borel (ProbabilityMeasure Plane)]
       (fun ν : ProbabilityMeasure Plane => (ν : Measure Plane) s) := by
-  letI : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
-  haveI : OpensMeasurableSpace (ProbabilityMeasure Plane) := ⟨le_rfl⟩
+  let : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
+  have : OpensMeasurableSpace (ProbabilityMeasure Plane) := ⟨le_rfl⟩
   induction s, hs using MeasurableSpace.induction_on_inter
     (h_eq := (BorelSpace.measurable_eq (α := Plane))) (h_inter := isPiSystem_isOpen) with
   | empty => simp
@@ -113,7 +113,7 @@ theorem measurable_borel_apply {s : Set Plane} (hs : MeasurableSet s) :
 
 theorem isOpen_induced_of_isOpen {U : Set (ProbabilityMeasure Plane)} (hU : IsOpen U) :
     IsOpen[TopologicalSpace.induced evalPi inferInstance] U := by
-  haveI : Countable piBasis := piBasis_countable.to_subtype
+  have : Countable piBasis := piBasis_countable.to_subtype
   have wconv : ∀ (μs : ℕ → ProbabilityMeasure Plane) (ν : ProbabilityMeasure Plane),
       Tendsto (fun n => evalPi (μs n)) atTop (𝓝 (evalPi ν)) → Tendsto μs atTop (𝓝 ν) := by
     intro μs ν h
@@ -122,10 +122,10 @@ theorem isOpen_induced_of_isOpen {U : Set (ProbabilityMeasure Plane)} (hU : IsOp
     intro s hs
     exact tendsto_pi_nhds.mp h ⟨s, hs⟩
   have hmemnhds : ∀ ν ∈ U, U ∈ 𝓝 ν := fun ν hν => hU.mem_nhds hν
-  letI : TopologicalSpace (ProbabilityMeasure Plane) :=
+  let : TopologicalSpace (ProbabilityMeasure Plane) :=
     TopologicalSpace.induced evalPi inferInstance
   have hind : Topology.IsInducing evalPi := ⟨rfl⟩
-  haveI : PseudoMetrizableSpace (ProbabilityMeasure Plane) := hind.pseudoMetrizableSpace
+  have : PseudoMetrizableSpace (ProbabilityMeasure Plane) := hind.pseudoMetrizableSpace
   rw [← isClosed_compl_iff]
   apply IsSeqClosed.isClosed
   intro μs ν hmem hconv
@@ -143,14 +143,14 @@ agree. -/
 theorem borel_probabilityMeasure_eq_giry :
     borel (ProbabilityMeasure Plane)
       = (inferInstance : MeasurableSpace (ProbabilityMeasure Plane)) := by
-  haveI : Countable piBasis := piBasis_countable.to_subtype
+  have : Countable piBasis := piBasis_countable.to_subtype
   refine le_antisymm ?_ ?_
   · refine MeasurableSpace.generateFrom_le fun U hU => ?_
     obtain ⟨V, hV, rfl⟩ := isOpen_induced_iff.mp (isOpen_induced_of_isOpen hU)
     exact measurable_evalPi hV.measurableSet
   · have hval : Measurable[borel (ProbabilityMeasure Plane)]
         (fun ν : ProbabilityMeasure Plane => (ν : Measure Plane)) := by
-      letI : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
+      let : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
       exact Measure.measurable_of_measurable_coe _ fun s hs => measurable_borel_apply hs
     intro t ht
     obtain ⟨u, hu, rfl⟩ := ht

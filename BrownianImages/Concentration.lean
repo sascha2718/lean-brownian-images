@@ -144,7 +144,7 @@ theorem memLp_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
   refine memLp_of_bounded (a := 0) (b := Real.exp (2 * s * v)) ?_
     (aemeasurable_Yprofile hW hmeas v).aestronglyMeasurable 2
   filter_upwards [hW.ae_isProbabilityMeasure_occupation μ] with ω hω
-  haveI := hω
+  have := hω
   refine ⟨Yprofile_nonneg _ s v, ?_⟩
   have hle : (corr (occupation W μ ω) (Real.exp (-v))).toReal ≤ 1 := by
     refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
@@ -332,7 +332,7 @@ theorem uniform_concentration_of_grid_convergence {P : Measure Ω} [IsProbabilit
       exact fun _ => hω
     · exact Eventually.of_forall fun _ h => absurd h hm
   filter_upwards [hallgrid, hW.ae_isProbabilityMeasure_occupation μ] with ω hωgrid hωprob
-  haveI := hωprob
+  have := hωprob
   intro ε hε
   obtain ⟨δ, hδ, hUCδ⟩ := hUC (ε/3) (by linarith)
   have hten : Tendsto (fun n : ℕ => Real.exp (2 * s * (1/(n:ℝ)))) atTop (𝓝 1) := by
@@ -487,7 +487,7 @@ theorem measurableSet_tailSet (s : ℝ) (μ : Measure ℝ) : MeasurableSet (tail
 theorem mem_tailSet {s : ℝ} {μ : Measure ℝ} {ν : ProbabilityMeasure Plane}
     (h : ∀ ε > 0, ∃ V : ℝ, ∀ v ≥ V, |Yprofile s ν.toMeasure v - H s μ v| ≤ ε) :
     ν ∈ tailSet s μ := by
-  simp only [tailSet, Set.mem_iInter, Set.mem_iUnion, Set.mem_setOf_eq]
+  simp only [tailSet, Set.mem_iInter, Set.mem_iUnion, Set.mem_ofPred_eq]
   intro k
   obtain ⟨V, hV⟩ := h (1/((k:ℝ)+1)) (by positivity)
   obtain ⟨n, hn⟩ := exists_nat_ge V
@@ -505,7 +505,7 @@ theorem tailSet_subset_compl {s A₁ A₂ : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
   intro ν hν₁ hν₂
   obtain ⟨ε, hε, hV⟩ := hsep
   obtain ⟨k, hk⟩ := exists_nat_one_div_lt (show (0:ℝ) < ε/4 by linarith)
-  simp only [tailSet, Set.mem_iInter, Set.mem_iUnion, Set.mem_setOf_eq] at hν₁ hν₂
+  simp only [tailSet, Set.mem_iInter, Set.mem_iUnion, Set.mem_ofPred_eq] at hν₁ hν₂
   obtain ⟨n₁, hn₁⟩ := hν₁ k
   obtain ⟨n₂, hn₂⟩ := hν₂ k
   have hUC₁ := profile_uniformContinuous hs0 hs1 h₁

@@ -151,12 +151,12 @@ theorem driNorm_enorm_ne_top_of_zero_left_of_bounded_of_exp_decay
     rw [Set.mem_Icc] at hx
     simp only [a]
     by_cases hk : k < 0
-    · rw [if_pos hk]
+    · rw [ite_eq_left hk]
       have hk1 : k + 1 ≤ 0 := by omega
       have hx0 : x ≤ 0 := hx.2.trans (by exact_mod_cast hk1)
       rw [hzero x hx0]
       simp
-    · rw [if_neg hk, Real.enorm_eq_ofReal_abs]
+    · rw [ite_eq_right hk, Real.enorm_eq_ofReal_abs]
       apply ENNReal.ofReal_le_ofReal
       by_cases hxL : L ≤ x
       · have hexp : Real.exp (-gamma * x) ≤
@@ -205,7 +205,7 @@ theorem driNorm_enorm_ne_top_of_zero_left_of_bounded_of_exp_decay
       have hneg : (-(n : Int)) < 0 := by omega
       change (if (-(n : Int)) < 0 then 0 else
         D * Real.exp (-gamma * ((-(n : Int) : Int) : Real))) = 0
-      rw [if_pos hneg]
+      rw [ite_eq_left hneg]
   rw [driNorm_def]
   refine ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hcell)
   rw [← ENNReal.ofReal_tsum_of_nonneg ha hasum]

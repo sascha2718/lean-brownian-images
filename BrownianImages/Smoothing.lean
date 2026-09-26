@@ -216,7 +216,7 @@ theorem phi_pos {μ : Measure ℝ} [IsProbabilityMeasure μ] {δ : ℝ} (hδ : 0
     simp only [Metric.mem_closedBall, Real.dist_eq] at hx hy
     have h1 := abs_le.mp hx
     have h2 := abs_le.mp hy
-    simp only [Set.mem_setOf_eq, abs_le]
+    simp only [Set.mem_ofPred_eq, abs_le]
     constructor <;> linarith
   have hprod : 0 < (μ.prod μ)
       ((Metric.closedBall c (δ / 2)) ×ˢ (Metric.closedBall c (δ / 2))) := by

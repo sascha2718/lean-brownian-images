@@ -603,7 +603,7 @@ theorem audit_profile_asymptotics_lattice {KA : Set ℝ} {μA : Measure ℝ}
     ∃ C > 0, ∀ v : ℝ, 0 ≤ v →
       |H (homogeneousDim lam) μA v - smoothOp (homogeneousDim lam) g v|
         ≤ C * Real.exp (-2 * (1 - homogeneousDim lam) * v) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨C, hC0, hC⟩ := exists_lattice_bound (homogeneousDim_pos hlam0 hlam)
     (homogeneousDim_lt_one hlam0 hlam) hg (log_inv_pos hlam0 hlam).ne' hper hagree
   exact ⟨C, hC0, fun v _ => hC v⟩
@@ -616,7 +616,7 @@ theorem audit_profile_asymptotics_lattice_bigO {KA : Set ℝ} {μA : Measure ℝ
     (hagree : ∀ w, homogeneousStart lam ≤ w → g w = G (homogeneousDim lam) μA w) :
     (fun v => H (homogeneousDim lam) μA v - smoothOp (homogeneousDim lam) g v)
       =O[atTop] fun v => Real.exp (-2 * (1 - homogeneousDim lam) * v) := by
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨C, _, hC⟩ := exists_lattice_bound (homogeneousDim_pos hlam0 hlam)
     (homogeneousDim_lt_one hlam0 hlam) hg (log_inv_pos hlam0 hlam).ne' hper hagree
   refine isBigO_iff.mpr ⟨C, Eventually.of_forall fun v => ?_⟩
@@ -643,17 +643,17 @@ theorem audit_disjoint_increments_indep {P : Measure Ω} [IsProbabilityMeasure P
 /-- The law of the occupation measure is a probability measure, so the object the paper
 calls `Law(W_*μ)` has total mass one. -/
 theorem audit_isProbabilityMeasure_occupationLaw {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) (μ : Measure ℝ)
-    [IsProbabilityMeasure μ] : IsProbabilityMeasure (occupationLaw W P μ) :=
-  hW.isProbabilityMeasure_occupationLaw μ
+    {W : ℝ≥0 → Ω → Plane} (μ : Measure ℝ) [IsProbabilityMeasure μ] :
+    IsProbabilityMeasure (occupationLaw W P μ) :=
+  isProbabilityMeasure_occupationLaw μ
 
 /-- The law of the compact Brownian image is a probability measure, so the compact-image
 laws compared in `thm:cantor-set-application` have total mass one and their mutual
 singularity is not the vacuous statement about two zero measures. -/
 theorem audit_isProbabilityMeasure_brownianImageLaw {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) (K : NonemptyCompacts ℝ) :
+    {W : ℝ≥0 → Ω → Plane} (K : NonemptyCompacts ℝ) :
     IsProbabilityMeasure (brownianImageLaw W P K) :=
-  hW.isProbabilityMeasure_brownianImageLaw K
+  isProbabilityMeasure_brownianImageLaw K
 
 /-- The occupation measure is a measurable function of the sample path, so
 `occupationLaw` is the law of `W_*μ` and not the junk value `Measure.map` returns on a

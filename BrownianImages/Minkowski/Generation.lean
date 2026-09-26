@@ -63,7 +63,7 @@ instance {iota : Type*} [Nonempty iota] (k : ℕ) :
       infer_instance
   | succ k ih =>
       change Nonempty (GenerationWord iota k × iota)
-      letI : Nonempty (GenerationWord iota k) := ih
+      let : Nonempty (GenerationWord iota k) := ih
       infer_instance
 
 namespace System
@@ -360,7 +360,7 @@ theorem IsNatural.abs_integral_sub_generationQuadrature_le_of_modulus
       |a - b| ≤ delta → |f a - f b| ≤ epsilon)
     {k : ℕ} (hk : Hutchinson.maxRatio S ^ k ≤ delta) :
     |(∫ x, f x ∂mu) - hmu.attractor.generationQuadrature S s k f| ≤ epsilon := by
-  letI := hmu.isProbabilityMeasure
+  let := hmu.isProbabilityMeasure
   let z : ℝ := hmu.attractor.baseAnchor S
   let g : BoundedContinuousFunction ℝ ℝ := (Hutchinson.testOp S s)^[k] f
   have hquad : hmu.attractor.generationQuadrature S s k f = g z := by
@@ -618,7 +618,7 @@ theorem IsNatural.tubeReconstructsOccupation_of_generation_tubeMassRatio
         atTop (nhds (S.generationWeight s k w))) :
     MinkowskiReconstruction.TubeReconstructsOccupation
       W P hmu.compactAttractor mu := by
-  letI : IsProbabilityMeasure mu := hmu.isProbabilityMeasure
+  let : IsProbabilityMeasure mu := hmu.isProbabilityMeasure
   have hcont := hW.ae_continuous
   have hoccupation := hW.ae_occupationProb_toMeasure mu
   have hunion : ∀ᵐ omega ∂P, ∀ k,

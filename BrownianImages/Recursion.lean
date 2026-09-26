@@ -201,13 +201,13 @@ theorem phi_recursion_cross {ι : Type*} [Fintype ι] (S : System ι) {K : Set �
       ENNReal.toReal_ofReal (Real.rpow_pos_of_pos (S.ratio_pos j) s).le]
     by_cases hij : i = j
     · subst hij
-      rw [if_pos rfl, if_pos rfl, add_zero, hμ.prod_map_diag S i δ, Phi, two_mul,
+      rw [ite_eq_left rfl, ite_eq_left rfl, add_zero, hμ.prod_map_diag S i δ, Phi, two_mul,
         Real.rpow_add (S.ratio_pos i)]
-    · rw [if_neg hij, if_neg hij, zero_add]
+    · rw [ite_eq_right hij, ite_eq_right hij, zero_add]
   rw [Phi, hμ.prod_eq_double_sum S δ, ENNReal.toReal_sum fun i _ => ENNReal.sum_ne_top.mpr
     fun j _ => hne i j]
   simp_rw [ENNReal.toReal_sum fun j _ => hne _ j, hterm, Finset.sum_add_distrib,
-    Finset.sum_ite_eq, Finset.mem_univ, if_true]
+    Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   rfl
 
 /-- **`thm:renewal-recursion`, `eq:g-recursion`.**  At every `w`,

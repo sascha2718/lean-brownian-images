@@ -61,14 +61,14 @@ theorem varScale_div_tendsto_zero {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
   · have hcongr : (fun r : ℝ => varScale s r / r ^ (4 * s))
         =ᶠ[nhdsWithin (0:ℝ) (Set.Ioi 0)] fun r : ℝ => r ^ (2 * s) := by
       filter_upwards [self_mem_nhdsWithin] with r hr
-      rw [varScale, if_pos h, ← Real.rpow_sub hr, show 6 * s - 4 * s = 2 * s by ring]
+      rw [varScale, ite_eq_left h, ← Real.rpow_sub hr, show 6 * s - 4 * s = 2 * s by ring]
     exact Filter.Tendsto.congr' hcongr.symm (tendsto_rpow_nhdsGT_zero (by linarith))
   · have h4 : 4 * s = 2 := by rw [h]; norm_num
     have hcongr : (fun r : ℝ => varScale s r / r ^ (4 * s))
         =ᶠ[nhdsWithin (0:ℝ) (Set.Ioi 0)] fun r : ℝ => r - Real.log r * r := by
       filter_upwards [self_mem_nhdsWithin] with r hr
       have hr' : (0:ℝ) < r := hr
-      rw [varScale, if_neg (by rw [h]; norm_num), if_pos h, h4,
+      rw [varScale, ite_eq_right (by rw [h]; norm_num), ite_eq_left h, h4,
         show (2:ℝ) = ((2:ℕ) : ℝ) by norm_num, Real.rpow_natCast,
         show (3:ℝ) = ((3:ℕ) : ℝ) by norm_num, Real.rpow_natCast,
         Real.log_inv]
@@ -84,7 +84,7 @@ theorem varScale_div_tendsto_zero {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
   · have hcongr : (fun r : ℝ => varScale s r / r ^ (4 * s))
         =ᶠ[nhdsWithin (0:ℝ) (Set.Ioi 0)] fun r : ℝ => r ^ (2 - 2 * s) := by
       filter_upwards [self_mem_nhdsWithin] with r hr
-      rw [varScale, if_neg (by linarith), if_neg (by linarith), ← Real.rpow_sub hr,
+      rw [varScale, ite_eq_right (by linarith), ite_eq_right (by linarith), ← Real.rpow_sub hr,
         show 2 * s + 2 - 4 * s = 2 - 2 * s by ring]
     exact Filter.Tendsto.congr' hcongr.symm (tendsto_rpow_nhdsGT_zero (by linarith))
 

@@ -110,7 +110,7 @@ the atom at `δ` are both null. -/
 theorem pairLaw_Ioo [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (hμ : IsFrostman s A μ) (c : ℝ) :
     pairLaw μ (Set.Ioo 0 c) = ENNReal.ofReal (Phi μ c) := by
-  haveI := isProbabilityMeasure_pairLaw (μ := μ)
+  have := isProbabilityMeasure_pairLaw (μ := μ)
   have hle : pairLaw μ (Set.Iic c) ≤ pairLaw μ (Set.Ioo 0 c) := by
     have hsub : Set.Iic c ⊆ Set.Ioo 0 c ∪ (Set.Iic 0 ∪ {c}) := by
       intro x hx
@@ -133,7 +133,7 @@ theorem pairLaw_Ioo [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
 exactly those of `(0, 1/t)`.  This is what the layer cake formula turns into `Φ`. -/
 theorem setOf_lt_inv {t : ℝ} (ht : 0 < t) : {a : ℝ | t < a⁻¹} = Set.Ioo 0 t⁻¹ := by
   ext a
-  simp only [Set.mem_setOf_eq, Set.mem_Ioo]
+  simp only [Set.mem_ofPred_eq, Set.mem_Ioo]
   constructor
   · intro h
     have ha : 0 < a := by
@@ -152,11 +152,11 @@ theorem integral_ret_eq [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (hμ : IsFrostman s A μ) (r : ℝ) :
     ∫ δ : ℝ, (1 - Real.exp (-(r ^ 2 / (2 * δ)))) ∂(pairLaw μ)
       = ∫ u in Set.Ioi (0:ℝ), Phi μ u⁻¹ * expDens r u := by
-  haveI := isProbabilityMeasure_pairLaw (μ := μ)
+  have := isProbabilityMeasure_pairLaw (μ := μ)
   have hnonneg : ∀ᵐ δ ∂(pairLaw μ), 0 ≤ δ := by
     rw [ae_iff]
     refine measure_mono_null (fun x hx => ?_) (pairLaw_Iic_zero hs hμ)
-    simp only [Set.mem_setOf_eq, not_le] at hx
+    simp only [Set.mem_ofPred_eq, not_le] at hx
     exact hx.le
   have hfnn : (0 : ℝ → ℝ) ≤ᵐ[pairLaw μ] fun δ : ℝ => δ⁻¹ := by
     filter_upwards [hnonneg] with δ hδ

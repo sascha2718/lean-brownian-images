@@ -29,7 +29,7 @@ theorem measurable_ballMass (nu : Measure Plane) [SFinite nu] (r : ℝ) :
   have hsection : ∀ x : Plane, Prod.mk x ⁻¹' A = Metric.ball x r := by
     intro x
     ext y
-    simp only [A, Set.mem_preimage, Set.mem_setOf_eq, Metric.mem_ball, dist_comm]
+    simp only [A, Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_ball, dist_comm]
   have hm : Measurable (fun x : Plane => nu (Prod.mk x ⁻¹' A)) :=
     measurable_measure_prodMk_left hA
   change Measurable (fun x : Plane => nu (Metric.ball x r))
@@ -45,11 +45,11 @@ theorem lintegral_ballMass_volume (nu : Measure Plane) [SFinite nu] (r : ℝ) :
   have hleft : ∀ x : Plane, Prod.mk x ⁻¹' A = Metric.ball x r := by
     intro x
     ext y
-    simp only [A, Set.mem_preimage, Set.mem_setOf_eq, Metric.mem_ball, dist_comm]
+    simp only [A, Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_ball, dist_comm]
   have hright : ∀ y : Plane, (fun x => (x, y)) ⁻¹' A = Metric.ball y r := by
     intro y
     ext x
-    simp only [A, Set.mem_preimage, Set.mem_setOf_eq, Metric.mem_ball]
+    simp only [A, Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_ball]
   calc
     ∫⁻ x, ballMass nu r x ∂volume = (volume.prod nu) A := by
       rw [Measure.prod_apply hA]
@@ -94,7 +94,7 @@ theorem lintegral_ballMass_sq_le_corr (nu : Measure Plane) [SFinite nu]
       Prod.mk z ⁻¹' T = Metric.ball z r ×ˢ Metric.ball z r := by
     intro z
     ext p
-    simp only [T, commonBallTripleSet, Set.mem_preimage, Set.mem_setOf_eq,
+    simp only [T, commonBallTripleSet, Set.mem_preimage, Set.mem_ofPred_eq,
       Set.mem_prod, Metric.mem_ball, dist_comm]
   have hright_le : ∀ p : Plane × Plane,
       volume ((fun z : Plane => (z, p)) ⁻¹' T) ≤ C.indicator (fun _ => area) p := by

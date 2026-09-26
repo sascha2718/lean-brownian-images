@@ -594,7 +594,7 @@ theorem IsNatural.prod_map_close_eq_one {K : Set ℝ} {s : ℝ} {μ : Measure �
   have hsub : (S.stoppingWordMap w '' K) ×ˢ (S.stoppingWordMap v '' K)
       ⊆ {p : ℝ × ℝ | |p.1 - p.2| ≤ 3 * h} := by
     rintro ⟨x, y⟩ ⟨hx, hy⟩
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     have hx' : x ∈ S.stoppingWordMap w '' Set.Icc (0:ℝ) 1 :=
       Set.image_mono hμ.attractor.2.2.1 hx
     have hy' : y ∈ S.stoppingWordMap v '' Set.Icc (0:ℝ) 1 :=

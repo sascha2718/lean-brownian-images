@@ -113,7 +113,7 @@ theorem sum_range_split {θ lam : ℝ} (hθ : 0 < θ) (hlam0 : 0 < lam) {N : ℕ
     have hβ : (0:ℝ) < ((1:ℝ)/2) ^ j := half_pow_pos j
     have hβθ : (0:ℝ) < (((1:ℝ)/2) ^ j) ^ θ := Real.rpow_pos_of_pos hβ θ
     by_cases hj : j < N
-    · rw [if_pos hj]
+    · rw [ite_eq_left hj]
       have h1 : (((1:ℝ)/2) ^ j) ^ θ * min 1 (lam / ((1:ℝ)/2) ^ j)
           ≤ (((1:ℝ)/2) ^ j) ^ θ * (lam / ((1:ℝ)/2) ^ j) :=
         mul_le_mul_of_nonneg_left (min_le_right _ _) hβθ.le
@@ -122,7 +122,7 @@ theorem sum_range_split {θ lam : ℝ} (hθ : 0 < θ) (hlam0 : 0 < lam) {N : ℕ
         rw [← half_pow_rpow, Real.rpow_sub hβ, Real.rpow_one]
         field_simp
       linarith [h2 ▸ h1]
-    · rw [if_neg hj, ← half_pow_rpow]
+    · rw [ite_eq_right hj, ← half_pow_rpow]
       have h1 : (((1:ℝ)/2) ^ j) ^ θ * min 1 (lam / ((1:ℝ)/2) ^ j)
           ≤ (((1:ℝ)/2) ^ j) ^ θ * 1 :=
         mul_le_mul_of_nonneg_left (min_le_left _ _) hβθ.le
@@ -377,7 +377,7 @@ theorem tsum_master_le {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     refine le_trans (mul_le_mul' (hD₁ _ hlam0 hlam1) (hD₂ _ hlam0 hlam1)) ?_
     rw [← ENNReal.ofReal_mul (by positivity)]
     refine ENNReal.ofReal_le_ofReal ?_
-    rw [varScale, if_pos hcase, sq_rpow hr0, sq_rpow hr0,
+    rw [varScale, ite_eq_left hcase, sq_rpow hr0, sq_rpow hr0,
       show D₁ * (r ^ (2 * s)) * (D₂ * r ^ (2 * (2 * s))) = D₁ * D₂ * (r ^ (2 * s) * r ^ (2 * (2 * s))) by ring,
       ← Real.rpow_add hr0]
     apply le_of_eq
@@ -404,7 +404,7 @@ theorem tsum_master_le {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     have hhalf : (r ^ 2) ^ (2:ℝ)⁻¹ = r := by
       rw [sq_rpow hr0]
       norm_num
-    rw [varScale, if_neg (by norm_num), if_pos rfl, hlog, hhalf]
+    rw [varScale, ite_eq_right (by norm_num), ite_eq_left rfl, hlog, hhalf]
     have hr3 : r ^ (3:ℝ) = r * r ^ 2 := by
       rw [show (3:ℝ) = ((3:ℕ):ℝ) by norm_num, Real.rpow_natCast]
       ring
@@ -419,7 +419,7 @@ theorem tsum_master_le {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     refine le_trans (mul_le_mul' (hD₁ _ hlam0 hlam1) (hD₂ _ hlam0 hlam1)) ?_
     rw [← ENNReal.ofReal_mul (by positivity)]
     refine ENNReal.ofReal_le_ofReal ?_
-    rw [varScale, if_neg (by linarith), if_neg (by linarith), sq_rpow hr0]
+    rw [varScale, ite_eq_right (by linarith), ite_eq_right (by linarith), sq_rpow hr0]
     have hsplit : r ^ (2 * s) * r ^ 2 = r ^ (2 * s + 2) := by
       rw [show (r:ℝ) ^ 2 = r ^ ((2:ℕ):ℝ) by rw [Real.rpow_natCast], Real.rpow_natCast,
         ← Real.rpow_natCast r 2, ← Real.rpow_add hr0]
@@ -581,7 +581,7 @@ theorem measure_unitSet_compl {s A : ℝ} (hμ : IsFrostman s A μ) :
   have hsub : (unitSetᶜ : Set (ℝ × ℝ × ℝ × ℝ))
       ⊆ ⋃ i : Fin 4, {p : ℝ × ℝ × ℝ × ℝ | coord p i ∈ (Set.Icc (0:ℝ) 1)ᶜ} := by
     intro p hp
-    simp only [unitSet, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall] at hp
+    simp only [unitSet, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall] at hp
     obtain ⟨i, hi⟩ := hp
     exact Set.mem_iUnion.2 ⟨i, hi⟩
   refine measure_mono_null hsub ?_
@@ -601,7 +601,7 @@ theorem measure_tieSet {s A : ℝ} (hs : 0 < s) (hμ : IsFrostman s A μ) :
       have hset : {a : ℝ × ℝ × ℝ | x = a.1} = ({x} : Set ℝ) ×ˢ (Set.univ : Set (ℝ × ℝ)) := by
         ext q; simp [eq_comm]
       rw [hset, Measure.prod_prod, hμ.measure_singleton hs x, zero_mul]
-    simp only [Set.preimage_setOf_eq]
+    simp only [Set.preimage_ofPred_eq]
     rw [lintegral_congr hsec]
     simp
   have htrans : ∀ σ : Equiv.Perm (Fin 4),
@@ -715,7 +715,7 @@ theorem cover_mem {α : Type*} (F : ℝ → ℝ → ℝ → ℝ → α)
   have ho1 : p.2.1 ≤ 1 := (hu 1).2
   have ho2 : p.2.2.1 ≤ 1 := (hu 2).2
   have ho3 : p.2.2.2 ≤ 1 := (hu 3).2
-  simp only [tieSet, Set.mem_union, Set.mem_setOf_eq, not_or] at ht
+  simp only [tieSet, Set.mem_union, Set.mem_ofPred_eq, not_or] at ht
   obtain ⟨⟨⟨hne13, hne14⟩, hne23⟩, hne24⟩ := ht
   have hlt := overlap_lt hov
   have hA : min p.1 p.2.1 < max p.1 p.2.1 :=
@@ -805,7 +805,7 @@ theorem cover_mem {α : Type*} (F : ℝ → ℝ → ℝ → ℝ → α)
 /-- The set of quadruples with all four times in `[0,1]` is measurable. -/
 theorem measurableSet_unitSet : MeasurableSet unitSet := by
   have h : unitSet = ⋂ i : Fin 4, (fun p : ℝ × ℝ × ℝ × ℝ => coord p i) ⁻¹' (Set.Icc (0:ℝ) 1) := by
-    rw [unitSet, Set.setOf_forall]
+    rw [unitSet, Set.ofPred_forall]
     rfl
   rw [h]
   exact MeasurableSet.iInter (fun i =>
@@ -894,7 +894,7 @@ theorem jointReturn_swap_left {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (r
   unfold jointReturn
   congr 1
   ext ω
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   rw [dist_comm (W u.toNNReal ω) (W t.toNNReal ω)]
 
 omit [IsProbabilityMeasure μ] in
@@ -905,7 +905,7 @@ theorem jointReturn_swap_right {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (
   unfold jointReturn
   congr 1
   ext ω
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   rw [dist_comm (W u'.toNNReal ω) (W t'.toNNReal ω)]
 
 omit [IsProbabilityMeasure μ] in
@@ -916,7 +916,7 @@ theorem jointReturn_swap_pairs {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (
   unfold jointReturn
   congr 1
   ext ω
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   exact and_comm
 
 end FourPointIntegral
@@ -980,7 +980,7 @@ theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Meas
       · exact Or.inr (Or.inr ht)
       · obtain ⟨σ, hpair, j, l, hjl⟩ := cover_mem F hswapL hswapR hswapP hp hu ht
         refine Or.inl (Set.mem_iUnion.2 ⟨(σ, j, l), ?_⟩)
-        rw [piece, if_pos hpair]
+        rw [piece, ite_eq_left hpair]
         exact ⟨hjl, hu⟩
     · exact Or.inr (Or.inl hu)
   have hN : (μ.prod (μ.prod (μ.prod μ))) (unitSetᶜ ∪ tieSet) = 0 :=

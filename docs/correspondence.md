@@ -74,8 +74,8 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `thm:neighbourhood-concentration` | `audit_tube_concentration` | `System.IsNatural.tubeConcentration`, under the open set condition, by `Minkowski.StoppingConcentration`: the sum `Y_{r,u}` over the stopping cylinders at scale `u = r` has variance `O(u^s)` through the `M` independent classes of `thm:stopping-overlap`, `eq:stopping-neighbourhood-variance`; the error `F_{r,u}` telescopes over the stopping tree, its expectation is `O(r^{η}(1 + t))` by `eq:neighbourhood-defect-mean` node by node, `eq:stopping-neighbourhood-defect`, and its third moment is bounded, so interpolation gives the `L²` bound; Borel--Cantelli gives every fixed phase |
 | the ambient σ-algebra on `𝒫(ℝ²)` | `audit_borel_eq_giry` | `borel_probabilityMeasure_eq_giry` |
 | occupation has full mass | `audit_isProbabilityMeasure_occupation` | `IsPlanarBrownian.ae_isProbabilityMeasure_occupation` |
-| `Law(W_*μ)` has total mass one | `audit_isProbabilityMeasure_occupationLaw` | `IsPlanarBrownian.isProbabilityMeasure_occupationLaw` |
-| the law of the compact Brownian image has total mass one | `audit_isProbabilityMeasure_brownianImageLaw` | `IsPlanarBrownian.isProbabilityMeasure_brownianImageLaw` |
+| `Law(W_*μ)` has total mass one | `audit_isProbabilityMeasure_occupationLaw` | `isProbabilityMeasure_occupationLaw`, for every process `W`: the push-forward of a probability measure is a probability measure |
+| the law of the compact Brownian image has total mass one | `audit_isProbabilityMeasure_brownianImageLaw` | `isProbabilityMeasure_brownianImageLaw`, for every process `W` |
 | occupation is measurable | `audit_aemeasurable_occupation` | `IsPlanarBrownian.aemeasurable_occupationProb` |
 | internal Ahlfors regularity | `audit_ahlfors` | `System.OpenSetCondition.exists_isAhlforsClosed`, under the open set condition |
 | the two Ahlfors ball conventions | `audit_ahlfors_conventions` | `IsAhlforsClosed.isAhlfors` |

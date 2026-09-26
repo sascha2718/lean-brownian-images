@@ -16,8 +16,7 @@ everywhere and the limit is measurable.
 * `JointMeasurability.measurable_occupation`: the occupation measure of such a
   modification is a measurable point of `Measure ℝ²` with the Giry structure.
 * `IsPlanarBrownian.aemeasurable_occupationProb`: `audit_aemeasurable_occupation`.
-* `IsPlanarBrownian.isProbabilityMeasure_occupationLaw`:
-  `audit_isProbabilityMeasure_occupationLaw`.
+* `isProbabilityMeasure_occupationLaw`: `audit_isProbabilityMeasure_occupationLaw`.
 -/
 import BrownianImages.Occupation
 import Mathlib.MeasureTheory.Function.Floor
@@ -193,10 +192,10 @@ theorem IsPlanarBrownian.aemeasurable_occupationProb (hW : IsPlanarBrownian W P)
     exact hocc
 
 /-- `audit_isProbabilityMeasure_occupationLaw`.  The law of the occupation measure is a
-probability measure, so the object the paper calls `Law(W_*μ)` has total mass one. -/
-theorem IsPlanarBrownian.isProbabilityMeasure_occupationLaw [IsProbabilityMeasure P]
-    (hW : IsPlanarBrownian W P) (μ : Measure ℝ) [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (occupationLaw W P μ) := by
+probability measure, so the object the paper calls `Law(W_*μ)` has total mass one.  The
+push-forward of a probability measure is a probability measure for every process `W`. -/
+theorem isProbabilityMeasure_occupationLaw [IsProbabilityMeasure P] (μ : Measure ℝ)
+    [IsProbabilityMeasure μ] : IsProbabilityMeasure (occupationLaw W P μ) := by
   unfold occupationLaw
   exact inferInstance
 

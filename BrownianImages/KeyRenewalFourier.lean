@@ -324,7 +324,7 @@ theorem countable_norm_charFun_renewalLaw_eq_one [Nonempty ι] {s : ℝ}
   have hcne : c ≠ 0 := sub_ne_zero.mpr hij
   refine Set.Countable.mono ?_ (Set.countable_range (fun k : ℤ => (k : ℝ) * (2 * Real.pi) / c))
   intro t hnorm
-  simp only [Set.mem_setOf_eq] at hnorm
+  simp only [Set.mem_ofPred_eq] at hnorm
   have heq := exp_logRatio_eq_of_norm_charFun_eq_one S hdim hnorm i j
   have hone : Complex.exp ((t : ℂ) * (c : ℂ) * Complex.I) = 1 := by
     have hrw : (t : ℂ) * (c : ℂ) * Complex.I
@@ -398,7 +398,7 @@ theorem fellerNonlattice_of_nonlattice {μ : Measure ℝ}
   countable_norm_charFun_eq_one := by
     refine Set.Countable.mono ?_ (Set.countable_singleton (0 : ℝ))
     intro t ht
-    simp only [Set.mem_setOf_eq] at ht
+    simp only [Set.mem_ofPred_eq] at ht
     by_contra h0
     exact absurd ht
       (AbsorptionCutoff.Renewal.norm_charFun_lt_one_of_nonlattice hμ h0).ne
@@ -558,7 +558,7 @@ log-ratios, so it has bounded support.  This is the moment hypothesis the key re
 theorem asks of the increment law. -/
 theorem memLp_id_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
     MemLp id 2 (S.renewalLaw s) := by
-  haveI := S.isProbabilityMeasure_renewalLaw hdim
+  have := S.isProbabilityMeasure_renewalLaw hdim
   refine MemLp.of_bound (by fun_prop) (∑ j, |S.logRatio j|) ?_
   rw [ae_iff]
   set B : Set ℝ := {x : ℝ | ¬ ‖(id x : ℝ)‖ ≤ ∑ j, |S.logRatio j|} with hB
@@ -570,7 +570,7 @@ theorem memLp_id_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
   refine Finset.sum_eq_zero fun i _ => ?_
   have hnot : S.logRatio i ∉ B := by
     rw [hB]
-    simp only [Set.mem_setOf_eq, not_not, id_eq, Real.norm_eq_abs]
+    simp only [Set.mem_ofPred_eq, not_not, id_eq, Real.norm_eq_abs]
     exact Finset.single_le_sum (f := fun j => |S.logRatio j|)
       (fun j _ => abs_nonneg _) (Finset.mem_univ i)
   rw [Measure.dirac_apply' _ hmeas, Set.indicator_of_notMem hnot, mul_zero]
@@ -613,7 +613,7 @@ theorem tendsto_of_renewalEquation [Nonempty ι] {s : ℝ} (hdim : S.IsDimension
     (hA : ∀ u, |h u| ≤ A) (hbot : Filter.Tendsto h Filter.atBot (𝓝 0))
     (hren : ∀ y : ℝ, h y = S.renewalConv s h y + z y) :
     Filter.Tendsto h Filter.atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, z x)) := by
-  haveI := S.isProbabilityMeasure_renewalLaw hdim
+  have := S.isProbabilityMeasure_renewalLaw hdim
   obtain ⟨θ, hθ, hlt⟩ := S.exists_expTransform_lt_one hdim
   have hm : 0 < ∫ x, x ∂(S.renewalLaw s) := by
     rw [S.integral_id_renewalLaw]
@@ -708,7 +708,7 @@ theorem phi_eq_one_of_one_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
       ⊆ ((Set.Icc (0:ℝ) 1)ᶜ ×ˢ (Set.univ : Set ℝ))
         ∪ ((Set.univ : Set ℝ) ×ˢ (Set.Icc (0:ℝ) 1)ᶜ) := by
     intro p hp
-    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le] at hp
+    simp only [Set.mem_compl_iff, Set.mem_ofPred_eq, not_le] at hp
     by_cases h1 : p.1 ∈ Set.Icc (0:ℝ) 1
     · by_cases h2 : p.2 ∈ Set.Icc (0:ℝ) 1
       · exfalso
@@ -730,7 +730,7 @@ kept rather than killed, so no separation hypothesis and no restriction on `δ` 
 needed. -/
 theorem phi_recursion_le {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
     (δ : ℝ) : ∑ i, S.ratio i ^ (2 * s) * Phi μ (δ / S.ratio i) ≤ Phi μ δ := by
-  haveI := hμ.isProbabilityMeasure
+  have := hμ.isProbabilityMeasure
   have hphi : ∀ δ' : ℝ, Phi μ δ' = (∫⁻ x, μ (Metric.closedBall x δ') ∂μ).toReal := by
     intro δ'; rw [Phi, phi_prod_eq]
   have hfin : ∀ δ' : ℝ, (∫⁻ x, μ (Metric.closedBall x δ') ∂μ) ≠ ⊤ := by
@@ -825,7 +825,7 @@ theorem renewalDefect_nonneg {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S
 theorem renewalDefect_pos_of_nonpos [Nonempty ι] {K : Set ℝ} {s : ℝ} (hs : 0 < s)
     (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) {w : ℝ}
     (hw : w ≤ 0) : 0 < S.renewalDefect s μ w := by
-  haveI := hμ.isProbabilityMeasure
+  have := hμ.isProbabilityMeasure
   have hsupp := hμ.support_Icc
   have hδ : (1:ℝ) ≤ Real.exp (-w) := Real.one_le_exp (by linarith)
   have hΦ : Phi μ (Real.exp (-w)) = 1 := phi_eq_one_of_one_le hsupp hδ

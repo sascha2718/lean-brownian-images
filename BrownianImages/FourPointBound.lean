@@ -80,7 +80,7 @@ theorem volume_disc (x : ℝ × ℝ) {r : ℝ} (hr : 0 < r) :
       {q : ℝ × ℝ | (q.1 - x.1) ^ 2 + (q.2 - x.2) ^ 2 < r ^ 2}
       = Metric.ball (Complex.mk x.1 x.2) r := by
     ext z
-    simp only [Set.mem_preimage, Set.mem_setOf_eq, Metric.mem_ball, Complex.dist_eq_re_im,
+    simp only [Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_ball, Complex.dist_eq_re_im,
       Complex.measurableEquivRealProd_apply]
     exact (Real.sqrt_lt' hr).symm
   rw [← Complex.volume_preserving_equiv_real_prod.measure_preimage hmeas.nullMeasurableSet,
@@ -428,7 +428,7 @@ theorem jointReturn_le_det [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
           ((W u' ω 0 - W t' ω 0) - ρ * (W u ω 0 - W t ω 0),
             (W u' ω 1 - W t' ω 1) - ρ * (W u ω 1 - W t ω 1)))) ⁻¹' S := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, hdist, hSdef]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, hdist, hSdef]
     refine and_congr Iff.rfl ?_
     have key : ((W u' ω 0 - W t' ω 0 - ρ * (W u ω 0 - W t ω 0)) + ρ * (W u ω 0 - W t ω 0)) ^ 2
         + ((W u' ω 1 - W t' ω 1 - ρ * (W u ω 1 - W t ω 1)) + ρ * (W u ω 1 - W t ω 1)) ^ 2
@@ -449,14 +449,14 @@ theorem jointReturn_le_det [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
           have hslice : Prod.mk z ⁻¹' S
               = {n : ℝ × ℝ | (n.1 + ρ * z.1) ^ 2 + (n.2 + ρ * z.2) ^ 2 < r ^ 2} := by
             ext n
-            simp only [Set.mem_preimage, hSdef, Set.mem_setOf_eq, hz, true_and]
+            simp only [Set.mem_preimage, hSdef, Set.mem_ofPred_eq, hz, true_and]
           rw [hslice]
           have hb := gaussianProd_disc_le' hvne hr (ρ * z.1) (ρ * z.2)
           rwa [hvcoe] at hb
         · rw [Set.indicator_of_notMem (s := {z : ℝ × ℝ | z.1 ^ 2 + z.2 ^ 2 < r ^ 2}) hz]
           have hslice : Prod.mk z ⁻¹' S = (∅ : Set (ℝ × ℝ)) := by
             ext n
-            simp only [Set.mem_preimage, hSdef, Set.mem_setOf_eq, Set.mem_empty_iff_false,
+            simp only [Set.mem_preimage, hSdef, Set.mem_ofPred_eq, Set.mem_empty_iff_false,
               iff_false, not_and]
             exact fun h => absurd h hz
           rw [hslice, measure_empty]

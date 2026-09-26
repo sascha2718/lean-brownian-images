@@ -287,8 +287,8 @@ theorem integrable_tubeOverlapArea_translate_of_indep_boundedDensity
     (hareaB : Integrable (fun omega => tubeArea r (B omega)) P) :
     Integrable (fun omega =>
       tubeOverlapArea r (A omega) (translateCompact (Z omega) (B omega))) P := by
-  letI : IsProbabilityMeasure (P.map A) := inferInstance
-  letI : IsProbabilityMeasure (P.map B) := inferInstance
+  let : IsProbabilityMeasure (P.map A) := inferInstance
+  let : IsProbabilityMeasure (P.map B) := inferInstance
   have hareaAmap : Integrable (tubeArea r) (P.map A) := by
     rw [integrable_map_measure (measurable_tubeArea r).aestronglyMeasurable hA]
     simpa only [Function.comp_def] using hareaA
@@ -328,8 +328,8 @@ theorem integral_tubeOverlapArea_translate_le_of_indep_boundedDensity
       (translateCompact (Z omega) (B omega)) ∂P) ≤
       C * ((∫ omega, tubeArea r (A omega) ∂P) *
         ∫ omega, tubeArea r (B omega) ∂P) := by
-  letI : IsProbabilityMeasure (P.map A) := inferInstance
-  letI : IsProbabilityMeasure (P.map B) := inferInstance
+  let : IsProbabilityMeasure (P.map A) := inferInstance
+  let : IsProbabilityMeasure (P.map B) := inferInstance
   have hareaAmap : Integrable (tubeArea r) (P.map A) := by
     rw [integrable_map_measure (measurable_tubeArea r).aestronglyMeasurable hA]
     simpa only [Function.comp_def] using hareaA
@@ -509,7 +509,7 @@ theorem IsPlanarBrownian.indepFun_compactPieces_gapIncrement
     intro n
     let LK := finiteCompactApprox (T := K) n
     let hLK : (LK : Set K).Finite := finite_finiteCompactApprox (T := K) n
-    letI : Fintype LK := hLK.fintype
+    let : Fintype LK := hLK.fintype
     have hsamples : Measurable (fun z : unitIntervalCompact → Plane => fun t : LK =>
         (Real.sqrt (r : Real))⁻¹ • z (inK t.1)) := by
       apply Measurable.of_eval
@@ -539,7 +539,7 @@ theorem IsPlanarBrownian.indepFun_compactPieces_gapIncrement
     intro n
     let LL := finiteCompactApprox (T := L) n
     let hLL : (LL : Set L).Finite := finite_finiteCompactApprox (T := L) n
-    letI : Fintype LL := hLL.fintype
+    let : Fintype LL := hLL.fintype
     have hsamples : Measurable (fun z : unitIntervalCompact → Plane => fun t : LL =>
         (Real.sqrt (s : Real))⁻¹ • z (inL t.1)) := by
       apply Measurable.of_eval

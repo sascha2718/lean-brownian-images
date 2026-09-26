@@ -91,8 +91,8 @@ theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityM
       (∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H s μ₁ t - H s μ₂ t|) →
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
-  haveI := hμ₁.isProbabilityMeasure
-  haveI := hμ₂.isProbabilityMeasure
+  have := hμ₁.isProbabilityMeasure
+  have := hμ₂.isProbabilityMeasure
   obtain ⟨A₁, hFrost₁⟩ := System.OpenSetCondition.exists_isFrostman S₁ hosc₁ hs0.le hμ₁
   obtain ⟨A₂, hFrost₂⟩ := System.OpenSetCondition.exists_isFrostman S₂ hosc₂ hs0.le hμ₂
   obtain ⟨hC₁, hG₁⟩ := hlim₁

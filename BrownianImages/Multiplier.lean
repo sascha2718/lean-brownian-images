@@ -110,7 +110,7 @@ everywhere, hence everywhere by continuity. -/
 theorem eq_zero_of_fourierCoeffP_eq_zero {q : ℝ} (hq : 0 < q) {g : ℝ → ℝ}
     (hg : Continuous g) (hper : Function.Periodic g q)
     (h : ∀ k : ℤ, fourierCoeffP q g k = 0) (x : ℝ) : g x = 0 := by
-  haveI : Fact (0 < q) := ⟨hq⟩
+  have : Fact (0 < q) := ⟨hq⟩
   have hperC : Function.Periodic (fun y : ℝ => (g y : ℂ)) q := fun y => by
     simp only []
     exact_mod_cast congrArg (fun t : ℝ => (t : ℂ)) (hper y)

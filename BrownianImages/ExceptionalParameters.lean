@@ -157,7 +157,7 @@ lemma exceptionalParameterToDimension_injective :
 countable.  The endpoint `audit_exceptional_parameters_countable`. -/
 theorem exceptionalParameters_countable : exceptionalParameters.Countable := by
   rw [Set.countable_iff_exists_injective]
-  letI := exceptionalDimensions_countable.toEncodable
+  let := exceptionalDimensions_countable.toEncodable
   exact ⟨fun lam => Encodable.encode (exceptionalParameterToDimension lam),
     Encodable.encode_injective.comp exceptionalParameterToDimension_injective⟩
 

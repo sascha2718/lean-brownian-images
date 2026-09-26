@@ -131,7 +131,7 @@ theorem IsBrownianReal.martingale_brownianGridSample
     {P : Measure Omega} {B : NNReal → Omega → Real}
     (hB : IsBrownianReal B P) (N : Nat) :
     Martingale (brownianGridSample hB N) (brownianGridFiltration hB N) P := by
-  letI : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
+  let : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
   let X := brownianGridSample hB N
   let hX : ∀ n, StronglyMeasurable (X n) :=
     stronglyMeasurable_brownianGridSample hB N
@@ -186,7 +186,7 @@ theorem IsBrownianReal.submartingale_abs_rpow_brownianGridSample
     Submartingale
       (fun n omega => |brownianGridSample hB N n omega| ^ q)
       (brownianGridFiltration hB N) P := by
-  letI : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
+  let : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
   let X := brownianGridSample hB N
   have hM := martingale_brownianGridSample hB N
   have hq0 : 0 ≤ q := zero_le_one.trans hq
@@ -260,7 +260,7 @@ theorem IsBrownianReal.gridMaxAbs_weak_moment
     {q a : Real} (hq : 1 ≤ q) (ha : 0 < a) :
     ENNReal.ofReal (a ^ q) * P {omega | a ≤ brownianGridMaxAbs hB N omega} ≤
       ENNReal.ofReal (∫ omega, |B 1 omega| ^ q ∂P) := by
-  letI : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
+  let : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
   let f : Nat → Omega → Real := fun n omega => |brownianGridSample hB N n omega| ^ q
   have hsub : Submartingale f (brownianGridFiltration hB N) P :=
     submartingale_abs_rpow_brownianGridSample hB N hq
@@ -590,7 +590,7 @@ theorem IsPlanarBrownian.integrable_standardBrownianRadius_rpow
     {P : Measure Omega} {W : NNReal → Omega → Plane}
     (hW : IsPlanarBrownian W P) {p : Real} (hp : 0 < p) :
     Integrable (fun omega => standardBrownianRadius W omega ^ p) P := by
-  letI : IsProbabilityMeasure P :=
+  let : IsProbabilityMeasure P :=
     (hW.coord 0).isGaussianProcess.isProbabilityMeasure
   let q : Real := p + 1
   let A : Real :=
@@ -618,7 +618,7 @@ theorem IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     {P : Measure Omega} {W : NNReal → Omega → Plane}
     (hW : IsPlanarBrownian W P) {p : Real} (hp : 1 ≤ p) :
     Integrable (fun omega => (1 + standardBrownianRadius W omega) ^ p) P := by
-  letI : IsProbabilityMeasure P :=
+  let : IsProbabilityMeasure P :=
     (hW.coord 0).isGaussianProcess.isProbabilityMeasure
   let a : Fin 2 → Omega → Real := fun j omega =>
     if j = 0 then 1 else standardBrownianRadius W omega

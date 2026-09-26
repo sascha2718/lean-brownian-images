@@ -37,7 +37,7 @@ set_option maxHeartbeats 800000 in
 `tubeCutoff`, is jointly continuous. -/
 theorem continuous_infDist_compactPlane :
     Continuous fun p : CompactPlane × Plane => Metric.infDist p.2 p.1 := by
-  exact (Metric.lipschitz_infDist (α := Plane)).continuous.comp continuous_swap
+  exact (TopologicalSpace.NonemptyCompacts.lipschitz_infDist (α := Plane)).continuous.comp continuous_swap
 
 /-- For a fixed compact set, the tube cut-off is continuous in the spatial point. -/
 theorem continuous_tubeCutoff_right (r : ℝ) (F : CompactPlane) :
@@ -51,7 +51,7 @@ theorem continuous_tubeCutoff_left (r : ℝ) (x : Plane) :
     Continuous fun F : CompactPlane => tubeCutoff r F x := by
   change Continuous fun F : CompactPlane => max (1 - Metric.infDist x F / r) 0
   exact (continuous_const.sub
-    ((Metric.lipschitz_infDist_set x).continuous.div_const r)).max continuous_const
+    ((TopologicalSpace.NonemptyCompacts.lipschitz_infDist_const x).continuous.div_const r)).max continuous_const
 
 /-- The tube cutoff is non-negative. -/
 theorem tubeCutoff_nonneg (r : ℝ) (F : CompactPlane) (x : Plane) :
@@ -122,7 +122,7 @@ theorem tubeCutoff_eq_zero_of_notMem_cthickening {r δ : ℝ} (hr : 0 < r) (hδ 
     Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded G.nonempty F.nonempty
       G.isCompact.isBounded F.isCompact.isBounded
   have hdist : Metric.infDist x F ≤ Metric.infDist x G + dist G F := by
-    simpa only [Metric.NonemptyCompacts.dist_eq] using
+    simpa only [TopologicalSpace.NonemptyCompacts.dist_eq] using
       (Metric.infDist_le_infDist_add_hausdorffDist (x := x) (s := (G : Set Plane))
         (t := (F : Set Plane)) hfin)
   apply (tubeCutoff_eq_zero_iff hr G x).2
@@ -296,8 +296,8 @@ theorem measurable_tubeProbability {r : ℝ} (hr : 0 < r) :
     Measurable (tubeProbability r hr) := by
   have h : @Measurable CompactPlane (ProbabilityMeasure Plane) (borel CompactPlane)
       (borel (ProbabilityMeasure Plane)) (tubeProbability r hr) := by
-    letI : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
-    haveI : BorelSpace (ProbabilityMeasure Plane) := ⟨rfl⟩
+    let : MeasurableSpace (ProbabilityMeasure Plane) := borel (ProbabilityMeasure Plane)
+    have : BorelSpace (ProbabilityMeasure Plane) := ⟨rfl⟩
     exact (continuous_tubeProbability hr).measurable
   exact @Eq.ndrec (MeasurableSpace (ProbabilityMeasure Plane))
     (borel (ProbabilityMeasure Plane))

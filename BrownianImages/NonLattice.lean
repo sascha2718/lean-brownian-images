@@ -98,7 +98,7 @@ theorem homogeneous_thm_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasu
           b * r ^ (2 * homogeneousDim lam) ≤ expCorr W P μA r)) := by
   have hs0 := homogeneousDim_pos hlam0 hlam
   have hs1 := homogeneousDim_lt_one hlam0 hlam
-  haveI := hB.isProbabilityMeasure
+  have := hB.isProbabilityMeasure
   obtain ⟨CB, hCBpos, hCB⟩ := homogeneous_gb_limit hlam0 hlam hB hnl
   obtain ⟨AB, hFrostB⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0
     (pairSystem_stronglySeparated (pairRatio_pos hs0) (pairRatio_lt_half hs0 hs1)

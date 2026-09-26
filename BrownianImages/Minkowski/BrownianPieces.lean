@@ -108,8 +108,8 @@ theorem indepFun_pi_of_pair_general
     IndepFun (fun omega i => X i omega) (fun omega i => Y i omega) P := by
   let mu : I -> Measure E := fun i => P.map (X i)
   let nu : I -> Measure F := fun i => P.map (Y i)
-  letI (i : I) : IsProbabilityMeasure (mu i) := inferInstance
-  letI (i : I) : IsProbabilityMeasure (nu i) := inferInstance
+  let (i : I) : IsProbabilityMeasure (mu i) := inferInstance
+  let (i : I) : IsProbabilityMeasure (nu i) := inferInstance
   have hXi : ∀ i, HasLaw (X i) (mu i) P := fun i => ⟨hX i, rfl⟩
   have hYi : ∀ i, HasLaw (Y i) (nu i) P := fun i => ⟨hY i, rfl⟩
   have hpairLaw : ∀ i, HasLaw (fun omega => (X i omega, Y i omega))
@@ -401,7 +401,7 @@ theorem IsPlanarBrownian.map_brownianImage_eq
     intro n
     let L := finiteCompactApprox (T := K) n
     let hL : (L : Set K).Finite := finite_finiteCompactApprox (T := K) n
-    letI : Fintype L := hL.fintype
+    let : Fintype L := hL.fintype
     change P.map (fun omega => finiteImage L hL (fun t : K => W t.1.toNNReal omega)) =
       Q.map (fun omega => finiteImage L hL (fun t : K => V t.1.toNNReal omega))
     simp_rw [finiteImage_eq_finiteRange]
@@ -509,7 +509,7 @@ theorem IsPlanarBrownian.iIndepFun_rescaledBrownianCompactPieces
       intro i
       let L := finiteCompactApprox (T := K i) n
       let hL : (L : Set (K i)).Finite := finite_finiteCompactApprox (T := K i) n
-      letI : Fintype L := hL.fintype
+      let : Fintype L := hL.fintype
       have hsamples : Measurable (fun z : K i -> Plane => fun t : L =>
           (Real.sqrt (r i : Real))⁻¹ • z t.1) := by
         apply Measurable.of_eval

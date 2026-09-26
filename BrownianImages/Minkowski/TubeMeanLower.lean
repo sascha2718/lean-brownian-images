@@ -154,7 +154,7 @@ theorem IsPlanarBrownian.integrable_occupationCorr
   refine (integrable_const (1 : ℝ)).mono
     (hW.aemeasurable_occupationCorr mu r).aestronglyMeasurable ?_
   filter_upwards [hW.ae_isProbabilityMeasure_occupation mu] with omega homega
-  letI := homega
+  let := homega
   have hle : (corr (occupation W mu omega) r).toReal ≤ 1 := by
     refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
     rw [ENNReal.ofReal_one]
@@ -176,7 +176,7 @@ theorem IsPlanarBrownian.ae_tubeMass_ge_discArea_div_corr
   filter_upwards [hW.ae_isProbabilityMeasure_occupation mu,
     hW.ae_occupation_compl_brownianImage_eq_zero K mu hsupport] with
     omega hprob hsupp
-  letI := hprob
+  let := hprob
   have harea :
       Real.pi * (r / 2) ^ 2 /
           (corr (occupation W mu omega) r).toReal ≤
@@ -210,7 +210,7 @@ theorem IsPlanarBrownian.ae_occupationCorr_pos
   filter_upwards [hW.ae_isProbabilityMeasure_occupation mu,
     hW.ae_occupation_compl_brownianImage_eq_zero K mu hsupport] with
     omega hprob hsupp
-  letI := hprob
+  let := hprob
   have hpos : 0 < corr (occupation W mu omega) r := by
     simpa only [show 2 * (r / 2) = r by ring] using
       (corr_two_mul_pos_of_support (occupation W mu omega)
@@ -292,7 +292,7 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_integrable
     ∃ c > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
       c * r ^ (tubeExponent s) ≤
         ∫ omega, tubeMass r (brownianImage W hmu.compactAttractor omega) ∂P := by
-  letI := hmu.isProbabilityMeasure
+  let := hmu.isProbabilityMeasure
   obtain ⟨A, hFrostman⟩ := System.OpenSetCondition.exists_isFrostman S hosc hs0.le hmu
   exact exists_expected_tubeMass_lower_of_frostman hW hs0 hs1 mu hFrostman
     hmu.compactAttractor hmu.support hint

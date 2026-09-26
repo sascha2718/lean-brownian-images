@@ -53,7 +53,7 @@ theorem block_inner_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
       rw [Set.indicator_of_mem hmem]
       refine le_trans (measure_mono ?_) (hμ.measure_closedBall_le x₃ η hη0 hη1)
       intro x₄ hx₄
-      simp only [Set.mem_preimage, Set.mem_setOf_eq] at hx₄
+      simp only [Set.mem_preimage, Set.mem_ofPred_eq] at hx₄
       simpa [Metric.mem_closedBall, Real.dist_eq] using hx₄.2
     · have hempty : Prod.mk x₃ ⁻¹' {q : ℝ × ℝ | |q.1 - x₂| ≤ β ∧ |q.2 - q.1| ≤ η} = ∅ := by
         ext x₄
@@ -101,7 +101,7 @@ theorem block_mid_le [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
       rw [Set.indicator_of_mem hmem]
       refine le_trans (measure_mono ?_) (block_inner_le hμ hβ0 hβ1 hη0 hη1 x₂)
       intro q hq
-      simp only [Set.mem_preimage, Set.mem_setOf_eq] at hq ⊢
+      simp only [Set.mem_preimage, Set.mem_ofPred_eq] at hq ⊢
       exact ⟨hq.1, hq.2.2⟩
     · have hempty : Prod.mk x₂ ⁻¹'
           {q : ℝ × ℝ × ℝ | |q.2.1 - q.1| ≤ β ∧ |x₁ - q.1| ≤ η ∧ |q.2.2 - q.2.1| ≤ η}
@@ -238,7 +238,7 @@ theorem indepFun_pi_of_pair {ι : Type*} [Fintype ι] {P : Measure Ω} [IsProbab
   refine IndepSets.indep hmeasX.comap_le hmeasY.comap_le hπX_pi hπY_pi hπX_gen hπY_gen ?_
   rw [IndepSets_iff]
   rintro _ _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩ ⟨_, ⟨b, hb, rfl⟩, rfl⟩
-  simp only [Set.mem_univ_pi, Set.mem_setOf_eq] at ha hb
+  simp only [Set.mem_univ_pi, Set.mem_ofPred_eq] at ha hb
   -- the three intersections, as intersections of preimages of boxes under the pairs
   have key : ∀ C : ι → Set (ℝ × ℝ), (∀ i, MeasurableSet (C i)) →
       P (⋂ i, (fun ω => (X i ω, Y i ω)) ⁻¹' C i)
@@ -437,7 +437,7 @@ theorem IsPlanarBrownian.return_eq_gaussian [IsProbabilityMeasure P]
   have hset : {ω | dist (W u ω) (W t ω) < r}
       = {ω | (W u ω 0 - W t ω 0) ^ 2 + (W u ω 1 - W t ω 1) ^ 2 < r ^ 2} := by
     ext ω
-    simp only [Set.mem_setOf_eq, EuclideanSpace.dist_eq, Real.dist_eq, Fin.sum_univ_two,
+    simp only [Set.mem_ofPred_eq, EuclideanSpace.dist_eq, Real.dist_eq, Fin.sum_univ_two,
       sq_abs]
     exact Real.sqrt_lt' hr
   rw [hset]
@@ -528,7 +528,7 @@ theorem gaussian_prod_disc {v : ℝ≥0} (hv : v ≠ 0) {r : ℝ} (hr : 0 < r) :
       by_cases hlt : p.1 < r
       · have hmemR : p ∈ Set.Ioo (0 : ℝ) r ×ˢ Set.Ioo (-Real.pi) Real.pi := ⟨⟨hp1, hlt⟩, hp2⟩
         have hmemS : polarCoord.symm p ∈ {q : ℝ × ℝ | q.1 ^ 2 + q.2 ^ 2 < r ^ 2} := by
-          simp only [polarCoord_symm_apply, Set.mem_setOf_eq, sq_polar]
+          simp only [polarCoord_symm_apply, Set.mem_ofPred_eq, sq_polar]
           nlinarith
         rw [Set.indicator_of_mem hmemR, Set.indicator_of_mem hmemS, polarCoord_symm_apply,
           gaussianPDF, gaussianPDF, ← ENNReal.ofReal_mul (gaussianPDFReal_nonneg _ _ _),
@@ -540,7 +540,7 @@ theorem gaussian_prod_disc {v : ℝ≥0} (hv : v ≠ 0) {r : ℝ} (hr : 0 < r) :
           intro hmem
           exact hlt hmem.1.2
         have hnotS : polarCoord.symm p ∉ {q : ℝ × ℝ | q.1 ^ 2 + q.2 ^ 2 < r ^ 2} := by
-          simp only [polarCoord_symm_apply, Set.mem_setOf_eq, sq_polar, not_lt]
+          simp only [polarCoord_symm_apply, Set.mem_ofPred_eq, sq_polar, not_lt]
           nlinarith [not_lt.mp hlt]
         rw [Set.indicator_of_notMem hnotR, Set.indicator_of_notMem hnotS]
         simp

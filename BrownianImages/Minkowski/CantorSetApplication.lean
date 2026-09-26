@@ -50,8 +50,8 @@ theorem homogeneous_brownianImage_application_pair_of_pathwise
     (hconvB : TubeReconstructsOccupation W P hB.compactAttractor muB) :
     (brownianImageLaw W P hA.compactAttractor).MutuallySingular
       (brownianImageLaw W P hB.compactAttractor) := by
-  letI := hA.isProbabilityMeasure
-  letI := hB.isProbabilityMeasure
+  let := hA.isProbabilityMeasure
+  let := hB.isProbabilityMeasure
   exact brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
     hW hconvA hconvB
       (BrownianImages.homogeneous_application_pair hW hlam0 hlam hA hB hnl)
@@ -75,8 +75,8 @@ theorem homogeneous_brownianImage_application
     (hmu : S.IsNatural K (homogeneousDim lam) mu) :
     (brownianImageLaw W P hA.compactAttractor).MutuallySingular
       (brownianImageLaw W P hmu.compactAttractor) := by
-  haveI := hA.isProbability
-  haveI := hmu.isProbability
+  have := hA.isProbability
+  have := hmu.isProbability
   have hoccupation : (occupationLaw W P muA).MutuallySingular (occupationLaw W P mu) :=
     homogeneous_application hW hlam0 hlam hA S hsosc hna hdim hmu
   have hpathA := hA.tubeReconstructsOccupation_homogeneousSystem hW hlam0 hlam

@@ -175,10 +175,10 @@ theorem charged_pre (hμ : S.IsNatural K s μ) {x r : ℝ} (hr : 0 < r) {i : ι}
 theorem isClosed_charged (μ : Measure ℝ) : IsClosed (Charged μ) := by
   rw [← isOpen_compl_iff, Metric.isOpen_iff]
   intro x hx
-  simp only [Charged, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not] at hx
+  simp only [Charged, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not] at hx
   obtain ⟨ε, hε, hε0⟩ := hx
   refine ⟨ε / 2, half_pos hε, fun y hy => ?_⟩
-  simp only [Charged, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not]
+  simp only [Charged, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not]
   refine ⟨ε / 2, half_pos hε, measure_mono_null (fun z hz => ?_) hε0⟩
   rw [Metric.mem_ball] at hz hy ⊢
   calc dist z x ≤ dist z y + dist y x := dist_triangle _ _ _
@@ -197,7 +197,7 @@ theorem charged_subset (hμ : S.IsNatural K s μ) : Charged μ ⊆ K := by
 This is the input the stopping construction needs at the stopping scale. -/
 theorem exists_uniform_lower (hμ : S.IsNatural K s μ) {t : ℝ} (ht : 0 < t) :
     ∃ c : ℝ, 0 < c ∧ ∀ x ∈ Charged μ, ENNReal.ofReal c ≤ μ (Metric.closedBall x t) := by
-  haveI := hμ.isProbabilityMeasure
+  have := hμ.isProbabilityMeasure
   rcases (Charged μ).eq_empty_or_nonempty with hempty | hne
   · exact ⟨1, one_pos, fun x hx => absurd (hempty ▸ hx) (Set.notMem_empty x)⟩
   have hcomp : IsCompact (Charged μ) :=
@@ -266,8 +266,8 @@ bound. -/
 theorem measure_closedBall_le_of_isNatural (hs : 0 < s) (hsep : S.StronglySeparated K ρ)
     (hμ : S.IsNatural K s μ) (x : ℝ) {r : ℝ} (hr : 0 < r) :
     μ (Metric.closedBall x r) ≤ ENNReal.ofReal ((2 / ρ) ^ s * r ^ s) := by
-  haveI := hμ.isProbabilityMeasure
-  haveI := nonempty_index hμ
+  have := hμ.isProbabilityMeasure
+  have := nonempty_index hμ
   have hρ : 0 < ρ := hsep.1
   have h2ρ : (0:ℝ) < 2 / ρ := div_pos (by norm_num) hρ
   have base : ∀ y t : ℝ, 0 < t → ρ / 2 ≤ t →
@@ -340,8 +340,8 @@ theorem exists_le_measure_closedBall_of_isNatural (hs : 0 < s)
     (hsep : S.StronglySeparated K ρ) (hμ : S.IsNatural K s μ) :
     ∃ c : ℝ, 0 < c ∧ ∀ x ∈ Charged μ, ∀ r : ℝ, 0 < r → r ≤ 1 →
       ENNReal.ofReal (c * r ^ s) ≤ μ (Metric.closedBall x r) := by
-  haveI := hμ.isProbabilityMeasure
-  haveI := nonempty_index hμ
+  have := hμ.isProbabilityMeasure
+  have := nonempty_index hμ
   have hρ : 0 < ρ := hsep.1
   obtain ⟨q, hq1, hqi⟩ := exists_growth_factor S
   have hq0 : (0:ℝ) < q := lt_trans one_pos hq1

@@ -70,7 +70,7 @@ theorem homogeneous_exists_profile_oscillation {lam : ℝ} (hlam0 : 0 < lam)
   have hs1 : s < 1 := homogeneousDim_lt_one hlam0 hlam
   have hp : 0 < p := log_inv_pos hlam0 hlam
   obtain ⟨g, hg, hper, hagree, -, hgne⟩ := homogeneous_periodic_profile hlam0 hlam hA
-  haveI := hA.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
   obtain ⟨C, hC0, hCbd⟩ := exists_lattice_bound hs0 hs1 (μ := μA)
     hg hp.ne' hper hagree
   have hhalf : (0:ℝ) < p / 2 := by linarith
@@ -135,8 +135,8 @@ theorem homogeneous_application_of_endpoints {P : Measure Ω} [IsProbabilityMeas
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) := by
   have hs0 := homogeneousDim_pos hlam0 hlam
   have hs1 := homogeneousDim_lt_one hlam0 hlam
-  haveI := hA.isProbabilityMeasure
-  haveI := hμ.isProbabilityMeasure
+  have := hA.isProbabilityMeasure
+  have := hμ.isProbabilityMeasure
   obtain ⟨AA, hFrostA⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0
     (homogeneousSystem_stronglySeparated hlam0 hlam hA.attractor.2.2.1) hA
   obtain ⟨A, hFrost⟩ := System.OpenSetCondition.exists_isFrostman S (hsosc.openSetCondition S) hs0.le hμ

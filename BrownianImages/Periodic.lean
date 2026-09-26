@@ -63,7 +63,7 @@ theorem exists_periodic_extension {p a : ℝ} (hp : 0 < p) {f : ℝ → ℝ}
     (hends : f a = f (a + p)) (hcont : ContinuousOn f (Set.Icc a (a + p))) :
     ∃ g : ℝ → ℝ, Continuous g ∧ Function.Periodic g p ∧
       ∀ w ∈ Set.Icc a (a + p), g w = f w := by
-  haveI : Fact (0 < p) := ⟨hp⟩
+  have : Fact (0 < p) := ⟨hp⟩
   refine ⟨fun w => AddCircle.liftIco p a f (w : AddCircle p), ?_, ?_, ?_⟩
   · exact (AddCircle.liftIco_continuous hends hcont).comp (AddCircle.continuous_mk' (p := p))
   · intro w

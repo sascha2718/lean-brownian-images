@@ -569,7 +569,7 @@ theorem FellerNonlattice.ae_norm_charFun_comp_lt_one {μ : Measure ℝ}
   refine measure_mono_null ?_
     ((hμ.countable_norm_charFun_eq_one.preimage hinj).measure_zero volume)
   intro t ht
-  simp only [Set.mem_setOf_eq, not_lt] at ht
+  simp only [Set.mem_ofPred_eq, not_lt] at ht
   exact le_antisymm (norm_charFun_le_one _) ht
 
 /-- **A nonlattice probability measure has `charFun μ t ≠ 1` for every `t ≠ 0`.**
@@ -645,7 +645,7 @@ theorem exists_pos_le_norm_one_sub_charFun {μ : Measure ℝ} [IsProbabilityMeas
     have ht₀ne : t₀ ≠ 0 := by
       intro h
       have h' := ht₀K.2
-      simp only [Set.mem_setOf_eq, h, abs_zero] at h'
+      simp only [Set.mem_ofPred_eq, h, abs_zero] at h'
       linarith
     have hpos : 0 < ‖1 - charFun μ t₀‖ := by
       rw [norm_pos_iff, sub_ne_zero]
@@ -1288,7 +1288,7 @@ theorem tendsto_driNorm_tail {g : ℝ → ℝ≥0∞} (hg : driNorm g ≠ ∞) :
   have hkey := hS (Finset.Icc (-(N : ℤ)) (N : ℤ)) hsub
   have hset : {k : ℤ | (N : ℤ) < |k|} = ((Finset.Icc (-(N : ℤ)) (N : ℤ) : Finset ℤ) : Set ℤ)ᶜ := by
     ext k
-    simp only [Set.mem_setOf_eq, Set.mem_compl_iff, Finset.coe_Icc, Set.mem_Icc]
+    simp only [Set.mem_ofPred_eq, Set.mem_compl_iff, Finset.coe_Icc, Set.mem_Icc]
     rw [← not_le, abs_le]
   rw [hset, ← tsum_subtype]
   exact hkey
@@ -1473,7 +1473,7 @@ theorem exists_hasCompactSupport_driNorm_sub_lt {z : ℝ → ℂ} (hz : Continuo
     exact ENNReal.ofReal_le_one.2 (cutoff_le_one M x)
   · refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun k => ?_) hN
     by_cases hk : (N : ℤ) < |k|
-    · rw [Set.indicator_apply, if_pos (show k ∈ {k : ℤ | (N : ℤ) < |k|} from hk)]
+    · rw [Set.indicator_apply, ite_eq_left (show k ∈ {k : ℤ | (N : ℤ) < |k|} from hk)]
       refine cellSup_mono (fun x => ?_) k
       rw [show z x - (cutoff M x : ℂ) * z x = ((1 - cutoff M x : ℝ) : ℂ) * z x by push_cast; ring,
         enorm_mul]
@@ -1481,7 +1481,7 @@ theorem exists_hasCompactSupport_driNorm_sub_lt {z : ℝ → ℂ} (hz : Continuo
       rw [← ofReal_norm, Complex.norm_real, Real.norm_eq_abs,
         abs_of_nonneg (by linarith [cutoff_le_one M x])]
       exact ENNReal.ofReal_le_one.2 (by linarith [cutoff_nonneg M x])
-    · rw [Set.indicator_apply, if_neg (show k ∉ {k : ℤ | (N : ℤ) < |k|} from hk),
+    · rw [Set.indicator_apply, ite_eq_right (show k ∉ {k : ℤ | (N : ℤ) < |k|} from hk),
         nonpos_iff_eq_zero]
       refine iSup₂_eq_bot.2 fun x hx => ?_
       obtain ⟨h1, h2⟩ := abs_le.1 (not_lt.1 hk)

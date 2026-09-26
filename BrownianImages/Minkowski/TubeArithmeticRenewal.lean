@@ -61,7 +61,7 @@ theorem ambientOfSection_eq {h : ℝ} (q : C(Set.Icc (0 : ℝ) h, ℝ))
 theorem continuousOn_ambientOfSection (h : ℝ)
     (q : C(Set.Icc (0 : ℝ) h, ℝ)) :
     ContinuousOn (ambientOfSection h q) (Set.Icc (0 : ℝ) h) := by
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   convert q.continuous using 1
   funext t
   exact ambientOfSection_eq q t.property
@@ -181,7 +181,7 @@ theorem exists_summable_lattice_envelope
             (Real.exp_lt_one_iff.mpr (by nlinarith)))
       refine hgeo.congr fun n ↦ ?_
       simp only [a]
-      rw [if_neg (by omega)]
+      rw [ite_eq_right (by omega)]
       congr 1
       rw [← Real.exp_nat_mul]
       congr 1
@@ -193,12 +193,12 @@ theorem exists_summable_lattice_envelope
       have hneg : (-(n : ℤ)) < 0 := by omega
       change (if (-(n : ℤ)) < 0 then 0 else
         D * Real.exp (-γ * h * ((-(n : ℤ) : ℤ) : ℝ))) = 0
-      rw [if_pos hneg]
+      rw [ite_eq_left hneg]
   refine ⟨a, ha0, hasum, ?_⟩
   intro k t
   simp only [a]
   by_cases hk : k < 0
-  · rw [if_pos hk]
+  · rw [ite_eq_left hk]
     have hk1 : k + 1 ≤ 0 := by omega
     have hx0 : (t : ℝ) + (k : ℝ) * h ≤ 0 := by
       have hkc : (k : ℝ) ≤ -1 := by exact_mod_cast (show k ≤ -1 by omega)
@@ -207,7 +207,7 @@ theorem exists_summable_lattice_envelope
           add_le_add t.property.2 le_rfl
         _ ≤ 0 := by nlinarith
     rw [hzero _ hx0, abs_zero]
-  · rw [if_neg hk]
+  · rw [ite_eq_right hk]
     have hk0 : (0 : ℝ) ≤ (k : ℝ) := by
       exact_mod_cast (not_lt.mp hk)
     have hkx : (k : ℝ) * h ≤ (t : ℝ) + (k : ℝ) * h := by

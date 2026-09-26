@@ -31,7 +31,7 @@ theorem exists_measurableSet_limit_classifier (f : ℕ → X → Y)
     (hf : ∀ n, Measurable (f n)) {E : Set Y} (hE : MeasurableSet E) :
     ∃ A : Set X, MeasurableSet A ∧
       ∀ x y, Tendsto (fun n ↦ f n x) atTop (nhds y) → (x ∈ A ↔ y ∈ E) := by
-  letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
+  let : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   let C : ∀ E : Set Y, MeasurableSet E → Prop := fun E _ ↦
     ∃ A : Set X, MeasurableSet A ∧
       ∀ x y, Tendsto (fun n ↦ f n x) atTop (nhds y) → (x ∈ A ↔ y ∈ E)
@@ -59,7 +59,7 @@ theorem exists_measurableSet_limit_classifier (f : ℕ → X → Y)
         (Metric.lipschitz_infDist_pt Uᶜ).continuous.continuousAt.tendsto.comp hlim
       constructor
       · intro hx
-        simp only [A, Set.mem_iUnion, Set.mem_iInter, Set.mem_setOf_eq] at hx
+        simp only [A, Set.mem_iUnion, Set.mem_iInter, Set.mem_ofPred_eq] at hx
         obtain ⟨k, N, hx⟩ := hx
         by_contra hy
         have hydist : Metric.infDist y Uᶜ = 0 :=
@@ -80,7 +80,7 @@ theorem exists_measurableSet_limit_classifier (f : ℕ → X → Y)
             1 / ((k : ℝ) + 1) < Metric.infDist (f n x) Uᶜ :=
           hdist (Ioi_mem_nhds hk)
         obtain ⟨N, hN⟩ := eventually_atTop.1 hevent
-        simp only [A, Set.mem_iUnion, Set.mem_iInter, Set.mem_setOf_eq]
+        simp only [A, Set.mem_iUnion, Set.mem_iInter, Set.mem_ofPred_eq]
         exact ⟨k, N, fun n ↦ hN n.1 n.2⟩
   · intro S hS hclass
     obtain ⟨A, hA, hlimit⟩ := hclass

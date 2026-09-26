@@ -55,7 +55,7 @@ theorem exists_finite_compactRange (e : ℝ) (he : 0 < e) :
     exact ⟨y, hy⟩
   let L : NonemptyCompacts T := ⟨⟨s, hsfin.isCompact⟩, hsne⟩
   refine ⟨L, hsfin, ?_⟩
-  rw [Metric.NonemptyCompacts.dist_eq, NonemptyCompacts.coe_top]
+  rw [TopologicalSpace.NonemptyCompacts.dist_eq, NonemptyCompacts.coe_top]
   refine Metric.hausdorffDist_le_of_mem_dist he.le ?_ ?_
   · intro x hx
     exact ⟨x, trivial, by simpa using he.le⟩
@@ -116,7 +116,7 @@ theorem coe_finiteRange (f : I → E) : (finiteRange f : Set E) = Set.range f :=
 Vietoris, equivalently Hausdorff, topology. -/
 theorem continuous_finiteRange :
     Continuous (finiteRange : (I → E) → NonemptyCompacts E) := by
-  letI : TopologicalSpace (Set E) := TopologicalSpace.vietoris E
+  let : TopologicalSpace (Set E) := TopologicalSpace.vietoris E
   rw [NonemptyCompacts.isEmbedding_coe.continuous_iff]
   exact vietoris.continuous_range_of_finite
 
@@ -173,7 +173,7 @@ theorem aemeasurable_finiteImage_process [MeasurableSpace E] [BorelSpace E]
     (hL : (L : Set T).Finite) (X : T → Ω → E)
     (hX : ∀ t, AEMeasurable (X t) P) :
     AEMeasurable (fun ω ↦ finiteImage L hL (fun t ↦ X t ω)) P := by
-  letI : Fintype L := hL.fintype
+  let : Fintype L := hL.fintype
   simp_rw [finiteImage_eq_finiteRange]
   exact aemeasurable_finiteRange_process P (fun t : L ↦ X t) (fun t ↦ hX t)
 
@@ -328,9 +328,8 @@ noncomputable def brownianImageLaw (W : ℝ≥0 → Ω → Plane) (P : Measure �
   P.map (brownianImage W K)
 
 /-- The compact-image law has total mass one. -/
-theorem IsPlanarBrownian.isProbabilityMeasure_brownianImageLaw [IsProbabilityMeasure P]
-    (hW : IsPlanarBrownian W P) (K : NonemptyCompacts ℝ) :
-    IsProbabilityMeasure (brownianImageLaw W P K) := by
+theorem isProbabilityMeasure_brownianImageLaw [IsProbabilityMeasure P]
+    (K : NonemptyCompacts ℝ) : IsProbabilityMeasure (brownianImageLaw W P K) := by
   unfold brownianImageLaw
   exact inferInstance
 
