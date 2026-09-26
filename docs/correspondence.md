@@ -10,7 +10,7 @@ it is argued.
 
 ## The statement layer
 
-`Solution.lean` is the formal statement of the paper: 84 endpoints named
+`Solution.lean` is the formal statement of the paper: 92 endpoints named
 `audit_<slug>`, in document order, each proved by a direct application of a library
 declaration. Adding a result to the paper means adding its statement there first; the
 design work is in the statement.
@@ -51,33 +51,33 @@ Two pairs separate what the paper asserts from what its proof produces:
 ## State
 
 Results and displayed claims of `BrownianImagesComplete.tex`, in document order, against
-the `Solution.lean` endpoint and what stands behind it. All 84 endpoints are proved.
+the `Solution.lean` endpoint and what stands behind it. All 92 endpoints are proved.
 `Challenge.lean` retains `sorry` only as the independent statement file for the four
 headline endpoints; no library or solution declaration uses `sorry`.
 
 | Result | Endpoint | Proved by |
 | --- | --- | --- |
 | `thm:main` | `audit_main` | `main` |
-| `thm:cantor-application` | `audit_cantor_application` | `homogeneous_application` |
+| `thm:cantor-application` | `audit_cantor_application` | `homogeneous_application`, the general system under the open set condition |
 | `thm:cantor-application`, named `μ_B` | `audit_cantor_application_pair` | `homogeneous_application_pair` |
 | countability of exceptional homogeneous parameters | `audit_exceptional_parameters_countable` | `exceptionalParameters_countable` |
-| `thm:minkowski-reconstruction` | `audit_minkowski_reconstruction` | `System.IsNatural.minkowskiReconstruction`; the non-arithmetic key-renewal limit and the arithmetic finite-delay periodic limit both feed the generation-cylinder quotient argument, giving pathwise recovery and a measurable reconstruction map from the compact Brownian image |
+| `thm:minkowski-reconstruction` | `audit_minkowski_reconstruction` | `System.IsNatural.minkowskiReconstruction`, under the open set condition; the non-arithmetic key-renewal limit and the arithmetic finite-delay periodic limit both feed the generation-cylinder quotient argument, giving pathwise recovery and a measurable reconstruction map from the compact Brownian image |
 | Borel recovery from the pathwise tube limit | `audit_borel_reconstruction_of_pathwise` | `MinkowskiReconstruction.exists_borel_reconstruction_of_pathwise` |
 | transfer from occupation-law singularity to compact-image-law singularity | `audit_brownianImageLaw_mutuallySingular_of_pathwise` | `MinkowskiReconstruction.brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction`; `brownianImageLaw_mutuallySingular_of_generation_tubeMassRatio` gives the direct self-similar generation-ratio form |
-| `thm:cantor-set-application` | `audit_cantor_set_application` | `MinkowskiReconstruction.homogeneous_brownianImage_application`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the non-arithmetic interval-separated source by the general reconstruction theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
+| `thm:cantor-set-application` | `audit_cantor_set_application` | `MinkowskiReconstruction.homogeneous_brownianImage_application`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the non-arithmetic source, under the open set condition, by the general reconstruction theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
 | `thm:cantor-set-application`, named `K_B` | `audit_cantor_set_application_pair` | `MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional` |
 | `eq:neighbourhood-union-scaling` | `audit_tube_union_scaling` | `tubeCutoff_compactUnion`, `tubeMass_translate_dilate` |
 | `eq:neighbourhood-defect-elementary` | `audit_tube_defect_elementary` | `tubeDefect_nonneg`, `tubeDefect_le_pairwiseTubeOverlapAreaSum` |
-| `thm:neighbourhood-moments` | `audit_tube_moments` | `System.IsNatural.tubeMoments`; discrete-martingale maximal estimates give every unit Brownian-radius moment, and the stopping cover supplies the stated upper moments and positive lower mean |
-| `thm:neighbourhood-overlap` | `audit_tube_overlap` | `System.IsNatural.tubeOverlap`; the separated-cylinder Gaussian-density estimate and the tube moment bound give uniform pairwise overlap and total defect estimates with integrability |
+| `thm:neighbourhood-moments` | `audit_tube_moments` | `System.IsNatural.tubeMoments`, under the open set condition; discrete-martingale maximal estimates give every unit Brownian-radius moment, the stopping cover supplies the stated upper moments, and the Ahlfors regularity of `thm:stopping-overlap` the positive lower mean |
+| `thm:neighbourhood-overlap` | `audit_tube_overlap` | `System.IsNatural.tubeOverlap`, under the open set condition, with the bound `C r^{α+2η}` for the exponent `η` of `thm:cross-piece-mass`; the Gaussian-gap estimate for the stopping cylinders at temporal scale `r²`, `eq:stopping-brownian-overlap`, counted through `eq:stopping-close-pairs` and summed dyadically, gives the pairwise overlap bound, and `Minkowski.DefectExpectation` the defect bound with integrability |
 | `thm:neighbourhood-renewal` | `audit_tube_renewal` | `System.IsNatural.tubeRenewal`; the finite-delay law at the maximal lattice span has gcd one, its renewal masses converge, and the exact convolution identity yields uniform convergence on each arithmetic period |
-| `thm:neighbourhood-concentration` | `audit_tube_concentration` | `System.IsNatural.tubeConcentration`; interpolation between first and third moments controls the normalized defect in `L²`, delayed contraction gives exponential decay, and Borel--Cantelli gives every fixed phase |
+| `thm:neighbourhood-concentration` | `audit_tube_concentration` | `System.IsNatural.tubeConcentration`, under the open set condition, by `Minkowski.StoppingConcentration`: the sum `Y_{r,u}` over the stopping cylinders at scale `u = r` has variance `O(u^s)` through the `M` independent classes of `thm:stopping-overlap`, `eq:stopping-neighbourhood-variance`; the error `F_{r,u}` telescopes over the stopping tree, its expectation is `O(r^{η}(1 + t))` by `eq:neighbourhood-defect-mean` node by node, `eq:stopping-neighbourhood-defect`, and its third moment is bounded, so interpolation gives the `L²` bound; Borel--Cantelli gives every fixed phase |
 | the ambient σ-algebra on `𝒫(ℝ²)` | `audit_borel_eq_giry` | `borel_probabilityMeasure_eq_giry` |
 | occupation has full mass | `audit_isProbabilityMeasure_occupation` | `IsPlanarBrownian.ae_isProbabilityMeasure_occupation` |
 | `Law(W_*μ)` has total mass one | `audit_isProbabilityMeasure_occupationLaw` | `IsPlanarBrownian.isProbabilityMeasure_occupationLaw` |
 | the law of the compact Brownian image has total mass one | `audit_isProbabilityMeasure_brownianImageLaw` | `IsPlanarBrownian.isProbabilityMeasure_brownianImageLaw` |
 | occupation is measurable | `audit_aemeasurable_occupation` | `IsPlanarBrownian.aemeasurable_occupationProb` |
-| internal Ahlfors regularity | `audit_ahlfors` | `exists_isAhlforsClosed` |
+| internal Ahlfors regularity | `audit_ahlfors` | `System.OpenSetCondition.exists_isAhlforsClosed`, under the open set condition |
 | the two Ahlfors ball conventions | `audit_ahlfors_conventions` | `IsAhlforsClosed.isAhlfors` |
 | internal Ahlfors regularity for `μ_A`, `μ_B` | `audit_ahlfors_named` | `exists_isAhlfors_homogeneous_pair` |
 | `thm:gaussian-reduction` | `audit_gaussian_reduction` | `gaussian_reduction` |
@@ -89,11 +89,16 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `eq:smoothing` | `audit_smoothing` | `smoothing` |
 | `sec:setup`, `φ` integrable and `∫φ > 0` | `audit_kern_integrable` | `kern_integrableOn`, `integral_kern_pos` |
 | `thm:profile-uniform-continuity` | `audit_profile_uniform_continuity` | `profile_uniformContinuous` |
-| `thm:renewal-recursion` (Φ) | `audit_renewal_recursion` | `phi_recursion` |
-| `thm:renewal-recursion` (G) | `audit_g_recursion` | `g_recursion` |
+| `thm:renewal-recursion` (Φ) | `audit_renewal_recursion` | `phi_recursion_cross`, with the cross term `Φ_×` of `eq:phi-recursion` |
+| `thm:renewal-recursion` (G) | `audit_g_recursion` | `g_recursion_cross` |
+| `thm:renewal-recursion`, the bound on the cross term | `audit_crossPhi_bound` | `System.StrongOpenSetCondition.exists_crossPhi_bound`: `0 ≤ Φ_×(δ) ≤ C δ^{s+η}` for `0 < δ ≤ 1`, with the exponent `η` of `thm:cross-piece-mass` |
+| `thm:renewal-recursion`, the strongly separated case | `audit_crossPhi_separated` | `crossPhi_eq_zero_of_stronglySeparated`: the cross term vanishes below the separation gap |
+| `thm:stopping-overlap` | `audit_stopping_overlap` | `System.IsFeasible.exists_point_multiplicity_bound`, `System.IsFeasible.exists_stopping_coloring` and `System.OpenSetCondition.exists_isAhlforsClosed`, under the open set condition: one integer `M` bounds the multiplicity of the stopping family at every threshold `0 < u ≤ 1`, the family is coloured with `M` colours so that intervals of one colour have disjoint interiors, and `μ` is `s`-Ahlfors regular |
+| `thm:cross-piece-mass` | `audit_cross_piece_mass` | `System.StrongOpenSetCondition.exists_cross_piece_bound`: `eq:boundary-mass` and `eq:cross-piece-mass` with one exponent `0 < η < 1 - s` |
+| Schief's theorem, cited in `sec:introduction` | `audit_schief` | `System.openSetCondition_iff_strongOpenSetCondition`: the open set condition is equivalent to the existence of a feasible open set meeting the attractor, by the maximal neighbour count of `Schief.lean` |
 | `thm:non-lattice-limit`, the renewal inputs | `audit_renewalLaw` | `isProbabilityMeasure_renewalLaw`, `integral_id_renewalLaw` |
 | `thm:non-lattice-limit`, exponential moment | `audit_exists_expTransform_lt_one` | `exists_expTransform_lt_one` |
-| `thm:non-lattice-limit` | `audit_non_lattice_limit` | `non_lattice_limit` |
+| `thm:non-lattice-limit` | `audit_non_lattice_limit` | `non_lattice_limit`, under the open set condition; the exponential tail of the renewal defect `z` is the cross-term bound of `thm:renewal-recursion` |
 | `eq:c-definition` | `audit_pairRatio` | `pairRatio_rpow`, `pairRatio_lt_half` |
 | `sec:renewal`, the homogeneous system | `audit_homogeneousSystem_facts` | `homogeneousSystem_isDimension`, `homogeneousSystem_stronglySeparated` |
 | `sec:renewal`, the paired system | `audit_pairSystem_facts` | `pairSystem_isDimension`, `pairSystem_stronglySeparated` |
@@ -123,7 +128,7 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `eq:ha-asymptotic` in big-`O` shape | `audit_profile_asymptotics_lattice_bigO` | `exists_lattice_bound` |
 | `thm:profile-asymptotics`, `μ_A` conclusion | `audit_lattice_correlation_oscillation` | `homogeneous_lattice_correlation_oscillation` |
 | `thm:profile-asymptotics`, bundled | `audit_thm_profile_asymptotics` | `homogeneous_thm_profile_asymptotics` |
-| `thm:non-lattice-separation` | `audit_non_lattice_separation` | `non_lattice_separation` |
+| `thm:non-lattice-separation` | `audit_non_lattice_separation` | `non_lattice_separation`, both systems under the open set condition |
 | `thm:gaussian-four-point`, independence | `audit_disjoint_increments_indep` | `disjoint_increments_indep` |
 | `thm:gaussian-four-point`, `eq:joint-return-bound` | `audit_gaussian_four_point` | `gaussian_four_point` |
 | `eq:joint-return-bound` almost everywhere | `audit_gaussian_four_point_ae` | `gaussian_four_point_ae` |
@@ -139,6 +144,9 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | `eq:monotone-fill` | `audit_monotone_fill` | `monotone_fill` |
 | `thm:uniform-concentration` | `audit_uniform_concentration` | `uniform_concentration` |
 | `sec:concentration`, the oscillation `d_A` | `audit_lattice_gap` | `smoothOp_gap` |
+| `thm:base-five-profiles` | `audit_base_five_profiles` | `baseFive_profiles`: the values `eq:base-five-distances` at every scale `5⁻ⁿ`, from the recursions `eq:base-five-recursion` and `Ψ(5⁻ᵐ) = ½ 9⁻ᵐ`, and the profile separation, through the continuous `log 5`-periodic limits of the two profiles in logarithmic coordinates with `g₁(0) = 3/2 ≠ 1 = g₂(0)`, dominated convergence in `eq:h-definition` and `thm:smoothing-injective` |
+| `thm:base-five-profiles`, the first display after it | `audit_base_five_occupation_laws` | `MinkowskiReconstruction.baseFive_occupationLaw_mutuallySingular`: `thm:main` for the two natural measures, Frostman by the open set condition |
+| `thm:base-five-profiles`, the second display after it | `audit_base_five_image_laws` | `MinkowskiReconstruction.baseFive_brownianImageLaw_mutuallySingular`: `thm:minkowski-reconstruction` for both systems under the open set condition, and the descent of the occupation-law singularity through the Borel reconstruction map |
 | `sec:obstruction`, the signed convolution | `audit_conv_reflect` | `conv_reflect_eq_map_sub` |
 | `thm:homometric-example` | `audit_homometric_example` | `homometric_example`, with the non-isometry of the attractors from `HomometricMeasures.isEmpty_isometryEquiv` |
 
@@ -157,8 +165,16 @@ determinants (`crossing_det`, `nested_det`).
 ## Fidelity boundary
 
 What a formal statement can quietly get wrong here is the ambient setting, not the
-inequality.  Five traps, and how each is closed.
+inequality.  Six traps, and how each is closed.
 
+- **The open set condition enters through Schief's theorem.**  The paper assumes the
+  open set condition and, citing Schief, chooses a feasible open set meeting the
+  attractor whenever a proof needs one.  The library's proofs take that set as their
+  hypothesis, `System.StrongOpenSetCondition K`, and Schief's theorem is proved in
+  `Schief.lean` (`audit_schief`), so every endpoint carries the paper's hypothesis
+  `System.OpenSetCondition` and derives the strong form from the attractor of its natural
+  measure.  `System.IsFeasible` carries the paper's definition of a feasible open set,
+  including boundedness, which no proof uses.
 - **Every measure of the paper lives on `[0,1]`, and `IsFrostman` says so.** The support
   condition `μ ([0,1])ᶜ = 0` is a field of `IsFrostman`, not a side hypothesis, because
   `occupation` reads the time through `Real.toNNReal`: a measure charging the negative
@@ -180,14 +196,19 @@ inequality.  Five traps, and how each is closed.
   hypothesis, and `IsFrostman.measure_singleton` proves it gives what is needed.
 - **Brownian motion means continuous paths.** `IsPlanarBrownian` is built from
   `IsBrownianReal`, not `IsPreBrownianReal`: finite-dimensional laws alone do not make
-  `t ↦ W t ω` measurable, and `Measure.map` returns the zero measure on a
-  non-measurable map, which would make `occupationLaw` junk and every mutual-singularity
-  statement vacuous.  Continuity gives measurability of the path
-  (`IsPlanarBrownian.ae_continuous`, `measurable_pathMap`) and hence full mass
-  (`audit_isProbabilityMeasure_occupation`).  Measurability of `ω ↦ occupationProb W μ ω`
-  is `audit_aemeasurable_occupation`, and it is `AEMeasurable` rather than `Measurable`
-  for a reason: `occupationProb W μ` is genuinely not measurable in general, only equal
-  almost everywhere to the occupation measure of a jointly measurable modification.
+  `t ↦ W t ω` measurable, and `Measure.map` returns a junk value on a map that is not
+  almost everywhere measurable, a Dirac mass at an arbitrary point, which would make
+  `occupationLaw` junk and every mutual-singularity statement vacuous.  That junk value
+  is a probability measure, so the total-mass endpoints
+  `audit_isProbabilityMeasure_occupationLaw` and
+  `audit_isProbabilityMeasure_brownianImageLaw` cannot detect it; what does is
+  measurability.  Continuity gives measurability of the path
+  (`IsPlanarBrownian.ae_continuous`, `measurable_pathMap`) and hence full mass of the
+  occupation measure itself (`audit_isProbabilityMeasure_occupation`).  Measurability of
+  `ω ↦ occupationProb W μ ω` is `audit_aemeasurable_occupation`, and it is `AEMeasurable`
+  rather than `Measurable` for a reason: `occupationProb W μ` is genuinely not measurable
+  in general, only equal almost everywhere to the occupation measure of a jointly
+  measurable modification.
 - **The law lives on `𝒫(ℝ²)`, not on the measures of `ℝ²`.** `occupationLaw` is a
   measure on `ProbabilityMeasure Plane`, which is the space the paper takes laws on.
   `occupationProb` is the reading of the occupation measure as a point there, with a
@@ -223,7 +244,7 @@ Four further points where the Lean text reads differently from the tex, delibera
   the same, and is strictly weaker.  `audit_gaussian_four_point_ae` and the bundle keep
   the paper's scoping, and `FourPointBound.det_pos_of_ne_of_nondegenerate` is the
   unconditional determinant bound behind it.
-Two statements deserve a note on what their endpoints assert.
+Three statements deserve a note on what their endpoints assert.
 
 - **`thm:homogeneous-nonconstancy`.** `audit_cantor_nonconstant` is non-constancy of the
   eventual periodic profile on every tail, for every `0 < λ < 1/2`, by the density
@@ -241,6 +262,19 @@ Two statements deserve a note on what their endpoints assert.
   digit pairs at dimension `2t`; homometry makes the two difference systems the same
   system, and Hutchinson uniqueness finishes.  The rescaling `(x - y + 1)/2` is not
   cosmetic: the raw difference lives on `[-1,1]` and `System` is hard-wired to `[0,1]`.
+
+- **`thm:base-five-profiles`.** The two systems are `baseFiveSystem` at the digit sets
+  `{0,1,4}` and `{0,2,4}`, and the natural measures enter as `IsNatural` hypotheses, as
+  in `audit_cantor_application`; `naturalMeasure_selfSimilar` supplies such a measure
+  for every system, so the hypotheses are satisfiable.  The Frostman constants are not
+  hypotheses: both systems satisfy the open set condition with `U = (0,1)`, and
+  `System.OpenSetCondition.exists_isFrostman` produces them.  The second assertion,
+  `limsup |H_{μ₁} - H_{μ₂}| > 0`, is stated as the separation
+  `∃ ε > 0, ∀ V, ∃ t ≥ V, ε ≤ |H_{μ₁}(t) - H_{μ₂}(t)|`, the hypothesis shape of
+  `thm:main`, which is what the two displays after the proposition consume.  The
+  periodic limits of the proof are built, not assumed: `exists_periodic_limit` turns the
+  non-negative, exponentially small increments `G(w) - G(w - log 5)` into a continuous
+  `log 5`-periodic function within `O(e^{-sw})` of `G`.
 
 Two endpoints are strictly more general than the tex, and carry a tex-shaped wrapper:
 `audit_ahlfors` against `audit_ahlfors_named`, and `audit_endpoint_block_mass` against

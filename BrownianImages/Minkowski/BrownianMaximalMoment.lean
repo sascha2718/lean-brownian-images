@@ -105,7 +105,7 @@ theorem IsBrownianReal.indepFun_brownianGridIncrement_past
     (show Measurable (fun z : NNReal → Real => z d) by fun_prop)
     (show Measurable (fun z : Set.Iic ti → Real =>
       fun k : Set.Iic i => z ⟨brownianGridTime N k, brownianGridTime_mono N k.2⟩) by
-      apply measurable_pi_lambda
+      apply Measurable.of_eval
       intro k
       exact measurable_pi_apply _)
   change IndepFun
@@ -154,7 +154,7 @@ theorem IsBrownianReal.martingale_brownianGridSample
     rw [hnat]
     exact condExp_indep_eq hYstrong.measurable.comap_le
       (show Measurable (fun omega (k : Set.Iic i) => X k omega) by
-        apply measurable_pi_lambda
+        apply Measurable.of_eval
         intro k
         exact (hX k).measurable).comap_le
       (comap_measurable Y).stronglyMeasurable hind

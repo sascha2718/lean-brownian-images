@@ -138,7 +138,7 @@ theorem maxRatio_lt_one (S : System ι) : maxRatio S < 1 :=
 theorem wordRatio_le_pow (S : System ι) (ω : ℕ → ι) (n : ℕ) :
     wordRatio S ω n ≤ maxRatio S ^ n := by
   have : wordRatio S ω n ≤ ∏ _k ∈ Finset.range n, maxRatio S :=
-    Finset.prod_le_prod (fun k _ => (S.ratio_pos (ω k)).le)
+    Finset.prod_le_prod₀ (fun k _ => (S.ratio_pos (ω k)).le)
       (fun k _ => ratio_le_maxRatio S (ω k))
   simpa using this
 
@@ -375,7 +375,7 @@ theorem isProbabilityMeasure_digitLaw (S : System ι) {s : ℝ} (hdim : S.IsDime
 omit [Fintype ι] [Nonempty ι] [DiscreteMeasurableSpace ι] in
 /-- Prefixing a letter is measurable. -/
 theorem measurable_cons (i : ι) : Measurable (cons i : (ℕ → ι) → ℕ → ι) := by
-  refine measurable_pi_lambda _ fun n => ?_
+  refine Measurable.of_eval fun n => ?_
   cases n with
   | zero => exact measurable_const
   | succ k => exact measurable_pi_apply k
@@ -513,7 +513,8 @@ noncomputable def naturalMeasure (S : System ι) (s : ℝ) : Measure ℝ :=
 theorem isProbabilityMeasure_naturalMeasure (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     IsProbabilityMeasure (naturalMeasure S s) := by
   haveI := isProbabilityMeasure_codeLaw S hdim
-  exact Measure.isProbabilityMeasure_map (measurable_code S).aemeasurable
+  unfold naturalMeasure
+  exact inferInstance
 
 /-- `sec:renewal`: the push-forward of the Bernoulli measure satisfies Hutchinson's
 identity `μ = ∑ r_i^s (S_i)_* μ`, the defining property of `System.IsNatural`. -/
@@ -595,8 +596,7 @@ theorem integral_testOp (S : System ι) {s : ℝ} {μ : Measure ℝ} [IsProbabil
     ∫ x, f x ∂μ = ∫ x, testOp S s f x ∂μ := by
   have hmi : ∀ i, Measurable (S.map i) := fun i => (continuous_systemMap S i).measurable
   have hpos : ∀ i : ι, (0:ℝ) < S.ratio i ^ s := fun i => Real.rpow_pos_of_pos (S.ratio_pos i) s
-  have hpm : ∀ i, IsProbabilityMeasure (μ.map (S.map i)) := fun i =>
-    Measure.isProbabilityMeasure_map (hmi i).aemeasurable
+  have hpm : ∀ i, IsProbabilityMeasure (μ.map (S.map i)) := fun i => inferInstance
   have hint : ∀ i ∈ (Finset.univ : Finset ι),
       Integrable (fun x => f x) (ENNReal.ofReal (S.ratio i ^ s) • μ.map (S.map i)) := by
     intro i _

@@ -51,8 +51,9 @@ its definition never enters a conclusion. -/
 theorem IsPlanarBrownian.ae_isProbabilityMeasure_occupation (hW : IsPlanarBrownian W P)
     (μ : Measure ℝ) [IsProbabilityMeasure μ] :
     ∀ᵐ ω ∂P, IsProbabilityMeasure (occupation W μ ω) := by
-  filter_upwards [hW.ae_continuous] with ω hω
-  exact Measure.isProbabilityMeasure_map (measurable_pathMap hω).aemeasurable
+  filter_upwards [hW.ae_continuous] with ω _hω
+  unfold occupation
+  exact inferInstance
 
 /-- Consequently `occupationProb` is almost surely the occupation measure itself. -/
 theorem IsPlanarBrownian.ae_occupationProb_toMeasure (hW : IsPlanarBrownian W P)

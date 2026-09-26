@@ -8,7 +8,10 @@ A Lean 4 formalisation, over Mathlib, of the paper
 > Brownian images*, 2026. arXiv:XXXX.XXXXX (identifier to be filled in).
 
 Every numbered result of the paper is stated formally and proved, together with the
-displayed claims that a later result cites or that carry a hypothesis of their own.
+displayed claims that a later result cites or that carry a hypothesis of their own,
+as recorded in [`docs/correspondence.md`](docs/correspondence.md).  Schief's theorem,
+which the paper cites for the open set condition, is proved in
+`BrownianImages/Schief.lean`.
 The library is `sorry`-free, declares no axiom, and every proof uses only the three
 standard axioms `propext`, `Classical.choice` and `Quot.sound`; `native_decide` is not
 used.
@@ -24,17 +27,17 @@ second, are the audited endpoints:
 | `thm:cantor-application`: the homogeneous and the paired natural measure separate | `audit_cantor_application`, `audit_cantor_application_pair` |
 | `thm:cantor-application`, final sentence: the exceptional parameter set is countable | `audit_exceptional_parameters_countable` |
 
-Beside them, `Solution.lean` states 84 endpoints in all, named `audit_<slug>` in document
+Beside them, `Solution.lean` states 92 endpoints in all, named `audit_<slug>` in document
 order, from the Gaussian reduction of the correlation integral through the renewal
 analysis, the smoothing operator and its Fourier multipliers, the four-point estimate and
 the concentration argument, to the Minkowski reconstruction of the occupation measure
-from the compact Brownian image, the transfer of singularity to compact-set laws, and the
-homometric counterexample. The table of every result against its endpoint is in
+from the compact Brownian image, the transfer of singularity to compact-set laws, the
+base-five missing-digit comparison, and the homometric counterexample. The table of every result against its endpoint is in
 [`docs/correspondence.md`](docs/correspondence.md).
 
 ## Layout
 
-- `BrownianImages/`: the library, 94 modules organised along the sections of the paper.
+- `BrownianImages/`: the library, 103 modules organised along the sections of the paper.
   The root module `BrownianImages.lean` is the index: it lists every module with the part
   of the paper it certifies. `BrownianImages/Minkowski/` carries the reconstruction
   section, and `BrownianImages/Renewal/` is vendored third-party code, see below.
@@ -56,7 +59,7 @@ the paper it certifies.
 
 ## Building
 
-The project pins Lean `v4.32.2` and Mathlib `v4.32.2` (`lean-toolchain`,
+The project pins Lean `v4.35.0-rc2` and Mathlib `v4.35.0-rc2` (`lean-toolchain`,
 `lake-manifest.json`). With [elan](https://github.com/leanprover/elan) installed:
 
 ```
@@ -82,7 +85,7 @@ sandbox is probed, and comparator runs inside a `systemd-run` unit with network 
 denied.
 
 To run it locally, build [comparator](https://github.com/leanprover/comparator) and
-[lean4export](https://github.com/leanprover/lean4export) at Lean `v4.32.2`, then
+[lean4export](https://github.com/leanprover/lean4export) at Lean `v4.35.0-rc2`, then
 
 ```
 COMPARATOR_TOOLS=/path/to/tools ./comparator-audit.sh

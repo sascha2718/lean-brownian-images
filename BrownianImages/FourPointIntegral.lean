@@ -435,7 +435,7 @@ def coord (p : ℝ × ℝ × ℝ × ℝ) : Fin 4 → ℝ := ![p.1, p.2.1, p.2.2.
 
 /-- Reading the four times is measurable. -/
 theorem measurable_coord : Measurable coord :=
-  measurable_pi_lambda _ (fun i => by
+  Measurable.of_eval (fun i => by
     fin_cases i
     exacts [measurable_fst, measurable_fst.comp measurable_snd,
       measurable_fst.comp (measurable_snd.comp measurable_snd),
@@ -484,7 +484,7 @@ theorem measurePreserving_comp_perm (σ : Equiv.Perm (Fin 4)) :
     MeasurePreserving (fun x : Fin 4 → ℝ => x ∘ σ)
       (Measure.pi fun _ : Fin 4 => μ) (Measure.pi fun _ : Fin 4 => μ) := by
   have hmeas : Measurable (fun x : Fin 4 → ℝ => x ∘ σ) :=
-    measurable_pi_lambda _ (fun i => measurable_pi_apply _)
+    Measurable.of_eval (fun i => measurable_pi_apply _)
   refine ⟨hmeas, ?_⟩
   refine (Measure.pi_eq ?_).symm
   intro s hs

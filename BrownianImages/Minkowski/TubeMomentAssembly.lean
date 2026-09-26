@@ -38,7 +38,7 @@ radius moments. -/
 theorem IsNatural.tubeMoments_of_standardRadiusMoments
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu)
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     (hunit : ∀ p : Real, 1 ≤ p → Integrable (fun omega =>
@@ -61,7 +61,7 @@ theorem IsNatural.tubeMoments_of_standardRadiusMoments
         c * r ^ tubeExponent s ≤
           ∫ omega, tubeMass r
             (brownianImage W hmu.compactAttractor omega) ∂P := by
-  exact hmu.tubeMoments_of_upper S hsep hdim hs0 hs1 hW
+  exact hmu.tubeMoments_of_upper S hosc hdim hs0 hs1 hW
     (hmu.tubeMomentUpper_of_standardRadiusMoments S hdim hs0 hW hunit)
 
 /-- Unit Brownian radius moments give all-scale integrability, continuity, and
@@ -70,7 +70,7 @@ profile.  These are the first two conclusions of `thm:neighbourhood-renewal`. -/
 theorem IsNatural.meanTubeProfile_data_of_standardRadiusMoments
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu)
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     (hunit : ∀ p : Real, 1 ≤ p → Integrable (fun omega =>
@@ -88,7 +88,7 @@ theorem IsNatural.meanTubeProfile_data_of_standardRadiusMoments
   have hcont := hW.continuous_meanBrownianTubeProfile_of_integrable
     hmu.compactAttractor hs1 hall
   have hmom := hmu.tubeMoments_of_standardRadiusMoments
-    S hs0 hs1 hsep hdim hW hunit
+    S hs0 hs1 hosc hdim hW hunit
   obtain ⟨C, hC, hupper⟩ := hmom.1 1 le_rfl
   obtain ⟨c, hc, hlower⟩ := hmom.2
   refine ⟨hall, hcont, c, C, hc, ?_⟩

@@ -30,7 +30,7 @@ structure on path space. -/
 theorem measurable_intervalRescalePathReal (a r : NNReal) :
     Measurable (fun x : NNReal -> Real =>
       fun t => (Real.sqrt (r : Real))⁻¹ * (x (a + r * t) - x a)) := by
-  apply measurable_pi_lambda
+  apply Measurable.of_eval
   intro t
   fun_prop
 
@@ -38,7 +38,7 @@ theorem measurable_intervalRescalePathReal (a r : NNReal) :
 spaces. -/
 theorem measurable_restrictRealPath (I : Finset NNReal) :
     Measurable (fun x : NNReal -> Real => I.restrict x) := by
-  apply measurable_pi_lambda
+  apply Measurable.of_eval
   intro t
   fun_prop
 
@@ -49,12 +49,12 @@ def packFinitePlanarPath (I : Finset NNReal) (x : Fin 2 -> I -> Real) : I -> Pla
 /-- `packFinitePlanarPath` is measurable for the finite product Borel structures. -/
 theorem measurable_packFinitePlanarPath (I : Finset NNReal) :
     Measurable (packFinitePlanarPath I) := by
-  apply measurable_pi_lambda
+  apply Measurable.of_eval
   intro t
   change Measurable (fun x : Fin 2 -> I -> Real =>
     WithLp.toLp 2 (fun i => x i t))
   exact (PiLp.continuousLinearEquiv 2 Real (fun _ : Fin 2 => Real)).symm.continuous.measurable.comp
-    (measurable_pi_lambda _ (fun i => by fun_prop))
+    (Measurable.of_eval (fun i => by fun_prop))
 
 /-- The canonical finite-dimensional law of planar Brownian motion, obtained by taking the
 product of the two real Brownian projective laws and reassembling their coordinates. -/

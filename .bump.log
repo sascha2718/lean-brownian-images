@@ -1,0 +1,99 @@
+info: mathlib: fetching revision 'v4.35.0-rc2' from https://github.com/leanprover-community/mathlib4
+info: toolchain not updated; already up-to-date
+info: mathlib: running post-update hooks
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8915 file(s)
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8915 file(s)
+⚠ [3424/3525] Built BrownianImages.Minkowski.LimitClassifier (2.0s)
+warning: BrownianImages/Minkowski/LimitClassifier.lean:34:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+warning: BrownianImages/Minkowski/LimitClassifier.lean:62:54: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+warning: BrownianImages/Minkowski/LimitClassifier.lean:83:54: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+✔ [3425/3525] Built BrownianImages.Minkowski.L2Recurrence (2.7s)
+✖ [3426/3525] Building BrownianImages.Defs (3.1s)
+trace: .> LEAN_PATH=/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sascha/Documents/lean/mathematics_in_lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/.lake/build/lib/lean /Users/sascha/.elan/toolchains/leanprover--lean4---v4.35.0-rc2/bin/lean /Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/BrownianImages/Defs.lean -o /Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/.lake/build/lib/lean/BrownianImages/Defs.olean -i /Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/.lake/build/lib/lean/BrownianImages/Defs.ilean -c /Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/.lake/build/ir/BrownianImages/Defs.c --setup /Users/sascha/Documents/ActiveResearch/SoleAuthor/BrownianImages/lean/.lake/build/ir/BrownianImages/Defs.setup.json --json
+warning: BrownianImages/Defs.lean:190:22: `dif_pos` has been deprecated: Use `dite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  d̵i̵f̵_̵p̵o̵s̵d̲i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+error: BrownianImages/Defs.lean:190:22: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  dite (IsProbabilityMeasure (occupation W μ ω)) ?m.20 ?m.21
+in the target expression
+  ↑(if h : IsProbabilityMeasure (occupation W μ ω) then ⟨occupation W μ ω, h⟩
+      else ⟨Measure.dirac 0, occupationProb._proof_1⟩) =
+    occupation W μ ω
+
+Ω : Type u_1
+W : ℝ≥0 → Ω → Plane
+μ : Measure ℝ
+ω : Ω
+h : IsProbabilityMeasure (occupation W μ ω)
+⊢ ↑(if h : IsProbabilityMeasure (occupation W μ ω) then ⟨occupation W μ ω, h⟩
+      else ⟨Measure.dirac 0, occupationProb._proof_1⟩) =
+    occupation W μ ω
+
+Note: The target expression is not type-correct under the `implicit` transparency level, which may have triggered the failure. This is usually caused by unfolding of semireducible definitions in prior tactic steps. Use `set_option linter.tacticCheckInstances true` to investigate the source of the issue.
+Full error:
+  Application type mismatch: The argument
+    fun h => ⟨occupation W μ ω, h⟩
+  has type
+    IsProbabilityMeasure (occupation W μ ω) → { μ // IsProbabilityMeasure μ }
+  but is expected to have type
+    IsProbabilityMeasure (occupation W μ ω) → ProbabilityMeasure Plane
+  in the application
+    dite (IsProbabilityMeasure (occupation W μ ω)) fun h => ⟨occupation W μ ω, h⟩
+✔ [3507/3525] Built BrownianImages.Renewal.Kernel (3.4s)
+⚠ [3508/3525] Built BrownianImages.Renewal.Basic (3.0s)
+warning: BrownianImages/Renewal/Basic.lean:572:13: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵S̲e̲t̲.̲m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+warning: BrownianImages/Renewal/Basic.lean:648:17: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵S̲e̲t̲.̲m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+warning: BrownianImages/Renewal/Basic.lean:1291:15: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+
+Hint: Replace the deprecated name:
+  S̵e̵t̵.̵m̵e̵m̵_̵s̵e̵t̵O̵f̵_̵e̵q̵S̲e̲t̲.̲m̲e̲m̲_̲o̲f̲P̲r̲e̲d̲_̲e̲q̲
+warning: BrownianImages/Renewal/Basic.lean:1476:31: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+warning: BrownianImages/Renewal/Basic.lean:1484:31: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+✔ [3509/3525] Built BrownianImages.Renewal.Abel (3.7s)
+✔ [3510/3525] Built BrownianImages.Renewal.Sinc (1.8s)
+⚠ [3511/3525] Built BrownianImages.Renewal.Approx (5.8s)
+warning: BrownianImages/Renewal/Approx.lean:318:33: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+warning: BrownianImages/Renewal/Approx.lean:332:33: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+✔ [3512/3525] Built BrownianImages.Renewal.Equation (1.8s)
+✔ [3513/3525] Built BrownianImages.Renewal (1.4s)
+Some required targets logged failures:
+- BrownianImages.Defs
+error: build failed

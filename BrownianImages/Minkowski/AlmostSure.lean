@@ -90,8 +90,8 @@ theorem ae_tendsto_zero_of_exponential_eLpNorm_sq_bound
   have hepsilonENN : ENNReal.ofReal epsilon ≠ 0 := by
     simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le, hepsilon]
   have hchebyshev := meas_ge_le_mul_pow_eLpNorm_enorm
-    (p := (2 : ENNReal)) P two_ne_zero ENNReal.ofNat_ne_top
-    (hmem n).aestronglyMeasurable hepsilonENN (by simp)
+    (p := (2 : ENNReal)) (μ := P) (f := X n) two_ne_zero ENNReal.ofNat_ne_top
+    hepsilonENN (by simp)
   have hsets : {omega | epsilon <= |X n omega|} =
       {omega | ENNReal.ofReal epsilon <= ‖X n omega‖ₑ} := by
     ext omega

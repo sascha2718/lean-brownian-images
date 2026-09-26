@@ -187,7 +187,7 @@ theorem occupationProb_toMeasure (W : ℝ≥0 → Ω → Plane) (μ : Measure �
     (h : IsProbabilityMeasure (occupation W μ ω)) :
     (occupationProb W μ ω).toMeasure = occupation W μ ω := by
   classical
-  rw [occupationProb, dif_pos h]
+  simp only [occupationProb, h, ↓reduceDIte]
   rfl
 
 /-- `Law(W_*μ)`, a measure on `𝒫(ℝ²)`. -/
@@ -287,6 +287,34 @@ noncomputable def logRatio (i : ι) : ℝ := Real.log (S.ratio i)⁻¹
 dense in `ℝ`.  This is the hypothesis of `thm:non-lattice-limit`. -/
 def NonArithmetic : Prop :=
   Dense ((AddSubgroup.closure (Set.range S.logRatio) : AddSubgroup ℝ) : Set ℝ)
+
+/-! ### The open set condition -/
+
+/-- A feasible open set for the system, as in `sec:introduction`: a non-empty bounded
+open set `U ⊂ ℝ` with `S_i(U) ⊆ U` for every `i` and the images `S_i(U)` pairwise
+disjoint.  The set need not be an interval, and the first-level intervals `S_i([0,1])`
+may overlap. -/
+structure IsFeasible (U : Set ℝ) : Prop where
+  /-- The set is open. -/
+  isOpen : IsOpen U
+  /-- The set is non-empty. -/
+  nonempty : U.Nonempty
+  /-- The set is bounded. -/
+  isBounded : Bornology.IsBounded U
+  /-- Each similarity maps the set into itself. -/
+  mapsTo : ∀ i, Set.MapsTo (S.map i) U U
+  /-- The first-level images are pairwise disjoint. -/
+  disjoint : ∀ i j, i ≠ j → Disjoint (S.map i '' U) (S.map j '' U)
+
+/-- The open set condition of `sec:introduction`: some feasible open set exists. -/
+def OpenSetCondition : Prop := ∃ U : Set ℝ, S.IsFeasible U
+
+/-- The strong open set condition: a feasible open set meeting the attractor `K`.
+Schief's theorem, cited in `sec:introduction` and proved in `Schief.lean`, says that a
+system with attractor `K` satisfies it exactly when it satisfies the open set condition;
+the library's proofs take it as their hypothesis and the endpoints derive it. -/
+def StrongOpenSetCondition (K : Set ℝ) : Prop :=
+  ∃ U : Set ℝ, S.IsFeasible U ∧ (U ∩ K).Nonempty
 
 end System
 

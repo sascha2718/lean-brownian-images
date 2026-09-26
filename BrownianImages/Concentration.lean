@@ -480,8 +480,8 @@ def tailSet (s : ℝ) (μ : Measure ℝ) : Set (ProbabilityMeasure Plane) :=
 the Borel maps `ν ↦ Y_ν(q)` of `sec:concentration`. -/
 theorem measurableSet_tailSet (s : ℝ) (μ : Measure ℝ) : MeasurableSet (tailSet s μ) :=
   MeasurableSet.iInter fun _ => MeasurableSet.iUnion fun _ => MeasurableSet.iInter fun q =>
-    measurableSet_le (((measurable_Yprofile s ((q : ℚ) : ℝ)).sub measurable_const).abs)
-      measurable_const
+    measurableSet_le (continuous_abs.measurable.comp ((measurable_Yprofile s ((q : ℚ) : ℝ)).sub
+      measurable_const)) measurable_const
 
 /-- Uniform convergence on tails puts a measure in the set. -/
 theorem mem_tailSet {s : ℝ} {μ : Measure ℝ} {ν : ProbabilityMeasure Plane}

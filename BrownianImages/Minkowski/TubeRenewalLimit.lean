@@ -555,9 +555,10 @@ theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_exp_defect
   exact ⟨CK, lt_of_lt_of_le hc hcCK, hlim⟩
 
 /-- Complete non-arithmetic renewal assembly from profile bounds and the uniform
-first-level overlap estimate.  The overlap theorem supplies both integrability and
-exponential decay of the expected multiple-counting defect; delayed profile
-integrability supplies the exact renewal equation.  Thus, after the tube-moment and
+first-level overlap estimate of order `r^(alpha + theta)`.  The overlap theorem supplies
+both integrability and exponential decay at rate `theta` of the expected
+multiple-counting defect; delayed profile integrability supplies the exact renewal
+equation.  Thus, after the tube-moment and
 tube-overlap estimates, continuity of the mean profile is the only additional
 analytic input in this statement. -/
 theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_pairwise_overlap
@@ -566,10 +567,10 @@ theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_pairwise_overlap
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System iota) {K : Set Real} {s : Real} {mu : Measure Real}
     (hmu : S.IsNatural K s mu) (hdim : S.IsDimension s)
-    (hs1 : s < 1) (hna : S.TubeNonArithmetic)
+    (_hs1 : s < 1) (hna : S.TubeNonArithmetic)
     (hm : Continuous
       (meanBrownianTubeProfile W P hmu.compactAttractor s))
-    {c A C : Real} (hc : 0 < c) (hC : 0 ≤ C)
+    {c A C θ : Real} (hc : 0 < c) (hC : 0 ≤ C) (hθ : 0 < θ)
     (hint : ∀ v : Real, 0 ≤ v →
       Integrable (brownianTubeProfile W hmu.compactAttractor s v) P)
     (hbounds : ∀ v : Real, 0 ≤ v →
@@ -582,15 +583,12 @@ theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_pairwise_overlap
       (∫ omega, tubeOverlapArea (tubeRadiusReal v)
         (hmu.brownianFirstLevelPiece S W omega i)
         (hmu.brownianFirstLevelPiece S W omega j) ∂P) ≤
-          C * tubeRadiusReal v ^ (2 * tubeExponent s)) :
+          C * tubeRadiusReal v ^ (tubeExponent s + θ)) :
     ∃ CK : Real, 0 < CK ∧
       Tendsto (meanBrownianTubeProfile W P hmu.compactAttractor s)
         atTop (nhds CK) := by
   let D : Real := ((Fintype.card iota : Real) ^ 2 / 2) * C
   have hD : 0 ≤ D := mul_nonneg (by positivity) hC
-  have hgamma : 0 < tubeExponent s := by
-    unfold tubeExponent
-    linarith
   have hrenewal : ∀ v : Real,
       (∀ i : iota, S.halfLogRatio i ≤ v) →
       Integrable (brownianTubeProfile W hmu.compactAttractor s v) P ∧
@@ -600,7 +598,7 @@ theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_pairwise_overlap
           hmu.meanBrownianTubeDefectProfile S W P v ∧
       0 ≤ hmu.meanBrownianTubeDefectProfile S W P v ∧
       hmu.meanBrownianTubeDefectProfile S W P v ≤
-        D * Real.exp (-tubeExponent s * v) := by
+        D * Real.exp (-θ * v) := by
     intro v hvsteps
     obtain ⟨i0⟩ := ‹Nonempty iota›
     have hv0 : 0 ≤ v := (S.halfLogRatio_pos i0).le.trans (hvsteps i0)
@@ -610,9 +608,9 @@ theorem System.IsNatural.meanBrownianTubeProfile_tendsto_of_pairwise_overlap
       intro i
       exact hint (v - S.halfLogRatio i) (sub_nonneg.mpr (hvsteps i))
     simpa only [D] using hW.mean_tube_renewal_of_pairwise_overlap
-      S hmu v C hC hdelayed (hpair v hv0)
+      S hmu v C θ hC hdelayed (hpair v hv0)
   apply hmu.meanBrownianTubeProfile_tendsto_of_exp_defect S hdim hna hm
-    hc hD hgamma hbounds
+    hc hD hθ hbounds
   · intro v hvsteps
     exact (hrenewal v hvsteps).2.1
   · intro v hvsteps

@@ -136,7 +136,7 @@ theorem aemeasurable_finiteRange_process [MeasurableSpace E] [BorelSpace E]
     (hX : ∀ i, AEMeasurable (X i) P) :
     AEMeasurable (fun ω ↦ finiteRange (fun i ↦ X i ω)) P := by
   apply measurable_finiteRange.comp_aemeasurable
-  exact aemeasurable_pi_lambda _ hX
+  exact AEMeasurable.of_eval hX
 
 end FiniteRanges
 
@@ -330,8 +330,9 @@ noncomputable def brownianImageLaw (W : ℝ≥0 → Ω → Plane) (P : Measure �
 /-- The compact-image law has total mass one. -/
 theorem IsPlanarBrownian.isProbabilityMeasure_brownianImageLaw [IsProbabilityMeasure P]
     (hW : IsPlanarBrownian W P) (K : NonemptyCompacts ℝ) :
-    IsProbabilityMeasure (brownianImageLaw W P K) :=
-  Measure.isProbabilityMeasure_map (hW.aemeasurable_brownianImage K)
+    IsProbabilityMeasure (brownianImageLaw W P K) := by
+  unfold brownianImageLaw
+  exact inferInstance
 
 end Brownian
 

@@ -32,8 +32,6 @@ constructing the whole measurable limit map.
 * `brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction`: descent of
   occupation-law singularity to compact-image-law singularity from pathwise convergence
   alone, the endpoint `audit_brownianImageLaw_mutuallySingular_of_pathwise`.
-* `homogeneous_brownianImage_application_pair_of_pathwise`: the paired application,
-  conditional on the two pathwise assertions.
 -/
 import BrownianImages.CompactImage
 import BrownianImages.Minkowski.Tube
@@ -42,7 +40,6 @@ import BrownianImages.Minkowski.LimitClassifier
 import BrownianImages.Minkowski.System
 import BrownianImages.Minkowski.TubeConvergence
 import BrownianImages.Minkowski.CylinderConvergence
-import BrownianImages.NonLattice
 
 namespace BrownianImages
 
@@ -257,31 +254,6 @@ theorem brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
     rw [show (brownianImage W K2) ⁻¹' Aᶜ =
       {omega | ¬brownianImage W K2 omega ∈ A} by ext; simp]
     exact ae_iff.mp himage2
-
-/-- Classifier form of the parameter-uniform homogeneous-versus-paired application.
-Only the two pathwise tube reconstruction assertions remain as analytic hypotheses. -/
-theorem homogeneous_brownianImage_application_pair_of_pathwise
-    {P : Measure Omega} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
-    {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1 / 2)
-    {KA : Set ℝ} {muA : Measure ℝ}
-    (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) muA)
-    {KB : Set ℝ} {muB : Measure ℝ}
-    (hB : (pairSystem (pairRatio (homogeneousDim lam))
-      (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
-      (pairRatio_lt_half (homogeneousDim_pos hlam0 hlam)
-        (homogeneousDim_lt_one hlam0 hlam))).IsNatural KB (homogeneousDim lam) muB)
-    (hnl : Irrational
-      (Real.log (pairRatio (homogeneousDim lam))⁻¹ / Real.log 2))
-    (hconvA : TubeReconstructsOccupation W P hA.compactAttractor muA)
-    (hconvB : TubeReconstructsOccupation W P hB.compactAttractor muB) :
-    (brownianImageLaw W P hA.compactAttractor).MutuallySingular
-      (brownianImageLaw W P hB.compactAttractor) := by
-  letI := hA.isProbabilityMeasure
-  letI := hB.isProbabilityMeasure
-  exact brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction
-    hW hconvA hconvB
-      (BrownianImages.homogeneous_application_pair hW hlam0 hlam hA hB hnl)
 
 end MinkowskiReconstruction
 

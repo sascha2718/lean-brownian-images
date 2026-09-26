@@ -358,18 +358,18 @@ theorem IsPlanarBrownian.integrable_brownianTubeProfile_and_mean_renewal_eq
   · intro i _
     exact hpiece i
 
-/-- A raw defect expectation of order `r^(2 alpha)` becomes an exponentially
-decaying forcing of order `exp(-alpha v)` in the normalised renewal equation. -/
+/-- A raw defect expectation of order `r^(alpha + theta)` becomes an exponentially
+decaying forcing of order `exp(-theta v)` in the normalised renewal equation. -/
 theorem System.IsNatural.meanBrownianTubeDefectProfile_le_of_tubeDefect_mean_le
     {Omega ι : Type*} [MeasurableSpace Omega] [Fintype ι] [Nonempty ι]
     (S : System ι) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
     (hmu : S.IsNatural K s mu) (W : ℝ≥0 → Omega → Plane)
-    (P : Measure Omega) (v C : ℝ)
+    (P : Measure Omega) (v C θ : ℝ)
     (hbound : (∫ omega, tubeDefect (tubeRadiusReal v)
       (fun i => hmu.brownianFirstLevelPiece S W omega i) ∂P) ≤
-        C * tubeRadiusReal v ^ (2 * tubeExponent s)) :
+        C * tubeRadiusReal v ^ (tubeExponent s + θ)) :
     hmu.meanBrownianTubeDefectProfile S W P v ≤
-      C * Real.exp (-tubeExponent s * v) := by
+      C * Real.exp (-θ * v) := by
   unfold System.IsNatural.meanBrownianTubeDefectProfile normalizedTubeDefect
   rw [integral_const_mul]
   calc
@@ -377,31 +377,32 @@ theorem System.IsNatural.meanBrownianTubeDefectProfile_le_of_tubeDefect_mean_le
         (∫ omega, tubeDefect (tubeRadiusReal v)
           (fun i => hmu.brownianFirstLevelPiece S W omega i) ∂P) ≤
         Real.exp (tubeExponent s * v) *
-          (C * tubeRadiusReal v ^ (2 * tubeExponent s)) :=
+          (C * tubeRadiusReal v ^ (tubeExponent s + θ)) :=
       mul_le_mul_of_nonneg_left hbound (Real.exp_pos _).le
-    _ = C * Real.exp (-tubeExponent s * v) := by
+    _ = C * Real.exp (-θ * v) := by
       rw [tubeRadiusReal, Real.rpow_def_of_pos (Real.exp_pos _), Real.log_exp]
       calc
         Real.exp (tubeExponent s * v) *
-            (C * Real.exp (-v * (2 * tubeExponent s))) =
+            (C * Real.exp (-v * (tubeExponent s + θ))) =
             C * (Real.exp (tubeExponent s * v) *
-              Real.exp (-v * (2 * tubeExponent s))) := by ring
+              Real.exp (-v * (tubeExponent s + θ))) := by ring
         _ = C * Real.exp
-            (tubeExponent s * v + -v * (2 * tubeExponent s)) := by
+            (tubeExponent s * v + -v * (tubeExponent s + θ)) := by
           rw [Real.exp_add]
-        _ = C * Real.exp (-tubeExponent s * v) := by
+        _ = C * Real.exp (-θ * v) := by
           congr 2
           ring
 
-/-- A uniform finite-pair overlap estimate gives exactly the integrable,
-exponentially decaying forcing required by the expectation-level renewal equation.
-The only loss is the deterministic finite-family factor `card(iota)^2 / 2`. -/
+/-- A uniform finite-pair overlap estimate of order `r^(alpha + theta)` gives exactly
+the integrable, exponentially decaying forcing of rate `theta` required by the
+expectation-level renewal equation.  The only loss is the deterministic finite-family
+factor `card(iota)^2 / 2`. -/
 theorem IsPlanarBrownian.integrable_normalizedTubeDefect_and_mean_le_of_pairwise_overlap
     {Omega ι : Type*} [MeasurableSpace Omega] [Fintype ι] [Nonempty ι]
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System ι) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hmu : S.IsNatural K s mu) (v C : ℝ) (hC : 0 ≤ C)
+    (hmu : S.IsNatural K s mu) (v C θ : ℝ) (hC : 0 ≤ C)
     (hpair : ∀ i j : ι, i ≠ j →
       Integrable (fun omega => tubeOverlapArea (tubeRadiusReal v)
         (hmu.brownianFirstLevelPiece S W omega i)
@@ -409,13 +410,13 @@ theorem IsPlanarBrownian.integrable_normalizedTubeDefect_and_mean_le_of_pairwise
       (∫ omega, tubeOverlapArea (tubeRadiusReal v)
         (hmu.brownianFirstLevelPiece S W omega i)
         (hmu.brownianFirstLevelPiece S W omega j) ∂P) ≤
-          C * tubeRadiusReal v ^ (2 * tubeExponent s)) :
+          C * tubeRadiusReal v ^ (tubeExponent s + θ)) :
     Integrable (fun omega => normalizedTubeDefect s v
       (fun i => hmu.brownianFirstLevelPiece S W omega i)) P ∧
     0 ≤ hmu.meanBrownianTubeDefectProfile S W P v ∧
     hmu.meanBrownianTubeDefectProfile S W P v ≤
       (((Fintype.card ι : ℝ) ^ 2 / 2) * C) *
-        Real.exp (-tubeExponent s * v) := by
+        Real.exp (-θ * v) := by
   let F : ι → Omega → CompactPlane := fun i omega =>
     hmu.brownianFirstLevelPiece S W omega i
   have hF : ∀ i, AEMeasurable (F i) P := fun i =>
@@ -424,7 +425,7 @@ theorem IsPlanarBrownian.integrable_normalizedTubeDefect_and_mean_le_of_pairwise
       Integrable (fun omega => tubeOverlapArea (tubeRadiusReal v)
         (F i omega) (F j omega)) P :=
     fun i j hij => (hpair i j hij).1
-  have hscale : 0 ≤ C * tubeRadiusReal v ^ (2 * tubeExponent s) :=
+  have hscale : 0 ≤ C * tubeRadiusReal v ^ (tubeExponent s + θ) :=
     mul_nonneg hC (Real.rpow_nonneg (tubeRadiusReal_pos v).le _)
   have hrawInt : Integrable (fun omega =>
       tubeDefect (tubeRadiusReal v) (fun i => F i omega)) P :=
@@ -432,7 +433,7 @@ theorem IsPlanarBrownian.integrable_normalizedTubeDefect_and_mean_le_of_pairwise
   have hrawBound : (∫ omega,
       tubeDefect (tubeRadiusReal v) (fun i => F i omega) ∂P) ≤
       ((Fintype.card ι : ℝ) ^ 2 / 2) *
-        (C * tubeRadiusReal v ^ (2 * tubeExponent s)) :=
+        (C * tubeRadiusReal v ^ (tubeExponent s + θ)) :=
     integral_tubeDefect_le_card_sq_mul (tubeRadiusReal_pos v) hscale hF
       hoverlap (fun i j hij => (hpair i j hij).2)
   have hnormInt : Integrable (fun omega => normalizedTubeDefect s v
@@ -442,14 +443,14 @@ theorem IsPlanarBrownian.integrable_normalizedTubeDefect_and_mean_le_of_pairwise
   refine ⟨hnormInt,
     hmu.meanBrownianTubeDefectProfile_nonneg S W P v, ?_⟩
   apply hmu.meanBrownianTubeDefectProfile_le_of_tubeDefect_mean_le
-    S W P v (((Fintype.card ι : ℝ) ^ 2 / 2) * C)
+    S W P v (((Fintype.card ι : ℝ) ^ 2 / 2) * C) θ
   change (∫ omega, tubeDefect (tubeRadiusReal v) (fun i => F i omega) ∂P) ≤ _
   calc
     (∫ omega, tubeDefect (tubeRadiusReal v) (fun i => F i omega) ∂P) ≤
         ((Fintype.card ι : ℝ) ^ 2 / 2) *
-          (C * tubeRadiusReal v ^ (2 * tubeExponent s)) := hrawBound
+          (C * tubeRadiusReal v ^ (tubeExponent s + θ)) := hrawBound
     _ = (((Fintype.card ι : ℝ) ^ 2 / 2) * C) *
-          tubeRadiusReal v ^ (2 * tubeExponent s) := by ring
+          tubeRadiusReal v ^ (tubeExponent s + θ) := by ring
 
 /-- Combined finite-overlap-to-renewal reduction at one logarithmic scale.  Pairwise
 overlap estimates and delayed-profile integrability yield the current integrability,
@@ -459,7 +460,7 @@ theorem IsPlanarBrownian.mean_tube_renewal_of_pairwise_overlap
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System ι) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hmu : S.IsNatural K s mu) (v C : ℝ) (hC : 0 ≤ C)
+    (hmu : S.IsNatural K s mu) (v C θ : ℝ) (hC : 0 ≤ C)
     (hdelayed : ∀ i,
       Integrable (brownianTubeProfile W hmu.compactAttractor s
         (v - S.halfLogRatio i)) P)
@@ -470,7 +471,7 @@ theorem IsPlanarBrownian.mean_tube_renewal_of_pairwise_overlap
       (∫ omega, tubeOverlapArea (tubeRadiusReal v)
         (hmu.brownianFirstLevelPiece S W omega i)
         (hmu.brownianFirstLevelPiece S W omega j) ∂P) ≤
-          C * tubeRadiusReal v ^ (2 * tubeExponent s)) :
+          C * tubeRadiusReal v ^ (tubeExponent s + θ)) :
     Integrable (brownianTubeProfile W hmu.compactAttractor s v) P ∧
     meanBrownianTubeProfile W P hmu.compactAttractor s v =
       S.tubeRenewalConv s
@@ -479,14 +480,14 @@ theorem IsPlanarBrownian.mean_tube_renewal_of_pairwise_overlap
     0 ≤ hmu.meanBrownianTubeDefectProfile S W P v ∧
     hmu.meanBrownianTubeDefectProfile S W P v ≤
       (((Fintype.card ι : ℝ) ^ 2 / 2) * C) *
-        Real.exp (-tubeExponent s * v) := by
+        Real.exp (-θ * v) := by
   have hforcing :=
     hW.integrable_normalizedTubeDefect_and_mean_le_of_pairwise_overlap
-      S hmu v C hC hpair
+      S hmu v C θ hC hpair
   have hrawInt : Integrable (fun omega =>
       tubeDefect (tubeRadiusReal v)
         (fun i => hmu.brownianFirstLevelPiece S W omega i)) P := by
-    have hscale : 0 ≤ C * tubeRadiusReal v ^ (2 * tubeExponent s) :=
+    have hscale : 0 ≤ C * tubeRadiusReal v ^ (tubeExponent s + θ) :=
       mul_nonneg hC (Real.rpow_nonneg (tubeRadiusReal_pos v).le _)
     exact integrable_tubeDefect_of_pairwise_overlap (tubeRadiusReal_pos v)
       (fun i => hW.aemeasurable_brownianImage (hmu.compactPiece S i))

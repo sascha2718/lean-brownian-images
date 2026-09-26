@@ -86,7 +86,7 @@ theorem intervalIntegral_expDens (r δ : ℝ) :
 theorem isProbabilityMeasure_pairLaw [IsProbabilityMeasure μ] :
     IsProbabilityMeasure (pairLaw μ) := by
   rw [pairLaw]
-  exact Measure.isProbabilityMeasure_map (by fun_prop)
+  exact inferInstance
 
 /-- The pair-distance law charges no non-positive number: distances are non-negative,
 and the atomlessness of `sec:setup` removes the value `0`. -/

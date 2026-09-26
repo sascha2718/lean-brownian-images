@@ -4,7 +4,7 @@
 # comparator-config.json.
 #
 # Requires local builds of leanprover/comparator and of leanprover/lean4export
-# at the project's Lean version (v4.32.2); override the default locations with
+# at the project's Lean version (v4.35.0-rc2); override the default locations with
 # COMPARATOR_TOOLS or the individual variables below. landrun is Linux-only,
 # so on macOS comparator's shim is used and the builds run unsandboxed. To add
 # the independent nanoda kernel, build it with cargo, set COMPARATOR_NANODA to

@@ -190,7 +190,7 @@ theorem measurable_crossLogMap (lam : ℝ) :
 instance crossLogLaw.isProbabilityMeasure (lam : ℝ) (μ : Measure ℝ)
     [IsProbabilityMeasure μ] : IsProbabilityMeasure (crossLogLaw lam μ) := by
   unfold crossLogLaw
-  exact Measure.isProbabilityMeasure_map (measurable_crossLogMap lam).aemeasurable
+  exact inferInstance
 
 /-- The cross term at `δ = e^{-w}` is the tail mass of `[w, ∞)` under the logarithmic
 cross-law. -/

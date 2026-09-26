@@ -69,7 +69,7 @@ def evalPi (ν : ProbabilityMeasure Plane) : piBasis → ℝ≥0 := fun i => ν 
 
 /-- Evaluation on the members of the π-system is measurable for the Giry σ-algebra. -/
 theorem measurable_evalPi : Measurable evalPi := by
-  refine measurable_pi_lambda _ fun i => ?_
+  refine Measurable.of_eval fun i => ?_
   show Measurable fun ν : ProbabilityMeasure Plane => ((ν : Measure Plane) i.1).toNNReal
   exact ENNReal.measurable_toNNReal.comp
     ((Measure.measurable_coe (piBasis_measurable i.1 i.2)).comp measurable_subtype_coe)

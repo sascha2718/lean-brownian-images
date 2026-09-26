@@ -52,6 +52,7 @@ import BrownianImages.RenewalBridge
 import BrownianImages.Recursion
 import BrownianImages.Profile
 import BrownianImages.AhlforsRegular
+import BrownianImages.CrossPiece
 
 namespace BrownianImages
 
@@ -634,13 +635,6 @@ open _root_.AbsorptionCutoff.Renewal
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
-/-- `eq:g-recursion` says exactly that the renewal defect `z = G - F * G` vanishes above
-`log(1/ρ)`. -/
-theorem renewalDefect_eq_zero_of_lt {K : Set ℝ} {ρ s : ℝ} (hsep : S.StronglySeparated K ρ)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) {w : ℝ} (hw : Real.log ρ⁻¹ < w) :
-    S.renewalDefect s μ w = 0 := by
-  rw [System.renewalDefect, System.renewalConv, ← g_recursion S hsep hμ hw, sub_self]
-
 /-- `|z(w)| ≤ e^{sw}`: the trivial bound `Φ ≤ 1` applied to both terms, the second one
 through `∑ p_i = 1`. -/
 theorem abs_renewalDefect_le {s : ℝ} (hs : 0 ≤ s) (hdim : S.IsDimension s) {μ : Measure ℝ}
@@ -663,74 +657,47 @@ theorem abs_renewalDefect_le {s : ℝ} (hs : 0 ≤ s) (hdim : S.IsDimension s) {
   rw [System.renewalDefect, abs_sub_le_iff]
   constructor <;> linarith
 
-/-- **The renewal defect is directly Riemann integrable.**  It vanishes above
-`log(1/ρ)` by `eq:g-recursion` and is dominated by `e^{sw}` below it, so the cell
-suprema in the vendored definition of `driNorm` form a geometric series.  This is the first of the two
-analytic facts `sec:renewal` proves about `z`. -/
-theorem driNorm_renewalDefect_ne_top {K : Set ℝ} {ρ s : ℝ} (hs : 0 < s)
-    (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s) {μ : Measure ℝ}
-    (hμ : S.IsNatural K s μ) :
-    driNorm (fun x => ‖S.renewalDefect s μ x‖ₑ) ≠ ∞ := by
-  haveI := hμ.isProbabilityMeasure
-  set L : ℝ := Real.log ρ⁻¹ with hL
-  set N : ℤ := ⌈L⌉ + 1 with hN
-  have hNL : L < (N : ℝ) := by
-    rw [hN]; push_cast; linarith [Int.le_ceil L]
-  set a : ℤ → ℝ := fun k => if k < N then Real.exp (s * ((k : ℝ) + 1)) else 0 with ha
-  have hanonneg : ∀ k, 0 ≤ a k := by
-    intro k
-    rw [ha]
-    dsimp only
-    split
-    · positivity
-    · exact le_rfl
-  have hcell : ∀ k : ℤ,
-      cellSup (fun x => ‖S.renewalDefect s μ x‖ₑ) k ≤ ENNReal.ofReal (a k) := by
+/-- **A function with two-sided exponential decay is directly Riemann integrable**: the
+cell suprema in the vendored definition of `driNorm` are dominated by a geometric
+series on either side of the origin. -/
+theorem driNorm_ne_top_of_exp_decay {f : ℝ → ℝ} {C c : ℝ} (hc : 0 < c)
+    (hf : ∀ x, |f x| ≤ C * Real.exp (-c * |x|)) :
+    driNorm (fun x => ‖f x‖ₑ) ≠ ∞ := by
+  have hC : 0 ≤ C := by
+    have h0 := hf 0
+    simp only [abs_zero, mul_zero, Real.exp_zero, mul_one] at h0
+    exact le_trans (abs_nonneg _) h0
+  have hcell : ∀ k : ℤ, cellSup (fun x => ‖f x‖ₑ) k
+      ≤ ENNReal.ofReal (C * Real.exp c * Real.exp (-c * |(k : ℝ)|)) := by
     intro k
     refine iSup₂_le fun x hx => ?_
     rw [Set.mem_Icc] at hx
-    rw [ha]
-    dsimp only
-    by_cases hk : k < N
-    · rw [if_pos hk, Real.enorm_eq_ofReal_abs]
-      refine ENNReal.ofReal_le_ofReal ?_
-      calc |S.renewalDefect s μ x| ≤ Real.exp (s * x) := abs_renewalDefect_le S hs.le hdim x
-        _ ≤ Real.exp (s * ((k : ℝ) + 1)) := Real.exp_le_exp.mpr (by nlinarith [hx.2])
-    · rw [if_neg hk]
-      have hkN : (N : ℝ) ≤ (k : ℝ) := by exact_mod_cast not_lt.mp hk
-      have hxL : L < x := lt_of_lt_of_le hNL (le_trans hkN hx.1)
-      rw [renewalDefect_eq_zero_of_lt S hsep hμ hxL]
-      simp
-  have hsummable : Summable a := by
+    show ‖f x‖ₑ ≤ _
+    rw [Real.enorm_eq_ofReal_abs]
+    refine ENNReal.ofReal_le_ofReal ((hf x).trans ?_)
+    have hk : |(k : ℝ)| ≤ |x| + 1 := by
+      have h1 : |(k : ℝ) - x| ≤ 1 := by
+        rw [abs_le]; constructor <;> linarith [hx.1, hx.2]
+      calc |(k : ℝ)| = |((k : ℝ) - x) + x| := by rw [sub_add_cancel]
+        _ ≤ |(k : ℝ) - x| + |x| := abs_add_le _ _
+        _ ≤ |x| + 1 := by linarith
+    rw [mul_assoc, ← Real.exp_add]
+    refine mul_le_mul_of_nonneg_left (Real.exp_le_exp.mpr ?_) hC
+    nlinarith
+  have hsummable : Summable fun k : ℤ => C * Real.exp c * Real.exp (-c * |(k : ℝ)|) := by
+    have hgeo : Summable fun n : ℕ => C * Real.exp c * Real.exp (-c) ^ n :=
+      Summable.mul_left _ (summable_geometric_of_lt_one (Real.exp_pos _).le
+        (Real.exp_lt_one_iff.mpr (by linarith)))
     refine Summable.of_nat_of_neg ?_ ?_
-    · refine summable_of_ne_finset_zero (s := Finset.range (N.toNat + 1)) fun n hn => ?_
-      rw [ha]
-      dsimp only
-      refine if_neg fun hlt => hn ?_
-      rw [Finset.mem_range]
-      omega
-    · have hgeo : Summable fun n : ℕ => Real.exp s * Real.exp (-s) ^ n := by
-        refine Summable.mul_left _ (summable_geometric_of_lt_one (Real.exp_pos _).le ?_)
-        exact Real.exp_lt_one_iff.mpr (by linarith)
-      refine Summable.of_nonneg_of_le (fun n => hanonneg _) (fun n => ?_) hgeo
-      rw [ha]
-      dsimp only
-      have hval : Real.exp s * Real.exp (-s) ^ n = Real.exp (s * ((-(n : ℤ) : ℝ) + 1)) := by
-        rw [← Real.exp_nat_mul, ← Real.exp_add]
-        congr 1
-        push_cast
-        ring
-      rw [hval]
-      by_cases hk : (-(n : ℤ)) < N
-      · rw [if_pos hk]
-        refine le_of_eq (congrArg Real.exp ?_)
-        push_cast
-        ring
-      · rw [if_neg hk]
-        positivity
+    · refine hgeo.congr fun n => ?_
+      simp only [Int.cast_natCast, Nat.abs_cast, ← Real.exp_nat_mul]
+      ring_nf
+    · refine hgeo.congr fun n => ?_
+      simp only [Int.cast_neg, Int.cast_natCast, abs_neg, Nat.abs_cast, ← Real.exp_nat_mul]
+      ring_nf
   rw [driNorm_def]
   refine ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hcell)
-  rw [← ENNReal.ofReal_tsum_of_nonneg hanonneg hsummable]
+  rw [← ENNReal.ofReal_tsum_of_nonneg (fun k => by positivity) hsummable]
   exact ENNReal.ofReal_ne_top
 
 /-- `Φ(δ) = 1` for `δ ≥ 1`: the measure sits on `[0,1]`, so every pair of points is at
@@ -882,31 +849,89 @@ theorem renewalDefect_pos_of_nonpos [Nonempty ι] {K : Set ℝ} {s : ℝ} (hs : 
   simp only [hΦi, mul_one]
   linarith
 
+/-- **`eq:g-recursion` for the renewal defect**: `z(w) = e^{sw} Φ_×(e^{-w})`. -/
+theorem renewalDefect_eq_crossPhi {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
+    (hμ : S.IsNatural K s μ) (w : ℝ) :
+    S.renewalDefect s μ w = Real.exp (s * w) * S.crossPhi s μ (Real.exp (-w)) := by
+  rw [renewalDefect_eq, phi_recursion_cross S hμ (Real.exp (-w))]
+  ring
+
+/-- **The renewal defect has exponentially decaying tails**, under the strong open set
+condition: `0 ≤ z(w) ≤ C e^{-ηw}` for `w ≥ 0` by `thm:renewal-recursion`, and
+`|z(w)| ≤ e^{sw}` for `w ≤ 0`. -/
+theorem exists_abs_renewalDefect_le_exp [Nonempty ι] {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    ∃ C c : ℝ, 0 < C ∧ 0 < c ∧
+      ∀ w, |S.renewalDefect s μ w| ≤ C * Real.exp (-c * |w|) := by
+  have := hμ.isProbabilityMeasure
+  obtain ⟨C₀, η, hC₀, hη, -, hbound⟩ := hsosc.exists_crossPhi_bound S hs0 hs1 hdim hμ
+  refine ⟨max C₀ 1, min η s, lt_max_of_lt_right one_pos, lt_min hη hs0, fun w => ?_⟩
+  rcases le_or_gt 0 w with hw | hw
+  · rw [abs_of_nonneg hw, abs_of_nonneg (renewalDefect_nonneg S hμ w),
+      renewalDefect_eq_crossPhi S hμ w]
+    have hδ0 : 0 < Real.exp (-w) := Real.exp_pos _
+    have hδ1 : Real.exp (-w) ≤ 1 := Real.exp_le_one_iff.mpr (by linarith)
+    calc Real.exp (s * w) * S.crossPhi s μ (Real.exp (-w))
+        ≤ Real.exp (s * w) * (C₀ * Real.exp (-w) ^ (s + η)) :=
+          mul_le_mul_of_nonneg_left (hbound _ hδ0 hδ1) (Real.exp_pos _).le
+      _ = C₀ * Real.exp (-η * w) := by
+          rw [← Real.exp_mul, ← mul_assoc, mul_comm (Real.exp (s * w)) C₀, mul_assoc,
+            ← Real.exp_add]
+          congr 2
+          ring
+      _ ≤ max C₀ 1 * Real.exp (-min η s * w) := by
+          refine mul_le_mul (le_max_left _ _) (Real.exp_le_exp.mpr ?_) (Real.exp_pos _).le
+            (le_trans hC₀.le (le_max_left _ _))
+          nlinarith [min_le_left η s]
+  · rw [abs_of_neg hw]
+    calc |S.renewalDefect s μ w| ≤ Real.exp (s * w) := abs_renewalDefect_le S hs0.le hdim w
+      _ = 1 * Real.exp (-s * -w) := by
+          rw [one_mul]
+          congr 1
+          ring
+      _ ≤ max C₀ 1 * Real.exp (-min η s * -w) := by
+          refine mul_le_mul (le_max_right _ _) (Real.exp_le_exp.mpr ?_) (Real.exp_pos _).le
+            (le_trans zero_le_one (le_max_right _ _))
+          nlinarith [min_le_right η s]
+
+/-- **The renewal defect is directly Riemann integrable**, under the strong open set
+condition: it has exponentially decaying tails.  This is the first of the two analytic
+facts `sec:renewal` proves about `z`. -/
+theorem driNorm_renewalDefect_ne_top [Nonempty ι] {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    driNorm (fun x => ‖S.renewalDefect s μ x‖ₑ) ≠ ∞ := by
+  obtain ⟨C, c, -, hc, hbound⟩ := exists_abs_renewalDefect_le_exp S hsosc hs0 hs1 hdim hμ
+  exact driNorm_ne_top_of_exp_decay hc hbound
+
 /-- The renewal defect is integrable: `driNorm_renewalDefect_ne_top` dominates the
 `L¹` norm. -/
-theorem integrable_renewalDefect {K : Set ℝ} {ρ s : ℝ} (hs : 0 < s)
-    (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s) {μ : Measure ℝ}
-    (hμ : S.IsNatural K s μ) : Integrable (S.renewalDefect s μ) := by
-  haveI := hμ.isProbabilityMeasure
-  obtain ⟨A, hA⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs hsep hμ
-  have hGc : Continuous (G s μ) := continuous_G hs hA
+theorem integrable_renewalDefect [Nonempty ι] {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    Integrable (S.renewalDefect s μ) := by
+  have := hμ.isProbabilityMeasure
+  obtain ⟨A, hA⟩ := System.OpenSetCondition.exists_isFrostman S (hsosc.openSetCondition S) hs0.le hμ
+  have hGc : Continuous (G s μ) := continuous_G hs0 hA
   have hzc : Continuous (S.renewalDefect s μ) := by
     refine hGc.sub (continuous_finsetSum _ fun i _ => ?_)
     exact continuous_const.mul (hGc.comp (continuous_id.sub continuous_const))
   refine ⟨hzc.aestronglyMeasurable, ?_⟩
   rw [hasFiniteIntegral_iff_enorm]
   exact lt_of_le_of_lt (lintegral_le_driNorm _)
-    (lt_top_iff_ne_top.mpr (driNorm_renewalDefect_ne_top S hs hsep hdim hμ))
+    (lt_top_iff_ne_top.mpr (driNorm_renewalDefect_ne_top S hsosc hs0 hs1 hdim hμ))
 
 /-- **`∫ z > 0`**, the second analytic fact `sec:renewal` proves about the renewal
 defect: `z ≥ 0` everywhere and `z > 0` on the whole half-line `w ≤ 0`. -/
-theorem integral_renewalDefect_pos [Nonempty ι] {K : Set ℝ} {ρ s : ℝ} (hs : 0 < s)
-    (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s) {μ : Measure ℝ}
-    (hμ : S.IsNatural K s μ) : 0 < ∫ x : ℝ, S.renewalDefect s μ x := by
+theorem integral_renewalDefect_pos [Nonempty ι] {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    0 < ∫ x : ℝ, S.renewalDefect s μ x := by
   rw [integral_pos_iff_support_of_nonneg (fun x => renewalDefect_nonneg S hμ x)
-    (integrable_renewalDefect S hs hsep hdim hμ)]
+    (integrable_renewalDefect S hsosc hs0 hs1 hdim hμ)]
   have hsub : Set.Iic (0:ℝ) ⊆ Function.support (S.renewalDefect s μ) := fun w hw =>
-    ne_of_gt (renewalDefect_pos_of_nonpos S hs hdim hμ hw)
+    ne_of_gt (renewalDefect_pos_of_nonpos S hs0 hdim hμ hw)
   refine lt_of_lt_of_le ?_ (measure_mono hsub)
   rw [Real.volume_Iic]
   exact ENNReal.zero_lt_top
@@ -919,11 +944,9 @@ continuous and bounded by `eq:phi-frostman`, it vanishes at `-∞` by `Φ ≤ 1`
 recursion `eq:g-recursion` is the definition of `z = G - ϑ * G`, and `ϑ` satisfies
 Feller's hypothesis by `eq:non-lattice`.  What is assumed is exactly what `sec:renewal`
 proves about `z` and nothing else: that `z` is directly Riemann integrable, and that its
-integral is strictly positive.  The first rests on `z = 0` above `log(1/ρ)` together with
-`|z| ≤ C e^{sw}` below it, the second on the off-diagonal blocks of the self-similar
-decomposition being non-negative. -/
+integral is strictly positive. -/
 theorem non_lattice_limit_of_driNorm {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (hsep : S.StronglySeparated K ρ)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hosc : S.OpenSetCondition)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
     (hzd : AbsorptionCutoff.Renewal.driNorm
@@ -932,8 +955,8 @@ theorem non_lattice_limit_of_driNorm {ι : Type*} [Fintype ι] [Nonempty ι] (S 
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
       Filter.Tendsto (G s μ) Filter.atTop
         (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x)) := by
-  haveI := hμ.isProbabilityMeasure
-  obtain ⟨A, hA⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0 hsep hμ
+  have := hμ.isProbabilityMeasure
+  obtain ⟨A, hA⟩ := System.OpenSetCondition.exists_isFrostman S hosc hs0.le hμ
   have hGc : Continuous (G s μ) := continuous_G hs0 hA
   have hzc : Continuous (S.renewalDefect s μ) := by
     refine hGc.sub (continuous_finsetSum _ fun i _ => ?_)
@@ -949,25 +972,10 @@ theorem non_lattice_limit_of_driNorm {ι : Type*} [Fintype ι] [Nonempty ι] (S 
   rw [System.renewalDefect]
   ring
 
-/-- **`thm:non-lattice-limit`, reduced to the positivity of `∫ z`.**  Direct Riemann
-integrability of the renewal defect is `driNorm_renewalDefect_ne_top`, so the only input
-`eq:g-non-lattice-limit` still waits on is that its integral is strictly positive, which
-in `sec:renewal` comes from the off-diagonal blocks of the self-similar decomposition
-being non-negative together with `z(w) = e^{sw}(1 - ∑ r_i^{2s})` below the origin. -/
-theorem non_lattice_limit_of_integral_pos {ι : Type*} [Fintype ι] [Nonempty ι]
-    (S : System ι) {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (hsep : S.StronglySeparated K ρ)
-    (hdim : S.IsDimension s) (hna : S.NonArithmetic)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
-    (hzpos : 0 < ∫ x : ℝ, S.renewalDefect s μ x) :
-    0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
-      Filter.Tendsto (G s μ) Filter.atTop
-        (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x)) :=
-  non_lattice_limit_of_driNorm S hs0 hsep hdim hna hμ
-    (driNorm_renewalDefect_ne_top S hs0 hsep hdim hμ) hzpos
-
-/-- **`thm:non-lattice-limit`, `eq:g-non-lattice-limit`.**  In the non-arithmetic case
-the normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive,
-where `m = ∑ p_i a_i` is the renewal mean and `z = G - F * G` the renewal defect.
+/-- **`thm:non-lattice-limit`, `eq:g-non-lattice-limit`.**  Under the strong open set
+condition and in the non-arithmetic case, the normalised profile converges to
+`m⁻¹ ∫ z`, which is finite and strictly positive, where `m = ∑ p_i a_i` is the renewal
+mean and `z = G - F * G` the renewal defect.
 
 The vendored key renewal theorem does not apply: `not_nonlattice_renewalLaw` refutes its
 `Nonlattice` hypothesis for `ϑ`, and `exists_norm_charFun_renewalLaw_eq_one` refutes even
@@ -975,12 +983,13 @@ the analytic condition `‖charFun ϑ t‖ < 1` behind it.  What replaces it is
 `FellerNonlattice`, which is what the Fourier proof actually consumes and what
 `eq:non-lattice` supplies. -/
 theorem non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (_hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hsosc : S.StrongOpenSetCondition K)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
       Tendsto (G s μ) atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x)) :=
-  non_lattice_limit_of_integral_pos S hs0 hsep hdim hna hμ
-    (integral_renewalDefect_pos S hs0 hsep hdim hμ)
+  non_lattice_limit_of_driNorm S hs0 (hsosc.openSetCondition S) hdim hna hμ
+    (driNorm_renewalDefect_ne_top S hsosc hs0 hs1 hdim hμ)
+    (integral_renewalDefect_pos S hsosc hs0 hs1 hdim hμ)
 
 end BrownianImages

@@ -20,7 +20,7 @@ mechanically.
   inputs.
 -/
 import BrownianImages.Asymptotics
-import BrownianImages.AhlforsRegular
+import BrownianImages.StoppingGeometry
 
 namespace BrownianImages
 
@@ -67,7 +67,7 @@ end Separation
 hypotheses `hlim₁` and `hlim₂` are the conclusion of `audit_non_lattice_limit`, one for
 each system, and `hmain` is `audit_main` at the ambient `W`, `P` and `s`, with the two
 Frostman constants and its three hypotheses left quantified: the constants are produced
-inside the proof by `AhlforsRegular.exists_isFrostman_of_isNatural`.  Everything else is
+inside the proof by `OpenSetCondition.exists_isFrostman`, `thm:stopping-overlap`.  Everything else is
 proved here: `eq:hb-asymptotic` moves the two limits from `G` to `H`, `integral_kern_pos`
 says the common factor `∫₀^∞ φ` does not collapse them, and
 `Separation.exists_separation_of_tendsto` turns the two distinct limits into
@@ -75,8 +75,8 @@ says the common factor `∫₀^∞ φ` does not collapse them, and
 theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
-    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {ρ₁ ρ₂ : ℝ}
-    (hsep₁ : S₁.StronglySeparated K₁ ρ₁) (hsep₂ : S₂.StronglySeparated K₂ ρ₂)
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ}
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
     (_hdim₁ : S₁.IsDimension s) (_hdim₂ : S₂.IsDimension s)
     (_hna₁ : S₁.NonArithmetic) (_hna₂ : S₂.NonArithmetic)
     {μ₁ μ₂ : Measure ℝ} (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂)
@@ -93,8 +93,8 @@ theorem non_lattice_separation_of_main_of_limit {P : Measure Ω} [IsProbabilityM
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
   haveI := hμ₁.isProbabilityMeasure
   haveI := hμ₂.isProbabilityMeasure
-  obtain ⟨A₁, hFrost₁⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0 hsep₁ hμ₁
-  obtain ⟨A₂, hFrost₂⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0 hsep₂ hμ₂
+  obtain ⟨A₁, hFrost₁⟩ := System.OpenSetCondition.exists_isFrostman S₁ hosc₁ hs0.le hμ₁
+  obtain ⟨A₂, hFrost₂⟩ := System.OpenSetCondition.exists_isFrostman S₂ hosc₂ hs0.le hμ₂
   obtain ⟨hC₁, hG₁⟩ := hlim₁
   obtain ⟨hC₂, hG₂⟩ := hlim₂
   obtain ⟨-, hH₁⟩ := profile_asymptotics_nonLattice hs0 hs1 hFrost₁ hC₁ hG₁

@@ -13,6 +13,7 @@ it is precisely the `q = 1` upper-moment input supplied by the other half of
 import BrownianImages.Minkowski.CorrelationLower
 import BrownianImages.Minkowski.OverlapTranslation
 import BrownianImages.AhlforsRegular
+import BrownianImages.StoppingGeometry
 import BrownianImages.Concentration
 import BrownianImages.Endpoints
 
@@ -275,14 +276,14 @@ namespace System
 
 variable {iota : Type*} [Fintype iota]
 
-/-- The lower half of `thm:neighbourhood-moments` for a separated self-similar natural
-measure.  `IsDimension` is carried to match the theorem's paper-level data;
+/-- The lower half of `thm:neighbourhood-moments` for the natural measure of a system
+satisfying the open set condition.  `IsDimension` is carried to match the theorem's paper-level data;
 `IsNatural` already supplies the probability measure and compact attractor.
 Only the `q = 1` neighbourhood integrability input from the upper-moment argument
 remains explicit. -/
 theorem IsNatural.exists_expected_tubeMass_lower_of_integrable
-    (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hsep : S.IntervalSeparated) (_hdim : S.IsDimension s)
+    [Nonempty iota] (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
+    (hosc : S.OpenSetCondition) (_hdim : S.IsDimension s)
     (hmu : S.IsNatural K s mu) (hs0 : 0 < s) (hs1 : s < 1)
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     (hint : ∀ r : ℝ, 0 < r → r ≤ 1 →
@@ -292,11 +293,7 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_integrable
       c * r ^ (tubeExponent s) ≤
         ∫ omega, tubeMass r (brownianImage W hmu.compactAttractor omega) ∂P := by
   letI := hmu.isProbabilityMeasure
-  obtain ⟨rho, hsepIcc⟩ := hsep
-  have hsepK : S.StronglySeparated K rho :=
-    System.StronglySeparated.mono S hmu.attractor.2.2.1 hsepIcc
-  obtain ⟨A, hFrostman⟩ :=
-    AhlforsRegular.exists_isFrostman_of_isNatural hs0 hsepK hmu
+  obtain ⟨A, hFrostman⟩ := System.OpenSetCondition.exists_isFrostman S hosc hs0.le hmu
   exact exists_expected_tubeMass_lower_of_frostman hW hs0 hs1 mu hFrostman
     hmu.compactAttractor (by simpa using hmu.support) hint
 
@@ -305,7 +302,7 @@ half.  Taking `q = 1` supplies the only fact the Markov proof still needs,
 namely integrability of `M_r(R)`. -/
 theorem IsNatural.exists_expected_tubeMass_lower_of_tubeMomentUpper
     [Nonempty iota] (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     (hmu : S.IsNatural K s mu) (hs0 : 0 < s) (hs1 : s < 1)
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     (hupper : ∀ q : ℝ, 1 ≤ q → ∃ Cq : ℝ, 0 < Cq ∧
@@ -331,14 +328,14 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_tubeMomentUpper
     intro r hr hr1
     simpa using (hupper1 r hr hr1).2.1
   obtain ⟨c, hc, hlower⟩ :=
-    hmu.exists_expected_tubeMass_lower_of_integrable S hsep hdim hs0 hs1 hW hint
+    hmu.exists_expected_tubeMass_lower_of_integrable S hosc hdim hs0 hs1 hW hint
   exact ⟨c, hc, fun r hr hr1 => ⟨hint r hr hr1, hlower r hr hr1⟩⟩
 
 /-- Once the upper moments are available, the complete statement of
 `thm:neighbourhood-moments` is obtained by pairing them with the preceding bridge. -/
 theorem IsNatural.tubeMoments_of_upper
     [Nonempty iota] (S : System iota) {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     (hmu : S.IsNatural K s mu) (hs0 : 0 < s) (hs1 : s < 1)
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     (hupper : ∀ q : ℝ, 1 ≤ q → ∃ Cq : ℝ, 0 < Cq ∧
@@ -369,7 +366,7 @@ theorem IsNatural.tubeMoments_of_upper
         c * r ^ tubeExponent s ≤
           ∫ omega, tubeMass r (brownianImage W hmu.compactAttractor omega) ∂P :=
   ⟨hupper,
-    hmu.exists_expected_tubeMass_lower_of_tubeMomentUpper S hsep hdim hs0 hs1 hW hupper⟩
+    hmu.exists_expected_tubeMass_lower_of_tubeMomentUpper S hosc hdim hs0 hs1 hW hupper⟩
 
 end System
 

@@ -36,7 +36,7 @@ namespace JointMeasurability
 structure on `EuclideanSpace ℝ (Fin 2)` is the one comapped from `Fin 2 → ℝ`. -/
 theorem measurable_plane_of_coord {α : Type*} [MeasurableSpace α] {f : α → Plane}
     (h : ∀ i : Fin 2, Measurable fun x => f x i) : Measurable f :=
-  (WithLp.measurable_toLp 2 (Fin 2 → ℝ)).comp (measurable_pi_lambda _ h)
+  (WithLp.measurable_toLp 2 (Fin 2 → ℝ)).comp (Measurable.of_eval h)
 
 /-- At each fixed time the process is almost everywhere measurable in the sample point.
 This is the coordinatewise `IsPreBrownianReal.aemeasurable`, read in the plane. -/
@@ -179,8 +179,8 @@ theorem IsPlanarBrownian.aemeasurable_occupationProb (hW : IsPlanarBrownian W P)
   obtain ⟨V, hVmeas, hVae⟩ := hW.exists_jointlyMeasurable
   have hsec : ∀ ω, Measurable fun t : ℝ => V t.toNNReal ω := fun ω =>
     hVmeas.comp ((continuous_real_toNNReal.measurable).prodMk measurable_const)
-  have hprob : ∀ ω, IsProbabilityMeasure (μ.map fun t : ℝ => V t.toNNReal ω) := fun ω =>
-    Measure.isProbabilityMeasure_map (hsec ω).aemeasurable
+  have hprob : ∀ ω, IsProbabilityMeasure (μ.map fun t : ℝ => V t.toNNReal ω) := fun _ω =>
+    inferInstance
   refine ⟨fun ω => ⟨μ.map fun t : ℝ => V t.toNNReal ω, hprob ω⟩, ?_, ?_⟩
   · exact (JointMeasurability.measurable_occupation hVmeas μ).subtype_mk
   · filter_upwards [hVae] with ω hω
@@ -196,7 +196,8 @@ theorem IsPlanarBrownian.aemeasurable_occupationProb (hW : IsPlanarBrownian W P)
 probability measure, so the object the paper calls `Law(W_*μ)` has total mass one. -/
 theorem IsPlanarBrownian.isProbabilityMeasure_occupationLaw [IsProbabilityMeasure P]
     (hW : IsPlanarBrownian W P) (μ : Measure ℝ) [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (occupationLaw W P μ) :=
-  Measure.isProbabilityMeasure_map (hW.aemeasurable_occupationProb μ)
+    IsProbabilityMeasure (occupationLaw W P μ) := by
+  unfold occupationLaw
+  exact inferInstance
 
 end BrownianImages

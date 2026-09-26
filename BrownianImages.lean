@@ -40,9 +40,22 @@ The objects, and `sec:setup`:
 * `Hutchinson`: the coding map on `ℕ → ι`, Hutchinson's theorem for a general system,
   and the two natural measures of `sec:renewal`.
 * `AhlforsRegular`: Ahlfors regularity of the natural measure of a strongly separated
-  system, used internally to obtain the Frostman bound at every centre.
+  system, and the cylinder-mass identities behind it.
+* `OpenSet`: the geometry of a feasible open set, and the passage from strong
+  separation to the strong open set condition.
+* `Schief`: Schief's theorem, cited in `sec:introduction`: the open set condition gives
+  a feasible open set meeting the attractor, through the word with the most neighbours
+  at its own scale.
+* `IntervalColoring`: intervals of bounded multiplicity are coloured with that many
+  colours so that intervals of one colour have disjoint interiors.
+* `StoppingGeometry`: `thm:stopping-overlap`, the stopping words below a node, the
+  multiplicity bound, the partition into `M` families, and Ahlfors regularity under
+  the open set condition.
+* `CrossPiece`: `thm:cross-piece-mass`, the boundary mass and the cross-piece mass
+  estimates, and the bound on the cross term of `thm:renewal-recursion`.
 * `Periodic`: the continuous periodic extension `G̃_A`, through `AddCircle`.
-* `Recursion`: `thm:renewal-recursion`, the self-similar recursion of `Φ` and of `G`.
+* `Recursion`: `thm:renewal-recursion`, the self-similar recursion of `Φ` and of `G`
+  with its cross term, and the vanishing of the cross term under strong separation.
 * `PairDifference`: the difference mass `(μ × μ){x - y ∈ T}` and its Fubini form.
 * `HomogeneousNonconstancy`: `thm:homogeneous-nonconstancy` for every `0 < λ < 1/2`.
 * `ExceptionalParameters`: the countable exceptional set of `thm:cantor-application`.
@@ -51,12 +64,10 @@ The objects, and `sec:setup`:
 * `RenewalBridge`: the hypotheses of that theorem that are properties of the renewal
   measure `ϑ = ∑ p_i δ_{a_i}` alone, and the refutation of its upstream `Nonlattice`
   hypothesis for `ϑ`.
-* `KeyRenewal`: the renewal defect `z = G - F*G` and the limit constant `m⁻¹ ∫ z`.
-* `TailHarmonic`: Choquet-Deny for a step law whose harmonicity is available only on a
-  half line, and `thm:non-lattice-limit` with it.
-* `KeyRenewalFourier`: `thm:non-lattice-limit` again, by the paper's own route: Feller's
-  non-lattice condition `FellerNonlattice`, which `eq:non-lattice` supplies, fed to the
-  vendored key renewal theorem.
+* `KeyRenewalFourier`: `thm:non-lattice-limit`: the renewal defect `z = G - F*G`, its
+  exponential tail from `thm:cross-piece-mass`, and Feller's non-lattice condition
+  `FellerNonlattice`, which `eq:non-lattice` supplies, fed to the vendored key renewal
+  theorem.
 
 `sec:smoothing`:
 
@@ -103,10 +114,8 @@ The objects, and `sec:setup`:
 
 * `CompactImage`: compact Brownian images as measurable random variables in the
   Hausdorff hyperspace, and the law of the compact image.
-* `Minkowski.System`: the first-level interval separation, and the parameters `β_i`,
-  `p_i`, `α` of the tube analysis.
-* `Minkowski.IntervalGap`: the symmetric first-level separation hypothesis converted to
-  the oriented temporal-gap configurations of the overlap proof.
+* `Minkowski.System`: the attractor and its pieces as points of the hyperspace, and
+  the parameters `β_i`, `p_i`, `α` of the tube analysis.
 * `Minkowski.Tube`, `Minkowski.TubeAlgebra`, `Minkowski.Profile`: the smoothed tube
   probability, its continuity, and the deterministic union, scaling, and overlap
   algebra.
@@ -120,12 +129,14 @@ The objects, and `sec:setup`:
   passage from cylinder ratios to weak convergence.
 * `Minkowski.OverlapTranslation`, `Minkowski.GaussianIncrement`,
   `Minkowski.OverlapProbability`, `Minkowski.BrownianOverlapGeometry`: the
-  convolution/Fubini identity behind the separated-cylinder overlap estimate, the
-  planar Gaussian density of an increment and its uniform bound, the probabilistic
-  form of the overlap identity, and the centring that matches it to actual Brownian
-  cylinders.
-* `Minkowski.DefectExpectation`, `Minkowski.OverlapAssembly`, `Minkowski.OverlapSystem`:
-  pairwise overlap integrability and its assembly into `thm:neighbourhood-overlap`.
+  convolution/Fubini identity behind the Gaussian-gap overlap estimate for two time
+  intervals, the planar Gaussian density of an increment and its uniform bound, the
+  probabilistic form of the overlap identity, and the centring that matches it to
+  actual Brownian cylinders.
+* `Minkowski.DefectExpectation`, `Minkowski.StoppingOverlap`: pairwise overlap
+  integrability and the passage to the defect, and `thm:neighbourhood-overlap` under
+  the strong open set condition, through the stopping cylinders at temporal scale
+  `r²` and `eq:stopping-close-pairs`.
 * `Minkowski.TubeUpper`, `Minkowski.TubeMeanLower`, `Minkowski.TubeMeanContinuity`:
   the deterministic disc-cover half of `thm:neighbourhood-moments`, its lower-bound
   half, and the continuity of the mean tube profile.
@@ -138,11 +149,13 @@ The objects, and `sec:setup`:
   `Minkowski.TubeDiscreteRenewal`: the exact mean renewal recurrence, the non-arithmetic
   limit by the key renewal theorem, its assembly, and the arithmetic periodic limit by
   finite-delay renewal convergence, `thm:neighbourhood-renewal`.
-* `Minkowski.L2Recurrence`, `Minkowski.DefectL2`, `Minkowski.Contraction`,
-  `Minkowski.AlmostSure`, `Minkowski.TubeConcentrationAssembly`,
-  `Minkowski.TubeEndpointAssembly`: the centred-variance recurrence, the interpolated
-  defect `L²` bound, delayed contraction, Borel--Cantelli along a fixed phase, and
-  `thm:neighbourhood-concentration`, with the unconditional endpoint forms.
+* `Minkowski.L2Recurrence`, `Minkowski.DefectL2`, `Minkowski.ProfileL2`,
+  `Minkowski.AlmostSure`, `Minkowski.StoppingConcentration`,
+  `Minkowski.TubeEndpointAssembly`: the centred `L²` norm and its square-sum bound
+  for independent summands, the first/third moment interpolation, the uniform `L²`
+  bound of the profile, Borel--Cantelli along a fixed phase, and
+  `thm:neighbourhood-concentration` through the stopping tree, with the unconditional
+  endpoint forms.
 * `Minkowski.Ratio`: the scalar passage from profile convergence and a positive renewal
   mean to the limiting cylinder-mass ratios.
 * `Minkowski.Limit`, `Minkowski.LimitClassifier`, `Minkowski.TubeConvergence`:
@@ -158,6 +171,14 @@ The objects, and `sec:setup`:
   in both renewal regimes, direct homogeneous reconstruction from the one-delay
   recurrence, `thm:minkowski-reconstruction`, and `thm:cantor-set-application` with its
   paired instance.
+
+`sec:base-five`:
+
+* `BaseFive`: `thm:base-five-profiles`, the two base-five systems, the recursions
+  `eq:base-five-recursion`, the values `eq:base-five-distances`, and the separation of
+  the expected profiles through the continuous periodic limits of the two profiles.
+* `Minkowski.BaseFiveApplication`: the two displays after `thm:base-five-profiles`, the
+  mutual singularity of the occupation laws and of the compact-image laws.
 
 `sec:obstruction`:
 
@@ -190,6 +211,11 @@ import BrownianImages.UniformContinuity
 import BrownianImages.JointMeasurability
 import BrownianImages.Reduction
 import BrownianImages.AhlforsRegular
+import BrownianImages.OpenSet
+import BrownianImages.Schief
+import BrownianImages.IntervalColoring
+import BrownianImages.StoppingGeometry
+import BrownianImages.CrossPiece
 import BrownianImages.Hutchinson
 import BrownianImages.PairDifference
 import BrownianImages.HomogeneousNonconstancy
@@ -202,17 +228,15 @@ import BrownianImages.Concentration
 import BrownianImages.Endpoints
 import BrownianImages.VarianceCovariance
 import BrownianImages.MainTheorem
+import BrownianImages.BaseFive
 import BrownianImages.HomometricMeasures
 import BrownianImages.ProfileAsymptotics
 import BrownianImages.Separation
 import BrownianImages.CantorApplication
-import BrownianImages.KeyRenewal
-import BrownianImages.TailHarmonic
 import BrownianImages.KeyRenewalFourier
 import BrownianImages.NonLattice
 import BrownianImages.CompactImage
 import BrownianImages.Minkowski.System
-import BrownianImages.Minkowski.IntervalGap
 import BrownianImages.Minkowski.Tube
 import BrownianImages.Minkowski.TubeAlgebra
 import BrownianImages.Minkowski.Profile
@@ -228,7 +252,6 @@ import BrownianImages.Minkowski.GaussianIncrement
 import BrownianImages.Minkowski.OverlapProbability
 import BrownianImages.Minkowski.BrownianOverlapGeometry
 import BrownianImages.Minkowski.DefectExpectation
-import BrownianImages.Minkowski.OverlapAssembly
 import BrownianImages.Minkowski.TubeMeanLower
 import BrownianImages.Minkowski.TubeUpper
 import BrownianImages.Minkowski.BrownianMaximalReduction
@@ -238,15 +261,15 @@ import BrownianImages.Minkowski.StoppingTubeUpper
 import BrownianImages.Minkowski.TubeMeanContinuity
 import BrownianImages.Minkowski.TubeMomentAssembly
 import BrownianImages.Minkowski.TubeRenewal
-import BrownianImages.Minkowski.OverlapSystem
+import BrownianImages.Minkowski.StoppingOverlap
 import BrownianImages.Minkowski.TubeRenewalLimit
 import BrownianImages.Minkowski.TubeRenewalAssembly
 import BrownianImages.Minkowski.L2Recurrence
 import BrownianImages.Minkowski.DefectL2
-import BrownianImages.Minkowski.Contraction
+import BrownianImages.Minkowski.ProfileL2
 import BrownianImages.Minkowski.AlmostSure
+import BrownianImages.Minkowski.StoppingConcentration
 import BrownianImages.Minkowski.Ratio
-import BrownianImages.Minkowski.TubeConcentrationAssembly
 import BrownianImages.Minkowski.TubeEndpointAssembly
 import BrownianImages.Minkowski.TubeArithmeticRenewal
 import BrownianImages.Minkowski.TubeDiscreteRenewal
@@ -261,3 +284,4 @@ import BrownianImages.Minkowski.ReconstructionAssembly
 import BrownianImages.Minkowski.HomogeneousReconstruction
 import BrownianImages.Minkowski.FullEndpointAssembly
 import BrownianImages.Minkowski.CantorSetApplication
+import BrownianImages.Minkowski.BaseFiveApplication

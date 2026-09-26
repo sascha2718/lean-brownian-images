@@ -9,7 +9,7 @@ statements without an additional maximal-moment hypothesis.
 import BrownianImages.Minkowski.BrownianMaximalMoment
 import BrownianImages.Minkowski.TubeMomentAssembly
 import BrownianImages.Minkowski.TubeRenewalAssembly
-import BrownianImages.Minkowski.TubeConcentrationAssembly
+import BrownianImages.Minkowski.StoppingConcentration
 
 namespace BrownianImages
 
@@ -30,7 +30,7 @@ theorem IsNatural.tubeMoments
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu) :
     (∀ q : Real, 1 ≤ q → ∃ Cq : Real, 0 < Cq ∧
       ∀ r : Real, 0 < r → r ≤ 1 →
@@ -51,7 +51,7 @@ theorem IsNatural.tubeMoments
           ∫ omega, tubeMass r
             (brownianImage W hmu.compactAttractor omega) ∂P := by
   apply hmu.tubeMoments_of_standardRadiusMoments
-    S hs0 hs1 hsep hdim hW
+    S hs0 hs1 hosc hdim hW
   intro p hp
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp
@@ -63,9 +63,9 @@ theorem IsNatural.tubeOverlap
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu) :
-    ∃ C : Real, 0 < C ∧ ∀ r : Real, 0 < r → r ≤ 1 →
+    ∃ C η : Real, 0 < C ∧ 0 < η ∧ ∀ r : Real, 0 < r → r ≤ 1 →
       (∀ i j : iota, i ≠ j →
         Integrable (fun omega => tubeOverlapArea r
           (brownianImage W (hmu.compactPiece S i) omega)
@@ -73,15 +73,14 @@ theorem IsNatural.tubeOverlap
         (∫ omega, tubeOverlapArea r
             (brownianImage W (hmu.compactPiece S i) omega)
             (brownianImage W (hmu.compactPiece S j) omega) ∂P) ≤
-          C * r ^ (2 * tubeExponent s)) ∧
+          C * r ^ (tubeExponent s + 2 * η)) ∧
       Integrable (fun omega => tubeDefect r
         (fun i => brownianImage W (hmu.compactPiece S i) omega)) P ∧
       (∫ omega, tubeDefect r
           (fun i => brownianImage W (hmu.compactPiece S i) omega) ∂P) ≤
-        C * r ^ (2 * tubeExponent s) := by
-  have hmom := hmu.tubeMoments hW S hs0 hs1 hsep hdim
-  exact hmu.tubeOverlap_of_tubeMomentsUpper
-    hW S hs0 hs1 hsep hdim hmom.1
+        C * r ^ (tubeExponent s + 2 * η) := by
+  have hmom := hmu.tubeMoments hW S hs0 hs1 (hsosc.openSetCondition S) hdim
+  exact hmu.tubeOverlap_of_sosc_of_tubeMoments S hW hs0 hs1 hsosc hdim hmom.1
 
 /-- The non-arithmetic branch of `thm:neighbourhood-renewal`, with the unit Brownian
 radius moments discharged. -/
@@ -90,14 +89,14 @@ theorem IsNatural.meanBrownianTubeProfile_tendsto
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
     (S : System iota) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu)
     (hna : S.TubeNonArithmetic) :
     ∃ CK : Real, 0 < CK ∧
       Tendsto (meanBrownianTubeProfile W P hmu.compactAttractor s)
         atTop (nhds CK) := by
   apply hmu.meanBrownianTubeProfile_tendsto_of_standardRadiusMoments
-    hW S hs0 hs1 hsep hdim hna
+    hW S hs0 hs1 hsosc hdim hna
   intro p hp
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp
@@ -116,7 +115,7 @@ theorem IsNatural.tubeConcentration
     {W : NNReal → OmegaC → Plane} (hW : IsPlanarBrownian W P)
     (S : System iotaC) {K : Set Real} {s : Real}
     (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure Real} (hmu : S.IsNatural K s mu) :
     (∃ C : Real, 0 < C ∧ ∃ gamma : Real, 0 < gamma ∧
       ∀ v : Real, 0 ≤ v →
@@ -126,8 +125,7 @@ theorem IsNatural.tubeConcentration
     ∀ t : Real, ∀ᵐ omega ∂P, Tendsto
       (fun n : Nat => centeredBrownianTubeProfile W P hmu.compactAttractor s
         ((n : Real) + t) omega) atTop (nhds 0) := by
-  apply hmu.tubeConcentration_of_standardRadiusMoments
-    hW S hs0 hs1 hsep hdim
+  apply hmu.tubeConcentration_of_sosc S hW hs0 hs1 hsosc hdim
   intro p hp
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp

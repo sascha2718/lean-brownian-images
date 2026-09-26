@@ -1,10 +1,14 @@
 /-
 `sec:reconstruction`, `thm:neighbourhood-concentration` of
-`BrownianImagesComplete.tex`: the abstract `L²` step in the stochastic recurrence.
+`BrownianImagesComplete.tex`: the Hilbert-space calculation behind
+`eq:stopping-neighbourhood-variance`, isolated from the Brownian tube estimates.
 
-This file isolates the Hilbert-space calculation from the Brownian tube estimates.
-Pairwise independence gives the sharp square-sum bound for the centered weighted
-pieces, while an arbitrary overlap error is handled by the `L²` triangle inequality.
+* `centeredL2Norm`: the real `L²` norm after centring, with its variance identity.
+* `centeredL2Norm_weighted_sum_le`: the sharp square-sum bound for a weighted sum of
+  pairwise independent variables.
+* `centeredL2Norm_sub_le`, `centeredL2Norm_le_lpNorm`, `centeredL2Norm_congr`,
+  `centeredL2Norm_eq_of_identDistrib`: the triangle inequality, the centring
+  contraction, and invariance under almost sure equality and equality in law.
 -/
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 import Mathlib.Probability.IdentDistrib
@@ -169,44 +173,6 @@ theorem centeredL2Norm_sub_le [IsFiniteMeasure μ] {X O : Ω → ℝ}
   funext ω
   simp only [Pi.sub_apply]
   ring
-
-/-- The recurrence step used for the tube-mass fluctuation.  The independent contribution is
-estimated sharply in `L²`; centering the arbitrary overlap error costs no constant at all. -/
-theorem centeredL2Norm_recurrence_le [Fintype ι] [IsProbabilityMeasure μ]
-    (X : Ω → ℝ) (Xi : ι → Ω → ℝ) (O : Ω → ℝ) (p a : ι → ℝ)
-    (hXi : ∀ i, MemLp (Xi i) 2 μ)
-    (hindep : Pairwise fun i j ↦ Xi i ⟂ᵢ[μ] Xi j) (hO : MemLp O 2 μ)
-    (ha0 : ∀ i, 0 ≤ a i) (ha : ∀ i, centeredL2Norm (Xi i) μ ≤ a i)
-    (hrec : X =ᵐ[μ] fun ω ↦ (∑ i, p i * Xi i ω) - O ω) :
-    centeredL2Norm X μ ≤
-      Real.sqrt (∑ i, (p i * a i) ^ 2) + lpNorm O 2 μ := by
-  let S : Ω → ℝ := fun ω ↦ ∑ i, p i * Xi i ω
-  have hS : MemLp S 2 μ :=
-    memLp_finsetSum Finset.univ fun i _ ↦ (hXi i).const_mul (p i)
-  have hSO : MemLp (fun ω ↦ S ω - O ω) 2 μ := hS.sub hO
-  have hX : MemLp X 2 μ := by
-    exact (memLp_congr_ae (by simpa [S] using hrec)).mpr hSO
-  calc
-    centeredL2Norm X μ = centeredL2Norm (fun ω ↦ S ω - O ω) μ :=
-      centeredL2Norm_congr hX hSO (by simpa [S] using hrec)
-    _ ≤ centeredL2Norm S μ + centeredL2Norm O μ :=
-      centeredL2Norm_sub_le hS hO
-    _ ≤ Real.sqrt (∑ i, (p i * a i) ^ 2) + lpNorm O 2 μ := by
-      apply add_le_add
-      · simpa [S] using centeredL2Norm_weighted_sum_le Xi p a hXi hindep ha0 ha
-      · exact centeredL2Norm_le_lpNorm hO
-
-/-- Mutual-independence form of the centered `L²` recurrence step. -/
-theorem centeredL2Norm_recurrence_of_iIndepFun_le [Fintype ι]
-    [IsProbabilityMeasure μ]
-    (X : Ω → ℝ) (Xi : ι → Ω → ℝ) (O : Ω → ℝ) (p a : ι → ℝ)
-    (hXi : ∀ i, MemLp (Xi i) 2 μ) (hindep : iIndepFun Xi μ) (hO : MemLp O 2 μ)
-    (ha0 : ∀ i, 0 ≤ a i) (ha : ∀ i, centeredL2Norm (Xi i) μ ≤ a i)
-    (hrec : X =ᵐ[μ] fun ω ↦ (∑ i, p i * Xi i ω) - O ω) :
-    centeredL2Norm X μ ≤
-      Real.sqrt (∑ i, (p i * a i) ^ 2) + lpNorm O 2 μ :=
-  centeredL2Norm_recurrence_le X Xi O p a hXi
-    (pairwise_indepFun_of_iIndepFun hindep) hO ha0 ha hrec
 
 section IdentDistrib
 

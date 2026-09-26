@@ -17,14 +17,28 @@ Each item is a piece of the paper that the library builds itself. Labels such as
   in `sec:renewal`, not on the first-level intervals `S_i([0,1])`, which would be
   strictly stronger; `homSystem_stronglySeparated` derives the attractor version from
   the interval version for the homometric systems.
+- **The open set condition.** Mathlib has no open set condition and no Schief theorem.
+  `System.IsFeasible`, `System.OpenSetCondition` and `System.StrongOpenSetCondition`
+  are the paper's definitions, and `Schief.lean` proves Schief's theorem, that the open
+  set condition yields a feasible open set meeting the attractor, in the form Käenmäki
+  and Vilppolainen give it: words are lists, the neighbours of a word are the stopping
+  words at its scale within three lengths of its interval, a word `h` with the most
+  neighbours has `N(ih) = i N(h)` for every prefix `i`, and the union of the balls
+  `S_w(B(x, r_h))` around the images of a point `x ∈ S_h K` is the feasible set. The
+  library's own proofs take the strong form as their hypothesis and the endpoints derive
+  it. What the library builds on top of a feasible open set is `sec:renewal` under the
+  open set condition: the stopping family below a node, its multiplicity bound and its partition
+  into `M` families with disjoint interiors, through the greedy interval colouring of
+  `IntervalColoring`, the Ahlfors regularity of the natural measure at every centre
+  (`StoppingGeometry`, `thm:stopping-overlap`), and the boundary and cross-piece mass
+  estimates through the iterated Hutchinson identity (`CrossPiece`,
+  `thm:cross-piece-mass`).
 - **Renewal theory.** Mathlib has none. The key renewal theorem is vendored from an
   external Lean project, see [the vendored library](renewal-library.md).
-  `thm:non-lattice-limit` is also proved without it: cutting the renewal equation at a
-  finite threshold `T` past the gap gives the exact identity
-  `∫ z = ∑ᵢ pᵢ ∫_{T-aᵢ}^{T} G`, so if `G` converges the limit is forced to be
-  `m⁻¹ ∫ z`, with positivity separate and unconditional (`renewalConstant_pos`); the
-  convergence of `G` is Choquet-Deny on the tail on which `eq:g-recursion` holds
-  (`TailHarmonic`).
+  `thm:non-lattice-limit` goes through it: `KeyRenewalFourier` verifies Feller's
+  non-lattice condition from `eq:non-lattice` and the exponential tail of the renewal
+  defect `z`, which under the open set condition is the cross-term bound of
+  `thm:renewal-recursion`.
 - **The planar return probability.** `IsPlanarBrownian.return_prob` proves
   `P(|W_u - W_t| < r) = 1 - exp(-r²/(2|u-t|))`. Mathlib has no chi-squared distribution
   and no result on the squared norm of a Gaussian vector, so the proof goes through polar
@@ -64,9 +78,11 @@ Each item is a piece of the paper that the library builds itself. Labels such as
 - **Minkowski reconstruction.** Compact Brownian images are measurable in the Hausdorff
   hyperspace; their affine cylinder laws and finite-family independence, the cut-off,
   union, scaling, defect, localization, finite-cylinder and translation-overlap algebra,
-  the Brownian stopping-cover moments, the separated-cylinder overlaps, the centred
-  variance recurrence, delayed exponential contraction and fixed-generation almost-sure
-  quotient limits are all built in `BrownianImages/Minkowski/`. Mathlib has no
+  the Brownian stopping-cover moments, the Gaussian-gap overlaps of the stopping
+  cylinders at temporal scale `r²`, the telescoping of the multiple-counting defect over
+  the stopping tree, the class-wise independence behind the variance of `Y_{r,u}`, and
+  fixed-generation almost-sure quotient limits are all built in
+  `BrownianImages/Minkowski/`. Mathlib has no
   continuous-time Brownian maximal-moment theorem; `Minkowski.BrownianMaximalReduction`
   and `Minkowski.BrownianMaximalMoment` supply the unit-interval radius moments from
   discrete martingale maximal estimates and Brownian scaling.

@@ -1,16 +1,10 @@
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: the deterministic data of the
-first-level time intervals used by Minkowski reconstruction.
+first-level pieces used by Minkowski reconstruction.
 
-The paper assumes that the compact intervals `S_i([0,1])` are pairwise disjoint.  For
-a finite system this is equivalent to the existence of a positive common separation
-gap.  The quantitative form below is the one consumed by the Gaussian-gap overlap
-estimate.
-
-* `System.IntervalSeparated`: distinct first-level intervals have a common positive
-  separation gap.
-* `homogeneousSystem_intervalSeparated`, `pairSystem_intervalSeparated`: the two
-  systems of the application satisfy this condition throughout `0 < λ < 1/2`.
+* `System.IsAttractor.toNonemptyCompacts`, `System.IsNatural.compactAttractor`,
+  `System.IsNatural.compactPiece`: the attractor and its first-level pieces as points
+  of the Hausdorff hyperspace.
 * `System.halfLogRatio`, `System.tubeWeight`, `tubeExponent`: the parameters
   `β_i`, `p_i` and `α` of `sec:reconstruction`.
 -/
@@ -24,11 +18,6 @@ open MeasureTheory TopologicalSpace
 namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
-
-/-- Quantitative form of pairwise disjointness of the first-level intervals
-`S_i([0,1])`: distinct intervals stay a common positive distance apart. -/
-def IntervalSeparated : Prop :=
-  ∃ rho : ℝ, S.StronglySeparated (Set.Icc (0 : ℝ) 1) rho
 
 /-- Bundle a nonempty compact attractor as a point of the Hausdorff hyperspace. -/
 def IsAttractor.toNonemptyCompacts {K : Set ℝ} (hK : S.IsAttractor K) :
@@ -108,44 +97,10 @@ theorem tubeWeight_pos (s : ℝ) (i : ι) : 0 < S.tubeWeight s i :=
 theorem tubeWeight_lt_one {s : ℝ} (hs : 0 < s) (i : ι) : S.tubeWeight s i < 1 := by
   exact Real.rpow_lt_one (S.ratio_pos i).le (S.ratio_lt_one i) hs
 
-/-- The square weights form a strict contraction.  This is the numerical input in the
-`L²` recursion of `thm:neighbourhood-concentration`. -/
-theorem sum_sq_tubeWeight_lt_one [Nonempty ι] {s : ℝ} (hs : 0 < s)
-    (hdim : S.IsDimension s) :
-    ∑ i, (S.tubeWeight s i) ^ 2 < 1 := by
-  rw [← S.sum_tubeWeight hdim]
-  refine Finset.sum_lt_sum (fun i _ => ?_) ?_
-  · have hpos := S.tubeWeight_pos s i
-    have hlt := S.tubeWeight_lt_one hs i
-    nlinarith [sq_nonneg (S.tubeWeight s i)]
-  · obtain ⟨i⟩ := ‹Nonempty ι›
-    refine ⟨i, Finset.mem_univ i, ?_⟩
-    have hpos := S.tubeWeight_pos s i
-    have hlt := S.tubeWeight_lt_one hs i
-    nlinarith [sq_nonneg (S.tubeWeight s i)]
-
 end System
 
 /-- The normalising exponent `α = 2 - 2s` of `sec:reconstruction`. -/
 def tubeExponent (s : ℝ) : ℝ := 2 - 2 * s
 
-/-- The tube exponent is positive throughout the range `0 < s < 1`. -/
-theorem tubeExponent_pos {s : ℝ} (hs : s < 1) : 0 < tubeExponent s := by
-  unfold tubeExponent
-  linarith
-
-/-- The homogeneous system has pairwise separated first-level intervals whenever
-`0 < λ < 1/2`. -/
-theorem homogeneousSystem_intervalSeparated {lam : ℝ} (hlam0 : 0 < lam)
-    (hlam : lam < 1 / 2) :
-    (homogeneousSystem lam hlam0 hlam).IntervalSeparated := by
-  exact ⟨1 - 2 * lam,
-    homogeneousSystem_stronglySeparated hlam0 hlam (Set.Subset.rfl)⟩
-
-/-- The paired system has pairwise separated first-level intervals whenever
-`0 < c < 1/2`. -/
-theorem pairSystem_intervalSeparated {c : ℝ} (hc0 : 0 < c) (hc : c < 1 / 2) :
-    (pairSystem c hc0 hc).IntervalSeparated := by
-  exact ⟨1 / 2 - c, pairSystem_stronglySeparated hc0 hc (Set.Subset.rfl)⟩
 
 end BrownianImages

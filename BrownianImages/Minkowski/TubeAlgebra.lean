@@ -449,7 +449,7 @@ theorem aemeasurable_tubeDefect_of_forall
     (hF : ∀ i, AEMeasurable (F i) P) :
     AEMeasurable (fun omega => tubeDefect r (fun i => F i omega)) P := by
   apply (measurable_tubeDefect hr).comp_aemeasurable
-  exact aemeasurable_pi_lambda _ hF
+  exact AEMeasurable.of_eval hF
 
 /-- The pointwise defect integrand is integrable at every positive radius. -/
 theorem integrable_tubeDefectIntegrand {ι : Type*} [Fintype ι] [Nonempty ι]

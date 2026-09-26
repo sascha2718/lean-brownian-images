@@ -1,9 +1,9 @@
 /-
 `sec:concentration`: `thm:cantor-application`, the second headline result of the paper,
 reduced to the endpoints it rests on.  The natural measure of the homogeneous system
-separates from the natural measure of every strongly separated non-arithmetic system of
-the same dimension, and in particular from the paired measure `μ_B` under
-`eq:non-lattice`.
+separates from the natural measure of every non-arithmetic system of the same dimension
+satisfying the strong open set condition, and in particular from the paired measure
+`μ_B` under `eq:non-lattice`.
 
 * `CantorApplication.exists_separation_of_oscillation`: a profile that oscillates by a
   fixed amount past every threshold separates, in the sense of `eq:profile-separation`,
@@ -18,6 +18,7 @@ the same dimension, and in particular from the paired measure `μ_B` under
   on the same two hypotheses.
 -/
 import BrownianImages.Endpoints
+import BrownianImages.StoppingGeometry
 
 namespace BrownianImages
 
@@ -108,19 +109,19 @@ theorem homogeneous_exists_profile_oscillation {lam : ℝ} (hlam0 : 0 < lam)
 end CantorApplication
 
 /-- `thm:cantor-application` in the paper's parameter-uniform form.  The homogeneous
-equal-weight measure at ratio `λ` separates from every strongly separated
-non-arithmetic natural measure of the same dimension. -/
+equal-weight measure at ratio `λ` separates from every non-arithmetic natural measure
+of the same dimension satisfying the strong open set condition. -/
 theorem homogeneous_application_of_endpoints {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
-    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ} {ρ : ℝ}
-    (hsep : S.StronglySeparated K ρ) (hna : S.NonArithmetic)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) (hna : S.NonArithmetic)
     (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
     (hμ : S.IsNatural K (homogeneousDim lam) μ)
     (hlimit : ∀ (S : System ι)
-      {K : Set ℝ} {ρ s : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1) (_hsep : S.StronglySeparated K ρ)
+      {K : Set ℝ} {s : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1) (_hsosc : S.StrongOpenSetCondition K)
       (_hdim : S.IsDimension s) (_hna : S.NonArithmetic)
       {μ : Measure ℝ} (_hμ : S.IsNatural K s μ),
       0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
@@ -138,8 +139,8 @@ theorem homogeneous_application_of_endpoints {P : Measure Ω} [IsProbabilityMeas
   haveI := hμ.isProbabilityMeasure
   obtain ⟨AA, hFrostA⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0
     (homogeneousSystem_stronglySeparated hlam0 hlam hA.attractor.2.2.1) hA
-  obtain ⟨A, hFrost⟩ := AhlforsRegular.exists_isFrostman_of_isNatural hs0 hsep hμ
-  obtain ⟨hCpos, hC⟩ := hlimit S hs0 hs1 hsep hdim hna hμ
+  obtain ⟨A, hFrost⟩ := System.OpenSetCondition.exists_isFrostman S (hsosc.openSetCondition S) hs0.le hμ
+  obtain ⟨hCpos, hC⟩ := hlimit S hs0 hs1 hsosc hdim hna hμ
   obtain ⟨-, hHlim⟩ := profile_asymptotics_nonLattice hs0 hs1 hFrost hCpos hC
   obtain ⟨d, hd, hosc⟩ :=
     CantorApplication.homogeneous_exists_profile_oscillation hlam0 hlam hA
@@ -159,7 +160,7 @@ theorem homogeneous_application_pair_of_endpoints {P : Measure Ω} [IsProbabilit
         (homogeneousDim_lt_one hlam0 hlam))).IsNatural KB (homogeneousDim lam) μB)
     (hnl : Irrational (Real.log (pairRatio (homogeneousDim lam))⁻¹ / Real.log 2))
     (hlimit : ∀ (S : System (Fin 2))
-      {K : Set ℝ} {ρ s : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1) (_hsep : S.StronglySeparated K ρ)
+      {K : Set ℝ} {s : ℝ} (_hs0 : 0 < s) (_hs1 : s < 1) (_hsosc : S.StrongOpenSetCondition K)
       (_hdim : S.IsDimension s) (_hna : S.NonArithmetic)
       {μ : Measure ℝ} (_hμ : S.IsNatural K s μ),
       0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
@@ -172,9 +173,10 @@ theorem homogeneous_application_pair_of_endpoints {P : Measure Ω} [IsProbabilit
       (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μB) :=
   homogeneous_application_of_endpoints hW hlam0 hlam hA _
-    (pairSystem_stronglySeparated (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
+    ((pairSystem_stronglySeparated (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
       (pairRatio_lt_half (homogeneousDim_pos hlam0 hlam)
-        (homogeneousDim_lt_one hlam0 hlam)) hB.attractor.2.2.1)
+        (homogeneousDim_lt_one hlam0 hlam)) hB.attractor.2.2.1).strongOpenSetCondition _
+      hB.attractor)
     ((pairSystem_nonArithmetic_iff (homogeneousDim_pos hlam0 hlam)
       (homogeneousDim_lt_one hlam0 hlam)).mpr hnl)
     (pairSystem_isDimension (homogeneousDim_pos hlam0 hlam)

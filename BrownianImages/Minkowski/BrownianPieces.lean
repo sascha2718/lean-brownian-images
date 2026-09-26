@@ -33,9 +33,9 @@ theorem map_eq_of_ae_tendsto_of_map_eq
     aemeasurable_limit := hy
     tendsto := by
       have heq :
-          (fun n => (⟨P.map (X n), Measure.isProbabilityMeasure_map (hX n)⟩ :
+          (fun n => (⟨P.map (X n), inferInstance⟩ :
             ProbabilityMeasure E)) =
-          (fun n => (⟨Q.map (Y n), Measure.isProbabilityMeasure_map (hY n)⟩ :
+          (fun n => (⟨Q.map (Y n), inferInstance⟩ :
             ProbabilityMeasure E)) := by
         funext n
         exact Subtype.ext (hlaw n)
@@ -62,15 +62,15 @@ theorem iIndepFun_of_ae_tendsto
   let xvec : Omega -> (I -> E) := fun omega i => x i omega
   let xprod : (I -> Omega) -> (I -> E) := fun omega i => x i (omega i)
   have hXvec : ∀ n, AEMeasurable (Xvec n) P := fun n =>
-    aemeasurable_pi_lambda _ (hX n)
+    AEMeasurable.of_eval (hX n)
   have hXprod : ∀ n, AEMeasurable (Xprod n) Q := fun n => by
-    apply aemeasurable_pi_lambda
+    apply AEMeasurable.of_eval
     intro i
     exact (hX n i).comp_quasiMeasurePreserving
       (Measure.quasiMeasurePreserving_eval (fun _ : I => P) i)
-  have hxvec : AEMeasurable xvec P := aemeasurable_pi_lambda _ hx
+  have hxvec : AEMeasurable xvec P := AEMeasurable.of_eval hx
   have hxprod : AEMeasurable xprod Q := by
-    apply aemeasurable_pi_lambda
+    apply AEMeasurable.of_eval
     intro i
     exact (hx i).comp_quasiMeasurePreserving
       (Measure.quasiMeasurePreserving_eval (fun _ : I => P) i)
@@ -108,8 +108,8 @@ theorem indepFun_pi_of_pair_general
     IndepFun (fun omega i => X i omega) (fun omega i => Y i omega) P := by
   let mu : I -> Measure E := fun i => P.map (X i)
   let nu : I -> Measure F := fun i => P.map (Y i)
-  letI (i : I) : IsProbabilityMeasure (mu i) := Measure.isProbabilityMeasure_map (hX i)
-  letI (i : I) : IsProbabilityMeasure (nu i) := Measure.isProbabilityMeasure_map (hY i)
+  letI (i : I) : IsProbabilityMeasure (mu i) := inferInstance
+  letI (i : I) : IsProbabilityMeasure (nu i) := inferInstance
   have hXi : ∀ i, HasLaw (X i) (mu i) P := fun i => ⟨hX i, rfl⟩
   have hYi : ∀ i, HasLaw (Y i) (nu i) P := fun i => ⟨hY i, rfl⟩
   have hpairLaw : ∀ i, HasLaw (fun omega => (X i omega, Y i omega))
@@ -125,7 +125,7 @@ theorem indepFun_pi_of_pair_general
   have hXlaw := hXind.hasLaw_pi hXi
   have hYlaw := hYind.hasLaw_pi hYi
   apply (indepFun_iff_map_prod_eq_prod_map_map
-    (aemeasurable_pi_lambda _ hX) (aemeasurable_pi_lambda _ hY)).2
+    (AEMeasurable.of_eval hX) (AEMeasurable.of_eval hY)).2
   have hmap := hallLaw.map_eq
   change P.map (fun omega => ((fun i => X i omega), fun i => Y i omega)) =
     (Measure.pi mu).prod (Measure.pi nu) at hmap
@@ -145,7 +145,7 @@ theorem map_finite_planar_eval_eq
   let pull : (I -> Plane) -> (A -> Plane) :=
     fun z i => z ⟨tau i, by simp [I]⟩
   have hpull : Measurable pull := by
-    apply measurable_pi_lambda
+    apply Measurable.of_eval
     intro i
     exact measurable_pi_apply (⟨tau i, by simp [I]⟩ : I)
   let nu : Measure (A -> Plane) := (planarBrownianProjectiveFamily I).map pull
@@ -177,9 +177,9 @@ theorem map_finiteRange_planar_eval_eq
     P.map (fun omega => finiteRange (fun i => W (tau i) omega)) =
       Q.map (fun omega => finiteRange (fun i => V (tau i) omega)) := by
   have hWt : AEMeasurable (fun omega i => W (tau i) omega) P :=
-    aemeasurable_pi_lambda _ fun i => JointMeasurability.aemeasurable_eval hW (tau i)
+    AEMeasurable.of_eval fun i => JointMeasurability.aemeasurable_eval hW (tau i)
   have hVt : AEMeasurable (fun omega i => V (tau i) omega) Q :=
-    aemeasurable_pi_lambda _ fun i => JointMeasurability.aemeasurable_eval hV (tau i)
+    AEMeasurable.of_eval fun i => JointMeasurability.aemeasurable_eval hV (tau i)
   change P.map (finiteRange ∘ (fun omega i => W (tau i) omega)) =
     Q.map (finiteRange ∘ (fun omega i => V (tau i) omega))
   rw [← AEMeasurable.map_map_of_aemeasurable
@@ -227,11 +227,11 @@ def packPlanarSamples (A : Type*) (x : Fin 2 -> A -> Real) : A -> Plane :=
 
 /-- Reassembling coordinate arrays is measurable for product measurable structures. -/
 theorem measurable_packPlanarSamples (A : Type*) : Measurable (packPlanarSamples A) := by
-  apply measurable_pi_lambda
+  apply Measurable.of_eval
   intro t
   change Measurable (fun x : Fin 2 -> A -> Real => WithLp.toLp 2 (fun i => x i t))
   exact (PiLp.continuousLinearEquiv 2 Real (fun _ : Fin 2 => Real)).symm.continuous.measurable.comp
-    (measurable_pi_lambda _ fun i => by fun_prop)
+    (Measurable.of_eval fun i => by fun_prop)
 
 /-- Finite centered planar path pieces before and after a cut time are independent.  The first
 family is sampled at `a + tau t`, all assumed at or before `c`; the second is sampled at
@@ -250,24 +250,24 @@ theorem IsPlanarBrownian.indepFun_centered_finite_pieces
     W (c + upsilon u) omega i - W c omega i
   have hX : ∀ i, AEMeasurable (X i) P := by
     intro i
-    apply aemeasurable_pi_lambda
+    apply AEMeasurable.of_eval
     intro t
     exact ((hW.coord i).toIsPreBrownianReal.aemeasurable (a + tau t)).sub
       ((hW.coord i).toIsPreBrownianReal.aemeasurable a)
   have hY : ∀ i, AEMeasurable (Y i) P := by
     intro i
-    apply aemeasurable_pi_lambda
+    apply AEMeasurable.of_eval
     intro u
     exact ((hW.coord i).toIsPreBrownianReal.aemeasurable (c + upsilon u)).sub
       ((hW.coord i).toIsPreBrownianReal.aemeasurable c)
   have mearly : Measurable (fun path : Set.Iic c -> Real =>
       fun t : A => path ⟨a + tau t, htau t⟩ - path ⟨a, hac⟩) := by
-    apply measurable_pi_lambda
+    apply Measurable.of_eval
     intro t
     fun_prop
   have mlate : Measurable (fun path : NNReal -> Real =>
       fun u : B => path (upsilon u)) := by
-    apply measurable_pi_lambda
+    apply Measurable.of_eval
     intro u
     fun_prop
   have hcoord : ∀ i, IndepFun (X i) (Y i) P := by
@@ -279,10 +279,10 @@ theorem IsPlanarBrownian.indepFun_centered_finite_pieces
       ((fun t : A => path (a + tau t) - path a),
         fun u : B => path (c + upsilon u) - path c)) := by
     apply Measurable.prodMk
-    · apply measurable_pi_lambda
+    · apply Measurable.of_eval
       intro t
       fun_prop
-    · apply measurable_pi_lambda
+    · apply Measurable.of_eval
       intro u
       fun_prop
   have hpair := hW.indep.comp
@@ -512,7 +512,7 @@ theorem IsPlanarBrownian.iIndepFun_rescaledBrownianCompactPieces
       letI : Fintype L := hL.fintype
       have hsamples : Measurable (fun z : K i -> Plane => fun t : L =>
           (Real.sqrt (r i : Real))⁻¹ • z t.1) := by
-        apply measurable_pi_lambda
+        apply Measurable.of_eval
         intro t
         fun_prop
       have hrange := (measurable_finiteRange (I := L) (E := Plane)).comp hsamples

@@ -28,7 +28,7 @@ variable {W : NNReal → Omega → Plane}
 theorem IsNatural.tubeReconstructsOccupation_of_tubeNonArithmetic
     (hW : IsPlanarBrownian W P) (S : System iota)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure ℝ} (hmu : S.IsNatural K s mu)
     (hna : S.TubeNonArithmetic) :
     MinkowskiReconstruction.TubeReconstructsOccupation
@@ -38,11 +38,11 @@ theorem IsNatural.tubeReconstructsOccupation_of_tubeNonArithmetic
     fun p hp => hW.integrable_one_add_standardBrownianRadius_rpow hp
   obtain ⟨_hall, _hcontinuous, c, _A, hc, hbounds⟩ :=
     hmu.meanTubeProfile_data_of_standardRadiusMoments
-      S hs0 hs1 hsep hdim hW hunit
+      S hs0 hs1 (hsosc.openSetCondition S) hdim hW hunit
   obtain ⟨L, _hL, hlimit⟩ :=
-    hmu.meanBrownianTubeProfile_tendsto hW S hs0 hs1 hsep hdim hna
+    hmu.meanBrownianTubeProfile_tendsto hW S hs0 hs1 hsosc hdim hna
   have hconcentration := hmu.tubeConcentration
-    hW S hs0 hs1 hsep hdim
+    hW S hs0 hs1 hsosc hdim
   exact hmu.tubeReconstructsOccupation_of_nonArithmetic_mean_limit
     S hdim hW hconcentration.1 hc
       (fun n => (hbounds (n : ℝ) (Nat.cast_nonneg n)).1) hlimit
@@ -52,7 +52,7 @@ All moment and concentration inputs are discharged here. -/
 theorem IsNatural.tubeReconstructsOccupation_of_tubeArithmetic
     (hW : IsPlanarBrownian W P) (S : System iota)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure ℝ} (hmu : S.IsNatural K s mu)
     {h : ℝ} (hh : 0 < h) (harith : S.TubeArithmetic h)
     {periodicProfile : ℝ → ℝ}
@@ -68,20 +68,20 @@ theorem IsNatural.tubeReconstructsOccupation_of_tubeArithmetic
     fun p hp => hW.integrable_one_add_standardBrownianRadius_rpow hp
   obtain ⟨_hall, _hcontinuous, c, _A, hc, hbounds⟩ :=
     hmu.meanTubeProfile_data_of_standardRadiusMoments
-      S hs0 hs1 hsep hdim hW hunit
+      S hs0 hs1 (hsosc.openSetCondition S) hdim hW hunit
   have hconcentration := hmu.tubeConcentration
-    hW S hs0 hs1 hsep hdim
+    hW S hs0 hs1 hsosc hdim
   exact hmu.tubeReconstructsOccupation_of_arithmetic_periodic_limit
     S hdim hW hconcentration.1 hc hh
       (fun n => (hbounds (n : ℝ) (Nat.cast_nonneg n)).1)
       harith hperiodic huniform
 
 /-- The two renewal alternatives together imply reconstruction for an arbitrary
-finite separated system. -/
+finite system satisfying the strong open set condition. -/
 theorem IsNatural.tubeReconstructsOccupation_of_renewal_alternatives
     (hW : IsPlanarBrownian W P) (S : System iota)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
     {mu : Measure ℝ} (hmu : S.IsNatural K s mu)
     (harithmetic : ∀ h : ℝ, 0 < h → S.TubeArithmetic h →
       ∃ periodicProfile : ℝ → ℝ,
@@ -94,10 +94,10 @@ theorem IsNatural.tubeReconstructsOccupation_of_renewal_alternatives
       W P hmu.compactAttractor mu := by
   rcases S.tubeNonArithmetic_or_exists_tubeArithmetic_pos with hna | ⟨h, hh, ha⟩
   · exact hmu.tubeReconstructsOccupation_of_tubeNonArithmetic
-      hW S hs0 hs1 hsep hdim hna
+      hW S hs0 hs1 hsosc hdim hna
   · obtain ⟨periodicProfile, hperiodic, huniform⟩ := harithmetic h hh ha
     exact hmu.tubeReconstructsOccupation_of_tubeArithmetic
-      hW S hs0 hs1 hsep hdim hh ha hperiodic huniform
+      hW S hs0 hs1 hsosc hdim hh ha hperiodic huniform
 
 omit [Nonempty iota] in
 omit [IsProbabilityMeasure P] in

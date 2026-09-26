@@ -224,8 +224,9 @@ theorem prod_selfSimilar {ι : Type*} [Fintype ι] (S : System ι) {s : ℝ} {σ
 
 /-- The rescaled difference law is a probability measure. -/
 theorem isProbabilityMeasure_diffLaw (σ : Measure ℝ) [IsProbabilityMeasure σ] :
-    IsProbabilityMeasure (diffLaw σ) :=
-  Measure.isProbabilityMeasure_map measurable_subShift.aemeasurable
+    IsProbabilityMeasure (diffLaw σ) := by
+  unfold diffLaw
+  exact inferInstance
 
 /-- The rescaled difference law sits on `[0,1]`, which is what the uniqueness step
 `Hutchinson.eq_of_selfSimilar` asks of it. -/
@@ -263,7 +264,7 @@ theorem diffLaw_selfSimilar {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : �
   conv_lhs => rw [hprod]
   rw [map_finsetSum _ measurable_subShift]
   refine Finset.sum_congr rfl fun p _ => ?_
-  rw [Measure.map_smul]
+  rw [Measure.map_smul _ measurable_subShift.aemeasurable]
   congr 1
   · have hr : ∀ i : Fin 6, (homSystem d h0 h17).ratio i = 1/30 := fun _ => rfl
     have hr' : (diffSystem d h0 h17).ratio p = 1/30 := rfl

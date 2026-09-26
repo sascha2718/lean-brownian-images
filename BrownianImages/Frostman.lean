@@ -239,7 +239,7 @@ theorem continuous_phi [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (h : IsFrostman s A μ) : Continuous (Phi μ) := by
   haveI hprob : IsProbabilityMeasure (pairLaw μ) := by
     rw [pairLaw]
-    exact Measure.isProbabilityMeasure_map (by fun_prop)
+    exact inferInstance
   have hcont := continuous_cdf_toReal (ν := pairLaw μ) (pairLaw_measure_singleton hs h)
   have : Phi μ = fun δ : ℝ => (pairLaw μ (Set.Iic δ)).toReal := funext (phi_eq_pairLaw)
   rw [this]

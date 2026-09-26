@@ -36,7 +36,7 @@ theorem aemeasurable_eval (hW : IsPlanarBrownian W P) (t : ℝ≥0) :
     AEMeasurable (fun ω => W t ω) P := by
   have h : ∀ i : Fin 2, AEMeasurable (fun ω => W t ω i) P := fun i =>
     (hW.coord i).toIsPreBrownianReal.aemeasurable t
-  exact (WithLp.measurable_toLp 2 (Fin 2 → ℝ)).comp_aemeasurable (aemeasurable_pi_lambda _ h)
+  exact (WithLp.measurable_toLp 2 (Fin 2 → ℝ)).comp_aemeasurable (AEMeasurable.of_eval h)
 
 /-- The Fubini step of `thm:gaussian-reduction` needs the process jointly measurable in
 time and chance, which `IsBrownianReal` does not supply: it gives measurability of `W t`

@@ -69,18 +69,17 @@ records that the vendored hypothesis is weaker than the upstream one, and `Nonla
 with its three lemmas is kept unchanged. Each file's header and the top-level `NOTICE`
 state the modification, as the Apache License requires.
 
-## Two proofs of `thm:non-lattice-limit`
+## The proof of `thm:non-lattice-limit`
 
-`KeyRenewalFourier` is the paper's own route and proves the endpoint
+`KeyRenewalFourier` is the paper's route and proves the endpoint
 `audit_non_lattice_limit`: it feeds `FellerNonlattice`, which `eq:non-lattice`
-supplies, to the vendored key renewal theorem. `KeyRenewal` and `TailHarmonic` are an
-independent second proof that needs no key renewal theorem: cutting the renewal
-equation at a finite threshold pins the constant, and Choquet-Deny run against the tail
-on which `eq:g-recursion` holds supplies convergence of `G`. The consequences drawn in
-`NonLattice`, among them `thm:cantor-application`, rest on the second proof. Both are
-kept: the first mirrors the paper's argument, the second is elementary and independent
-of the vendored code. `Minkowski.TubeRenewalLimit` uses the vendored theorem for
-`thm:neighbourhood-renewal`, where no elementary substitute is available.
+supplies, and the exponential tail of the renewal defect `z = G - F*G`, which under the
+open set condition is the cross-term bound of `thm:renewal-recursion`, to the vendored
+key renewal theorem. The consequences drawn in `NonLattice`, among them
+`thm:cantor-application`, rest on it, and `Minkowski.TubeRenewalLimit` uses the
+vendored theorem again for `thm:neighbourhood-renewal`. Under the open set condition
+`eq:g-recursion` holds only up to the cross term, so no proof by tail harmonicity of `G`
+is available: the vendored theorem is load-bearing for every non-arithmetic conclusion.
 
 ## What the audit covers
 
@@ -91,7 +90,7 @@ The vendored theorem sits in the dependency closure of five endpoints of
 endpoints the comparator kernel-checks, whose proofs of `thm:cantor-application` go
 through the Choquet-Deny route. So the vendored code is checked by `lake build
 Solution`, with the library's axiom discipline (no `axiom`, no `native_decide`)
-applying to it as to everything else, and it compiles against Mathlib `v4.32.2`
+applying to it as to everything else, and it compiles against Mathlib `v4.35.0-rc2`
 unchanged.
 
 ## Re-syncing with upstream

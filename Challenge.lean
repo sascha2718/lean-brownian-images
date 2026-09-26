@@ -99,7 +99,7 @@ noncomputable def occupationLaw (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) 
   P.map (occupationProb W μ)
 
 /-! ### The objects of `thm:cantor-application`, copied from
-`BrownianImages.SelfSimilar` -/
+`BrownianImages.Defs` and `BrownianImages.OpenSet` -/
 
 /-- A self-similar system on `[0,1]`: finitely many similarities
 `S_i(x) = r_i x + b_i` with ratios in `(0,1)`, each mapping `[0,1]` into itself. -/
@@ -128,12 +128,24 @@ def map (i : ι) (x : ℝ) : ℝ := S.ratio i * x + S.shift i
 def IsAttractor (K : Set ℝ) : Prop :=
   IsCompact K ∧ K.Nonempty ∧ K ⊆ Set.Icc 0 1 ∧ K = ⋃ i, S.map i '' K
 
-/-- Strong separation with gap `ρ`: the pieces `S_i K` and `S_j K` of the attractor stay
-`ρ` apart for `i ≠ j`.  This is the constant `ρ = min_{i≠j} dist(S_iK, S_jK)` of
-`sec:renewal`: a condition on the pieces of the attractor, not on the first-level
-intervals `S_i([0,1])`, which would be strictly stronger. -/
-def StronglySeparated (K : Set ℝ) (ρ : ℝ) : Prop :=
-  0 < ρ ∧ ∀ i j, i ≠ j → ∀ x ∈ K, ∀ y ∈ K, ρ ≤ |S.map i x - S.map j y|
+/-- A feasible open set for the system, as in `sec:introduction`: a non-empty bounded
+open set `U ⊂ ℝ` with `S_i(U) ⊆ U` for every `i` and the images `S_i(U)` pairwise
+disjoint.  The set need not be an interval, and the first-level intervals `S_i([0,1])`
+may overlap. -/
+structure IsFeasible (U : Set ℝ) : Prop where
+  /-- The set is open. -/
+  isOpen : IsOpen U
+  /-- The set is non-empty. -/
+  nonempty : U.Nonempty
+  /-- The set is bounded. -/
+  isBounded : Bornology.IsBounded U
+  /-- Each similarity maps the set into itself. -/
+  mapsTo : ∀ i, Set.MapsTo (S.map i) U U
+  /-- The first-level images are pairwise disjoint. -/
+  disjoint : ∀ i j, i ≠ j → Disjoint (S.map i '' U) (S.map j '' U)
+
+/-- The open set condition of `sec:introduction`: some feasible open set exists. -/
+def OpenSetCondition : Prop := ∃ U : Set ℝ, S.IsFeasible U
 
 /-- The similarity dimension equation `∑ r_i^s = 1`. -/
 def IsDimension (s : ℝ) : Prop := ∑ i, S.ratio i ^ s = 1
@@ -210,15 +222,15 @@ theorem audit_main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := sorry
 
 /-- `thm:cantor-application`.  The homogeneous equal-weight measure at any ratio
-`0 < λ < 1/2` separates from the natural measure of every strongly separated
-non-arithmetic system of the same dimension. -/
+`0 < λ < 1/2` separates from the natural measure of every non-arithmetic system of the
+same dimension satisfying the open set condition. -/
 theorem audit_cantor_application {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
-    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ} {ρ : ℝ}
-    (hsep : S.StronglySeparated K ρ) (hna : S.NonArithmetic)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hosc : S.OpenSetCondition) (hna : S.NonArithmetic)
     (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
     (hμ : S.IsNatural K (homogeneousDim lam) μ) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) := sorry

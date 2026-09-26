@@ -10,8 +10,7 @@ the delayed-mean comparison required by the generation-cylinder quotient theorem
 -/
 import BrownianImages.Minkowski.BrownianMaximalMoment
 import BrownianImages.Minkowski.GenerationRatio
-import BrownianImages.Minkowski.OverlapSystem
-import BrownianImages.Minkowski.TubeConcentrationAssembly
+import BrownianImages.Minkowski.StoppingConcentration
 import BrownianImages.Minkowski.TubeMomentAssembly
 
 namespace BrownianImages
@@ -93,9 +92,9 @@ universe u
 variable {Omega : Type u} [MeasurableSpace Omega]
 
 /-- Unconditional pathwise Minkowski reconstruction for the homogeneous two-map
-natural measure.  The proof uses only Brownian maximal moments, the separated-piece
-overlap estimate, the one-step homogeneous renewal equation, and exponential `L²`
-concentration; no arithmetic renewal theorem is needed. -/
+natural measure.  The proof uses only Brownian maximal moments, the overlap estimate of
+`thm:neighbourhood-overlap`, the one-step homogeneous renewal equation, and exponential
+`L²` concentration; no arithmetic renewal theorem is needed. -/
 theorem IsNatural.tubeReconstructsOccupation_homogeneousSystem
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
@@ -114,25 +113,26 @@ theorem IsNatural.tubeReconstructsOccupation_homogeneousSystem
   have hs0 : 0 < s := homogeneousDim_pos hlam0 hlam
   have hs1 : s < 1 := homogeneousDim_lt_one hlam0 hlam
   have hdim : S.IsDimension s := homogeneousSystem_isDimension hlam0 hlam
-  have hsep : S.IntervalSeparated := homogeneousSystem_intervalSeparated hlam0 hlam
+  have hsosc : S.StrongOpenSetCondition K :=
+    (homogeneousSystem_stronglySeparated hlam0 hlam hmu.attractor.2.2.1).strongOpenSetCondition
+      S hmu.attractor
   have hunit : ∀ p : ℝ, 1 ≤ p → Integrable
       (fun omega => (1 + standardBrownianRadius W omega) ^ p) P := by
     intro p hp
     exact hW.integrable_one_add_standardBrownianRadius_rpow hp
   obtain ⟨hall, _hcontinuous, c, _A, hc, hbounds⟩ :=
     hmu.meanTubeProfile_data_of_standardRadiusMoments
-      S hs0 hs1 hsep hdim hW hunit
+      S hs0 hs1 (hsosc.openSetCondition S) hdim hW hunit
   have hmom := hmu.tubeMoments_of_standardRadiusMoments
-    S hs0 hs1 hsep hdim hW hunit
-  obtain ⟨C, hC, hoverlap⟩ := hmu.tubeOverlap_of_tubeMomentsUpper
-    hW S hs0 hs1 hsep hdim hmom.1
+    S hs0 hs1 (hsosc.openSetCondition S) hdim hW hunit
+  obtain ⟨C, η, hC, hη, hoverlap⟩ :=
+    hmu.tubeOverlap_of_sosc_of_tubeMoments S hW hs0 hs1 hsosc hdim hmom.1
   let D : ℝ := ((Fintype.card (Fin 2) : ℝ) ^ 2 / 2) * C
   have hD : 0 ≤ D := mul_nonneg (by positivity) hC.le
-  have halpha : 0 < tubeExponent s := tubeExponent_pos hs1
   have hrenewal : ∀ v : ℝ, 0 ≤ v →
       m v = m (v - beta) - d v ∧
       0 ≤ d v ∧
-      d v ≤ D * Real.exp (-tubeExponent s * v) := by
+      d v ≤ D * Real.exp (-(2 * η) * v) := by
     intro v hv
     have hr1 : tubeRadiusReal v ≤ 1 := by
       unfold tubeRadiusReal
@@ -144,12 +144,12 @@ theorem IsNatural.tubeReconstructsOccupation_homogeneousSystem
         (∫ omega, tubeOverlapArea (tubeRadiusReal v)
           (hmu.brownianFirstLevelPiece S W omega i)
           (hmu.brownianFirstLevelPiece S W omega j) ∂P) ≤
-            C * tubeRadiusReal v ^ (2 * tubeExponent s) := by
+            C * tubeRadiusReal v ^ (tubeExponent s + 2 * η) := by
       intro i j hij
       simpa only [IsNatural.brownianFirstLevelPiece] using
         (hoverlap (tubeRadiusReal v) (tubeRadiusReal_pos v) hr1).1 i j hij
     have hrec := hW.mean_tube_renewal_of_pairwise_overlap
-      S hmu v C hC.le (fun i => hall (v - S.halfLogRatio i)) hpair
+      S hmu v C (2 * η) hC.le (fun i => hall (v - S.halfLogRatio i)) hpair
     have hconv : S.tubeRenewalConv s m v = m (v - beta) := by
       simpa only [S, s, m, beta] using
         homogeneousSystem_tubeRenewalConv hlam0 hlam m v
@@ -160,10 +160,10 @@ theorem IsNatural.tubeReconstructsOccupation_homogeneousSystem
       exact hrecEq
     · simpa only [d, D] using hrec.2.2.2
   have hdecay : Tendsto
-      (fun v : ℝ => D * Real.exp (-tubeExponent s * v))
+      (fun v : ℝ => D * Real.exp (-(2 * η) * v))
       atTop (nhds 0) := by
-    have hneg : -tubeExponent s < 0 := by linarith
-    have harg : Tendsto (fun v : ℝ => -tubeExponent s * v)
+    have hneg : -(2 * η) < 0 := by linarith
+    have harg : Tendsto (fun v : ℝ => -(2 * η) * v)
         atTop atBot :=
       (tendsto_const_mul_atBot_of_neg hneg).mpr tendsto_id
     simpa using (Real.tendsto_exp_atBot.comp harg).const_mul D
@@ -193,8 +193,7 @@ theorem IsNatural.tubeReconstructsOccupation_homogeneousSystem
       c ≤ meanBrownianTubeProfile W P hmu.compactAttractor s (n : ℝ) := by
     intro n
     exact (hbounds n (Nat.cast_nonneg n)).1
-  have hbound := (hmu.tubeConcentration_of_standardRadiusMoments
-    hW S hs0 hs1 hsep hdim hunit).1
+  have hbound := (hmu.tubeConcentration_of_sosc S hW hs0 hs1 hsosc hdim hunit).1
   exact hmu.tubeReconstructsOccupation_of_generation_tubeMassRatio S hdim hW
     (hmu.ae_generation_tubeMassRatio_of_exponential_concentration
       S hW hbound hc hmean hlower)

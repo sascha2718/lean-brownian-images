@@ -1,6 +1,6 @@
 /-
 The results of `BrownianImagesComplete.tex` that rest on `thm:non-lattice-limit`, which
-`TailHarmonic.nonLatticeLimit` supplies.
+`non_lattice_limit` of `KeyRenewalFourier` supplies.
 
 * `non_lattice_separation`: `thm:non-lattice-separation`.
 * `homogeneous_gb_limit`, `homogeneous_thm_profile_asymptotics`: `eq:gb-limit` and
@@ -8,7 +8,7 @@ The results of `BrownianImagesComplete.tex` that rest on `thm:non-lattice-limit`
 * `homogeneous_application`, `homogeneous_application_pair`: `thm:cantor-application`,
   in general and for the paired measure `μ_B`.
 -/
-import BrownianImages.TailHarmonic
+import BrownianImages.KeyRenewalFourier
 import BrownianImages.ProfileAsymptotics
 import BrownianImages.Separation
 import BrownianImages.CantorApplication
@@ -27,18 +27,18 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 theorem non_lattice_separation {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
-    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {ρ₁ ρ₂ : ℝ}
-    (hsep₁ : S₁.StronglySeparated K₁ ρ₁) (hsep₂ : S₂.StronglySeparated K₂ ρ₂)
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ}
+    (hsosc₁ : S₁.StrongOpenSetCondition K₁) (hsosc₂ : S₂.StrongOpenSetCondition K₂)
     (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
     (hna₁ : S₁.NonArithmetic) (hna₂ : S₂.NonArithmetic)
     {μ₁ μ₂ : Measure ℝ} (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂)
     (hne : (S₁.renewalMean s)⁻¹ * ∫ x : ℝ, S₁.renewalDefect s μ₁ x
         ≠ (S₂.renewalMean s)⁻¹ * ∫ x : ℝ, S₂.renewalDefect s μ₂ x) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
-  non_lattice_separation_of_main_of_limit hW hs0 hs1 S₁ S₂ hsep₁ hsep₂ hdim₁ hdim₂
-    hna₁ hna₂ hμ₁ hμ₂ hne
-    (nonLatticeLimit S₁ hs0 hs1 hsep₁ hdim₁ hna₁ hμ₁)
-    (nonLatticeLimit S₂ hs0 hs1 hsep₂ hdim₂ hna₂ hμ₂)
+  non_lattice_separation_of_main_of_limit hW hs0 hs1 S₁ S₂ (hsosc₁.openSetCondition S₁)
+    (hsosc₂.openSetCondition S₂) hdim₁ hdim₂ hna₁ hna₂ hμ₁ hμ₂ hne
+    (non_lattice_limit S₁ hs0 hs1 hsosc₁ hdim₁ hna₁ hμ₁)
+    (non_lattice_limit S₂ hs0 hs1 hsosc₂ hdim₂ hna₂ hμ₂)
     (fun h₁ h₂ hsep => main hW hs0 hs1 h₁ h₂ hsep)
 
 /-- `eq:gb-limit` for the paired system associated with an arbitrary
@@ -54,11 +54,12 @@ theorem homogeneous_gb_limit {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
   let s := homogeneousDim lam
   let S := pairSystem (pairRatio s) (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
     (pairRatio_lt_half (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam))
-  obtain ⟨hpos, htend⟩ := nonLatticeLimit S
+  obtain ⟨hpos, htend⟩ := non_lattice_limit S
     (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam)
-    (pairSystem_stronglySeparated (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
+    ((pairSystem_stronglySeparated (pairRatio_pos (homogeneousDim_pos hlam0 hlam))
       (pairRatio_lt_half (homogeneousDim_pos hlam0 hlam)
-        (homogeneousDim_lt_one hlam0 hlam)) hB.attractor.2.2.1)
+        (homogeneousDim_lt_one hlam0 hlam)) hB.attractor.2.2.1).strongOpenSetCondition _
+      hB.attractor)
     (pairSystem_isDimension (homogeneousDim_pos hlam0 hlam)
       (homogeneousDim_lt_one hlam0 hlam))
     ((pairSystem_nonArithmetic_iff (homogeneousDim_pos hlam0 hlam)
@@ -115,13 +116,13 @@ theorem homogeneous_application {P : Measure Ω} [IsProbabilityMeasure P]
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
-    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ} {ρ : ℝ}
-    (hsep : S.StronglySeparated K ρ) (hna : S.NonArithmetic)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hsosc : S.StrongOpenSetCondition K) (hna : S.NonArithmetic)
     (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
     (hμ : S.IsNatural K (homogeneousDim lam) μ) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) :=
-  homogeneous_application_of_endpoints hW hlam0 hlam hA S hsep hna hdim hμ
-    nonLatticeLimit main
+  homogeneous_application_of_endpoints hW hlam0 hlam hA S hsosc hna hdim hμ
+    non_lattice_limit main
 
 /-- The paired instance of the parameter-uniform corollary. -/
 theorem homogeneous_application_pair {P : Measure Ω} [IsProbabilityMeasure P]
@@ -136,6 +137,6 @@ theorem homogeneous_application_pair {P : Measure Ω} [IsProbabilityMeasure P]
         (homogeneousDim_lt_one hlam0 hlam))).IsNatural KB (homogeneousDim lam) μB)
     (hnl : Irrational (Real.log (pairRatio (homogeneousDim lam))⁻¹ / Real.log 2)) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μB) :=
-  homogeneous_application_pair_of_endpoints hW hlam0 hlam hA hB hnl nonLatticeLimit main
+  homogeneous_application_pair_of_endpoints hW hlam0 hlam hA hB hnl non_lattice_limit main
 
 end BrownianImages

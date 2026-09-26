@@ -8,8 +8,7 @@ The objects themselves, `System` with `IsAttractor`, `StronglySeparated`,
 `Defs.lean`, where `Challenge.lean` can copy them.  This module carries what the
 proofs need beyond the definitions:
 
-* `measurable_map`, `StronglySeparated.mono`, the `IsNatural` extractors and
-  `logRatio_pos`.
+* `measurable_map`, the `IsNatural` extractors and `logRatio_pos`.
 * `log_two_pos`, `log_inv_pos`, `homogeneousDim_pos`, `homogeneousDim_lt_one`,
   `rpow_homogeneousDim`: the similarity dimension `log 2 / log(1/λ)` of the homogeneous
   system and its elementary bounds.
@@ -40,11 +39,6 @@ variable {ι : Type*} [Fintype ι] (S : System ι)
 /-- Every map of a system is measurable, being affine. -/
 theorem measurable_map (i : ι) : Measurable (S.map i) := by
   unfold map; fun_prop
-
-/-- Separation on a larger set restricts. -/
-theorem StronglySeparated.mono {K K' : Set ℝ} {ρ : ℝ} (h : K' ⊆ K)
-    (hs : S.StronglySeparated K ρ) : S.StronglySeparated K' ρ :=
-  ⟨hs.1, fun i j hij x hx y hy => hs.2 i j hij x (h hx) y (h hy)⟩
 
 /-- The natural measure is a probability measure; `IsNatural` already carries this, and
 this is the extractor that lets a consumer avoid a separate instance binder. -/

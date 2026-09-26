@@ -28,14 +28,14 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-! ### `sec:reconstruction`: reconstruction from the compact image -/
 
-/-- `thm:minkowski-reconstruction`, including its final Borel assertion.  Pairwise
-disjoint first-level intervals are encoded by `System.IntervalSeparated`; the bundled
-compact set is the attractor carried by the natural measure. -/
+/-- `thm:minkowski-reconstruction`, including its final Borel assertion, under the open
+set condition; the bundled compact set is the attractor carried by the natural
+measure. -/
 theorem audit_minkowski_reconstruction {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     MinkowskiReconstruction.TubeReconstructsOccupation
         W P hμ.compactAttractor μ ∧
@@ -43,7 +43,7 @@ theorem audit_minkowski_reconstruction {P : Measure Ω} [IsProbabilityMeasure P]
         Measurable reconstruct ∧
         (fun ω ↦ reconstruct (brownianImage W hμ.compactAttractor ω)) =ᵐ[P]
           occupationProb W μ :=
-  hμ.minkowskiReconstruction hW S hs0 hs1 hsep hdim
+  hμ.minkowskiReconstruction hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
 /-- The formal Borel step in `thm:minkowski-reconstruction`: once the pathwise weak
 tube limit is known, the limiting occupation probability is almost surely a Borel
@@ -76,23 +76,21 @@ theorem audit_brownianImageLaw_mutuallySingular_of_pathwise
 
 /-- `thm:cantor-set-application`.  The compact Brownian image of the homogeneous
 attractor at any ratio `0 < λ < 1/2` and that of the attractor of every non-arithmetic
-system of the same dimension with pairwise disjoint first-level intervals have mutually
-singular laws on the Hausdorff hyperspace.  Pairwise disjoint first-level intervals are
-encoded by `System.IntervalSeparated`, which implies the strong separation that
-`thm:cantor-application` asks for. -/
+system of the same dimension satisfying the open set condition have mutually singular
+laws on the Hausdorff hyperspace. -/
 theorem audit_cantor_set_application {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
-    (hsep : S.IntervalSeparated) (hna : S.NonArithmetic)
+    (hosc : S.OpenSetCondition) (hna : S.NonArithmetic)
     (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
     (hμ : S.IsNatural K (homogeneousDim lam) μ) :
     (brownianImageLaw W P hA.compactAttractor).MutuallySingular
       (brownianImageLaw W P hμ.compactAttractor) :=
   MinkowskiReconstruction.homogeneous_brownianImage_application
-    hW hlam0 hlam hA S hsep hna hdim hμ
+    hW hlam0 hlam hA S (hosc.strongOpenSetCondition S hμ.attractor) hna hdim hμ
 
 /-- The paired instance of `thm:cantor-set-application`, the last sentence of the
 corollary: under `eq:non-lattice`, the compact Brownian images of the homogeneous
@@ -139,12 +137,13 @@ theorem audit_tube_defect_elementary {ι : Type*} [Fintype ι] [Nonempty ι]
 
 /-- `thm:neighbourhood-moments`, including the finiteness of every real expectation used in
 the inequalities.  The compact time set is the attractor carried by the natural
-measure. -/
+measure; the open set condition enters only through the Ahlfors regularity of
+`thm:stopping-overlap`, so its plain form suffices here. -/
 theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     (∀ q : ℝ, 1 ≤ q → ∃ Cq : ℝ, 0 < Cq ∧
       ∀ r : ℝ, 0 < r → r ≤ 1 →
@@ -160,18 +159,19 @@ theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
           (fun ω ↦ tubeMass r (brownianImage W hμ.compactAttractor ω)) P ∧
         c * r ^ tubeExponent s ≤
           ∫ ω, tubeMass r (brownianImage W hμ.compactAttractor ω) ∂P :=
-  hμ.tubeMoments hW S hs0 hs1 hsep hdim
+  hμ.tubeMoments hW S hs0 hs1 hosc hdim
 
 /-- `thm:neighbourhood-overlap`, including integrability of the overlap and defect random
-variables.  One constant controls every distinct first-level pair and the resulting
-multiple-counting defect. -/
+variables.  One constant and one exponent `η > 0` control every distinct first-level
+pair and the resulting multiple-counting defect, with the bound `C r^{α+2η}`; `η` is
+the exponent of `thm:cross-piece-mass`, which the statement of the lemma inherits. -/
 theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    ∃ C : ℝ, 0 < C ∧ ∀ r : ℝ, 0 < r → r ≤ 1 →
+    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ ∀ r : ℝ, 0 < r → r ≤ 1 →
       (∀ i j : ι, i ≠ j →
         Integrable (fun ω ↦ tubeOverlapArea r
           (brownianImage W (hμ.compactPiece S i) ω)
@@ -179,13 +179,13 @@ theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
         (∫ ω, tubeOverlapArea r
             (brownianImage W (hμ.compactPiece S i) ω)
             (brownianImage W (hμ.compactPiece S j) ω) ∂P)
-          ≤ C * r ^ (2 * tubeExponent s)) ∧
+          ≤ C * r ^ (tubeExponent s + 2 * η)) ∧
       Integrable (fun ω ↦ tubeDefect r
         (fun i ↦ brownianImage W (hμ.compactPiece S i) ω)) P ∧
       (∫ ω, tubeDefect r
           (fun i ↦ brownianImage W (hμ.compactPiece S i) ω) ∂P)
-        ≤ C * r ^ (2 * tubeExponent s) :=
-  hμ.tubeOverlap hW S hs0 hs1 hsep hdim
+        ≤ C * r ^ (tubeExponent s + 2 * η) :=
+  hμ.tubeOverlap hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
 /-- `thm:neighbourhood-renewal`.  The real integrals defining the mean profile are required
 to be integrable.  Uniform convergence in the arithmetic case is written directly
@@ -194,7 +194,7 @@ theorem audit_tube_renewal {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     (∀ v : ℝ, 0 ≤ v →
       Integrable (brownianTubeProfile W hμ.compactAttractor s v) P) ∧
@@ -211,7 +211,7 @@ theorem audit_tube_renewal {P : Measure Ω} [IsProbabilityMeasure P]
           ∀ t ∈ Set.Icc (0 : ℝ) h,
             |meanBrownianTubeProfile W P hμ.compactAttractor s
                 (t + (n : ℝ) * h) - PK t| ≤ ε) :=
-  hμ.tubeRenewal hW S hs0 hs1 hsep hdim
+  hμ.tubeRenewal hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
 /-- `thm:neighbourhood-concentration`.  Membership in `L²` is included explicitly before
 the `eLpNorm` bound, and the final assertion has the paper's quantifier order: each
@@ -220,7 +220,7 @@ theorem audit_tube_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsep : S.IntervalSeparated) (hdim : S.IsDimension s)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     (∃ C : ℝ, 0 < C ∧ ∃ γ : ℝ, 0 < γ ∧ ∀ v : ℝ, 0 ≤ v →
       MemLp (centeredBrownianTubeProfile W P hμ.compactAttractor s v) 2 P ∧
@@ -229,7 +229,7 @@ theorem audit_tube_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     ∀ t : ℝ, ∀ᵐ ω ∂P, Tendsto
       (fun n : ℕ ↦ centeredBrownianTubeProfile W P hμ.compactAttractor s
         ((n : ℝ) + t) ω) atTop (nhds 0) :=
-  hμ.tubeConcentration hW S hs0 hs1 hsep hdim
+  hμ.tubeConcentration hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
 /-! ### `sec:setup`: the Gaussian reduction -/
 
@@ -439,21 +439,93 @@ theorem audit_lattice_gap {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
         ∀ v, smoothOp s g b ≤ smoothOp s g v ∧ smoothOp s g v ≤ smoothOp s g a :=
   smoothOp_gap hs0 hs1 hp hg hper hne
 
-/-- `thm:renewal-recursion`, `eq:phi-recursion`.  Below the separation gap the
-pair-distance distribution satisfies the self-similar recursion. -/
+/-- `thm:renewal-recursion`, `eq:phi-recursion`.  At every scale the pair-distance
+distribution satisfies the self-similar recursion with the cross term `Φ_×` of pairs
+with different first-level addresses. -/
 theorem audit_renewal_recursion {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
-    {ρ s : ℝ} (hsep : S.StronglySeparated K ρ) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
-    {δ : ℝ} (hδ0 : 0 < δ) (hδ : δ < ρ) :
-    Phi μ δ = ∑ i, S.ratio i ^ (2 * s) * Phi μ (δ / S.ratio i) :=
-  phi_recursion S hsep hμ hδ0 hδ
+    {s : ℝ} {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (δ : ℝ) :
+    Phi μ δ = ∑ i, S.ratio i ^ (2 * s) * Phi μ (δ / S.ratio i) + S.crossPhi s μ δ :=
+  phi_recursion_cross S hμ δ
 
 /-- `thm:renewal-recursion`, `eq:g-recursion`.  The recursion in the normalised
-profile. -/
-theorem audit_g_recursion {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {ρ s : ℝ}
-    (hsep : S.StronglySeparated K ρ) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
-    {w : ℝ} (hw : Real.log ρ⁻¹ < w) :
-    G s μ w = ∑ i, S.ratio i ^ s * G s μ (w - S.logRatio i) :=
-  g_recursion S hsep hμ hw
+profile, at every `w`. -/
+theorem audit_g_recursion {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {s : ℝ}
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (w : ℝ) :
+    G s μ w = ∑ i, S.ratio i ^ s * G s μ (w - S.logRatio i)
+      + Real.exp (s * w) * S.crossPhi s μ (Real.exp (-w)) :=
+  g_recursion_cross S hμ w
+
+/-- `thm:renewal-recursion`, the bound on the cross term: under the open set condition,
+`0 ≤ Φ_×(δ) ≤ C δ^{s+η}` for `0 < δ ≤ 1`, with `η ∈ (0, 1-s)`. -/
+theorem audit_crossPhi_bound {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hosc : S.OpenSetCondition) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ η < 1 - s ∧ ∀ δ : ℝ, 0 < δ → δ ≤ 1 →
+      0 ≤ S.crossPhi s μ δ ∧ S.crossPhi s μ δ ≤ C * δ ^ (s + η) := by
+  obtain ⟨C, η, hC, hη, hηs, hbound⟩ :=
+    (hosc.strongOpenSetCondition S hμ.attractor).exists_crossPhi_bound S hs0 hs1 hdim hμ
+  exact ⟨C, η, hC, hη, hηs, fun δ hδ0 hδ1 => ⟨S.crossPhi_nonneg s μ δ, hbound δ hδ0 hδ1⟩⟩
+
+/-- `thm:renewal-recursion`, the separated case: if the first-level pieces have mutual
+distance at least `ρ`, the cross term vanishes below `ρ`. -/
+theorem audit_crossPhi_separated {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
+    {ρ s : ℝ} (hsep : S.StronglySeparated K ρ) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    {δ : ℝ} (hδ0 : 0 < δ) (hδ : δ < ρ) : S.crossPhi s μ δ = 0 :=
+  crossPhi_eq_zero_of_stronglySeparated S hsep hμ hδ
+
+/-- `thm:stopping-overlap`.  Under the open set condition there is an integer `M ≥ 1`
+such that, at every threshold `0 < u ≤ 1`, the stopping family `𝒲(u)`, realised as the
+leaves of the stopping tree at any depth past which every branch has stopped, has
+multiplicity at most `M` and can be coloured with `M` colours so that intervals of one
+colour have pairwise disjoint interiors; and the natural measure is `s`-Ahlfors
+regular. -/
+theorem audit_stopping_overlap {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    (hosc : S.OpenSetCondition) {K : Set ℝ} {s : ℝ} (hs : 0 < s) {μ : Measure ℝ}
+    (hμ : S.IsNatural K s μ) :
+    (∃ M : ℕ, 0 < M ∧ ∀ u : ℝ, 0 < u → u ≤ 1 →
+      ∀ n : ℕ, Hutchinson.maxRatio S ^ n ≤ u →
+        (∀ x : ℝ, ∀ T : Finset (S.StoppingLeaves u n System.stoppingRoot),
+          (∀ leaf ∈ T, x ∈ S.stoppingWordMap (S.stoppingLeafWord u leaf) '' Set.Icc (0:ℝ) 1) →
+          T.card ≤ M) ∧
+        ∃ c : S.StoppingLeaves u n System.stoppingRoot → Fin M,
+          ∀ leaf₁ leaf₂, leaf₁ ≠ leaf₂ → c leaf₁ = c leaf₂ →
+            Disjoint
+              (interior (S.stoppingWordMap (S.stoppingLeafWord u leaf₁) '' Set.Icc (0:ℝ) 1))
+              (interior (S.stoppingWordMap (S.stoppingLeafWord u leaf₂) '' Set.Icc (0:ℝ) 1))) ∧
+    ∃ A : ℝ, IsAhlforsClosed s A μ := by
+  classical
+  obtain ⟨U, hU⟩ := hosc
+  obtain ⟨M, hM, hmult⟩ := hU.exists_point_multiplicity_bound S
+  obtain ⟨M', hM', hcol⟩ := hU.exists_stopping_coloring S
+  refine ⟨⟨max M M', lt_max_of_lt_left hM, fun u hu0 hu1 n hn => ⟨fun x T hT => ?_, ?_⟩⟩,
+    System.OpenSetCondition.exists_isAhlforsClosed S ⟨U, hU⟩ hs.le hμ⟩
+  · refine le_trans (Finset.card_le_card fun leaf hleaf => ?_)
+      (le_trans (hmult u hu0 hu1 n hn x) (le_max_left _ _))
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hT leaf hleaf⟩
+  · obtain ⟨c, hc⟩ := hcol u hu0 hu1 n hn
+    refine ⟨fun leaf => Fin.castLE (le_max_right M M') (c leaf), fun leaf₁ leaf₂ hne hceq => ?_⟩
+    exact hc leaf₁ leaf₂ hne (Fin.castLE_injective _ hceq)
+
+/-- `thm:cross-piece-mass`.  Under the open set condition there are `C > 0` and
+`η ∈ (0, 1-s)` such that, for `i ≠ j` and `0 < h ≤ 1`, the mass of `μ_i = (S_i)_* μ`
+within distance `h` of `K_j = S_j K` is at most `C h^η` (`eq:boundary-mass`), and
+`(μ_i × μ_j){|x-y| ≤ h} ≤ C h^{s+η}` (`eq:cross-piece-mass`). -/
+theorem audit_cross_piece_mass {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} (hosc : S.OpenSetCondition) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ η < 1 - s ∧ ∀ i j : ι, i ≠ j → ∀ h : ℝ, 0 < h → h ≤ 1 →
+      (μ.map (S.map i)) (Metric.cthickening h (S.map j '' K)) ≤ ENNReal.ofReal (C * h ^ η) ∧
+      ((μ.map (S.map i)).prod (μ.map (S.map j))) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}
+        ≤ ENNReal.ofReal (C * h ^ (s + η)) :=
+  (hosc.strongOpenSetCondition S hμ.attractor).exists_cross_piece_bound S hs0 hs1 hdim hμ
+
+/-- Schief's theorem, cited in `sec:introduction` and in the proof of
+`thm:cross-piece-mass`: for a system with attractor `K`, the open set condition is
+equivalent to the existence of a feasible open set meeting `K`. -/
+theorem audit_schief {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hK : S.IsAttractor K) :
+    S.OpenSetCondition ↔ ∃ U : Set ℝ, S.IsFeasible U ∧ (U ∩ K).Nonempty :=
+  S.openSetCondition_iff_strongOpenSetCondition hK
 
 /-- `eq:gamma-multiplier`: the multiplier integral evaluates in closed form, by the
 substitution `x = 1/(2η)`. -/
@@ -593,13 +665,14 @@ theorem audit_aemeasurable_occupation {P : Measure Ω} [IsProbabilityMeasure P]
     AEMeasurable (occupationProb W μ) P :=
   hW.aemeasurable_occupationProb μ
 
-/-- Internal Ahlfors-regularity endpoint for a strongly separated natural measure.
-Support points are those charging every ball. -/
-theorem audit_ahlfors {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {ρ s : ℝ}
-    (hs : 0 < s) (hsep : S.StronglySeparated K ρ) (hdim : S.IsDimension s)
+/-- Internal Ahlfors-regularity endpoint for the natural measure of a system satisfying
+the open set condition, `thm:stopping-overlap`.  Support points are those charging every
+ball. -/
+theorem audit_ahlfors {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    {s : ℝ} (hs : 0 < s) (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     ∃ A : ℝ, IsAhlforsClosed s A μ :=
-  exists_isAhlforsClosed S hs hsep hdim hμ
+  System.OpenSetCondition.exists_isAhlforsClosed S hosc hs.le hμ
 
 /-- Internal Ahlfors-regularity endpoint for the two named measures `μ_A` and `μ_B`.
 The general endpoint above is the same statement for every strongly separated system. -/
@@ -870,6 +943,39 @@ theorem audit_uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
       |Yprofile s (occupation W μ ω) v - H s μ v| ≤ ε :=
   uniform_concentration hW hs0 hs1 hμ
 
+/-- `thm:base-five-profiles`.  For the natural measures of the two base-five systems with
+digit sets `{0,1,4}` and `{0,2,4}`, the pair-distance distributions take the values
+`eq:base-five-distances` at every scale `5⁻ⁿ`, and the expected profiles stay a fixed
+distance apart along a sequence tending to infinity, the form of
+`limsup |H_{μ₁} - H_{μ₂}| > 0` that `thm:main` consumes. -/
+theorem audit_base_five_profiles {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
+    (hμ₁ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K₁ baseFiveDim μ₁)
+    (hμ₂ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le).IsNatural K₂ baseFiveDim μ₂) :
+    (∀ n : ℕ, Phi μ₁ ((1 / 5 : ℝ) ^ n) = 3 / 2 * (1 / 3 : ℝ) ^ n - 1 / 2 * (1 / 9 : ℝ) ^ n ∧
+      Phi μ₂ ((1 / 5 : ℝ) ^ n) = (1 / 3 : ℝ) ^ n) ∧
+    ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |H baseFiveDim μ₁ t - H baseFiveDim μ₂ t| :=
+  baseFive_profiles hμ₁ hμ₂
+
+/-- The first display after `thm:base-five-profiles`: the occupation laws of the two
+base-five natural measures are mutually singular, by `thm:main`. -/
+theorem audit_base_five_occupation_laws {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
+    (hμ₁ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K₁ baseFiveDim μ₁)
+    (hμ₂ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le).IsNatural K₂ baseFiveDim μ₂) :
+    (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
+  MinkowskiReconstruction.baseFive_occupationLaw_mutuallySingular hW hμ₁ hμ₂
+
+/-- The second display after `thm:base-five-profiles`: the laws of the compact Brownian
+images of the two base-five attractors are mutually singular, by
+`thm:minkowski-reconstruction`. -/
+theorem audit_base_five_image_laws {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
+    (hμ₁ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K₁ baseFiveDim μ₁)
+    (hμ₂ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le).IsNatural K₂ baseFiveDim μ₂) :
+    (brownianImageLaw W P hμ₁.compactAttractor).MutuallySingular
+      (brownianImageLaw W P hμ₂.compactAttractor) :=
+  MinkowskiReconstruction.baseFive_brownianImageLaw_mutuallySingular hW hμ₁ hμ₂
+
 /-- `thm:homometric-example`.  Two distinct strongly separated self-similar measures,
 Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, whose attractors are
 not isometric, with equal signed convolutions `σ * σ̃`, hence identical pair-distance
@@ -890,19 +996,20 @@ theorem audit_homometric_example :
   homometric_example
 
 /-- `thm:cantor-application`.  The homogeneous equal-weight measure at any ratio
-`0 < λ < 1/2` separates from the natural measure of every strongly separated
-non-arithmetic system of the same dimension. -/
+`0 < λ < 1/2` separates from the natural measure of every non-arithmetic system of the
+same dimension satisfying the open set condition. -/
 theorem audit_cantor_application {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     {KA : Set ℝ} {μA : Measure ℝ}
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA)
-    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ} {ρ : ℝ}
-    (hsep : S.StronglySeparated K ρ) (hna : S.NonArithmetic)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
+    (hosc : S.OpenSetCondition) (hna : S.NonArithmetic)
     (hdim : S.IsDimension (homogeneousDim lam)) {μ : Measure ℝ}
     (hμ : S.IsNatural K (homogeneousDim lam) μ) :
     (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) :=
-  homogeneous_application hW hlam0 hlam hA S hsep hna hdim hμ
+  homogeneous_application hW hlam0 hlam hA S (hosc.strongOpenSetCondition S hμ.attractor) hna
+    hdim hμ
 
 /-- The paired instance of `thm:cantor-application`, the last sentence of the theorem,
 at a parameter satisfying `eq:non-lattice`.  The ratio bounds `0 < c < 1/2` of
@@ -932,12 +1039,12 @@ theorem audit_exceptional_parameters_countable :
 normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive, where
 `m = ∑ p_i a_i` is the renewal mean and `z = G - F * G` the renewal defect. -/
 theorem audit_non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {ρ s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hsep : S.StronglySeparated K ρ)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hosc : S.OpenSetCondition)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
       Tendsto (G s μ) atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x)) :=
-  non_lattice_limit S hs0 hs1 hsep hdim hna hμ
+  non_lattice_limit S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim hna hμ
 
 /-- `eq:gb-limit`: under `eq:non-lattice` the normalised profile of `μ_B` converges to a
 finite positive constant. -/
@@ -991,14 +1098,15 @@ theorem audit_thm_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
 theorem audit_non_lattice_separation {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
-    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {ρ₁ ρ₂ : ℝ}
-    (hsep₁ : S₁.StronglySeparated K₁ ρ₁) (hsep₂ : S₂.StronglySeparated K₂ ρ₂)
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ}
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
     (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
     (hna₁ : S₁.NonArithmetic) (hna₂ : S₂.NonArithmetic)
     {μ₁ μ₂ : Measure ℝ} (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂)
     (hne : (S₁.renewalMean s)⁻¹ * ∫ x : ℝ, S₁.renewalDefect s μ₁ x
         ≠ (S₂.renewalMean s)⁻¹ * ∫ x : ℝ, S₂.renewalDefect s μ₂ x) :
     (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) :=
-  non_lattice_separation hW hs0 hs1 S₁ S₂ hsep₁ hsep₂ hdim₁ hdim₂ hna₁ hna₂ hμ₁ hμ₂ hne
+  non_lattice_separation hW hs0 hs1 S₁ S₂ (hosc₁.strongOpenSetCondition S₁ hμ₁.attractor)
+    (hosc₂.strongOpenSetCondition S₂ hμ₂.attractor) hdim₁ hdim₂ hna₁ hna₂ hμ₁ hμ₂ hne
 
 end BrownianImages

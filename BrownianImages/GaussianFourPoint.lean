@@ -221,8 +221,8 @@ theorem indepFun_pi_of_pair {ι : Type*} [Fintype ι] {P : Measure Ω} [IsProbab
     IndepFun (fun ω i => X i ω) (fun ω i => Y i ω) P := by
   classical
   rw [IndepFun_iff_Indep]
-  have hmeasX : Measurable (fun ω (i : ι) => X i ω) := measurable_pi_lambda _ hX
-  have hmeasY : Measurable (fun ω (i : ι) => Y i ω) := measurable_pi_lambda _ hY
+  have hmeasX : Measurable (fun ω (i : ι) => X i ω) := Measurable.of_eval hX
+  have hmeasY : Measurable (fun ω (i : ι) => Y i ω) := Measurable.of_eval hY
   set πβ : Set (Set (ι → ℝ)) :=
     Set.pi Set.univ '' Set.pi Set.univ fun _ : ι => {s : Set ℝ | MeasurableSet s} with hπβ
   set πX : Set (Set Ω) := {s | ∃ t ∈ πβ, (fun ω (i : ι) => X i ω) ⁻¹' t = s} with hπXdef
