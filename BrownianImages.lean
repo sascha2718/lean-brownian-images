@@ -182,8 +182,8 @@ The objects, and `sec:setup`:
 
 `sec:obstruction`:
 
-* `Homometric`: the finite content of `thm:homometric-example`, the homometry of the
-  two digit sets and the common dimension `log 6 / log 30`.
+* `Homometric`: the finite content of `thm:homometric-example`, the two systems, their
+  strong separation and the common dimension `log 6 / log 30`.
 * `HomometricMeasures`: `thm:homometric-example`, the two natural measures, the
   non-isometry of their attractors, and the equality of their signed convolutions,
   through the difference system.

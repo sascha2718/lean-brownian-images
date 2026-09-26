@@ -286,17 +286,13 @@ theorem diffLaw_selfSimilar {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : �
 
 /-! ### The homometry, as an equality of sums over ordered pairs -/
 
-/-- The two digit sets have the same difference multiset, indexed by ordered pairs of
-positions.  This is `diffMultiset_eq` in the form the sum over the difference system
-consumes. -/
+/-- The homometry of `thm:homometric-example`: the two digit sets have the same signed
+difference multiset, indexed by ordered pairs of positions, the form the sum over the
+difference system consumes. -/
 theorem diffMultiset_fin_eq :
     (Finset.univ.val.map fun p : Fin 6 × Fin 6 => digitFunA p.1 - digitFunA p.2)
       = (Finset.univ.val.map fun p : Fin 6 × Fin 6 => digitFunB p.1 - digitFunB p.2) := by
   decide
-
-/-- Every ratio of the difference system is `1/30`. -/
-theorem diffSystem_ratio (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : ∀ i, d i ≤ 17)
-    (p : Fin 6 × Fin 6) : (diffSystem d h0 h17).ratio p = 1/30 := rfl
 
 /-- Equal difference multisets give equal sums over the difference system. -/
 theorem sum_diffMap_congr (ν : Measure ℝ) (c : ℝ≥0∞) :
@@ -329,7 +325,7 @@ theorem diffLaw_eq {KA KB : Set ℝ} {σA σB : Measure ℝ}
       = ∑ p : Fin 6 × Fin 6,
       ENNReal.ofReal ((diffSystem digitFunA digitFunA_nonneg digitFunA_le).ratio p ^ (2 * tHom))
         • (diffLaw σB).map ((diffSystem digitFunA digitFunA_nonneg digitFunA_le).map p) := by
-    simp only [diffSystem_map, diffSystem_ratio]
+    simp only [diffSystem_map]
     exact (sum_diffMap_congr (diffLaw σB) _).symm
   exact Hutchinson.eq_of_selfSimilar (diffSystem digitFunA digitFunA_nonneg digitFunA_le)
     (diffSystem_isDimension _ _ _) hidA (hidB.trans hconv)

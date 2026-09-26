@@ -34,13 +34,6 @@ def IsNatural.compactAttractor {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
     (hmu : S.IsNatural K s mu) : NonemptyCompacts ℝ :=
   hmu.attractor.toNonemptyCompacts
 
-/-- The compact attractor carried by a natural measure has the attractor as underlying
-set. -/
-@[simp]
-theorem IsNatural.coe_compactAttractor {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hmu : S.IsNatural K s mu) :
-    (hmu.compactAttractor : Set ℝ) = K := rfl
-
 /-- Each similarity of a system is continuous. -/
 theorem continuous_map (i : ι) : Continuous (S.map i) := by
   unfold map

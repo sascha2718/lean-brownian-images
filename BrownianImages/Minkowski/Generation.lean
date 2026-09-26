@@ -77,12 +77,6 @@ def generationMap (S : System iota) : (k : ℕ) → GenerationWord iota k → �
   | Nat.succ k, w => S.map w.2 ∘ S.generationMap k w.1
 
 omit [Nonempty iota] in
-/-- The empty word acts as the identity. -/
-@[simp]
-theorem generationMap_zero (w : GenerationWord iota 0) :
-    S.generationMap 0 w = id := rfl
-
-omit [Nonempty iota] in
 /-- Appending a letter composes its map on the outside. -/
 @[simp]
 theorem generationMap_succ (k : ℕ) (w : GenerationWord iota (Nat.succ k)) :

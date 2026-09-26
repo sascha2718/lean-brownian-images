@@ -2,16 +2,16 @@
 `thm:homometric-example` of `sec:obstruction`: two distinct strongly separated
 self-similar measures with identical pair-distance distributions.
 
-The whole content of the example is finite and is proved here: the two digit sets
-have the same signed difference multiset, the two systems are strongly separated, and
-the common dimension `t = log 6 / log 30` lies in `(1/2, 1)` and solves
-`6·(1/30)^t = 1`.  What the multiset equality buys probabilistically, namely that the
-level differences `D_n - D'_n` are equidistributed, is `diffCount_eq`.
+The finite content of the example is proved here: the two systems are strongly
+separated, and the common dimension `t = log 6 / log 30` lies in `(1/2, 1)` and solves
+`6·(1/30)^t = 1`.  The homometry of the two digit sets `{0,1,4,10,12,17}` and
+`{0,1,8,11,13,17}` is proved in `HomometricMeasures`, as the equality of the two
+difference systems.
 
-* `digitsA`, `digitsB`: the digit sets `{0,1,4,10,12,17}` and `{0,1,8,11,13,17}`.
-* `diffMultiset_eq`, `diffCount_eq`: the homometry of the two digit sets.
 * `strong_separation`: distinct first-level cylinders stay `1/45` apart.
 * `tHom`, `tHom_mem_Ioo`, `six_mul_rpow_tHom`: the common dimension.
+* `digitFunA`, `digitFunB`, `homSystem`, `homSystem_stronglySeparated`: the two systems.
+* `reflect`, `conv_reflect_eq_map_sub`: the signed convolution `σ * σ̃` as a difference law.
 -/
 import BrownianImages.SelfSimilar
 
@@ -19,38 +19,6 @@ namespace BrownianImages
 
 open Real MeasureTheory
 open scoped ENNReal
-
-/-! ### The two digit sets -/
-
-/-- The digit set `𝒜 = {0,1,4,10,12,17}`. -/
-def digitsA : Finset ℤ := {0, 1, 4, 10, 12, 17}
-
-/-- The digit set `ℬ = {0,1,8,11,13,17}`. -/
-def digitsB : Finset ℤ := {0, 1, 8, 11, 13, 17}
-
-/-- The digit set `𝒜` has six elements. -/
-theorem card_digitsA : digitsA.card = 6 := by decide
-
-/-- The digit set `ℬ` has six elements. -/
-theorem card_digitsB : digitsB.card = 6 := by decide
-
-/-- The two digit sets differ, so the two first-level supports differ and the two
-measures are distinct. -/
-theorem digitsA_ne_digitsB : digitsA ≠ digitsB := by decide
-
-/-- The signed difference multisets of the two digit sets agree.  This is the
-homometry of `thm:homometric-example`. -/
-theorem diffMultiset_eq :
-    ((digitsA ×ˢ digitsA).val.map fun p => p.1 - p.2)
-      = ((digitsB ×ˢ digitsB).val.map fun p => p.1 - p.2) := by
-  decide
-
-/-- Every value is taken equally often as a difference of digits: the law of
-`D - D'` is the same for the two digit sets. -/
-theorem diffCount_eq (k : ℤ) :
-    Multiset.count k ((digitsA ×ˢ digitsA).val.map fun p => p.1 - p.2)
-      = Multiset.count k ((digitsB ×ˢ digitsB).val.map fun p => p.1 - p.2) := by
-  rw [diffMultiset_eq]
 
 /-! ### Strong separation -/
 
@@ -77,9 +45,6 @@ theorem strong_separation {d d' : ℤ} (hne : d ≠ d') {x y : ℝ}
 
 /-- The common dimension `t = log 6 / log 30` of the two attractors. -/
 noncomputable def tHom : ℝ := Real.log 6 / Real.log 30
-
-/-- `log 6 > 0`. -/
-theorem log_six_pos : 0 < Real.log 6 := Real.log_pos (by norm_num)
 
 /-- `log 30 > 0`. -/
 theorem log_thirty_pos : 0 < Real.log 30 := Real.log_pos (by norm_num)
@@ -129,12 +94,6 @@ theorem digitFunA_injective : Function.Injective digitFunA := by decide
 
 /-- The enumeration of `ℬ` is injective. -/
 theorem digitFunB_injective : Function.Injective digitFunB := by decide
-
-/-- The enumeration of `𝒜` has the digit set as its range. -/
-theorem range_digitFunA : Finset.image digitFunA Finset.univ = digitsA := by decide
-
-/-- The enumeration of `ℬ` has the digit set as its range. -/
-theorem range_digitFunB : Finset.image digitFunB Finset.univ = digitsB := by decide
 
 /-- The self-similar system of `thm:homometric-example` attached to a digit set:
 `S_d(x) = x/30 + d/18`, at six digits in `{0,…,17}`. -/

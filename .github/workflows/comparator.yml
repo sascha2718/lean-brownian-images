@@ -92,9 +92,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          comparator_sha=2312244ac716564a61cc0bf4e107d9abf1757a61
-          comparator_export_sha=cacf989bd75f608700820f6afc595f32e7a99a4d
-          lean4export_sha=86e4a339507466921dc8c5417c8cb1de1ce7df60
+          comparator_sha=32bd61da1d68fbaa310234964e9b820b03a0f82f
+          comparator_export_sha=6cea97789dc088ea47fcea15692db85685aedac5
+          lean4export_sha=6cea97789dc088ea47fcea15692db85685aedac5
           landrun_sha=811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
 
           mkdir -p "$TOOLS_DIR/bin"

@@ -38,18 +38,6 @@ def stoppingMap (S : System iota) :
   | Nat.succ k, w => S.stoppingMap k w.1 ∘ S.map w.2
 
 omit [Nonempty iota] in
-/-- The empty word acts as the identity. -/
-@[simp]
-theorem stoppingMap_zero (w : GenerationWord iota 0) :
-    S.stoppingMap 0 w = id := rfl
-
-omit [Nonempty iota] in
-/-- Appending a letter composes its map on the inside. -/
-@[simp]
-theorem stoppingMap_succ (k : ℕ) (w : GenerationWord iota (k + 1)) :
-    S.stoppingMap (k + 1) w = S.stoppingMap k w.1 ∘ S.map w.2 := rfl
-
-omit [Nonempty iota] in
 /-- Every prefix map is continuous. -/
 theorem continuous_stoppingMap :
     ∀ (k : ℕ) (w : GenerationWord iota k), Continuous (S.stoppingMap k w)
@@ -285,19 +273,6 @@ def stoppingLeafWord (S : System iota) (delta : ℝ) :
   | _, _, .cutoff w => w
   | _, w, .stop _ => w
   | _, _, .branch _ _ leaf => S.stoppingLeafWord delta leaf
-
-omit [Nonempty iota] in
-/-- A cutoff leaf carries its own word. -/
-@[simp]
-theorem stoppingLeafWord_cutoff (delta : ℝ) (w : StoppingWord iota) :
-    S.stoppingLeafWord delta (StoppingLeaves.cutoff w) = w := rfl
-
-omit [Nonempty iota] in
-/-- A stopped leaf carries the word at which it stopped. -/
-@[simp]
-theorem stoppingLeafWord_stop (delta : ℝ) {n : ℕ} {w : StoppingWord iota}
-    (h : S.stoppingRatio w ≤ delta) :
-    S.stoppingLeafWord delta (StoppingLeaves.stop (n := n) h) = w := rfl
 
 omit [Nonempty iota] in
 /-- A branching leaf carries the word of the leaf it branches to. -/

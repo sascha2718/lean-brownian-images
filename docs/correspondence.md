@@ -158,7 +158,7 @@ layer (`corr_mono`, `Yprofile_le_of_le`, `measurable_corr`, `measurable_Yprofile
 period arithmetic
 (`exists_nat_sub_mem_Ico`, `shift_add_nsmul`, `exists_periodic_extension`), the identification `phi_eq_pairLaw` of `Φ` as the
 distribution function of `dΦ`, the homometric
-layer (`diffMultiset_eq`, `diffCount_eq`, `strong_separation`, `homSystem`,
+layer (`strong_separation`, `homSystem`,
 `homSystem_stronglySeparated`, `tHom_mem_Ioo`, `six_mul_rpow_tHom`), and the pairing
 determinants (`crossing_det`, `nested_det`).
 

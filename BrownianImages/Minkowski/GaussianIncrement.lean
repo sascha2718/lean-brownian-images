@@ -22,13 +22,6 @@ real coordinates. -/
 noncomputable def planeProdMeasurableEquiv : Plane ≃ᵐ ℝ × ℝ :=
   (MeasurableEquiv.toLp 2 (Fin 2 → ℝ)).symm.trans MeasurableEquiv.finTwoArrow
 
-/-- The measurable equivalence between the plane and `ℝ × ℝ` reads off the two
-coordinates. -/
-@[simp]
-theorem planeProdMeasurableEquiv_apply (z : Plane) :
-    planeProdMeasurableEquiv z = (z 0, z 1) := by
-  rfl
-
 /-- Passing from the Euclidean plane to its two coordinates preserves
 Lebesgue measure. -/
 theorem measurePreserving_planeProdMeasurableEquiv :

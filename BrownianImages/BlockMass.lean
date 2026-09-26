@@ -125,7 +125,7 @@ theorem crossing_le
       abs_of_nonneg (by linarith : (0:ℝ) ≤ x₄ - x₂)]
     have hm1 : x₃ - x₁ ≤ max (x₃ - x₁) (x₄ - x₂) := le_max_left _ _
     have hm2 : x₄ - x₂ ≤ max (x₃ - x₁) (x₄ - x₂) := le_max_right _ _
-    linarith [length_ge_block hb hh]
+    linarith
   exact min_le_block hr hβ hη hdet hlen
     (hfour hr (lt_of_lt_of_le (by positivity) hdet))
 
@@ -164,7 +164,7 @@ theorem nested_le
     rw [e1, e2, e3, e4, abs_of_nonneg (by linarith : (0:ℝ) ≤ x₄ - x₁),
       abs_of_nonneg (by linarith : (0:ℝ) ≤ x₃ - x₂)]
     have hm1 : x₄ - x₁ ≤ max (x₄ - x₁) (x₃ - x₂) := le_max_left _ _
-    linarith [length_ge_block hb hh]
+    linarith
   exact min_le_block hr hβ hη hdet hlen
     (hfour hr (lt_of_lt_of_le (by positivity) hdet))
 

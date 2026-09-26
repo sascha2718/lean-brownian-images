@@ -79,7 +79,6 @@ theorem ae_tendsto_zero_of_exponential_eLpNorm_sq_bound
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
     (X : Nat -> Omega -> Real) {C gamma : Real}
     (hC : 0 <= C) (hgamma : 0 < gamma)
-    (hmem : forall n : Nat, MemLp (X n) 2 P)
     (hsq : forall n : Nat,
       eLpNorm (X n) 2 P ^ (2 : Real) <=
         ENNReal.ofReal (C * Real.exp (-gamma * (n : Real)))) :
@@ -115,13 +114,12 @@ theorem ae_tendsto_zero_of_exponential_eLpNorm_bound
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
     (X : Nat -> Omega -> Real) {C gamma : Real}
     (hC : 0 <= C) (hgamma : 0 < gamma)
-    (hmem : forall n : Nat, MemLp (X n) 2 P)
     (hnorm : forall n : Nat,
       eLpNorm (X n) 2 P <=
         ENNReal.ofReal (C * Real.exp (-gamma * (n : Real)))) :
     ∀ᵐ omega ∂P, Tendsto (fun n : Nat => X n omega) atTop (nhds 0) := by
   apply ae_tendsto_zero_of_exponential_eLpNorm_sq_bound X
-    (sq_nonneg C) (mul_pos zero_lt_two hgamma) hmem
+    (sq_nonneg C) (mul_pos zero_lt_two hgamma)
   intro n
   calc
     eLpNorm (X n) 2 P ^ (2 : Real) <=
@@ -143,7 +141,6 @@ theorem ae_tendsto_zero_along_phase_of_exponential_eLpNorm_bound
     {Omega : Type*} [MeasurableSpace Omega] {P : Measure Omega}
     (X : Real -> Omega -> Real) {C gamma : Real}
     (hC : 0 <= C) (hgamma : 0 < gamma)
-    (hmem : forall v : Real, 0 <= v -> MemLp (X v) 2 P)
     (hnorm : forall v : Real, 0 <= v ->
       eLpNorm (X v) 2 P <= ENNReal.ofReal (C * Real.exp (-gamma * v)))
     (t : Real) :
@@ -160,10 +157,6 @@ theorem ae_tendsto_zero_along_phase_of_exponential_eLpNorm_bound
     apply ae_tendsto_zero_of_exponential_eLpNorm_bound
       (fun n : Nat => X (((n + N : Nat) : Real) + t))
       hCphase hgamma
-    · intro n
-      apply hmem
-      simpa only [Nat.cast_add, add_assoc] using
-        add_nonneg (Nat.cast_nonneg n) hNt
     · intro n
       have hv : 0 <= ((n + N : Nat) : Real) + t := by
         simpa only [Nat.cast_add, add_assoc] using
@@ -199,10 +192,8 @@ theorem tubeGridConcentration_of_exponential_eLpNorm
   apply ae_tendsto_zero_along_phase_of_exponential_eLpNorm_bound
     (fun v => centeredBrownianTubeProfile W P K s v)
     hC.le hgamma
-  · intro v hv
-    exact (hbound v hv).1
-  · intro v hv
-    exact (hbound v hv).2
+  intro v hv
+  exact (hbound v hv).2
 
 end MinkowskiAlmostSure
 

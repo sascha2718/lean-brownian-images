@@ -9,8 +9,7 @@ lower bounds on a dyadic block `E_{β,η}` that `thm:endpoint-block-mass` feeds 
 
 * `crossing_det`, `crossing_det_ge`: `eq:crossing-determinant`.
 * `nested_det`: `eq:nested-determinant`.
-* `det_ge_block`, `length_ge_block`: the two lower bounds `Δ ≥ βη/4` and
-  `(b+h)/2 ≥ (β+η)/4` valid on `E_{β,η}`.
+* `det_ge_block`: the lower bound `Δ ≥ βη/4` valid on `E_{β,η}`.
 * `varScale_div_tendsto_zero`: the last assertion of `thm:variance`, that each of the
   three variance scales `eq:variance-scale` is `o(r^{4s})`.
 -/
@@ -41,12 +40,6 @@ least `βη/4`. -/
 theorem det_ge_block {β η b h : ℝ} (hβ : 0 < β) (hη : 0 < η)
     (hb : β / 2 < b) (hh : η / 2 < h) : β * η / 4 ≤ b * h := by
   nlinarith
-
-/-- On the block `E_{β,η}` the half-sum `(b+h)/2`, a lower bound for the length of the
-longer of the two intervals, is at least `(β+η)/4`. -/
-theorem length_ge_block {β η b h : ℝ} (hb : β / 2 < b) (hh : η / 2 < h) :
-    (β + η) / 4 ≤ (b + h) / 2 := by
-  linarith
 
 /-! ### The variance scale is `o(r^{4s})` -/
 

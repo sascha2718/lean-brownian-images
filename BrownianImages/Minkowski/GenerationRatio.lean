@@ -92,29 +92,6 @@ theorem IsPlanarBrownian.identDistrib_centeredBrownianGenerationTubeProfile
   exact h.trans hright
 
 omit [Nonempty iota] in
-/-- `L²` membership transfers from the delayed full profile to a generation
-cylinder. -/
-theorem IsPlanarBrownian.memLp_centeredBrownianGenerationTubeProfile
-    [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
-    {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
-    (hmu : S.IsNatural K s mu) (k : ℕ)
-    (w : GenerationWord iota k) (v : ℝ)
-    (hmem : MemLp (centeredBrownianTubeProfile W P hmu.compactAttractor s
-      (v - S.generationHalfLogRatio k w)) 2 P) :
-    MemLp (hmu.centeredBrownianGenerationTubeProfile S W P k w v) 2 P := by
-  have hright : MemLp
-      (fun omega => S.generationWeight s k w *
-        centeredBrownianTubeProfile W P hmu.compactAttractor s
-          (v - S.generationHalfLogRatio k w) omega) 2 P := by
-    change MemLp
-      (S.generationWeight s k w •
-        centeredBrownianTubeProfile W P hmu.compactAttractor s
-          (v - S.generationHalfLogRatio k w)) 2 P
-    exact hmem.const_smul (S.generationWeight s k w)
-  exact (hW.identDistrib_centeredBrownianGenerationTubeProfile
-    S hmu k w v).memLp_iff.mpr hright
-
-omit [Nonempty iota] in
 /-- The generation-cylinder `L²` norm is the natural weight times the norm of
 the delayed full centered profile. -/
 theorem IsPlanarBrownian.eLpNorm_centeredBrownianGenerationTubeProfile
@@ -150,8 +127,6 @@ theorem IsPlanarBrownian.ae_tendsto_centeredBrownianGenerationTubeProfile
     {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
     (hmu : S.IsNatural K s mu)
     {C gamma : ℝ} (hC : 0 ≤ C) (hgamma : 0 < gamma)
-    (hmem : ∀ v : ℝ, 0 ≤ v →
-      MemLp (centeredBrownianTubeProfile W P hmu.compactAttractor s v) 2 P)
     (hnorm : ∀ v : ℝ, 0 ≤ v →
       eLpNorm (centeredBrownianTubeProfile W P hmu.compactAttractor s v) 2 P ≤
         ENNReal.ofReal (C * Real.exp (-gamma * v)))
@@ -162,12 +137,6 @@ theorem IsPlanarBrownian.ae_tendsto_centeredBrownianGenerationTubeProfile
   let p : ℝ := S.generationWeight s k w
   let beta : ℝ := S.generationHalfLogRatio k w
   have hp : 0 < p := S.generationWeight_pos s k w
-  have hmemShift : ∀ u : ℝ, 0 ≤ u → MemLp
-      (fun omega => hmu.centeredBrownianGenerationTubeProfile
-        S W P k w (u + beta) omega) 2 P := by
-    intro u hu
-    apply hW.memLp_centeredBrownianGenerationTubeProfile S hmu
-    simpa only [beta, add_sub_cancel_right] using hmem u hu
   have hnormShift : ∀ u : ℝ, 0 ≤ u →
       eLpNorm (fun omega => hmu.centeredBrownianGenerationTubeProfile
         S W P k w (u + beta) omega) 2 P ≤
@@ -198,7 +167,7 @@ theorem IsPlanarBrownian.ae_tendsto_centeredBrownianGenerationTubeProfile
         (fun u omega => hmu.centeredBrownianGenerationTubeProfile
           S W P k w (u + beta) omega)
         (C := p * C) (gamma := gamma) (mul_nonneg hp.le hC) hgamma
-        hmemShift hnormShift (-beta))
+        hnormShift (-beta))
   exact hshift
 
 /-- The raw tube-mass quotient equals the quotient of normalized profiles. -/
@@ -334,8 +303,7 @@ theorem System.IsNatural.ae_generation_tubeMassRatio_of_exponential_concentratio
         (fun n : ℕ => hmu.centeredBrownianGenerationTubeProfile
           S W P k w (n : ℝ) omega) atTop (nhds 0) :=
     hW.ae_tendsto_centeredBrownianGenerationTubeProfile S hmu
-      hC.le hgamma (fun v hv => (hbound v hv).1)
-      (fun v hv => (hbound v hv).2) k w
+      hC.le hgamma (fun v hv => (hbound v hv).2) k w
   have hcylinderK (k : ℕ) : ∀ᵐ omega ∂P,
       ∀ w : GenerationWord iota k, Tendsto
         (fun n : ℕ => hmu.centeredBrownianGenerationTubeProfile

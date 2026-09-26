@@ -295,7 +295,7 @@ theorem IsNatural.exists_expected_tubeMass_lower_of_integrable
   letI := hmu.isProbabilityMeasure
   obtain ⟨A, hFrostman⟩ := System.OpenSetCondition.exists_isFrostman S hosc hs0.le hmu
   exact exists_expected_tubeMass_lower_of_frostman hW hs0 hs1 mu hFrostman
-    hmu.compactAttractor (by simpa using hmu.support) hint
+    hmu.compactAttractor hmu.support hint
 
 /-- Direct bridge from the upper-moment half of `thm:neighbourhood-moments` to its lower
 half.  Taking `q = 1` supplies the only fact the Markov proof still needs,

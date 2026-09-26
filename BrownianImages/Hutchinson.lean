@@ -509,6 +509,7 @@ weights `p_i = r_i^s` under the coding map. -/
 noncomputable def naturalMeasure (S : System ι) (s : ℝ) : Measure ℝ :=
   (codeLaw S s).map (code S)
 
+omit [Nonempty ι] in
 /-- The natural measure is a probability measure. -/
 theorem isProbabilityMeasure_naturalMeasure (S : System ι) {s : ℝ} (hdim : S.IsDimension s) :
     IsProbabilityMeasure (naturalMeasure S s) := by
