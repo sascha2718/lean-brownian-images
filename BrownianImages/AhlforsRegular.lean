@@ -48,18 +48,14 @@ variable {ι : Type*} [Fintype ι] {S : System ι} {K : Set ℝ} {ρ s : ℝ} {�
 `IsAhlforsClosed` puts on the centre. -/
 def Charged (μ : Measure ℝ) : Set ℝ := {x : ℝ | ∀ ε > 0, μ (Metric.ball x ε) ≠ 0}
 
-/-- The centre of the preimage ball: `S_i⁻¹(x) = (x - b_i)/r_i`. -/
-noncomputable def pre (S : System ι) (i : ι) (x : ℝ) : ℝ := (x - S.shift i) / S.ratio i
+/-- The centre of the preimage ball: `S_i⁻¹(x) = ε_i (x - b_i)/r_i`. -/
+noncomputable def pre (S : System ι) (i : ι) (x : ℝ) : ℝ := S.inv i x
 
 /-- `S_i` scales distances by `r_i`. -/
 theorem dist_map (S : System ι) (i : ι) (x y : ℝ) :
     dist (S.map i y) x = S.ratio i * dist y (pre S i x) := by
-  have hri := S.ratio_pos i
-  rw [Real.dist_eq, Real.dist_eq, ← abs_of_pos hri, ← abs_mul]
-  congr 1
-  simp only [System.map, pre]
-  field_simp
-  ring
+  conv_lhs => rw [← S.map_inv i x]
+  exact S.dist_map_map i y (S.inv i x)
 
 /-- The preimage of a closed ball under `S_i` is the closed ball of radius `r/r_i`. -/
 theorem preimage_closedBall (S : System ι) (i : ι) (x r : ℝ) :

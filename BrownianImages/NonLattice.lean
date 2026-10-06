@@ -4,7 +4,7 @@ The results of `BrownianImagesComplete.tex` that rest on `thm:non-lattice-limit`
 
 * `non_lattice_separation`: `thm:non-lattice-separation`.
 * `homogeneous_gb_limit`, `homogeneous_thm_profile_asymptotics`: `eq:gb-limit` and
-  `thm:profile-asymptotics`, for every `0 < λ < 1/2`.
+  the paired consequences `eq:ha-asymptotic`, `eq:hb-asymptotic`, for every `0 < λ < 1/2`.
 * `homogeneous_application`, `homogeneous_application_pair`: `thm:cantor-application`,
   in general and for the paired measure `μ_B`.
 -/
@@ -22,7 +22,7 @@ open scoped ENNReal NNReal Topology
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-/-- `thm:non-lattice-separation`.  Two non-arithmetic systems whose renewal constants
+/-- `thm:non-lattice-separation`.  Two non-lattice systems whose renewal constants
 `eq:g-non-lattice-limit` differ have mutually singular Brownian occupation laws. -/
 theorem non_lattice_separation {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -66,7 +66,7 @@ theorem homogeneous_gb_limit {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
       (homogeneousDim_lt_one hlam0 hlam)).mpr hnl) hB
   exact ⟨_, hpos, htend⟩
 
-/-- `thm:profile-asymptotics` with the homogeneous measure at an arbitrary
+/-- The paired profile consequences in `sec:smoothing`, with the homogeneous measure at any
 `0 < λ < 1/2`. -/
 theorem homogeneous_thm_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)

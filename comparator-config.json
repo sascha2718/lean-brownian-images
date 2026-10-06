@@ -5,7 +5,9 @@
         "BrownianImages.audit_main",
         "BrownianImages.audit_cantor_application",
         "BrownianImages.audit_cantor_application_pair",
-        "BrownianImages.audit_exceptional_parameters_countable"
+        "BrownianImages.audit_exceptional_parameters_countable",
+        "BrownianImages.audit_two_contraction_distinction",
+        "BrownianImages.audit_two_contraction_separation"
     ],
     "definition_names": [],
     "permitted_axioms": [

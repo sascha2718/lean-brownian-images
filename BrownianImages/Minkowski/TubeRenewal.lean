@@ -34,21 +34,21 @@ steps `beta_i` and natural weights `p_i`. -/
 noncomputable def tubeRenewalConv (s : ℝ) (g : ℝ → ℝ) (v : ℝ) : ℝ :=
   ∑ i, S.tubeWeight s i * g (v - S.halfLogRatio i)
 
-/-- The first-level attractor piece is the affine time copy to which Brownian scaling
-for compact time sets applies. -/
+/-- The first-level attractor piece is the oriented affine time copy
+`S_i K = ℓ_i + r_i · orientCompact ε_i K` to which Brownian scaling for compact time sets
+applies, with the time reversal of the increments when `S_i` reverses orientation. -/
 theorem IsNatural.compactPiece_eq_affineTimeCompact
     {K : Set ℝ} {s : ℝ} {mu : Measure ℝ} (hmu : S.IsNatural K s mu)
     (i : ι) :
     hmu.compactPiece S i =
-      affineTimeCompact (S.shift i).toNNReal (S.ratio i).toNNReal
-        hmu.compactAttractor := by
+      affineTimeCompact (S.left i).toNNReal (S.ratio i).toNNReal
+        (orientCompact (S.sign i) hmu.compactAttractor) := by
   apply NonemptyCompacts.ext
-  rw [IsNatural.coe_compactPiece, coe_affineTimeCompact]
+  rw [IsNatural.coe_compactPiece, coe_affineTimeCompact, coe_orientCompact, Set.image_image]
   apply Set.image_congr
   intro t _ht
-  rw [System.map, Real.coe_toNNReal _ (S.shift_nonneg i),
-    Real.coe_toNNReal _ (S.ratio_pos i).le]
-  ring
+  rw [Real.coe_toNNReal _ (S.left_nonneg i), Real.coe_toNNReal _ (S.ratio_pos i).le]
+  exact S.map_eq_left_add i t
 
 end System
 
@@ -196,8 +196,8 @@ theorem IsPlanarBrownian.map_tubeMass_brownianFirstLevelPiece_eq
           (brownianImage W hmu.compactAttractor omega)) := by
   have hrne : (S.ratio i).toNNReal ≠ 0 :=
     ne_of_gt (Real.toNNReal_pos.mpr (S.ratio_pos i))
-  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_eq
-    (tubeRadiusReal_pos v) (S.shift i).toNNReal hrne hmu.compactAttractor
+  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_orientCompact_eq
+    (tubeRadiusReal_pos v) (S.left i).toNNReal hrne (S.sign_eq i) hmu.compactAttractor
     hmu.attractor.2.2.1
   simpa only [System.IsNatural.brownianFirstLevelPiece,
     hmu.compactPiece_eq_affineTimeCompact S i, affineBrownianCompactPiece,

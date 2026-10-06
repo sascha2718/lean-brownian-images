@@ -3,8 +3,8 @@ The endpoints of `BrownianImagesComplete.tex` that no single module proves: each
 composition of results from two or more of the modules above, in the shape
 `Challenge.lean` states it.
 
-* `smoothing`, `non_lattice_correlation_limit`: `eq:smoothing` and the `μ_B` conclusion
-  of `thm:profile-asymptotics`, the analytic core of `Rescaling` fed with the Stieltjes
+* `smoothing`, `non_lattice_correlation_limit`: `eq:smoothing` and the `μ_B` consequence
+  of `eq:hb-asymptotic`, the analytic core of `Rescaling` fed with the Stieltjes
   form of `thm:gaussian-reduction`.
 * `endpoint_block_mass`, `endpoint_block_mass_dyadic`, `four_point_integral`: the
   variance chain of `sec:variance`, `eq:joint-return-bound` fed through the block bound
@@ -14,8 +14,8 @@ composition of results from two or more of the modules above, in the shape
   the periodic profile `G̃_A` of `sec:renewal` for every `0 < λ < 1/2`, built from the
   non-constancy of `HomogeneousNonconstancy`, the internal Frostman regularity result
   and the shift identity `eq:g-recursion`, together with the three results that consume
-  it: `eq:ha-asymptotic`, `thm:smoothing-injective` bundled, and the `μ_A` conclusion of
-  `thm:profile-asymptotics`.
+  it: `eq:ha-asymptotic`, `thm:smoothing-injective` bundled, and the resulting oscillation
+  of the normalised expected correlation integral for `μ_A`.
 -/
 import BrownianImages.Rescaling
 import BrownianImages.Reduction
@@ -33,7 +33,7 @@ open scoped ENNReal NNReal Topology
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-/-- `eq:smoothing`.  The exact rescaling `S_μ(r) = r^{2s} H_μ(log(1/r))`, for every
+/-- `eq:smoothing`.  The exact rescaling `S_μ(r) = r^{2s} H_μ^s(log(1/r))`, for every
 `r > 0`. -/
 theorem smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -42,7 +42,7 @@ theorem smoothing {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω 
     expCorr W P μ r = r ^ (2 * s) * H s μ (Real.log r⁻¹) :=
   smoothing_of_gaussian_reduction hW hs0 hs1 hμ hr0 (gaussian_reduction hW hs0 hs1 hμ hr0).2
 
-/-- `thm:profile-asymptotics`, the conclusion for `μ_B`: the normalised expected
+/-- `eq:hb-asymptotic`, the consequence for `μ_B`: the normalised expected
 correlation integral has a finite positive limit. -/
 theorem non_lattice_correlation_limit {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s C A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -161,7 +161,7 @@ theorem thm_smoothing_injective_homogeneous {lam : ℝ} (hlam0 : 0 < lam)
     smoothOp_nonconstant (homogeneousDim_pos hlam0 hlam) (homogeneousDim_lt_one hlam0 hlam)
       (log_inv_pos hlam0 hlam) hg hper hne⟩
 
-/-- `thm:profile-asymptotics`, the oscillatory conclusion for the homogeneous measure
+/-- `eq:ha-asymptotic`, the oscillatory consequence for the homogeneous measure
 for every `0 < λ < 1/2`. -/
 theorem homogeneous_lattice_correlation_oscillation {P : Measure Ω}
     [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)

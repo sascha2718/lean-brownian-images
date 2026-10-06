@@ -38,17 +38,19 @@ open scoped ENNReal Topology
 /-- The base-five system with digit set `D`: the maps `x ↦ (x + d)/5`, `d ∈ D`. -/
 noncomputable def baseFiveSystem (D : Fin 3 → ℕ) (hD : ∀ i, D i ≤ 4) : System (Fin 3) where
   ratio _ := 1 / 5
+  sign _ := 1
   shift i := (D i : ℝ) / 5
   ratio_pos _ := by norm_num
   ratio_lt_one _ := by norm_num
+  sign_eq _ := Or.inl rfl
   mapsTo i x hx := by
     obtain ⟨hx0, hx1⟩ := hx
     have hd0 : (0:ℝ) ≤ (D i : ℝ) := by exact_mod_cast Nat.zero_le _
     have hd4 : (D i : ℝ) ≤ 4 := by exact_mod_cast hD i
     constructor
-    · show (0:ℝ) ≤ 1 / 5 * x + (D i : ℝ) / 5
+    · show (0:ℝ) ≤ 1 * (1 / 5) * x + (D i : ℝ) / 5
       linarith
-    · show 1 / 5 * x + (D i : ℝ) / 5 ≤ 1
+    · show 1 * (1 / 5) * x + (D i : ℝ) / 5 ≤ 1
       linarith
 
 /-- The digit set `D₁ = {0, 1, 4}`. -/
@@ -97,7 +99,7 @@ theorem baseFiveSystem_ratio (D : Fin 3 → ℕ) (hD : ∀ i, D i ≤ 4) (i : Fi
 
 theorem baseFiveSystem_map (D : Fin 3 → ℕ) (hD : ∀ i, D i ≤ 4) (i : Fin 3) (x : ℝ) :
     (baseFiveSystem D hD).map i x = (x + D i) / 5 := by
-  show 1 / 5 * x + (D i : ℝ) / 5 = (x + D i) / 5
+  show 1 * (1 / 5) * x + (D i : ℝ) / 5 = (x + D i) / 5
   ring
 
 /-- Both systems have dimension `s`: `3 · 5^{-s} = 1`. -/
@@ -970,7 +972,7 @@ end Profiles
 
 /-- **`thm:base-five-profiles`.**  For the natural measures `μ₁`, `μ₂` of the two base-five
 systems, the pair-distance distributions take the values `eq:base-five-distances` at the
-scales `5⁻ⁿ`, and the expected profiles `H_{μ₁}`, `H_{μ₂}` stay a fixed distance apart along
+scales `5⁻ⁿ`, and the expected profiles `H_{μ₁}^s`, `H_{μ₂}^s` stay a fixed distance apart along
 a sequence tending to infinity. -/
 theorem baseFive_profiles {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
     (hμ₁ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K₁ baseFiveDim μ₁)

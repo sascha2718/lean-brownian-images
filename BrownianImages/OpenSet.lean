@@ -42,21 +42,8 @@ theorem IsFeasible.mapsTo_wordMap {U : Set ℝ} (hU : S.IsFeasible U) (ω : ℕ 
 /-- The image of a feasible set under a similarity of the system is open. -/
 theorem IsFeasible.isOpen_image {U : Set ℝ} (hU : S.IsFeasible U) (i : ι) :
     IsOpen (S.map i '' U) := by
-  have hr := S.ratio_pos i
-  have heq : S.map i '' U = (fun y => (y - S.shift i) / S.ratio i) ⁻¹' U := by
-    ext y
-    constructor
-    · rintro ⟨x, hx, rfl⟩
-      simp only [Set.mem_preimage, System.map]
-      rwa [show (S.ratio i * x + S.shift i - S.shift i) / S.ratio i = x by
-        rw [add_sub_cancel_right]; field_simp]
-    · intro hy
-      refine ⟨(y - S.shift i) / S.ratio i, hy, ?_⟩
-      simp only [System.map]
-      field_simp
-      try ring
-  rw [heq]
-  exact hU.isOpen.preimage (by fun_prop)
+  rw [S.image_eq_preimage_inv]
+  exact hU.isOpen.preimage (S.continuous_inv i)
 
 /-- `S_i U` is disjoint from the closure of `S_j U` for `i ≠ j`. -/
 theorem IsFeasible.disjoint_image_closure_image {U : Set ℝ} (hU : S.IsFeasible U)
@@ -72,8 +59,7 @@ theorem tendsto_wordMap_of_real [Nonempty ι] (ω : ℕ → ι) (z : ℝ) :
   have hbound : ∀ n, ‖Hutchinson.wordMap S ω n z - Hutchinson.codeSeq S ω n‖
       ≤ |z| * Hutchinson.maxRatio S ^ n := by
     intro n
-    rw [Real.norm_eq_abs, Hutchinson.codeSeq, Hutchinson.wordMap_sub, abs_mul,
-      abs_of_pos (Hutchinson.wordRatio_pos S ω n), sub_zero, mul_comm]
+    rw [Real.norm_eq_abs, Hutchinson.codeSeq, Hutchinson.abs_wordMap_sub, sub_zero, mul_comm]
     exact mul_le_mul_of_nonneg_left (Hutchinson.wordRatio_le_pow S ω n) (abs_nonneg z)
   have hdiff : Tendsto (fun n => Hutchinson.wordMap S ω n z - Hutchinson.codeSeq S ω n)
       atTop (𝓝 0) := by
@@ -117,9 +103,7 @@ theorem map_thickening_subset (i : ι) (ε : ℝ) (E : Set ℝ) :
   rw [Metric.mem_thickening_iff] at hx ⊢
   obtain ⟨z, hz, hxz⟩ := hx
   refine ⟨S.map i z, ⟨z, hz, rfl⟩, ?_⟩
-  rw [Real.dist_eq, System.map, System.map,
-    show S.ratio i * x + S.shift i - (S.ratio i * z + S.shift i) = S.ratio i * (x - z) by ring,
-    abs_mul, abs_of_pos (S.ratio_pos i)]
+  rw [Real.dist_eq, S.abs_map_sub]
   rw [Real.dist_eq] at hxz
   exact mul_lt_mul_of_pos_left hxz (S.ratio_pos i)
 

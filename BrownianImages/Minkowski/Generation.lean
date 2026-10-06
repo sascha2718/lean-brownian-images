@@ -8,7 +8,8 @@ obtained by composing the new letter on the outside.  This convention makes the
 finite-word sum exactly the iterate of Hutchinson's test-function operator.
 
 * `GenerationWord`, `System.generationMap`, `System.generationRatio`,
-  `System.generationWeight`: finite words and their deterministic data.
+  `System.generationSign`, `System.generationWeight`: finite words and their
+  deterministic data, the orientation included.
 * `System.IsAttractor.generationCylinder`,
   `System.IsAttractor.exists_generation_preimage`: the generation-`k` pieces of the
   attractor, which cover it.
@@ -100,26 +101,40 @@ def generationWeight (S : System iota) (s : ℝ) :
   | 0, _ => 1
   | Nat.succ k, w => S.generationWeight s k w.1 * S.tubeWeight s w.2
 
+/-- The orientation `ε_w`, the product of the orientations of the letters of a
+generation word. -/
+def generationSign (S : System iota) : (k : ℕ) → GenerationWord iota k → ℝ
+  | 0, _ => 1
+  | Nat.succ k, w => S.generationSign k w.1 * S.sign w.2
+
 omit [Nonempty iota] in
-/-- A finite-word similarity has the advertised product ratio. -/
+/-- The orientation of a word is `1` or `-1`. -/
+theorem generationSign_eq :
+    ∀ (k : ℕ) (w : GenerationWord iota k),
+      S.generationSign k w = 1 ∨ S.generationSign k w = -1
+  | 0, _ => Or.inl rfl
+  | Nat.succ k, ⟨w, i⟩ => by
+      rcases generationSign_eq k w with h | h <;> rcases S.sign_eq i with h' | h' <;>
+        simp [generationSign, h, h']
+
+omit [Nonempty iota] in
+/-- The orientation of a word has modulus one. -/
+theorem abs_generationSign (k : ℕ) (w : GenerationWord iota k) :
+    |S.generationSign k w| = 1 := by
+  rcases S.generationSign_eq k w with h | h <;> simp [h]
+
+omit [Nonempty iota] in
+/-- A finite-word similarity has the advertised signed product ratio. -/
 theorem generationMap_sub :
     ∀ (k : ℕ) (w : GenerationWord iota k) (x y : ℝ),
       S.generationMap k w x - S.generationMap k w y =
-        S.generationRatio k w * (x - y)
-  | 0, _, x, y => by simp [generationMap, generationRatio]
+        S.generationSign k w * S.generationRatio k w * (x - y)
+  | 0, _, x, y => by simp [generationMap, generationRatio, generationSign]
   | Nat.succ k, ⟨w, i⟩, x, y => by
-      change
-        (S.ratio i * S.generationMap k w x + S.shift i) -
-            (S.ratio i * S.generationMap k w y + S.shift i) =
-          (S.generationRatio k w * S.ratio i) * (x - y)
-      calc
-        (S.ratio i * S.generationMap k w x + S.shift i) -
-            (S.ratio i * S.generationMap k w y + S.shift i) =
-            S.ratio i *
-              (S.generationMap k w x - S.generationMap k w y) := by ring
-        _ = S.ratio i * (S.generationRatio k w * (x - y)) := by
-          rw [generationMap_sub k w x y]
-        _ = (S.generationRatio k w * S.ratio i) * (x - y) := by ring
+      change S.map i (S.generationMap k w x) - S.map i (S.generationMap k w y) =
+        (S.generationSign k w * S.sign i) * (S.generationRatio k w * S.ratio i) * (x - y)
+      rw [S.map_sub, generationMap_sub k w x y]
+      ring
 
 omit [Nonempty iota] in
 /-- Product contraction ratios are strictly positive. -/
@@ -128,6 +143,27 @@ theorem generationRatio_pos :
   | 0, _ => by simp [generationRatio]
   | Nat.succ k, ⟨w, i⟩ =>
       mul_pos (generationRatio_pos k w) (S.ratio_pos i)
+
+omit [Nonempty iota] in
+/-- The signed product ratio has modulus the product ratio. -/
+theorem abs_generationSign_mul_generationRatio (k : ℕ) (w : GenerationWord iota k) :
+    |S.generationSign k w * S.generationRatio k w| = S.generationRatio k w := by
+  rw [abs_mul, abs_generationSign, one_mul, abs_of_pos (S.generationRatio_pos k w)]
+
+omit [Nonempty iota] in
+/-- The signed product ratio is non-zero. -/
+theorem generationSign_mul_generationRatio_ne_zero (k : ℕ) (w : GenerationWord iota k) :
+    S.generationSign k w * S.generationRatio k w ≠ 0 := by
+  intro h
+  have := S.abs_generationSign_mul_generationRatio k w
+  rw [h, abs_zero] at this
+  exact (S.generationRatio_pos k w).ne this
+
+omit [Nonempty iota] in
+/-- A finite-word similarity scales distances by its product ratio. -/
+theorem abs_generationMap_sub (k : ℕ) (w : GenerationWord iota k) (x y : ℝ) :
+    |S.generationMap k w x - S.generationMap k w y| = S.generationRatio k w * |x - y| := by
+  rw [generationMap_sub, abs_mul, abs_generationSign_mul_generationRatio]
 
 /-- Product contraction ratios are uniformly bounded by the corresponding power of
 the largest one-letter ratio. -/
@@ -291,8 +327,7 @@ theorem IsAttractor.diam_generationCylinder_le {K : Set ℝ}
   have hxy : |x0 - y0| ≤ 1 := by
     rw [abs_le]
     constructor <;> linarith [hxI.1, hxI.2, hyI.1, hyI.2]
-  rw [Real.dist_eq, S.generationMap_sub k w x0 y0, abs_mul,
-    abs_of_pos (S.generationRatio_pos k w)]
+  rw [Real.dist_eq, S.abs_generationMap_sub k w x0 y0]
   calc
     S.generationRatio k w * |x0 - y0| ≤
         (Hutchinson.maxRatio S ^ k) * 1 :=

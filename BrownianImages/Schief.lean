@@ -16,7 +16,8 @@ and the union of the balls `S_w(B(x, r_h))` is a feasible open set containing `x
 
 Words are lists, `S_{[i₁,…,iₙ]} = S_{i₁} ∘ ⋯ ∘ S_{iₙ}`, so that prefixes are outer maps.
 
-* `listMap`, `listRatio`, `listInterval`: the map, ratio and interval of a word.
+* `listMap`, `listRatio`, `listSign`, `listLeft`, `listInterval`: the map, ratio,
+  orientation, left endpoint and interval of a word.
 * `Incomparable`, `exists_common_prefix_of_incomparable`: incomparable words split as a
   common prefix followed by distinct letters.
 * `IsStopping`: the stopping family at a threshold, with its finiteness and the
@@ -52,6 +53,9 @@ def listMap : List ι → ℝ → ℝ
 /-- The ratio of a word, the product of the ratios of its letters. -/
 def listRatio (w : List ι) : ℝ := (w.map S.ratio).prod
 
+/-- The orientation of a word, the product of the orientations of its letters. -/
+def listSign (w : List ι) : ℝ := (w.map S.sign).prod
+
 @[simp] theorem listMap_nil : S.listMap ([] : List ι) = id := rfl
 
 @[simp] theorem listMap_cons (i : ι) (w : List ι) :
@@ -69,6 +73,24 @@ theorem listMap_append (u v : List ι) : S.listMap (u ++ v) = S.listMap u ∘ S.
 
 theorem listRatio_append (u v : List ι) : S.listRatio (u ++ v) = S.listRatio u * S.listRatio v := by
   simp [listRatio]
+
+@[simp] theorem listSign_nil : S.listSign ([] : List ι) = 1 := by simp [listSign]
+
+@[simp] theorem listSign_cons (i : ι) (w : List ι) :
+    S.listSign (i :: w) = S.sign i * S.listSign w := by simp [listSign]
+
+theorem listSign_append (u v : List ι) : S.listSign (u ++ v) = S.listSign u * S.listSign v := by
+  simp [listSign]
+
+theorem listSign_eq (w : List ι) : S.listSign w = 1 ∨ S.listSign w = -1 := by
+  induction w with
+  | nil => exact Or.inl (by simp)
+  | cons i w ih =>
+    rw [listSign_cons]
+    rcases S.sign_eq i with h | h <;> rcases ih with h' | h' <;> simp [h, h']
+
+theorem abs_listSign (w : List ι) : |S.listSign w| = 1 := by
+  rcases S.listSign_eq w with h | h <;> simp [h]
 
 theorem listRatio_pos (w : List ι) : 0 < S.listRatio w := by
   induction w with
@@ -113,21 +135,37 @@ theorem listRatio_le_maxRatio_pow [Nonempty ι] (w : List ι) :
     exact mul_le_mul (Hutchinson.ratio_le_maxRatio S i) ih (S.listRatio_pos w).le
       (Hutchinson.maxRatio_pos S).le
 
-/-- The word's similarity is affine with slope its ratio. -/
+/-- The word's similarity is affine with slope its signed ratio. -/
 theorem listMap_sub (w : List ι) (x y : ℝ) :
-    S.listMap w x - S.listMap w y = S.listRatio w * (x - y) := by
+    S.listMap w x - S.listMap w y = S.listSign w * S.listRatio w * (x - y) := by
   induction w with
   | nil => simp
   | cons i w ih =>
-    simp only [listMap_cons, Function.comp_apply, listRatio_cons, System.map]
-    rw [show S.ratio i * S.listMap w x + S.shift i - (S.ratio i * S.listMap w y + S.shift i)
-      = S.ratio i * (S.listMap w x - S.listMap w y) by ring, ih]
+    simp only [listMap_cons, Function.comp_apply, listRatio_cons, listSign_cons]
+    rw [S.map_sub, ih]
     ring
 
+theorem abs_listSign_mul_listRatio (w : List ι) :
+    |S.listSign w * S.listRatio w| = S.listRatio w := by
+  rw [abs_mul, abs_listSign, one_mul, abs_of_pos (S.listRatio_pos w)]
+
+theorem listSign_mul_listRatio_ne_zero (w : List ι) : S.listSign w * S.listRatio w ≠ 0 := by
+  intro h
+  have := S.abs_listSign_mul_listRatio w
+  rw [h, abs_zero] at this
+  exact (S.listRatio_pos w).ne this
+
+/-- The word's similarity scales distances by its ratio. -/
+theorem abs_listMap_sub (w : List ι) (x y : ℝ) :
+    |S.listMap w x - S.listMap w y| = S.listRatio w * |x - y| := by
+  rw [listMap_sub, abs_mul, abs_listSign_mul_listRatio]
+
 theorem listMap_apply (w : List ι) (x : ℝ) :
-    S.listMap w x = S.listMap w 0 + S.listRatio w * x := by
-  have := S.listMap_sub w x 0
-  linarith
+    S.listMap w x = S.listMap w 0 + S.listSign w * S.listRatio w * x := by
+  linear_combination S.listMap_sub w x 0
+
+theorem listMap_injective (w : List ι) : Function.Injective (S.listMap w) :=
+  injective_of_affine (S.listMap_sub w) (S.listSign_mul_listRatio_ne_zero w)
 
 theorem listMap_mapsTo_unitInterval (w : List ι) :
     MapsTo (S.listMap w) (Icc (0:ℝ) 1) (Icc 0 1) := by
@@ -135,25 +173,25 @@ theorem listMap_mapsTo_unitInterval (w : List ι) :
   | nil => exact mapsTo_id _
   | cons i w ih => exact (S.mapsTo i).comp ih
 
-/-- The interval `I_w = S_w[0,1]` of a word. -/
-def listInterval (w : List ι) : Set ℝ := Icc (S.listMap w 0) (S.listMap w 0 + S.listRatio w)
+/-- The left endpoint `ℓ_w = min(S_w(0), S_w(1))` of the interval `I_w`, in closed form. -/
+noncomputable def listLeft (w : List ι) : ℝ :=
+  S.listMap w 0 + (S.listSign w - 1) / 2 * S.listRatio w
+
+theorem listLeft_eq_min (w : List ι) : S.listLeft w = min (S.listMap w 0) (S.listMap w 1) :=
+  (min_eq_of_affine (S.listMap_sub w) (S.listSign_eq w) (S.listRatio_pos w)).symm
+
+/-- `S_w(x) = ℓ_w + r_w ((1 - ε_w)/2 + ε_w x)`. -/
+theorem listMap_eq_listLeft_add (w : List ι) (x : ℝ) :
+    S.listMap w x = S.listLeft w + S.listRatio w * ((1 - S.listSign w) / 2 + S.listSign w * x) :=
+  eq_left_add_of_affine (S.listMap_sub w) x
+
+/-- The interval `I_w = S_w[0,1] = [ℓ_w, ℓ_w + r_w]` of a word. -/
+noncomputable def listInterval (w : List ι) : Set ℝ :=
+  Icc (S.listLeft w) (S.listLeft w + S.listRatio w)
 
 theorem listMap_image_unitInterval (w : List ι) :
-    S.listMap w '' Icc (0:ℝ) 1 = S.listInterval w := by
-  ext y
-  constructor
-  · rintro ⟨t, ⟨ht0, ht1⟩, rfl⟩
-    rw [listMap_apply]
-    have hr := S.listRatio_pos w
-    constructor <;> nlinarith
-  · rintro ⟨hy0, hy1⟩
-    have hr := S.listRatio_pos w
-    refine ⟨(y - S.listMap w 0) / S.listRatio w, ⟨by positivity, ?_⟩, ?_⟩
-    · rw [div_le_one hr]
-      linarith
-    · rw [listMap_apply]
-      field_simp
-      ring
+    S.listMap w '' Icc (0:ℝ) 1 = S.listInterval w :=
+  image_unitInterval_of_affine (S.listMap_sub w) (S.listSign_eq w) (S.listRatio_pos w)
 
 theorem listInterval_append_subset (u v : List ι) :
     S.listInterval (u ++ v) ⊆ S.listInterval u := by
@@ -173,8 +211,8 @@ theorem mem_listInterval_of_mem_image {w : List ι} {K : Set ℝ} (hK : K ⊆ Ic
 /-- Points of the intervals of two words are at least the gap apart. -/
 theorem listInterval_dist {i j : List ι} {x y : ℝ} (hx : x ∈ S.listInterval i)
     (hy : y ∈ S.listInterval j) :
-    max (S.listMap j 0 - (S.listMap i 0 + S.listRatio i))
-      (S.listMap i 0 - (S.listMap j 0 + S.listRatio j)) ≤ |x - y| := by
+    max (S.listLeft j - (S.listLeft i + S.listRatio i))
+      (S.listLeft i - (S.listLeft j + S.listRatio j)) ≤ |x - y| := by
   obtain ⟨hx0, hx1⟩ := hx
   obtain ⟨hy0, hy1⟩ := hy
   rcases le_total x y with h | h
@@ -228,12 +266,7 @@ theorem IsFeasible.disjoint_listMap_image {U : Set ℝ} (hU : S.IsFeasible U) {i
     | nil => exact mapsTo_id U
     | cons k w ih => exact (hU.mapsTo k).comp ih
   rw [listMap_append, listMap_append, Set.image_comp, Set.image_comp]
-  refine Set.disjoint_image_of_injective ?_ ?_
-  · intro x y hxy
-    have := S.listMap_sub u x y
-    rw [hxy, sub_self] at this
-    have hr := S.listRatio_pos u
-    nlinarith [mul_pos hr (show (0:ℝ) < 1 by norm_num)]
+  refine Set.disjoint_image_of_injective (S.listMap_injective u) ?_
   · rw [listMap_cons, listMap_cons, Set.image_comp, Set.image_comp]
     exact Set.disjoint_of_subset (Set.image_mono (hmaps i').image_subset)
       (Set.image_mono (hmaps j').image_subset) (hU.disjoint a b hab)
@@ -273,35 +306,10 @@ theorem IsAttractor.eq_iUnion_listMap_image {K : Set ℝ} (hK : S.IsAttractor K)
       obtain ⟨w, -, hxw⟩ := hx
       exact hK.listMap_image_subset S w hxw
 
-theorem listMap_image_Ioo (w : List ι) (a b : ℝ) :
-    S.listMap w '' Ioo a b = Ioo (S.listMap w a) (S.listMap w b) := by
-  have hr := S.listRatio_pos w
-  ext y
-  constructor
-  · rintro ⟨t, ⟨hat, htb⟩, rfl⟩
-    have h1 := S.listMap_sub w t a
-    have h2 := S.listMap_sub w b t
-    constructor <;> nlinarith
-  · rintro ⟨hy0, hy1⟩
-    have hab := S.listMap_sub w b a
-    refine ⟨a + (y - S.listMap w a) / S.listRatio w, ⟨?_, ?_⟩, ?_⟩
-    · have : 0 < (y - S.listMap w a) / S.listRatio w := div_pos (by linarith) hr
-      linarith
-    · have : (y - S.listMap w a) / S.listRatio w < b - a := by
-        rw [div_lt_iff₀ hr]
-        linarith
-      linarith
-    · have := S.listMap_sub w (a + (y - S.listMap w a) / S.listRatio w) a
-      rw [add_sub_cancel_left, mul_div_cancel₀ _ hr.ne'] at this
-      linarith
-
 theorem listMap_image_ball (w : List ι) (x ε : ℝ) :
     S.listMap w '' Metric.ball x ε = Metric.ball (S.listMap w x) (S.listRatio w * ε) := by
-  rw [Real.ball_eq_Ioo, Real.ball_eq_Ioo, listMap_image_Ioo]
-  have h1 := S.listMap_sub w x (x - ε)
-  have h2 := S.listMap_sub w (x + ε) x
-  congr 1 <;> linarith [show S.listRatio w * (x - (x - ε)) = S.listRatio w * ε by ring,
-    show S.listRatio w * (x + ε - x) = S.listRatio w * ε by ring]
+  rw [image_ball_of_affine (S.listMap_sub w) (S.listSign_mul_listRatio_ne_zero w),
+    abs_listSign_mul_listRatio]
 
 /-! ### The stopping family -/
 
@@ -402,17 +410,32 @@ theorem IsAttractor.exists_isStopping_mem [Nonempty ι] {K : Set ℝ} (hK : S.Is
 /-! ### The neighbour sets -/
 
 /-- The gap between the intervals of two words, negative when they overlap. -/
-def listGap (i j : List ι) : ℝ :=
-  max (S.listMap j 0 - (S.listMap i 0 + S.listRatio i))
-    (S.listMap i 0 - (S.listMap j 0 + S.listRatio j))
+noncomputable def listGap (i j : List ι) : ℝ :=
+  max (S.listLeft j - (S.listLeft i + S.listRatio i))
+    (S.listLeft i - (S.listLeft j + S.listRatio j))
+
+/-- The left endpoint of `I_{ui}` is the image of `ℓ_i` under `S_u` when `S_u` preserves
+orientation, and the image of `ℓ_i + r_i` when it reverses it. -/
+theorem listLeft_append (u i : List ι) :
+    S.listLeft (u ++ i) =
+      S.listMap u (S.listLeft i) + (S.listSign u - 1) / 2 * (S.listRatio u * S.listRatio i) := by
+  unfold listLeft
+  rw [listMap_append, Function.comp_apply, listSign_append, listRatio_append,
+    S.listMap_apply u (S.listMap i 0),
+    S.listMap_apply u (S.listMap i 0 + (S.listSign i - 1) / 2 * S.listRatio i)]
+  ring
 
 theorem listGap_append (u i j : List ι) :
     S.listGap (u ++ i) (u ++ j) = S.listRatio u * S.listGap i j := by
   unfold listGap
-  rw [listMap_append, listMap_append, listRatio_append, listRatio_append, Function.comp_apply,
-    Function.comp_apply, S.listMap_apply u (S.listMap i 0), S.listMap_apply u (S.listMap j 0),
-    mul_max_of_nonneg _ _ (S.listRatio_pos u).le]
-  congr 1 <;> ring
+  rw [listLeft_append, listLeft_append, listRatio_append, listRatio_append,
+    S.listMap_apply u (S.listLeft i), S.listMap_apply u (S.listLeft j)]
+  have hu := S.listRatio_pos u
+  rcases S.listSign_eq u with h | h
+  · rw [h, mul_max_of_nonneg _ _ hu.le]
+    congr 1 <;> ring
+  · rw [h, mul_max_of_nonneg _ _ hu.le, max_comm]
+    congr 1 <;> ring
 
 /-- The neighbours of a word `i`: the stopping words at the scale of `i` whose interval
 lies within `3 r_i` of `I_i`, together with `i` itself. -/
@@ -482,7 +505,7 @@ theorem IsFeasible.exists_neighbours_ncard_le [Nonempty ι] {U : Set ℝ} (hU : 
   have hA₀0 : 0 ≤ A₀ := le_trans (abs_nonneg a) (le_max_left _ _)
   have hrmin := S.minRatio_pos
   have hba : 0 < b - a := by linarith
-  set X : ℝ := (9 + 2 * A₀) / (S.minRatio * (b - a)) with hX
+  set X : ℝ := (10 + 2 * A₀) / (S.minRatio * (b - a)) with hX
   refine ⟨⌈X⌉₊ + 1, fun i => ?_⟩
   set ri : ℝ := S.listRatio i with hri
   have hri0 : 0 < ri := S.listRatio_pos i
@@ -496,21 +519,22 @@ theorem IsFeasible.exists_neighbours_ncard_le [Nonempty ι] {U : Set ℝ} (hU : 
     · exact Set.mem_insert_of_mem _ ⟨h1, h2⟩
   have hncard : (S.neighbours i).ncard ≤ Tset.ncard + 1 :=
     (Set.ncard_le_ncard hsub (hTfin.insert i)).trans (Set.ncard_insert_le i Tset)
-  -- the images of `(a, b)`
-  have himg : ∀ j : List ι, Ioo (S.listMap j a) (S.listMap j a + S.listRatio j * (b - a))
-      = S.listMap j '' Ioo a b := by
+  -- the images of `(a, b) = B(z, ε)` are balls
+  have hIoo : Ioo a b = Metric.ball z ε := by rw [Real.ball_eq_Ioo]
+  have himg : ∀ j : List ι, Ioo (S.listMap j z - S.listRatio j * ε)
+      (S.listMap j z - S.listRatio j * ε + S.listRatio j * (b - a)) = S.listMap j '' Ioo a b := by
     intro j
-    rw [listMap_image_Ioo]
+    rw [hIoo, listMap_image_ball, Real.ball_eq_Ioo]
     congr 1
-    have := S.listMap_sub j b a
-    linarith
-  have hpack := card_mul_le_of_pairwiseDisjoint_Ioo T (fun j => S.listMap j a)
+    rw [ha, hb]
+    ring
+  have hpack := card_mul_le_of_pairwiseDisjoint_Ioo T (fun j => S.listMap j z - S.listRatio j * ε)
     (fun j => S.listRatio j * (b - a)) (ℓ := S.minRatio * ri * (b - a))
-    (lo := S.listMap i 0 - (4 + A₀) * ri) (hi := S.listMap i 0 + (5 + A₀) * ri)
+    (lo := S.listLeft i - (5 + A₀) * ri) (hi := S.listLeft i + (5 + A₀) * ri)
     (by nlinarith) ?_ ?_ ?_
   · have hcardX : (T.card : ℝ) ≤ X := by
       rw [hX, le_div_iff₀ (mul_pos hrmin hba)]
-      have : (T.card : ℝ) * (S.minRatio * ri * (b - a)) ≤ (9 + 2 * A₀) * ri := by
+      have : (T.card : ℝ) * (S.minRatio * ri * (b - a)) ≤ (10 + 2 * A₀) * ri := by
         linarith
       nlinarith
     have hnat : T.card ≤ ⌈X⌉₊ := by exact_mod_cast hcardX.trans (Nat.le_ceil X)
@@ -528,17 +552,32 @@ theorem IsFeasible.exists_neighbours_ncard_le [Nonempty ι] {U : Set ℝ} (hU : 
   · intro j hj y hy
     rw [hT, Set.Finite.mem_toFinset] at hj
     obtain ⟨⟨hr1, -⟩, hgap⟩ := hj
-    obtain ⟨hy0, hy1⟩ := hy
+    rw [himg] at hy
+    obtain ⟨t, ⟨hat, htb⟩, rfl⟩ := hy
     have hgap' := max_le_iff.mp hgap
-    have hja := S.listMap_apply j a
     have hrj := S.listRatio_pos j
-    have hta : |a| ≤ A₀ := le_max_left _ _
-    have htb : |b| ≤ A₀ := le_max_right _ _
-    have hta' := abs_le.mp hta
-    have htb' := abs_le.mp htb
-    have hrA : S.listRatio j * A₀ ≤ ri * A₀ := mul_le_mul_of_nonneg_right hr1 hA₀0
-    constructor <;> nlinarith [mul_le_mul_of_nonneg_left hta'.2 hrj.le,
-      mul_le_mul_of_nonneg_left htb'.2 hrj.le, mul_le_mul_of_nonneg_left hta'.1 hrj.le]
+    have hta : |t| ≤ A₀ := by
+      rw [hA₀]
+      rcases le_or_gt 0 t with ht | ht
+      · rw [abs_of_nonneg ht]
+        exact le_trans (le_trans htb.le (le_abs_self b)) (le_max_right _ _)
+      · rw [abs_of_neg ht]
+        have := neg_le_abs a
+        exact le_trans (by linarith : -t ≤ |a|) (le_max_left _ _)
+    have hcoef : |(1 - S.listSign j) / 2 + S.listSign j * t| ≤ 1 + A₀ := by
+      have h1 : |(1 - S.listSign j) / 2| ≤ 1 := by
+        rcases S.listSign_eq j with h | h <;> rw [h] <;> norm_num
+      calc |(1 - S.listSign j) / 2 + S.listSign j * t|
+          ≤ |(1 - S.listSign j) / 2| + |S.listSign j * t| := abs_add_le _ _
+        _ ≤ 1 + A₀ := by
+          rw [abs_mul, S.abs_listSign, one_mul]
+          linarith
+    have hrt : |S.listRatio j * ((1 - S.listSign j) / 2 + S.listSign j * t)| ≤ ri * (1 + A₀) := by
+      rw [abs_mul, abs_of_pos hrj]
+      exact mul_le_mul hr1 hcoef (abs_nonneg _) hri0.le
+    have hrt' := abs_le.mp hrt
+    rw [S.listMap_eq_listLeft_add]
+    constructor <;> nlinarith
 
 /-- Some word has the most neighbours. -/
 theorem IsFeasible.exists_neighbours_max [Nonempty ι] {U : Set ℝ} (hU : S.IsFeasible U) :
@@ -638,8 +677,8 @@ theorem IsFeasible.exists_separated_point [Nonempty ι] {U : Set ℝ} (hU : S.Is
   have h1 := key a b i' j' hab
   have h2 := key b a j' i' hab.symm
   rw [abs_sub_comm] at h2
-  rw [listMap_append, listMap_append, Function.comp_apply, Function.comp_apply, listMap_sub,
-    abs_mul, abs_of_pos (S.listRatio_pos u), listRatio_append, listRatio_append]
+  rw [listMap_append, listMap_append, Function.comp_apply, Function.comp_apply, abs_listMap_sub,
+    listRatio_append, listRatio_append]
   have hu := S.listRatio_pos u
   have hD := abs_nonneg (S.listMap (a :: i') (S.listMap h z) - S.listMap (b :: j') (S.listMap h z))
   have h3 : S.listRatio h * (S.listRatio (a :: i') + S.listRatio (b :: j'))

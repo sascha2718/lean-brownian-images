@@ -55,29 +55,33 @@ theorem mapsTo_stoppingMap_unitInterval :
       (mapsTo_stoppingMap_unitInterval k w.1).comp (S.mapsTo w.2)
 
 omit [Nonempty iota] in
-/-- The prefix map has the product contraction ratio recorded by
-`generationRatio`. -/
+/-- The prefix map has the signed product contraction ratio recorded by
+`generationSign` and `generationRatio`. -/
 theorem stoppingMap_sub :
     ∀ (k : ℕ) (w : GenerationWord iota k) (x y : ℝ),
       S.stoppingMap k w x - S.stoppingMap k w y =
-        S.generationRatio k w * (x - y)
-  | 0, _, x, y => by simp [stoppingMap, generationRatio]
+        S.generationSign k w * S.generationRatio k w * (x - y)
+  | 0, _, x, y => by simp [stoppingMap, generationRatio, generationSign]
   | Nat.succ k, ⟨w, i⟩, x, y => by
       change
         S.stoppingMap k w (S.map i x) - S.stoppingMap k w (S.map i y) =
-          (S.generationRatio k w * S.ratio i) * (x - y)
-      rw [stoppingMap_sub k w]
-      simp only [System.map]
+          (S.generationSign k w * S.sign i) * (S.generationRatio k w * S.ratio i) * (x - y)
+      rw [stoppingMap_sub k w, S.map_sub]
       ring
+
+omit [Nonempty iota] in
+/-- A prefix map scales distances by its product ratio. -/
+theorem abs_stoppingMap_sub (k : ℕ) (w : GenerationWord iota k) (x y : ℝ) :
+    |S.stoppingMap k w x - S.stoppingMap k w y| = S.generationRatio k w * |x - y| := by
+  rw [stoppingMap_sub, abs_mul, abs_generationSign_mul_generationRatio]
 
 omit [Nonempty iota] in
 /-- Affine normal form of a prefix map. -/
 theorem stoppingMap_eq_zero_add_ratio_mul
     (k : ℕ) (w : GenerationWord iota k) (x : ℝ) :
     S.stoppingMap k w x = S.stoppingMap k w 0 +
-      S.generationRatio k w * x := by
-  have h := S.stoppingMap_sub k w x 0
-  simpa [add_comm] using (sub_eq_iff_eq_add.mp h)
+      S.generationSign k w * S.generationRatio k w * x := by
+  linear_combination S.stoppingMap_sub k w x 0
 
 /-- The nested compact cylinder associated to a stopping word. -/
 def IsAttractor.stoppingCylinder {K : Set ℝ} (hK : S.IsAttractor K)
@@ -134,21 +138,89 @@ def stoppingRatio (w : StoppingWord iota) : ℝ :=
 def stoppingWeight (s : ℝ) (w : StoppingWord iota) : ℝ :=
   S.generationWeight s w.1 w.2
 
-/-- Left endpoint of a stopping cylinder, bundled as a nonnegative time. -/
+/-- Orientation of an arbitrary finite word. -/
+def stoppingSign (w : StoppingWord iota) : ℝ :=
+  S.generationSign w.1 w.2
+
+omit [Nonempty iota] in
+/-- The orientation of a word is `1` or `-1`. -/
+theorem stoppingSign_eq (w : StoppingWord iota) :
+    S.stoppingSign w = 1 ∨ S.stoppingSign w = -1 :=
+  S.generationSign_eq w.1 w.2
+
+omit [Nonempty iota] in
+/-- The orientation of a word has modulus one. -/
+theorem abs_stoppingSign (w : StoppingWord iota) : |S.stoppingSign w| = 1 :=
+  S.abs_generationSign w.1 w.2
+
+/-- The left endpoint `min(S_w(0), S_w(1))` of the host interval `S_w([0,1])` of a
+stopping cylinder, in closed form. -/
+def stoppingLeft (w : StoppingWord iota) : ℝ :=
+  S.stoppingMap w.1 w.2 0 + (S.stoppingSign w - 1) / 2 * S.stoppingRatio w
+
+omit [Nonempty iota] in
+/-- The left endpoint is the smaller endpoint image. -/
+theorem stoppingLeft_eq_min (w : StoppingWord iota) :
+    S.stoppingLeft w = min (S.stoppingMap w.1 w.2 0) (S.stoppingMap w.1 w.2 1) :=
+  (min_eq_of_affine (S.stoppingMap_sub w.1 w.2) (S.stoppingSign_eq w)
+    (S.generationRatio_pos w.1 w.2)).symm
+
+omit [Nonempty iota] in
+/-- The right endpoint `ℓ_w + r_w` is the larger endpoint image. -/
+theorem stoppingLeft_add_eq_max (w : StoppingWord iota) :
+    S.stoppingLeft w + S.stoppingRatio w =
+      max (S.stoppingMap w.1 w.2 0) (S.stoppingMap w.1 w.2 1) :=
+  (max_eq_of_affine (S.stoppingMap_sub w.1 w.2) (S.stoppingSign_eq w)
+    (S.generationRatio_pos w.1 w.2)).symm
+
+omit [Nonempty iota] in
+/-- The host interval `S_w([0,1]) = [ℓ_w, ℓ_w + r_w]`. -/
+theorem stoppingMap_image_unitInterval (w : StoppingWord iota) :
+    S.stoppingMap w.1 w.2 '' Set.Icc (0:ℝ) 1 =
+      Set.Icc (S.stoppingLeft w) (S.stoppingLeft w + S.stoppingRatio w) :=
+  image_unitInterval_of_affine (S.stoppingMap_sub w.1 w.2) (S.stoppingSign_eq w)
+    (S.generationRatio_pos w.1 w.2)
+
+omit [Nonempty iota] in
+/-- `S_w(x) = ℓ_w + r_w ((1 - ε_w)/2 + ε_w x)`: the orientation-preserving similarity onto
+the host interval, preceded by the reflection `x ↦ 1 - x` when `S_w` reverses
+orientation. -/
+theorem stoppingMap_eq_left_add (w : StoppingWord iota) (x : ℝ) :
+    S.stoppingMap w.1 w.2 x =
+      S.stoppingLeft w + S.stoppingRatio w * ((1 - S.stoppingSign w) / 2 + S.stoppingSign w * x) :=
+  eq_left_add_of_affine (S.stoppingMap_sub w.1 w.2) x
+
+omit [Nonempty iota] in
+/-- The left endpoint of a host interval is non-negative. -/
+theorem stoppingLeft_nonneg (w : StoppingWord iota) : 0 ≤ S.stoppingLeft w := by
+  rw [stoppingLeft_eq_min]
+  exact le_min
+    (S.mapsTo_stoppingMap_unitInterval w.1 w.2 (show (0 : ℝ) ∈ Set.Icc 0 1 by simp)).1
+    (S.mapsTo_stoppingMap_unitInterval w.1 w.2 (show (1 : ℝ) ∈ Set.Icc 0 1 by simp)).1
+
+omit [Nonempty iota] in
+/-- A host interval ends at or before `1`. -/
+theorem stoppingLeft_add_le_one (w : StoppingWord iota) :
+    S.stoppingLeft w + S.stoppingRatio w ≤ 1 := by
+  rw [stoppingLeft_add_eq_max]
+  exact max_le
+    (S.mapsTo_stoppingMap_unitInterval w.1 w.2 (show (0 : ℝ) ∈ Set.Icc 0 1 by simp)).2
+    (S.mapsTo_stoppingMap_unitInterval w.1 w.2 (show (1 : ℝ) ∈ Set.Icc 0 1 by simp)).2
+
+/-- Left endpoint of the host interval of a stopping cylinder, bundled as a nonnegative
+time. -/
 def stoppingAnchor (w : StoppingWord iota) : NNReal :=
-  ⟨S.stoppingMap w.1 w.2 0,
-    (S.mapsTo_stoppingMap_unitInterval w.1 w.2
-      (show (0 : ℝ) ∈ Set.Icc 0 1 by simp)).1⟩
+  ⟨S.stoppingLeft w, S.stoppingLeft_nonneg w⟩
 
 /-- Length of the host interval of a stopping cylinder. -/
 def stoppingLength (w : StoppingWord iota) : NNReal :=
   ⟨S.stoppingRatio w, (S.generationRatio_pos w.1 w.2).le⟩
 
 omit [Nonempty iota] in
-/-- The stopping anchor is the image of `0` under the word's map. -/
+/-- The stopping anchor is the left endpoint of the host interval. -/
 @[simp]
 theorem coe_stoppingAnchor (w : StoppingWord iota) :
-    (S.stoppingAnchor w : ℝ) = S.stoppingMap w.1 w.2 0 := rfl
+    (S.stoppingAnchor w : ℝ) = S.stoppingLeft w := rfl
 
 omit [Nonempty iota] in
 /-- The stopping length is the product ratio of the word. -/

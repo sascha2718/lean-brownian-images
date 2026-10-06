@@ -1,5 +1,5 @@
 /-
-`sec:renewal`: the theory of strongly separated self-similar systems on `[0,1]` and
+`sec:renewal`: the theory of strongly separated self-similar IFSs on `[0,1]` and
 their natural `s`-dimensional measures.
 
 The objects themselves, `System` with `IsAttractor`, `StronglySeparated`,
@@ -8,7 +8,14 @@ The objects themselves, `System` with `IsAttractor`, `StronglySeparated`,
 `Defs.lean`, where `Challenge.lean` can copy them.  This module carries what the
 proofs need beyond the definitions:
 
+* `abs_sub_of_affine`, `image_Icc_of_affine`, `image_Ioo_of_affine`,
+  `image_ball_of_affine`, `preimage_closedBall_of_affine`: the elementary geometry of an
+  affine map of the line with non-zero slope, shared by every composition of similarities.
 * `measurable_map`, the `IsNatural` extractors and `logRatio_pos`.
+* `abs_sign`, `map_sub`, `abs_map_sub`, `map_injective`, `inv`: the orientation of a
+  similarity, its signed slope `ε_i r_i`, and its inverse.
+* `left`, `map_image_unitInterval`: the left endpoint `ℓ_i = min(S_i(0), S_i(1))` of the
+  first-level interval `S_i([0,1]) = [ℓ_i, ℓ_i + r_i]`.
 * `log_two_pos`, `log_inv_pos`, `homogeneousDim_pos`, `homogeneousDim_lt_one`,
   `rpow_homogeneousDim`: the similarity dimension `log 2 / log(1/λ)` of the homogeneous
   system and its elementary bounds.
@@ -32,6 +39,181 @@ theorem log_two_pos : 0 < Real.log 2 := Real.log_pos (by norm_num)
 
 open MeasureTheory
 
+/-! ### Affine maps of the line -/
+
+section Affine
+
+variable {f : ℝ → ℝ} {a : ℝ}
+
+/-- An affine map of slope `a` scales distances by `|a|`. -/
+theorem abs_sub_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (x y : ℝ) :
+    |f x - f y| = |a| * |x - y| := by
+  rw [hf, abs_mul]
+
+/-- An affine map of non-zero slope is injective. -/
+theorem injective_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (ha : a ≠ 0) :
+    Function.Injective f := by
+  intro x y hxy
+  have h := hf x y
+  rw [hxy, sub_self] at h
+  rcases mul_eq_zero.mp h.symm with h0 | h0
+  · exact absurd h0 ha
+  · exact sub_eq_zero.mp h0
+
+/-- The image of a closed interval under an affine map of non-zero slope. -/
+theorem image_Icc_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (ha : a ≠ 0) {c d : ℝ}
+    (hcd : c ≤ d) : f '' Set.Icc c d = Set.Icc (min (f c) (f d)) (max (f c) (f d)) := by
+  have hfc : ∀ x, f x = a * (x - c) + f c := fun x => by linarith [hf x c]
+  have hdc : f d - f c = a * (d - c) := hf d c
+  rcases lt_or_gt_of_ne ha with ha | ha
+  · have hle : f d ≤ f c := by nlinarith
+    rw [min_eq_right hle, max_eq_left hle]
+    ext y
+    constructor
+    · rintro ⟨x, ⟨hx0, hx1⟩, rfl⟩
+      rw [hfc x]
+      constructor <;> nlinarith
+    · rintro ⟨hy0, hy1⟩
+      refine ⟨c + (y - f c) / a, ⟨?_, ?_⟩, ?_⟩
+      · have : 0 ≤ (y - f c) / a := div_nonneg_of_nonpos (by linarith) ha.le
+        linarith
+      · have : (y - f c) / a ≤ d - c := by
+          rw [div_le_iff_of_neg ha]
+          linarith
+        linarith
+      · rw [hfc]
+        field_simp
+        ring
+  · have hle : f c ≤ f d := by nlinarith
+    rw [min_eq_left hle, max_eq_right hle]
+    ext y
+    constructor
+    · rintro ⟨x, ⟨hx0, hx1⟩, rfl⟩
+      rw [hfc x]
+      constructor <;> nlinarith
+    · rintro ⟨hy0, hy1⟩
+      refine ⟨c + (y - f c) / a, ⟨?_, ?_⟩, ?_⟩
+      · have : 0 ≤ (y - f c) / a := div_nonneg (by linarith) ha.le
+        linarith
+      · have : (y - f c) / a ≤ d - c := by
+          rw [div_le_iff₀ ha]
+          linarith
+        linarith
+      · rw [hfc]
+        field_simp
+        ring
+
+/-- The image of an open interval under an affine map of non-zero slope. -/
+theorem image_Ioo_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (ha : a ≠ 0) {c d : ℝ}
+    (hcd : c ≤ d) : f '' Set.Ioo c d = Set.Ioo (min (f c) (f d)) (max (f c) (f d)) := by
+  have hfc : ∀ x, f x = a * (x - c) + f c := fun x => by linarith [hf x c]
+  have hdc : f d - f c = a * (d - c) := hf d c
+  rcases hcd.lt_or_eq with hcd | rfl
+  swap
+  · simp
+  rcases lt_or_gt_of_ne ha with ha | ha
+  · have hle : f d ≤ f c := by nlinarith
+    rw [min_eq_right hle, max_eq_left hle]
+    ext y
+    constructor
+    · rintro ⟨x, ⟨hx0, hx1⟩, rfl⟩
+      rw [hfc x]
+      constructor <;> nlinarith
+    · rintro ⟨hy0, hy1⟩
+      refine ⟨c + (y - f c) / a, ⟨?_, ?_⟩, ?_⟩
+      · have : 0 < (y - f c) / a := div_pos_of_neg_of_neg (by linarith) ha
+        linarith
+      · have : (y - f c) / a < d - c := by
+          rw [div_lt_iff_of_neg ha]
+          linarith
+        linarith
+      · rw [hfc]
+        field_simp
+        ring
+  · have hle : f c ≤ f d := by nlinarith
+    rw [min_eq_left hle, max_eq_right hle]
+    ext y
+    constructor
+    · rintro ⟨x, ⟨hx0, hx1⟩, rfl⟩
+      rw [hfc x]
+      constructor <;> nlinarith
+    · rintro ⟨hy0, hy1⟩
+      refine ⟨c + (y - f c) / a, ⟨?_, ?_⟩, ?_⟩
+      · have : 0 < (y - f c) / a := div_pos (by linarith) ha
+        linarith
+      · have : (y - f c) / a < d - c := by
+          rw [div_lt_iff₀ ha]
+          linarith
+        linarith
+      · rw [hfc]
+        field_simp
+        ring
+
+/-- The image of an open ball under an affine map of non-zero slope. -/
+theorem image_ball_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (ha : a ≠ 0) (x ε : ℝ) :
+    f '' Metric.ball x ε = Metric.ball (f x) (|a| * ε) := by
+  rcases le_or_gt ε 0 with hε | hε
+  · rw [Metric.ball_eq_empty.mpr hε, Set.image_empty, Metric.ball_eq_empty.mpr]
+    exact mul_nonpos_of_nonneg_of_nonpos (abs_nonneg a) hε
+  rw [Real.ball_eq_Ioo, Real.ball_eq_Ioo, image_Ioo_of_affine hf ha (by linarith)]
+  have h1 := hf x (x - ε)
+  have h2 := hf (x + ε) x
+  rcases lt_or_gt_of_ne ha with ha' | ha'
+  · rw [abs_of_neg ha', min_eq_right (by nlinarith), max_eq_left (by nlinarith)]
+    congr 1 <;> linarith
+  · rw [abs_of_pos ha', min_eq_left (by nlinarith), max_eq_right (by nlinarith)]
+    congr 1 <;> linarith
+
+/-- The preimage of a closed ball centred at `f x` under an affine map of slope `a ≠ 0`
+is the closed ball of radius `δ/|a|` at `x`. -/
+theorem preimage_closedBall_of_affine (hf : ∀ x y, f x - f y = a * (x - y)) (ha : a ≠ 0)
+    (x δ : ℝ) : f ⁻¹' Metric.closedBall (f x) δ = Metric.closedBall x (δ / |a|) := by
+  have ha' : 0 < |a| := abs_pos.mpr ha
+  ext y
+  simp only [Set.mem_preimage, Metric.mem_closedBall, Real.dist_eq, abs_sub_of_affine hf,
+    le_div_iff₀ ha', mul_comm]
+
+variable {σ ρ : ℝ}
+
+/-- For an affine map of slope `σρ` with `σ = ±1` and `ρ > 0`, the smaller endpoint image
+`min(f(0), f(1))` in closed form. -/
+theorem min_eq_of_affine (hf : ∀ x y, f x - f y = σ * ρ * (x - y)) (hσ : σ = 1 ∨ σ = -1)
+    (hρ : 0 < ρ) : min (f 0) (f 1) = f 0 + (σ - 1) / 2 * ρ := by
+  have h := hf 1 0
+  rcases hσ with rfl | rfl
+  · rw [min_eq_left (by nlinarith)]
+    ring
+  · rw [min_eq_right (by nlinarith)]
+    linarith
+
+/-- The larger endpoint image `max(f(0), f(1))` in closed form. -/
+theorem max_eq_of_affine (hf : ∀ x y, f x - f y = σ * ρ * (x - y)) (hσ : σ = 1 ∨ σ = -1)
+    (hρ : 0 < ρ) : max (f 0) (f 1) = f 0 + (σ - 1) / 2 * ρ + ρ := by
+  have h := hf 1 0
+  rcases hσ with rfl | rfl
+  · rw [max_eq_right (by nlinarith)]
+    linarith
+  · rw [max_eq_left (by nlinarith)]
+    ring
+
+/-- The image of `[0,1]` under an affine map of slope `σρ`, `σ = ±1`, `ρ > 0`, is the
+interval of length `ρ` starting at `min(f(0), f(1))`. -/
+theorem image_unitInterval_of_affine (hf : ∀ x y, f x - f y = σ * ρ * (x - y))
+    (hσ : σ = 1 ∨ σ = -1) (hρ : 0 < ρ) :
+    f '' Set.Icc (0:ℝ) 1 = Set.Icc (f 0 + (σ - 1) / 2 * ρ) (f 0 + (σ - 1) / 2 * ρ + ρ) := by
+  have hne : σ * ρ ≠ 0 := mul_ne_zero (by rcases hσ with rfl | rfl <;> norm_num) hρ.ne'
+  rw [image_Icc_of_affine hf hne zero_le_one, min_eq_of_affine hf hσ hρ,
+    max_eq_of_affine hf hσ hρ]
+
+/-- An affine map of slope `σρ` is the orientation-preserving similarity of ratio `ρ` onto
+its interval, preceded by the reflection `x ↦ 1 - x` when `σ = -1`:
+`f(x) = ℓ + ρ ((1 - σ)/2 + σ x)` with `ℓ = f(0) + (σ - 1) ρ / 2`. -/
+theorem eq_left_add_of_affine (hf : ∀ x y, f x - f y = σ * ρ * (x - y)) (x : ℝ) :
+    f x = (f 0 + (σ - 1) / 2 * ρ) + ρ * ((1 - σ) / 2 + σ * x) := by
+  linear_combination hf x 0
+
+end Affine
+
 namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
@@ -39,6 +221,135 @@ variable {ι : Type*} [Fintype ι] (S : System ι)
 /-- Every map of a system is measurable, being affine. -/
 theorem measurable_map (i : ι) : Measurable (S.map i) := by
   unfold map; fun_prop
+
+/-! ### Orientation -/
+
+/-- The orientation of a similarity has modulus one. -/
+theorem abs_sign (i : ι) : |S.sign i| = 1 := by
+  rcases S.sign_eq i with h | h <;> simp [h]
+
+/-- The orientation of a similarity is non-zero. -/
+theorem sign_ne_zero (i : ι) : S.sign i ≠ 0 := by
+  rcases S.sign_eq i with h | h <;> simp [h]
+
+/-- The orientation squares to one. -/
+theorem sign_mul_self (i : ι) : S.sign i * S.sign i = 1 := by
+  rcases S.sign_eq i with h | h <;> simp [h]
+
+/-- The signed ratio `ε_i r_i` has modulus `r_i`. -/
+theorem abs_sign_mul_ratio (i : ι) : |S.sign i * S.ratio i| = S.ratio i := by
+  rw [abs_mul, abs_sign, one_mul, abs_of_pos (S.ratio_pos i)]
+
+/-- The signed ratio is non-zero. -/
+theorem sign_mul_ratio_ne_zero (i : ι) : S.sign i * S.ratio i ≠ 0 :=
+  mul_ne_zero (S.sign_ne_zero i) (S.ratio_pos i).ne'
+
+/-- `S_i` is affine with slope the signed ratio `ε_i r_i`. -/
+theorem map_sub (i : ι) (x y : ℝ) :
+    S.map i x - S.map i y = S.sign i * S.ratio i * (x - y) := by
+  simp only [map]; ring
+
+/-- `S_i` scales distances by `r_i`, whatever its orientation. -/
+theorem abs_map_sub (i : ι) (x y : ℝ) : |S.map i x - S.map i y| = S.ratio i * |x - y| := by
+  rw [abs_sub_of_affine (S.map_sub i), abs_sign_mul_ratio]
+
+/-- `S_i` scales distances by `r_i`. -/
+theorem dist_map_map (i : ι) (x y : ℝ) :
+    dist (S.map i x) (S.map i y) = S.ratio i * dist x y := by
+  rw [Real.dist_eq, Real.dist_eq, abs_map_sub]
+
+/-- Each similarity is injective. -/
+theorem map_injective (i : ι) : Function.Injective (S.map i) :=
+  injective_of_affine (S.map_sub i) (S.sign_mul_ratio_ne_zero i)
+
+/-- The inverse similarity `S_i⁻¹(y) = ε_i (y - b_i) / r_i`. -/
+noncomputable def inv (i : ι) (y : ℝ) : ℝ := S.sign i * (y - S.shift i) / S.ratio i
+
+/-- `S_i ∘ S_i⁻¹ = id`. -/
+theorem map_inv (i : ι) (y : ℝ) : S.map i (S.inv i y) = y := by
+  have hr := (S.ratio_pos i).ne'
+  rcases S.sign_eq i with h | h <;> simp only [map, inv, h] <;> field_simp <;> ring
+
+/-- `S_i⁻¹ ∘ S_i = id`. -/
+theorem inv_map (i : ι) (x : ℝ) : S.inv i (S.map i x) = x := by
+  have hr := (S.ratio_pos i).ne'
+  rcases S.sign_eq i with h | h <;> simp only [map, inv, h] <;> field_simp <;> ring
+
+/-- The inverse similarity is continuous. -/
+theorem continuous_inv (i : ι) : Continuous (S.inv i) := by
+  unfold inv; fun_prop
+
+/-- The image of a set under `S_i` is its preimage under `S_i⁻¹`. -/
+theorem image_eq_preimage_inv (i : ι) (A : Set ℝ) : S.map i '' A = S.inv i ⁻¹' A := by
+  ext y
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    rw [Set.mem_preimage, inv_map]
+    exact hx
+  · intro hy
+    exact ⟨S.inv i y, hy, S.map_inv i y⟩
+
+/-- The preimage of a closed ball centred in `S_i(x)` under `S_i` is the closed ball of
+radius `δ/r_i` at `x`. -/
+theorem preimage_closedBall_map (i : ι) (x δ : ℝ) :
+    S.map i ⁻¹' Metric.closedBall (S.map i x) δ = Metric.closedBall x (δ / S.ratio i) := by
+  rw [preimage_closedBall_of_affine (S.map_sub i) (S.sign_mul_ratio_ne_zero i),
+    abs_sign_mul_ratio]
+
+/-! ### The first-level intervals -/
+
+/-- The left endpoint `ℓ_i = min(S_i(0), S_i(1))` of the first-level interval
+`S_i([0,1])`, in the closed form `b_i + (ε_i - 1) r_i / 2`. -/
+noncomputable def left (i : ι) : ℝ := S.shift i + (S.sign i - 1) / 2 * S.ratio i
+
+/-- The left endpoint is the smaller of the two endpoint images. -/
+theorem left_eq_min (i : ι) : S.left i = min (S.map i 0) (S.map i 1) := by
+  have hr := S.ratio_pos i
+  rcases S.sign_eq i with h | h
+  · simp only [left, map, h]
+    rw [min_eq_left (by linarith)]
+    ring
+  · simp only [left, map, h]
+    rw [min_eq_right (by linarith)]
+    ring
+
+/-- The right endpoint `ℓ_i + r_i` is the larger of the two endpoint images. -/
+theorem max_map_eq (i : ι) : max (S.map i 0) (S.map i 1) = S.left i + S.ratio i := by
+  rw [left_eq_min]
+  have h := max_sub_min_eq_abs (S.map i 0) (S.map i 1)
+  have h' : |S.map i 0 - S.map i 1| = S.ratio i := by
+    rw [abs_map_sub]; norm_num
+  have h'' : |S.map i 1 - S.map i 0| = S.ratio i := by
+    rw [abs_map_sub]; norm_num
+  simp only [h''] at h
+  linarith
+
+/-- `S_i(x) = ℓ_i + r_i ((1 - ε_i)/2 + ε_i x)`: the similarity is the orientation-preserving
+similarity of ratio `r_i` onto its interval, preceded by the reflection `x ↦ 1 - x` when
+`ε_i = -1`. -/
+theorem map_eq_left_add (i : ι) (x : ℝ) :
+    S.map i x = S.left i + S.ratio i * ((1 - S.sign i) / 2 + S.sign i * x) := by
+  simp only [map, left]; ring
+
+/-- The left endpoint is non-negative. -/
+theorem left_nonneg (i : ι) : 0 ≤ S.left i := by
+  rw [left_eq_min]
+  exact le_min (S.mapsTo i ⟨le_rfl, zero_le_one⟩).1 (S.mapsTo i ⟨zero_le_one, le_rfl⟩).1
+
+/-- The first-level interval ends at or before `1`. -/
+theorem left_add_ratio_le_one (i : ι) : S.left i + S.ratio i ≤ 1 := by
+  rw [← max_map_eq]
+  exact max_le (S.mapsTo i ⟨le_rfl, zero_le_one⟩).2 (S.mapsTo i ⟨zero_le_one, le_rfl⟩).2
+
+/-- The image of a closed interval under a similarity. -/
+theorem map_image_Icc (i : ι) {c d : ℝ} (hcd : c ≤ d) :
+    S.map i '' Set.Icc c d = Set.Icc (min (S.map i c) (S.map i d)) (max (S.map i c) (S.map i d)) :=
+  image_Icc_of_affine (S.map_sub i) (S.sign_mul_ratio_ne_zero i) hcd
+
+/-- The first-level interval `S_i([0,1]) = [ℓ_i, ℓ_i + r_i]`. -/
+theorem map_image_unitInterval (i : ι) :
+    S.map i '' Set.Icc (0:ℝ) 1 = Set.Icc (S.left i) (S.left i + S.ratio i) := by
+  rw [map_image_Icc S i zero_le_one, ← left_eq_min, max_map_eq]
 
 /-- The natural measure is a probability measure; `IsNatural` already carries this, and
 this is the extractor that lets a consumer avoid a separate instance binder. -/

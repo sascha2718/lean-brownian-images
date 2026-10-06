@@ -7,7 +7,7 @@ The variance bound of `thm:variance` is an input here, not an output: the statem
 below carry the conclusion of `audit_variance` as an explicit hypothesis, in the text
 `Challenge.lean` gives it, so that closing that endpoint discharges the hypothesis
 mechanically.  The same holds for `audit_smoothing`, which identifies `𝔼 Y_μ(v)` with
-`H_μ(t)`, and for `audit_aemeasurable_occupation`, without which the empirical profile
+`H_μ^s(t)`, and for `audit_aemeasurable_occupation`, without which the empirical profile
 is not a random variable and no variance bound carries information.
 
 * `Concentration.exp_sq_mul_varScale`: the change of variable `r = e^{-t}` in
@@ -16,7 +16,7 @@ is not a random variable and no variance bound carries information.
 * `Concentration.exists_exp_bound`: the three regimes of `eq:y-variance` are dominated
   by a single exponential, so the grid sums are geometric.
 * `Concentration.memLp_Yprofile`, `Concentration.integral_Yprofile`: the empirical
-  profile is a bounded random variable with mean `H_μ(t)`.
+  profile is a bounded random variable with mean `H_μ^s(t)`.
 * `grid_convergence_of_y_variance`: `eq:grid-convergence`, by Chebyshev and
   Borel--Cantelli.
 * `Concentration.H_nonneg`, `Concentration.H_le`: the expected profile is bounded, the
@@ -156,7 +156,7 @@ theorem memLp_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
         exact mul_le_mul_of_nonneg_left hle (Real.exp_pos _).le
     _ = Real.exp (2 * s * v) := mul_one _
 
-/-- `𝔼 Y_μ(t) = H_μ(t)`: `eq:smoothing` read in the coordinate of `Y_μ`.
+/-- `𝔼 Y_μ(t) = H_μ^s(t)`: `eq:smoothing` read in the coordinate of `Y_μ`.
 The hypothesis is the conclusion of `audit_smoothing`. -/
 theorem integral_Yprofile {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
     {s : ℝ} {μ : Measure ℝ}
@@ -276,12 +276,12 @@ namespace Concentration
 
 /-! ### The expected profile is bounded -/
 
-/-- `H_μ ≥ 0`: the kernel and the normalised profile are non-negative. -/
+/-- `H_μ^s ≥ 0`: the kernel and the normalised profile are non-negative. -/
 theorem H_nonneg {s : ℝ} {μ : Measure ℝ} (v : ℝ) : 0 ≤ H s μ v :=
   setIntegral_nonneg measurableSet_Ioi fun _ hη =>
     mul_nonneg (kern_pos hη).le (G_nonneg _)
 
-/-- `H_μ ≤ A ‖k‖₁` on the whole line: this is the supremum `M` of the proof of
+/-- `H_μ^s ≤ A ‖k‖₁` on the whole line: this is the supremum `M` of the proof of
 `thm:uniform-concentration`, and `eq:phi-frostman` is what bounds `G`. -/
 theorem H_le {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : IsFrostman s A μ) (v : ℝ) : H s μ v ≤ A * ∫ x : ℝ, logKern s x := by
@@ -468,8 +468,8 @@ namespace Concentration
 /-! ### The separating Borel set of `thm:main` -/
 
 /-- The set of the proof of `thm:main`: the probability measures on the plane whose
-empirical profile agrees with `H_μ` in the limit along the non-negative rationals.  The
-paper writes it as `lim_n sup_{q ∈ ℚ, q ≥ n} |Y_ν(q) - H_μ(q)| = 0`; here it is written
+empirical profile agrees with `H_μ^s` in the limit along the non-negative rationals.  The
+paper writes it as `lim_n sup_{q ∈ ℚ, q ≥ n} |Y_ν(q) - H_μ^s(q)| = 0`; here it is written
 out with a countable intersection over the tolerance, which avoids the junk value a
 supremum takes on an unbounded family. -/
 def tailSet (s : ℝ) (μ : Measure ℝ) : Set (ProbabilityMeasure Plane) :=

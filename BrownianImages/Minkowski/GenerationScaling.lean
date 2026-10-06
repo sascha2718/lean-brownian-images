@@ -21,9 +21,17 @@ namespace System
 
 variable {iota : Type*} [Fintype iota] [Nonempty iota] (S : System iota)
 
-/-- The left endpoint of the affine similarity represented by a generation word. -/
-def generationShift (k : ℕ) (w : GenerationWord iota k) : ℝ :=
-  S.generationMap k w 0
+/-- The left endpoint `min(S_w(0), S_w(1))` of the host interval of the similarity
+represented by a generation word, in closed form. -/
+def generationLeft (k : ℕ) (w : GenerationWord iota k) : ℝ :=
+  S.generationMap k w 0 + (S.generationSign k w - 1) / 2 * S.generationRatio k w
+
+omit [Nonempty iota] in
+/-- The left endpoint is the smaller endpoint image. -/
+theorem generationLeft_eq_min (k : ℕ) (w : GenerationWord iota k) :
+    S.generationLeft k w = min (S.generationMap k w 0) (S.generationMap k w 1) :=
+  (min_eq_of_affine (S.generationMap_sub k w) (S.generationSign_eq k w)
+    (S.generationRatio_pos k w)).symm
 
 /-- The sum of the half-logarithmic renewal delays along a generation word. -/
 def generationHalfLogRatio (S : System iota) :
@@ -70,36 +78,38 @@ theorem mapsTo_generationMap_unitInterval :
       simpa [generationMap] using Set.mapsTo_id (Set.Icc (0 : ℝ) 1)
   | Nat.succ k, w => by
       have houter : MapsTo (S.map w.2) (Set.Icc (0 : ℝ) 1) (Set.Icc 0 1) := by
-        change MapsTo (fun x => S.ratio w.2 * x + S.shift w.2)
+        change MapsTo (fun x => S.sign w.2 * S.ratio w.2 * x + S.shift w.2)
           (Set.Icc (0 : ℝ) 1) (Set.Icc 0 1)
         exact S.mapsTo w.2
       exact houter.comp (mapsTo_generationMap_unitInterval k w.1)
 
 omit [Nonempty iota] in
 /-- The left endpoint of a finite-word similarity is nonnegative. -/
-theorem generationShift_nonneg (k : ℕ) (w : GenerationWord iota k) :
-    0 ≤ S.generationShift k w := by
-  exact (S.mapsTo_generationMap_unitInterval k w
-    (show (0 : ℝ) ∈ Set.Icc 0 1 by norm_num)).1
+theorem generationLeft_nonneg (k : ℕ) (w : GenerationWord iota k) :
+    0 ≤ S.generationLeft k w := by
+  rw [generationLeft_eq_min]
+  exact le_min
+    (S.mapsTo_generationMap_unitInterval k w (show (0 : ℝ) ∈ Set.Icc 0 1 by norm_num)).1
+    (S.mapsTo_generationMap_unitInterval k w (show (1 : ℝ) ∈ Set.Icc 0 1 by norm_num)).1
 
 omit [Nonempty iota] in
-/-- A generation cylinder is literally the affine copy with the product ratio. -/
+/-- A generation cylinder is literally the oriented affine copy with the product ratio,
+`S_w K = ℓ_w + r_w · orientCompact ε_w K`. -/
 theorem IsAttractor.generationCylinder_eq_affineTimeCompact
     {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) :
     hK.generationCylinder S k w =
-      affineTimeCompact (S.generationShift k w).toNNReal
-        (S.generationRatio k w).toNNReal hK.toNonemptyCompacts := by
+      affineTimeCompact (S.generationLeft k w).toNNReal
+        (S.generationRatio k w).toNNReal
+        (orientCompact (S.generationSign k w) hK.toNonemptyCompacts) := by
   apply NonemptyCompacts.ext
-  rw [hK.coe_generationCylinder S k w, coe_affineTimeCompact]
+  rw [hK.coe_generationCylinder S k w, coe_affineTimeCompact, coe_orientCompact,
+    Set.image_image]
   apply Set.image_congr
   intro t _ht
-  rw [Real.coe_toNNReal _ (S.generationShift_nonneg k w),
+  rw [Real.coe_toNNReal _ (S.generationLeft_nonneg k w),
     Real.coe_toNNReal _ (S.generationRatio_pos k w).le]
-  have hsub := S.generationMap_sub k w t 0
-  unfold generationShift
-  simp only [sub_zero] at hsub
-  linarith
+  exact eq_left_add_of_affine (S.generationMap_sub k w) t
 
 omit [Nonempty iota] in
 /-- The physical radius at the delayed generation scale is divided by the square
@@ -183,9 +193,9 @@ theorem IsPlanarBrownian.map_tubeMass_brownianGenerationCylinder_eq
           (brownianImage W hmu.compactAttractor omega)) := by
   have hrne : (S.generationRatio k w).toNNReal ≠ 0 :=
     ne_of_gt (Real.toNNReal_pos.mpr (S.generationRatio_pos k w))
-  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_eq
-    (tubeRadiusReal_pos v) (S.generationShift k w).toNNReal hrne
-      hmu.compactAttractor hmu.attractor.2.2.1
+  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_orientCompact_eq
+    (tubeRadiusReal_pos v) (S.generationLeft k w).toNNReal hrne
+      (S.generationSign_eq k w) hmu.compactAttractor hmu.attractor.2.2.1
   simpa only [System.IsAttractor.brownianGenerationCylinder,
     hmu.attractor.generationCylinder_eq_affineTimeCompact S k w,
     affineBrownianCompactPiece, System.IsNatural.compactAttractor,

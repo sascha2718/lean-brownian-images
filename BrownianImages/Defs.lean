@@ -10,7 +10,7 @@ paper is phrased in, collected so that every later module speaks the same langua
 * `G`: the normalised pair-distance profile of `eq:g-definition`.
 * `kern`, `logKern`: the smoothing kernel `φ` of `eq:h-definition` and the function
   `x ↦ e^x φ(e^x)` used after passing to logarithmic coordinates.
-* `H`: the expected profile `H_μ` of `eq:expected-profile`, in the integral form
+* `H`: the expected profile `H_μ^s` of `eq:expected-profile`, in the integral form
   `eq:h-definition` the proofs use.
 * `IsFrostmanOpen`: the same condition in the shape `eq:frostman` writes it, open
   balls centred in `[0,1]`; `Frostman.lean` compares the two.
@@ -25,16 +25,19 @@ paper is phrased in, collected so that every later module speaks the same langua
 * `Yprofile`: the empirical profile `Y_ν` of `sec:concentration`.
 * `varScale`: the variance scale `V_s` of `eq:variance-scale`.
 * `System`, with `IsAttractor`, `StronglySeparated`, `IsDimension`, `IsNatural`,
-  `logRatio`, `NonArithmetic`: self-similar systems on `[0,1]` and their natural
-  measures, the objects of `sec:renewal`; the theory lives in `SelfSimilar.lean`.
+  `logRatio`, `NonArithmetic`: self-similar iterated function systems (IFSs) on `[0,1]`,
+  with orientation-preserving and orientation-reversing similarities, and their natural measures, the objects of
+  `sec:renewal`; the theory lives in `SelfSimilar.lean`.
 * `homogeneousSystem`, `homogeneousDim`, `pairSystem`, `pairRatio`: the two systems of
   `thm:cantor-application` and the ratio `c` of `eq:c-definition`.
 
-`Challenge.lean` restates the headline theorems on Mathlib-only copies of these
-definitions, and the comparator requires the copies to export identically.  Auxiliary
-`_proof` constants are deduplicated per module, so every definition copied there must
-be declared in this one module, in the order `Challenge.lean` declares it; that is why
-the `System` block sits here rather than in `SelfSimilar.lean`.
+`Challenge.lean` uses independent Mathlib-only copies of the definitions needed for
+the headline statements. Comparator requires the copied declarations and their
+dependencies to export identically; auxiliary `_proof` constants can be deduplicated
+within a module, so changes to these copies must be checked with comparator.
+The direct expected profile and the invariance predicates for the two named measures
+have their counterparts in `Solution.lean`, which proves their equivalence with the
+objects used by the library.
 -/
 import Mathlib.Probability.BrownianMotion.Basic
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
@@ -141,13 +144,13 @@ noncomputable def logKern (s x : ℝ) : ℝ :=
 noncomputable def smoothOp (s : ℝ) (g : ℝ → ℝ) (t : ℝ) : ℝ :=
   ∫ η in Set.Ioi (0 : ℝ), kern s η * g (2 * t - Real.log η)
 
-/-- `eq:h-definition`: the expected profile `H_μ(t) = ∫₀^∞ φ(η) G(2t - log η) dη`.
+/-- `eq:h-definition`: the expected profile `H_μ^s(t) = ∫₀^∞ φ(η) G(2t - log η) dη`.
 `eq:smoothing` identifies it with `eq:expected-profile`. -/
 noncomputable def H (s : ℝ) (μ : Measure ℝ) (t : ℝ) : ℝ :=
   ∫ η in Set.Ioi (0 : ℝ), kern s η * G s μ (2 * t - Real.log η)
 
 /-- The expected profile in logarithmic coordinates,
-`H_μ(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
+`H_μ^s(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
 noncomputable def Hlog (s : ℝ) (μ : Measure ℝ) (t : ℝ) : ℝ :=
   ∫ x : ℝ, logKern s x * G s μ (2 * t - x)
 
@@ -229,28 +232,38 @@ noncomputable def varScale (s r : ℝ) : ℝ :=
   else if s = 2⁻¹ then r ^ (3 : ℝ) * (1 + Real.log r⁻¹)
   else r ^ (2 * s + 2)
 
-/-! ### Self-similar systems and their natural measures -/
+/-! ### Self-similar iterated function systems and their natural measures -/
 
-/-- A self-similar system on `[0,1]`: finitely many similarities
-`S_i(x) = r_i x + b_i` with ratios in `(0,1)`, each mapping `[0,1]` into itself. -/
+/-- A self-similar iterated function system (IFS) on `[0,1]`: finitely many similarities
+`S_i(x) = ε_i r_i x + b_i` with contraction ratios `r_i ∈ (0,1)` and orientations
+`ε_i ∈ {1, -1}`, each mapping `[0,1]` into itself.  The signed ratio `ε_i r_i` ranges over
+`(-1,0) ∪ (0,1)`: the similarities with `ε_i = -1` reverse orientation, and the paper's
+`r_i` is the modulus `r_i` throughout. -/
 structure System (ι : Type*) [Fintype ι] where
   /-- The contraction ratios. -/
   ratio : ι → ℝ
+  /-- The orientations, `1` for an orientation-preserving similarity and `-1` for an
+  orientation-reversing one. -/
+  sign : ι → ℝ
   /-- The translation parts. -/
   shift : ι → ℝ
   /-- Each ratio is positive. -/
   ratio_pos : ∀ i, 0 < ratio i
   /-- Each ratio is a contraction. -/
   ratio_lt_one : ∀ i, ratio i < 1
-  /-- Each similarity maps the unit interval into itself. -/
-  mapsTo : ∀ i, Set.MapsTo (fun x => ratio i * x + shift i) (Set.Icc 0 1) (Set.Icc 0 1)
+  /-- Each orientation is `1` or `-1`. -/
+  sign_eq : ∀ i, sign i = 1 ∨ sign i = -1
+  /-- Each similarity maps the unit interval into itself; this is what keeps the attractor
+  inside `[0,1]` whatever the orientations. -/
+  mapsTo : ∀ i,
+    Set.MapsTo (fun x => sign i * ratio i * x + shift i) (Set.Icc 0 1) (Set.Icc 0 1)
 
 namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
-/-- The similarity attached to a letter, `S_i(x) = r_i x + b_i`. -/
-def map (i : ι) (x : ℝ) : ℝ := S.ratio i * x + S.shift i
+/-- The similarity attached to a letter, `S_i(x) = ε_i r_i x + b_i`. -/
+def map (i : ι) (x : ℝ) : ℝ := S.sign i * S.ratio i * x + S.shift i
 
 /-- An attractor of the system: a non-empty compact subset of `[0,1]` with
 `K = ⋃ i S_i K`.  Hutchinson's existence and uniqueness theorem is the endpoint pair
@@ -323,9 +336,11 @@ end System
 noncomputable def homogeneousSystem (lam : ℝ) (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     System (Fin 2) where
   ratio _ := lam
+  sign _ := 1
   shift i := if i = 0 then 0 else 1 - lam
   ratio_pos _ := hlam0
   ratio_lt_one _ := by linarith
+  sign_eq _ := Or.inl rfl
   mapsTo i x hx := by
     obtain ⟨h0, h1⟩ := hx
     fin_cases i <;> constructor <;> simp <;> nlinarith
@@ -337,6 +352,7 @@ noncomputable def homogeneousDim (lam : ℝ) : ℝ := Real.log 2 / Real.log lam�
 `0 < c < 1/2`. -/
 noncomputable def pairSystem (c : ℝ) (hc0 : 0 < c) (hc : c < 1/2) : System (Fin 2) where
   ratio i := if i = 0 then 1/2 else c
+  sign _ := 1
   shift i := if i = 0 then 0 else 1 - c
   ratio_pos i := by
     fin_cases i
@@ -346,6 +362,7 @@ noncomputable def pairSystem (c : ℝ) (hc0 : 0 < c) (hc : c < 1/2) : System (Fi
     fin_cases i
     · norm_num
     · simpa using by linarith
+  sign_eq _ := Or.inl rfl
   mapsTo i x hx := by
     obtain ⟨h0, h1⟩ := hx
     fin_cases i <;> constructor <;> simp <;> nlinarith

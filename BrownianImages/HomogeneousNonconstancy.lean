@@ -88,7 +88,7 @@ theorem lintegral_homogeneous_map_decomp {lam : ℝ} (hlam0 : 0 < lam)
             ((homogeneousSystem lam hlam0 hlam).shift i -
               (homogeneousSystem lam hlam0 hlam).shift j) := by
         simp only [System.map]
-        change lam * x + _ - (lam * y + _) = _
+        change 1 * lam * x + _ - (1 * lam * y + _) = _
         ring
       simp only [Set.mem_preimage, Set.mem_ofPred_eq, homBlockSet, hval]
     rw [hA.measure_eq_sum (homogeneousSystem lam hlam0 hlam) hmeas,

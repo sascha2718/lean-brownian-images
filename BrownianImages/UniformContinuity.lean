@@ -1,6 +1,6 @@
 /-
 `thm:profile-uniform-continuity` of `BrownianImagesComplete.tex`: the expected profile
-`H_μ` is uniformly continuous on `ℝ`.
+`H_μ^s` is uniformly continuous on `ℝ`.
 
 * `H_eq_Hlog`: the substitution `η = e^x` of `eq:h-definition`.
 * `tendsto_integral_logKern_sub`: translation is continuous in `L¹(ℝ)` for the
@@ -20,7 +20,7 @@ variable {s A : ℝ} {μ : Measure ℝ}
 /-! ### The substitution `η = e^x` -/
 
 /-- The substitution `η = e^x` in `eq:h-definition`:
-`H_μ(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
+`H_μ^s(t) = ∫_ℝ e^x φ(e^x) G(2t - x) dx`. -/
 theorem H_eq_Hlog (s : ℝ) (μ : Measure ℝ) (v : ℝ) : H s μ v = Hlog s μ v := by
   have himg : Real.exp '' (Set.univ : Set ℝ) = Set.Ioi 0 := by
     rw [Set.image_univ, Real.range_exp]
@@ -98,7 +98,7 @@ theorem tendsto_integral_logKern_sub (hs0 : 0 < s) (hs1 : s < 1) :
 /-! ### The uniform-continuity estimate -/
 
 /-- The estimate of the proof of `thm:profile-uniform-continuity`:
-`|H_μ(a) - H_μ(b)| ≤ ‖G‖_∞ ‖k(· + 2(a-b)) - k‖_1`. -/
+`|H_μ^s(a) - H_μ^s(b)| ≤ ‖G‖_∞ ‖k(· + 2(a-b)) - k‖_1`. -/
 theorem abs_H_sub_le [IsProbabilityMeasure μ] (hs0 : 0 < s) (hs1 : s < 1)
     (hμ : IsFrostman s A μ) (a b : ℝ) :
     |H s μ a - H s μ b| ≤ A * ∫ x : ℝ, |logKern s (x + 2 * (a - b)) - logKern s x| := by

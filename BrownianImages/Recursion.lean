@@ -67,13 +67,9 @@ theorem System.StronglySeparated.measure_closedBall_map (S : System ι) {K : Set
     {δ : ℝ} (hδ : δ < ρ) (i : ι) {x : ℝ} (hx : x ∈ K) :
     μ (Metric.closedBall (S.map i x) δ)
       = ENNReal.ofReal (S.ratio i ^ s) * μ (Metric.closedBall x (δ / S.ratio i)) := by
-  have hr := S.ratio_pos i
   rw [hμ.measure_eq_sum S measurableSet_closedBall, Finset.sum_eq_single i]
   · congr 2
-    ext y
-    simp only [Set.mem_preimage, Metric.mem_closedBall, Real.dist_eq, System.map]
-    rw [show S.ratio i * y + S.shift i - (S.ratio i * x + S.shift i) = (y - x) * S.ratio i from
-        by ring, abs_mul, abs_of_pos hr, le_div_iff₀ hr]
+    exact S.preimage_closedBall_map i x δ
   · intro j _ hji
     have hsub : S.map j ⁻¹' Metric.closedBall (S.map i x) δ ⊆ Kᶜ := by
       intro y hy hyK
@@ -103,11 +99,8 @@ theorem System.StronglySeparated.measure_preimage_closedBall_eq_zero (S : System
 /-- The pull-back of a ball centred in a piece through the same piece is a ball of the
 rescaled radius. -/
 theorem System.preimage_closedBall_map_self (S : System ι) (i : ι) (x δ : ℝ) :
-    S.map i ⁻¹' Metric.closedBall (S.map i x) δ = Metric.closedBall x (δ / S.ratio i) := by
-  ext y
-  simp only [Set.mem_preimage, Metric.mem_closedBall, Real.dist_eq, System.map]
-  rw [show S.ratio i * y + S.shift i - (S.ratio i * x + S.shift i) = (y - x) * S.ratio i from
-      by ring, abs_mul, abs_of_pos (S.ratio_pos i), le_div_iff₀ (S.ratio_pos i)]
+    S.map i ⁻¹' Metric.closedBall (S.map i x) δ = Metric.closedBall x (δ / S.ratio i) :=
+  S.preimage_closedBall_map i x δ
 
 /-! ### The cross term -/
 

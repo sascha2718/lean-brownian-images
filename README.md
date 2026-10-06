@@ -18,33 +18,41 @@ used.
 
 ## What is proved
 
-The two headline theorems of the paper, and the two claims of the final sentence of the
-second, are the audited endpoints:
+The separation theorem, its self-similar corollary with the two claims in its final
+sentence, and the monotonicity of the mean profile along the two-contraction family are
+the Comparator-audited endpoints:
 
 | Paper | Endpoint |
 | --- | --- |
-| `thm:main`: distinct pair-distance profiles give mutually singular occupation-measure laws | `audit_main` |
-| `thm:cantor-application`: the homogeneous and the paired natural measure separate | `audit_cantor_application`, `audit_cantor_application_pair` |
+| `thm:main`: separated expected correlation profiles give mutually singular occupation-measure laws | `audit_main` |
+| `thm:cantor-application`: the homogeneous measure separates from every non-lattice natural measure of the same dimension under the open set condition, including the paired example | `audit_cantor_application`, `audit_cantor_application_pair` |
 | `thm:cantor-application`, final sentence: the exceptional parameter set is countable | `audit_exceptional_parameters_countable` |
+| `thm:two-contraction-distinction`: along `x ↦ x/2`, `x ↦ cx + 1 - c`, the mean of the expected profile at the dimension `s(c)` is strictly increasing in `c`, and distinct parameters give separated profiles | `audit_two_contraction_distinction`, `audit_two_contraction_separation` |
 
-Beside them, `Solution.lean` states 92 endpoints in all, named `audit_<slug>` in document
+Beside them, `Solution.lean` states 131 endpoints in all, named `audit_<slug>` in document
 order, from the Gaussian reduction of the correlation integral through the renewal
 analysis, the smoothing operator and its Fourier multipliers, the four-point estimate and
 the concentration argument, to the Minkowski reconstruction of the occupation measure
 from the compact Brownian image, the transfer of singularity to compact-set laws, the
-base-five missing-digit comparison, and the homometric counterexample. The table of every result against its endpoint is in
+base-five missing-digit comparison, the homometric counterexample, the explicit
+limiting profiles of the two-contraction family, and the fixed-dimension family: its
+limiting profiles, the analyticity and the range of the mean profile, the separation of
+parameters with distinct means, and the strict monotonicity of the mean for small
+dimension. The table of every result against its endpoint is in
 [`docs/correspondence.md`](docs/correspondence.md).
 
 ## Layout
 
-- `BrownianImages/`: the library, 103 modules organised along the sections of the paper.
+- `BrownianImages/`: the library, 142 modules organised along the sections of the paper.
   The root module `BrownianImages.lean` is the index: it lists every module with the part
-  of the paper it certifies. `BrownianImages/Minkowski/` carries the reconstruction
+  of the paper it certifies. `BrownianImages/FixedDimension/` carries the fixed-dimension
+  family, `BrownianImages/Minkowski/` carries the reconstruction
   section, and `BrownianImages/Renewal/` is vendored third-party code, see below.
 - `Solution.lean`: the formal statement of the paper, every endpoint proved by a library
   declaration.
-- `Challenge.lean`: the four headline endpoints restated with `sorry`, on Mathlib-only
-  copies of the definitions their statements need. It imports only Mathlib, so the audit
+- `Challenge.lean`: the six headline endpoints restated with `sorry`, on Mathlib-only
+  definitions of the expected correlation profile and self-similar measures. It contains
+  no helper proofs or bundled constructors for the named systems. It imports only Mathlib, so the audit
   trusts this file and Mathlib alone. Its statement text is character-for-character
   identical to `Solution.lean`.
 - `comparator-config.json`, `comparator-audit.sh`: the audit configuration and a local

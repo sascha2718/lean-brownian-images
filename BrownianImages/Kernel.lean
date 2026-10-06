@@ -5,7 +5,7 @@ logarithmic form `x ↦ e^x φ(e^x)`.  These are the estimates the proof of
 `φ(η) ≤ ½ η^{s-2}` is what the proof of `thm:profile-asymptotics` uses.
 
 * `kern_pos`, `logKern_pos`: strict positivity, needed for the positivity of the
-  periodic profile `H̃_A`.
+  periodic profile `H̃_A^s`.
 * `logKern_eq`: the substitution `η = e^x` in the form `x ↦ e^x φ(e^x)`.
 * `kern_integrableOn`, `integral_kern_pos`: `sec:setup`'s claim that `φ` is integrable,
   "since it decays exponentially at `0` and as `η^{s-2}` at infinity, where `s < 1`",
@@ -222,7 +222,7 @@ theorem integral_kern_pos (hs0 : 0 < s) (hs1 : s < 1) :
 
 /-- `sec:smoothing`: `Tg` is strictly positive when `g` is.  The integrand is positive
 and integrable, dominated by `M·φ`, and `φ` is integrable with `(0,∞)` of positive
-measure.  This is the positivity of `H̃_A` the paper records after
+measure.  This is the positivity of `H̃_A^s` the paper records after
 `thm:smoothing-injective`. -/
 theorem smoothOp_pos (hs0 : 0 < s) (hs1 : s < 1) {g : ℝ → ℝ} (hg : Continuous g)
     (hgpos : ∀ x, 0 < g x) {M : ℝ} (hM : ∀ x, |g x| ≤ M) (v : ℝ) :

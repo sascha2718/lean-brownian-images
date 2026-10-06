@@ -1,6 +1,7 @@
 /-
 `thm:stopping-overlap` of `sec:renewal`: the geometry of a stopping family under the
-open set condition, and the Ahlfors regularity of the natural measure.
+open set condition. The module also proves the classical Ahlfors regularity of the
+natural measure, cited from Falconer in the paper.
 
 The stopping family `𝒲(u)` of the paper is the leaf set of the finite stopping tree
 of `Minkowski.Stopping`, at threshold `u` and at a depth past which every branch has
@@ -70,24 +71,29 @@ omit [Nonempty iota] in
 theorem stoppingWordMap_root : S.stoppingWordMap (stoppingRoot : StoppingWord iota) = id := rfl
 
 omit [Nonempty iota] in
-/-- The map of a stopping word is affine with slope its ratio. -/
+/-- The map of a stopping word is affine with slope its signed ratio. -/
 theorem stoppingWordMap_sub (w : StoppingWord iota) (x y : ℝ) :
-    S.stoppingWordMap w x - S.stoppingWordMap w y = S.stoppingRatio w * (x - y) :=
+    S.stoppingWordMap w x - S.stoppingWordMap w y =
+      S.stoppingSign w * S.stoppingRatio w * (x - y) :=
   S.stoppingMap_sub w.1 w.2 x y
+
+omit [Nonempty iota] in
+/-- The map of a stopping word scales distances by its ratio. -/
+theorem abs_stoppingWordMap_sub (w : StoppingWord iota) (x y : ℝ) :
+    |S.stoppingWordMap w x - S.stoppingWordMap w y| = S.stoppingRatio w * |x - y| :=
+  S.abs_stoppingMap_sub w.1 w.2 x y
+
+omit [Nonempty iota] in
+/-- The signed ratio of a stopping word is non-zero. -/
+theorem stoppingSign_mul_stoppingRatio_ne_zero (w : StoppingWord iota) :
+    S.stoppingSign w * S.stoppingRatio w ≠ 0 :=
+  S.generationSign_mul_generationRatio_ne_zero w.1 w.2
 
 omit [Nonempty iota] in
 /-- The map of a stopping word is injective. -/
 theorem stoppingWordMap_injective (w : StoppingWord iota) :
-    Function.Injective (S.stoppingWordMap w) := by
-  intro x y hxy
-  have h := S.stoppingWordMap_sub w x y
-  rw [hxy, sub_self] at h
-  have hr : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
-  have : x - y = 0 := by
-    rcases mul_eq_zero.mp h.symm with h0 | h0
-    · exact absurd h0 hr.ne'
-    · exact h0
-  linarith
+    Function.Injective (S.stoppingWordMap w) :=
+  injective_of_affine (S.stoppingWordMap_sub w) (S.stoppingSign_mul_stoppingRatio_ne_zero w)
 
 omit [Nonempty iota] in
 /-- The map of a stopping word is continuous. -/
@@ -103,47 +109,37 @@ theorem measurable_stoppingWordMap (w : StoppingWord iota) :
 
 omit [Nonempty iota] in
 /-- The image of a closed interval under the map of a stopping word. -/
-theorem stoppingWordMap_image_Icc (w : StoppingWord iota) {a b : ℝ} (_hab : a ≤ b) :
-    S.stoppingWordMap w '' Icc a b = Icc (S.stoppingWordMap w a) (S.stoppingWordMap w b) := by
-  have hr : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
-  have hfun : S.stoppingWordMap w = fun x => S.stoppingRatio w * x + S.stoppingWordMap w 0 := by
-    funext x
-    have := S.stoppingWordMap_sub w x 0
-    linarith
-  rw [hfun]
-  exact Set.image_affine_Icc' hr _ a b
+theorem stoppingWordMap_image_Icc (w : StoppingWord iota) {a b : ℝ} (hab : a ≤ b) :
+    S.stoppingWordMap w '' Icc a b =
+      Icc (min (S.stoppingWordMap w a) (S.stoppingWordMap w b))
+        (max (S.stoppingWordMap w a) (S.stoppingWordMap w b)) :=
+  image_Icc_of_affine (S.stoppingWordMap_sub w) (S.stoppingSign_mul_stoppingRatio_ne_zero w) hab
 
 omit [Nonempty iota] in
 /-- The image of an open interval under the map of a stopping word. -/
-theorem stoppingWordMap_image_Ioo (w : StoppingWord iota) (a b : ℝ) :
-    S.stoppingWordMap w '' Ioo a b = Ioo (S.stoppingWordMap w a) (S.stoppingWordMap w b) := by
-  have hr : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
-  have hfun : S.stoppingWordMap w = fun x => S.stoppingRatio w * x + S.stoppingWordMap w 0 := by
-    funext x
-    have := S.stoppingWordMap_sub w x 0
-    linarith
-  rw [hfun]
-  ext y
-  simp only [Set.mem_image, Set.mem_Ioo]
-  constructor
-  · rintro ⟨x, ⟨hax, hxb⟩, rfl⟩
-    constructor <;> nlinarith
-  · rintro ⟨hay, hyb⟩
-    refine ⟨(y - S.stoppingWordMap w 0) / S.stoppingRatio w, ⟨?_, ?_⟩, ?_⟩
-    · rw [lt_div_iff₀ hr]; linarith
-    · rw [div_lt_iff₀ hr]; linarith
-    · field_simp
-      ring
+theorem stoppingWordMap_image_Ioo (w : StoppingWord iota) {a b : ℝ} (hab : a ≤ b) :
+    S.stoppingWordMap w '' Ioo a b =
+      Ioo (min (S.stoppingWordMap w a) (S.stoppingWordMap w b))
+        (max (S.stoppingWordMap w a) (S.stoppingWordMap w b)) :=
+  image_Ioo_of_affine (S.stoppingWordMap_sub w) (S.stoppingSign_mul_stoppingRatio_ne_zero w) hab
 
 omit [Nonempty iota] in
-/-- The stopping interval `I_w = S_w([0,1])`. -/
+/-- The length of the image of an interval under the map of a stopping word. -/
+theorem max_sub_min_stoppingWordMap (w : StoppingWord iota) {a b : ℝ} (hab : a ≤ b) :
+    max (S.stoppingWordMap w a) (S.stoppingWordMap w b) -
+        min (S.stoppingWordMap w a) (S.stoppingWordMap w b) = S.stoppingRatio w * (b - a) := by
+  have h := max_sub_min_eq_abs (S.stoppingWordMap w a) (S.stoppingWordMap w b)
+  have h2 : |S.stoppingWordMap w b - S.stoppingWordMap w a| = S.stoppingRatio w * (b - a) := by
+    rw [abs_stoppingWordMap_sub, abs_of_nonneg (sub_nonneg.mpr hab)]
+  simp only [h2] at h
+  exact h
+
+omit [Nonempty iota] in
+/-- The stopping interval `I_w = S_w([0,1]) = [ℓ_w, ℓ_w + r_w]`. -/
 theorem stoppingWordMap_image_unitInterval (w : StoppingWord iota) :
     S.stoppingWordMap w '' Icc (0:ℝ) 1 =
-      Icc (S.stoppingWordMap w 0) (S.stoppingWordMap w 0 + S.stoppingRatio w) := by
-  rw [S.stoppingWordMap_image_Icc w zero_le_one]
-  congr 1
-  have := S.stoppingWordMap_sub w 1 0
-  linarith
+      Icc (S.stoppingLeft w) (S.stoppingLeft w + S.stoppingRatio w) :=
+  S.stoppingMap_image_unitInterval w
 
 /-! ### Words below a node -/
 
@@ -391,7 +387,7 @@ theorem IsFeasible.exists_multiplicity_bound {U : Set ℝ} (hU : S.IsFeasible U)
   set A₀ : ℝ := max |a| |b| with hA₀
   have hA₀0 : 0 ≤ A₀ := le_trans (abs_nonneg a) (le_max_left _ _)
   have hrmin := S.minRatio_pos
-  set X : ℝ := 2 * (2 + A₀) / (S.minRatio * (b - a)) with hX
+  set X : ℝ := 2 * (3 + A₀) / (S.minRatio * (b - a)) with hX
   have hX0 : 0 < X := by
     rw [hX]
     have : 0 < b - a := by linarith
@@ -412,37 +408,36 @@ theorem IsFeasible.exists_multiplicity_bound {U : Set ℝ} (hU : S.IsFeasible U)
     intro leaf
     rw [hf]
     dsimp only
-    rw [S.stoppingWordMap_image_Ioo]
+    rw [S.stoppingWordMap_image_Ioo _ hab.le]
     exact measurableSet_Ioo
   -- each image has length at least `r_min δ (b - a)`
   have hlen : ∀ leaf ∈ T, ENNReal.ofReal (S.minRatio * delta * (b - a)) ≤ volume (f leaf) := by
     intro leaf _
     rw [hf]
     dsimp only
-    rw [S.stoppingWordMap_image_Ioo, Real.volume_Ioo, S.stoppingWordMap_sub]
+    rw [S.stoppingWordMap_image_Ioo _ hab.le, Real.volume_Ioo,
+      S.max_sub_min_stoppingWordMap _ hab.le]
     refine ENNReal.ofReal_le_ofReal ?_
     have := (S.stoppingLeafRatio_bounds hdelta0 hdelta1 hn leaf).1
     have hba : 0 ≤ b - a := by linarith
     exact mul_le_mul_of_nonneg_right this hba
-  -- all images lie in a window of length `2 (2 + A₀) δ`
-  have hsub : (⋃ leaf ∈ T, f leaf) ⊆ Icc (x - (2 + A₀) * delta) (x + (2 + A₀) * delta) := by
+  -- all images lie in a window of length `2 (3 + A₀) δ`
+  have hsub : (⋃ leaf ∈ T, f leaf) ⊆ Icc (x - (3 + A₀) * delta) (x + (3 + A₀) * delta) := by
     intro y hy
     simp only [Set.mem_iUnion, exists_prop] at hy
     obtain ⟨leaf, hleaf, hy⟩ := hy
     rw [hT, Finset.mem_filter] at hleaf
     obtain ⟨-, ⟨y₀, hy₀I, hy₀W⟩⟩ := hleaf
     set w := S.stoppingLeafWord delta leaf with hw
-    set c : ℝ := S.stoppingWordMap w 0 with hc
+    set ℓ : ℝ := S.stoppingLeft w with hℓ
     set r : ℝ := S.stoppingRatio w with hr
     have hr0 : 0 < r := S.generationRatio_pos w.1 w.2
     have hrδ : r ≤ delta := (S.stoppingLeafRatio_bounds hdelta0 hdelta1 hn leaf).2
-    have haff : ∀ t, S.stoppingWordMap w t = c + r * t := by
-      intro t
-      have := S.stoppingWordMap_sub w t 0
-      rw [hc, hr]
-      linarith
+    have haff : ∀ t, S.stoppingWordMap w t =
+        ℓ + r * ((1 - S.stoppingSign w) / 2 + S.stoppingSign w * t) := fun t =>
+      S.stoppingMap_eq_left_add w t
     rw [S.stoppingWordMap_image_unitInterval] at hy₀I
-    obtain ⟨hcy₀, hy₀c⟩ := hy₀I
+    obtain ⟨hℓy₀, hy₀ℓ⟩ := hy₀I
     obtain ⟨hxy₀, hy₀x⟩ := hy₀W
     rw [hf] at hy
     obtain ⟨t, ⟨hat, htb⟩, rfl⟩ := hy
@@ -455,27 +450,35 @@ theorem IsFeasible.exists_multiplicity_bound {U : Set ℝ} (hU : S.IsFeasible U)
       · rw [abs_of_neg ht]
         have := neg_le_abs a
         exact le_trans (by linarith : -t ≤ |a|) (le_max_left _ _)
-    have hrt : |r * t| ≤ delta * A₀ := by
+    have hcoef : |(1 - S.stoppingSign w) / 2 + S.stoppingSign w * t| ≤ 1 + A₀ := by
+      have h1 : |(1 - S.stoppingSign w) / 2| ≤ 1 := by
+        rcases S.stoppingSign_eq w with h | h <;> rw [h] <;> norm_num
+      calc |(1 - S.stoppingSign w) / 2 + S.stoppingSign w * t|
+          ≤ |(1 - S.stoppingSign w) / 2| + |S.stoppingSign w * t| := abs_add_le _ _
+        _ ≤ 1 + A₀ := by
+          rw [abs_mul, S.abs_stoppingSign, one_mul]
+          linarith
+    have hrt : |r * ((1 - S.stoppingSign w) / 2 + S.stoppingSign w * t)| ≤ delta * (1 + A₀) := by
       rw [abs_mul, abs_of_pos hr0]
-      exact mul_le_mul hrδ hta (abs_nonneg t) hdelta0.le
+      exact mul_le_mul hrδ hcoef (abs_nonneg _) hdelta0.le
     have hrt' := abs_le.mp hrt
     constructor <;> nlinarith
   -- compare lengths
   have hsum : volume (⋃ leaf ∈ T, f leaf) = ∑ leaf ∈ T, volume (f leaf) :=
     measure_biUnion_finset hdisj fun leaf _ => hmeas leaf
   have hcount : (T.card : ℝ≥0∞) * ENNReal.ofReal (S.minRatio * delta * (b - a))
-      ≤ ENNReal.ofReal (2 * (2 + A₀) * delta) := by
+      ≤ ENNReal.ofReal (2 * (3 + A₀) * delta) := by
     calc (T.card : ℝ≥0∞) * ENNReal.ofReal (S.minRatio * delta * (b - a))
         = ∑ _leaf ∈ T, ENNReal.ofReal (S.minRatio * delta * (b - a)) := by
           rw [Finset.sum_const, nsmul_eq_mul]
       _ ≤ ∑ leaf ∈ T, volume (f leaf) := Finset.sum_le_sum hlen
       _ = volume (⋃ leaf ∈ T, f leaf) := hsum.symm
-      _ ≤ volume (Icc (x - (2 + A₀) * delta) (x + (2 + A₀) * delta)) := measure_mono hsub
-      _ = ENNReal.ofReal (2 * (2 + A₀) * delta) := by
+      _ ≤ volume (Icc (x - (3 + A₀) * delta) (x + (3 + A₀) * delta)) := measure_mono hsub
+      _ = ENNReal.ofReal (2 * (3 + A₀) * delta) := by
           rw [Real.volume_Icc]
           congr 1
           ring
-  have hcountR : (T.card : ℝ) * (S.minRatio * delta * (b - a)) ≤ 2 * (2 + A₀) * delta := by
+  have hcountR : (T.card : ℝ) * (S.minRatio * delta * (b - a)) ≤ 2 * (3 + A₀) * delta := by
     have hpos : 0 ≤ S.minRatio * delta * (b - a) := by
       have : 0 ≤ b - a := by linarith
       positivity
@@ -521,9 +524,9 @@ theorem IsFeasible.exists_stopping_coloring {U : Set ℝ} (hU : S.IsFeasible U) 
   obtain ⟨M, hM, hbound⟩ := hU.exists_point_multiplicity_bound S
   refine ⟨M, hM, fun delta hdelta0 hdelta1 n hn => ?_⟩
   set aL : S.StoppingLeaves delta n stoppingRoot → ℝ := fun leaf =>
-    S.stoppingWordMap (S.stoppingLeafWord delta leaf) 0 with haL
+    S.stoppingLeft (S.stoppingLeafWord delta leaf) with haL
   set bL : S.StoppingLeaves delta n stoppingRoot → ℝ := fun leaf =>
-    S.stoppingWordMap (S.stoppingLeafWord delta leaf) 0 +
+    S.stoppingLeft (S.stoppingLeafWord delta leaf) +
       S.stoppingRatio (S.stoppingLeafWord delta leaf) with hbL
   have hab : ∀ leaf, aL leaf ≤ bL leaf := fun leaf => by
     rw [haL, hbL]
@@ -542,7 +545,7 @@ theorem IsFeasible.exists_stopping_coloring {U : Set ℝ} (hU : S.IsFeasible U) 
 
 /-! ### Ahlfors regularity -/
 
-/-- The upper Ahlfors bound of `thm:stopping-overlap`, at every centre:
+/-- The classical upper Ahlfors bound under the open set condition, at every centre:
 `μ(B̄(x,δ)) ≤ M δ^s` for `0 < δ ≤ 1`.  Only the stopping intervals meeting the ball
 contribute to `eq:stopping-family`, each with weight at most `δ^s`. -/
 theorem IsFeasible.measure_closedBall_le {U : Set ℝ} (hU : S.IsFeasible U) {K : Set ℝ}
@@ -602,7 +605,7 @@ theorem IsFeasible.measure_closedBall_le {U : Set ℝ} (hU : S.IsFeasible U) {K 
     _ = ENNReal.ofReal (M * delta ^ s) := by
         rw [ENNReal.ofReal_mul (Nat.cast_nonneg _), ENNReal.ofReal_natCast]
 
-/-- The lower Ahlfors bound of `thm:stopping-overlap`, at every point of the attractor:
+/-- The classical lower Ahlfors bound under the open set condition, at every point of the attractor:
 `μ(B̄(x,δ)) ≥ (r_min δ / 2)^s` for `0 < δ ≤ 1`.  The stopping interval at threshold
 `δ/2` containing `x` lies in the ball and carries mass at least its weight. -/
 theorem IsNatural.le_measure_closedBall_of_mem {K : Set ℝ} {s : ℝ} (hs : 0 ≤ s)
@@ -631,8 +634,7 @@ theorem IsNatural.le_measure_closedBall_of_mem {K : Set ℝ} {s : ℝ} (hs : 0 �
   -- the stopping interval lies in the ball
   have hIsub : S.stoppingWordMap w '' Icc (0:ℝ) 1 ⊆ Metric.closedBall x delta := by
     rintro _ ⟨t, ht, rfl⟩
-    rw [Metric.mem_closedBall, Real.dist_eq, ← ht₀x, S.stoppingWordMap_sub, abs_mul,
-      abs_of_pos (show 0 < S.stoppingRatio w from S.generationRatio_pos w.1 w.2)]
+    rw [Metric.mem_closedBall, Real.dist_eq, ← ht₀x, S.abs_stoppingWordMap_sub]
     have htt : |t - t₀| ≤ 1 := by
       rw [abs_le]
       constructor <;> linarith [ht.1, ht.2, ht₀.1, ht₀.2]
@@ -664,7 +666,7 @@ theorem IsNatural.le_measure_closedBall_of_mem {K : Set ℝ} {s : ℝ} (hs : 0 �
     _ ≤ μ (S.stoppingWordMap w '' Icc (0:ℝ) 1) := hmass
     _ ≤ μ (Metric.closedBall x delta) := measure_mono hIsub
 
-/-- **`thm:stopping-overlap`, the Frostman conclusion.**  Under the open set condition
+/-- **Classical Frostman bound.** Under the open set condition
 the natural measure is `s`-Frostman: the upper Ahlfors bound holds at every centre,
 and `IsNatural` carries the support condition on `[0,1]`. -/
 theorem OpenSetCondition.exists_isFrostman (hosc : S.OpenSetCondition) {K : Set ℝ} {s : ℝ}
@@ -676,7 +678,7 @@ theorem OpenSetCondition.exists_isFrostman (hosc : S.OpenSetCondition) {K : Set 
   have hds : (0:ℝ) ≤ delta ^ s := Real.rpow_nonneg hdelta0.le s
   exact mul_le_mul_of_nonneg_right (le_max_right _ _) hds
 
-/-- **`thm:stopping-overlap`, Ahlfors regularity.**  Under the open set condition the
+/-- **Classical Ahlfors regularity.** Under the open set condition the
 natural measure is `s`-Ahlfors regular in the closed-ball form: the two-sided bound
 holds at every point of the support, which lies in the attractor. -/
 theorem OpenSetCondition.exists_isAhlforsClosed (hosc : S.OpenSetCondition) {K : Set ℝ}

@@ -7,8 +7,9 @@ The coding map sends a word to the point cut out by the nested compositions
 `S_{ω_0} ∘ ... ∘ S_{ω_{n-1}}`; the attractor is its range and the natural measure is the
 push-forward of the Bernoulli measure with weights `p_i = r_i^s`.
 
-* `wordMap`, `wordRatio`, `codeSeq`, `code`: the composition of the first `n` letters of
-  a word, its contraction ratio, the orbit of the origin under it, and the coding map.
+* `wordMap`, `wordRatio`, `wordSign`, `codeSeq`, `code`: the composition of the first `n`
+  letters of a word, its contraction ratio and orientation, the orbit of the origin under
+  it, and the coding map.
 * `attractorSet`, `eq_attractorSet`: the attractor and the uniqueness of the invariant
   compact set.
 * `digitLaw`, `codeLaw`, `codeLaw_eq_sum`, `naturalMeasure`: the Bernoulli measure on the
@@ -53,19 +54,41 @@ theorem wordMap_succ (S : System ι) (ω : ℕ → ι) (n : ℕ) :
 noncomputable def wordRatio (S : System ι) (ω : ℕ → ι) (n : ℕ) : ℝ :=
   ∏ k ∈ Finset.range n, S.ratio (ω k)
 
+/-- The orientation `ε_{ω_0} ⋯ ε_{ω_{n-1}}` of `wordMap S ω n`. -/
+noncomputable def wordSign (S : System ι) (ω : ℕ → ι) (n : ℕ) : ℝ :=
+  ∏ k ∈ Finset.range n, S.sign (ω k)
+
 /-- The ratio of a composition is positive. -/
 theorem wordRatio_pos (S : System ι) (ω : ℕ → ι) (n : ℕ) : 0 < wordRatio S ω n :=
   Finset.prod_pos fun k _ => S.ratio_pos (ω k)
 
-/-- `wordMap S ω n` is the similarity of ratio `wordRatio S ω n`. -/
+/-- The orientation of a composition is `1` or `-1`. -/
+theorem wordSign_eq (S : System ι) (ω : ℕ → ι) (n : ℕ) :
+    wordSign S ω n = 1 ∨ wordSign S ω n = -1 := by
+  induction n with
+  | zero => exact Or.inl (by simp [wordSign])
+  | succ n ih =>
+    rw [wordSign, Finset.prod_range_succ, ← wordSign]
+    rcases ih with h | h <;> rcases S.sign_eq (ω n) with h' | h' <;> simp [h, h']
+
+/-- The orientation of a composition has modulus one. -/
+theorem abs_wordSign (S : System ι) (ω : ℕ → ι) (n : ℕ) : |wordSign S ω n| = 1 := by
+  rcases wordSign_eq S ω n with h | h <;> simp [h]
+
+/-- `wordMap S ω n` is the similarity of signed ratio `wordSign S ω n * wordRatio S ω n`. -/
 theorem wordMap_sub (S : System ι) (ω : ℕ → ι) (n : ℕ) (x y : ℝ) :
-    wordMap S ω n x - wordMap S ω n y = wordRatio S ω n * (x - y) := by
+    wordMap S ω n x - wordMap S ω n y = wordSign S ω n * wordRatio S ω n * (x - y) := by
   induction n generalizing x y with
-  | zero => simp [wordMap_zero, wordRatio]
+  | zero => simp [wordMap_zero, wordRatio, wordSign]
   | succ n ih =>
     rw [wordMap_succ, Function.comp_apply, Function.comp_apply, ih]
-    simp only [wordRatio, Finset.prod_range_succ, System.map]
+    simp only [wordRatio, wordSign, Finset.prod_range_succ, System.map]
     ring
+
+/-- `wordMap S ω n` scales distances by `wordRatio S ω n`. -/
+theorem abs_wordMap_sub (S : System ι) (ω : ℕ → ι) (n : ℕ) (x y : ℝ) :
+    |wordMap S ω n x - wordMap S ω n y| = wordRatio S ω n * |x - y| := by
+  rw [wordMap_sub, abs_mul, abs_mul, abs_wordSign, one_mul, abs_of_pos (wordRatio_pos S ω n)]
 
 /-- Every composition maps the unit interval into itself. -/
 theorem wordMap_mapsTo (S : System ι) (ω : ℕ → ι) (n : ℕ) :
@@ -148,8 +171,7 @@ theorem dist_codeSeq_succ (S : System ι) (ω : ℕ → ι) (n : ℕ) :
   have hmem : S.map (ω n) 0 ∈ Set.Icc (0:ℝ) 1 := S.mapsTo (ω n) ⟨le_rfl, zero_le_one⟩
   have h1 : |S.map (ω n) 0| ≤ 1 := abs_le.2 ⟨by linarith [hmem.1], hmem.2⟩
   have hcode : codeSeq S ω (n + 1) = wordMap S ω n (S.map (ω n) 0) := rfl
-  rw [Real.dist_eq, codeSeq, hcode, wordMap_sub]
-  rw [abs_mul, abs_of_pos (wordRatio_pos S ω n), zero_sub, abs_neg]
+  rw [Real.dist_eq, codeSeq, hcode, abs_wordMap_sub, zero_sub, abs_neg]
   calc wordRatio S ω n * |S.map (ω n) 0|
       ≤ maxRatio S ^ n * 1 :=
         mul_le_mul (wordRatio_le_pow S ω n) h1 (abs_nonneg _)
@@ -190,8 +212,7 @@ theorem tendsto_wordMap (S : System ι) (ω : ℕ → ι) {z : ℝ} (hz : z ∈ 
   have hz1 : |z| ≤ 1 := abs_le.2 ⟨by linarith [hz.1], hz.2⟩
   have hbound : ∀ n, ‖wordMap S ω n z - codeSeq S ω n‖ ≤ maxRatio S ^ n := by
     intro n
-    rw [Real.norm_eq_abs, codeSeq, wordMap_sub, abs_mul,
-      abs_of_pos (wordRatio_pos S ω n), sub_zero]
+    rw [Real.norm_eq_abs, codeSeq, abs_wordMap_sub, sub_zero]
     calc wordRatio S ω n * |z|
         ≤ maxRatio S ^ n * 1 :=
           mul_le_mul (wordRatio_le_pow S ω n) hz1 (abs_nonneg _)
@@ -283,9 +304,9 @@ theorem eq_attractorSet (S : System ι) {K : Set ℝ} (hK : S.IsAttractor K) :
       intro n
       have hz : orbit n ∈ Set.Icc (0:ℝ) 1 := hsub (hA n)
       have hz1 : |orbit n| ≤ 1 := abs_le.2 ⟨by linarith [hz.1], hz.2⟩
-      have hxe : x - codeSeq S ω n = wordRatio S ω n * (orbit n - 0) := by
-        rw [← hB n, codeSeq]; exact wordMap_sub S ω n (orbit n) 0
-      rw [Real.norm_eq_abs, hxe, sub_zero, abs_mul, abs_of_pos (wordRatio_pos S ω n)]
+      have hxe : |x - codeSeq S ω n| = wordRatio S ω n * |orbit n - 0| := by
+        rw [← hB n, codeSeq]; exact abs_wordMap_sub S ω n (orbit n) 0
+      rw [Real.norm_eq_abs, hxe, sub_zero]
       calc wordRatio S ω n * |orbit n|
           ≤ maxRatio S ^ n * 1 :=
             mul_le_mul (wordRatio_le_pow S ω n) hz1 (abs_nonneg _)
@@ -318,7 +339,8 @@ theorem continuous_wordMap (S : System ι) (n : ℕ) {g : (ℕ → ι) → ℝ} 
   | succ n ih =>
     have hstep : Continuous (fun ω : ℕ → ι => S.map (ω n) (g ω)) := by
       simp only [System.map]
-      exact ((continuous_of_discreteTopology.comp (continuous_apply n)).mul hg).add
+      exact (((continuous_of_discreteTopology.comp (continuous_apply n)).mul
+        (continuous_of_discreteTopology.comp (continuous_apply n))).mul hg).add
         (continuous_of_discreteTopology.comp (continuous_apply n))
     exact ih hstep
 
@@ -494,7 +516,8 @@ theorem measurable_wordMap (S : System ι) (n : ℕ) {g : (ℕ → ι) → ℝ} 
   | succ n ih =>
     have hstep : Measurable (fun ω : ℕ → ι => S.map (ω n) (g ω)) := by
       simp only [System.map]
-      exact ((Measurable.of_discrete.comp (measurable_pi_apply n)).mul hg).add
+      exact (((Measurable.of_discrete.comp (measurable_pi_apply n)).mul
+        (Measurable.of_discrete.comp (measurable_pi_apply n))).mul hg).add
         (Measurable.of_discrete.comp (measurable_pi_apply n))
     exact ih hstep
 
@@ -651,10 +674,7 @@ theorem abs_sub_iterate_testOp_le (S : System ι) {s : ℝ} (hdim : S.IsDimensio
         |(testOp S s)^[n] f (S.map i x) - (testOp S s)^[n] f (S.map i y)| ≤ ε := by
       intro i
       refine ih (S.map i x) (S.mapsTo i hx) (S.map i y) (S.mapsTo i hy) ?_
-      have hd : |S.map i x - S.map i y| = S.ratio i * |x - y| := by
-        simp only [System.map]
-        rw [show S.ratio i * x + S.shift i - (S.ratio i * y + S.shift i)
-              = S.ratio i * (x - y) by ring, abs_mul, abs_of_pos (S.ratio_pos i)]
+      have hd : |S.map i x - S.map i y| = S.ratio i * |x - y| := S.abs_map_sub i x y
       have hb : (0:ℝ) ≤ |x - y| := abs_nonneg _
       have hp : (0:ℝ) ≤ maxRatio S ^ n := pow_nonneg (maxRatio_pos S).le n
       have hr := ratio_le_maxRatio S i

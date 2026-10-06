@@ -64,9 +64,9 @@ theorem minRatio_pow_le_generationRatio :
 omit [Nonempty iota] in
 /-- The affine form of a generation map. -/
 theorem generationMap_eq_add_mul (k : ℕ) (w : GenerationWord iota k) (x : ℝ) :
-    S.generationMap k w x = S.generationMap k w 0 + S.generationRatio k w * x := by
-  have := S.generationMap_sub k w x 0
-  linarith
+    S.generationMap k w x =
+      S.generationMap k w 0 + S.generationSign k w * S.generationRatio k w * x := by
+  linear_combination S.generationMap_sub k w x 0
 
 omit [Nonempty iota] in
 /-- Hutchinson's identity iterated to generation `m`, read on a measurable set:
@@ -116,18 +116,19 @@ theorem IsAttractor.exists_generationWord_image_subset {K : Set ℝ} (hK : S.IsA
 
 /-! ### The exclusion step -/
 
-/-- **The exclusion step.**  Let `f` be an affine map of slope `r > 0` sending a
+/-- **The exclusion step.**  Let `f` be an affine map of slope `r ≠ 0` sending a
 feasible set `U` into `S_i U`, and let `v` be a word whose cylinder `S_v K` has its
 `b`-neighbourhood inside `U`.  Then the cylinder `f(S_v K)` stays at distance at least
-`b r` from `K_j` for `j ≠ i`, so the preimage of the `h`-neighbourhood of `K_j` under
-`f ∘ S_v` misses the attractor whenever `h < b r`. -/
+`b |r|` from `K_j` for `j ≠ i`, so the preimage of the `h`-neighbourhood of `K_j` under
+`f ∘ S_v` misses the attractor whenever `h < b |r|`. -/
 theorem IsFeasible.preimage_cthickening_subset_compl {U : Set ℝ} (hU : S.IsFeasible U)
     {K : Set ℝ} (hK : S.IsAttractor K) {m : ℕ} {v : GenerationWord iota m} {b : ℝ}
     (hv : cthickening b (S.generationMap m v '' K) ⊆ U)
-    {f : ℝ → ℝ} {c r : ℝ} (hf : ∀ x, f x = c + r * x) (hr : 0 < r)
+    {f : ℝ → ℝ} {c r : ℝ} (hf : ∀ x, f x = c + r * x) (hr : r ≠ 0)
     (hfU : f '' U ⊆ S.map i '' U) {j : iota} (hij : i ≠ j) {h : ℝ} (h0 : 0 ≤ h)
-    (hhb : h < b * r) :
+    (hhb : h < b * |r|) :
     (f ∘ S.generationMap m v) ⁻¹' cthickening h (S.map j '' K) ⊆ Kᶜ := by
+  have hr' : 0 < |r| := abs_pos.mpr hr
   intro y hy hyK
   have hKj : IsCompact (S.map j '' K) := hK.1.image (Hutchinson.continuous_systemMap S j)
   rw [Set.mem_preimage, Function.comp_apply, hKj.cthickening_eq_biUnion_closedBall h0] at hy
@@ -143,7 +144,7 @@ theorem IsFeasible.preimage_cthickening_subset_compl {U : Set ℝ} (hU : S.IsFea
   have hy'U : S.generationMap m v y + d / r ∈ U := by
     refine hv (Metric.mem_cthickening_of_dist_le _ (S.generationMap m v y) b _
       ⟨y, hyK, rfl⟩ ?_)
-    rw [Real.dist_eq, add_sub_cancel_left, abs_div, abs_of_pos hr, div_le_iff₀ hr]
+    rw [Real.dist_eq, add_sub_cancel_left, abs_div, div_le_iff₀ hr']
     linarith
   have hzU : z ∈ S.map i '' U := hfU ⟨_, hy'U, hfy'⟩
   exact hU.notMem_piece_of_mem_image S hK hij hzU hzKj
@@ -151,16 +152,16 @@ theorem IsFeasible.preimage_cthickening_subset_compl {U : Set ℝ} (hU : S.IsFea
 /-! ### The geometric decay -/
 
 /-- **The block count of `thm:cross-piece-mass`.**  For an affine map `f` of slope
-`r > 0` sending `U` into `S_i U`, the `μ`-mass of `f⁻¹` of the `h`-neighbourhood of
-`K_j` is at most `(1 - p_v)^k` whenever `h < b r r_min^{km}`: iterating Hutchinson's
+`r ≠ 0` sending `U` into `S_i U`, the `μ`-mass of `f⁻¹` of the `h`-neighbourhood of
+`K_j` is at most `(1 - p_v)^k` whenever `h < b |r| r_min^{km}`: iterating Hutchinson's
 identity `m` letters at a time, the block `v` is excluded and every other block
 carries a factor `1 - p_v`. -/
 theorem IsFeasible.measure_preimage_cthickening_le_pow {U : Set ℝ} (hU : S.IsFeasible U)
     {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (hdim : S.IsDimension s)
     {m : ℕ} {v : GenerationWord iota m} {b : ℝ} (hb : 0 < b)
     (hv : cthickening b (S.generationMap m v '' K) ⊆ U) {i j : iota} (hij : i ≠ j) :
-    ∀ (k : ℕ) (f : ℝ → ℝ) (c r : ℝ), (∀ x, f x = c + r * x) → 0 < r →
-      f '' U ⊆ S.map i '' U → ∀ h : ℝ, 0 ≤ h → h < b * r * S.minRatio ^ (k * m) →
+    ∀ (k : ℕ) (f : ℝ → ℝ) (c r : ℝ), (∀ x, f x = c + r * x) → r ≠ 0 →
+      f '' U ⊆ S.map i '' U → ∀ h : ℝ, 0 ≤ h → h < b * |r| * S.minRatio ^ (k * m) →
         μ (f ⁻¹' cthickening h (S.map j '' K)) ≤
           ENNReal.ofReal ((1 - S.generationWeight s m v) ^ k)
   | 0, f, c, r, hf, hr, hfU, h, h0, hhb => by
@@ -178,15 +179,16 @@ theorem IsFeasible.measure_preimage_cthickening_le_pow {U : Set ℝ} (hU : S.IsF
       rw [hμ.measure_eq_sum_generation S m (hfmeas hN)]
       rw [← Finset.add_sum_erase Finset.univ _ (Finset.mem_univ v)]
       -- the block `v` contributes nothing
+      have hr' : 0 < |r| := abs_pos.mpr hr
       have hvterm : μ (S.generationMap m v ⁻¹' (f ⁻¹' cthickening h (S.map j '' K))) = 0 := by
         refine measure_mono_null ?_ hμ.support
         rw [← Set.preimage_comp]
         refine hU.preimage_cthickening_subset_compl S hμ.attractor hv hf hr hfU hij h0 ?_
-        calc h < b * r * S.minRatio ^ ((k + 1) * m) := hhb
-          _ ≤ b * r * 1 := by
+        calc h < b * |r| * S.minRatio ^ ((k + 1) * m) := hhb
+          _ ≤ b * |r| * 1 := by
               gcongr
               exact pow_le_one₀ hrmin.le hrmin1
-          _ = b * r := mul_one _
+          _ = b * |r| := mul_one _
       rw [hvterm, mul_zero, zero_add]
       -- every other block carries the factor `1 - p_v`
       have hpv0 : 0 ≤ S.generationWeight s m v := S.generationWeight_nonneg s m v
@@ -207,19 +209,24 @@ theorem IsFeasible.measure_preimage_cthickening_le_pow {U : Set ℝ} (hU : S.IsF
         rw [← Set.preimage_comp]
         have hgen := S.minRatio_pow_le_generationRatio m u
         have hρ := S.generationRatio_pos m u
+        have habs : |r * (S.generationSign m u * S.generationRatio m u)|
+            = |r| * S.generationRatio m u := by
+          rw [abs_mul, S.abs_generationSign_mul_generationRatio]
         refine hU.measure_preimage_cthickening_le_pow hμ hdim hb hv hij k
-          (f ∘ S.generationMap m u) (c + r * S.generationMap m u 0) (r * S.generationRatio m u)
-          ?_ (mul_pos hr hρ) ?_ h h0 ?_
+          (f ∘ S.generationMap m u) (c + r * S.generationMap m u 0)
+          (r * (S.generationSign m u * S.generationRatio m u))
+          ?_ (mul_ne_zero hr (S.generationSign_mul_generationRatio_ne_zero m u)) ?_ h h0 ?_
         · intro x
           rw [Function.comp_apply, hf, S.generationMap_eq_add_mul m u x]
           ring
         · rw [Set.image_comp]
           exact (Set.image_mono (hU.mapsTo_generationMap S m u).image_subset).trans hfU
-        · calc h < b * r * S.minRatio ^ ((k + 1) * m) := hhb
-            _ = b * (r * S.minRatio ^ m) * S.minRatio ^ (k * m) := by
+        · rw [habs]
+          calc h < b * |r| * S.minRatio ^ ((k + 1) * m) := hhb
+            _ = b * (|r| * S.minRatio ^ m) * S.minRatio ^ (k * m) := by
                 rw [show (k + 1) * m = m + k * m by ring, pow_add]
                 ring
-            _ ≤ b * (r * S.generationRatio m u) * S.minRatio ^ (k * m) := by
+            _ ≤ b * (|r| * S.generationRatio m u) * S.minRatio ^ (k * m) := by
                 gcongr
       calc (∑ u ∈ Finset.univ.erase v, ENNReal.ofReal (S.generationWeight s m u) *
             μ (S.generationMap m u ⁻¹' (f ⁻¹' cthickening h (S.map j '' K))))
@@ -425,9 +432,9 @@ theorem StrongOpenSetCondition.exists_cross_piece_bound {K : Set ℝ}
     refine ENNReal.toReal_le_of_le_ofReal (pow_nonneg hθ0.le n) ?_
     rw [Measure.map_apply (S.measurable_map p.1.1) Metric.isClosed_cthickening.measurableSet]
     refine hU.measure_preimage_cthickening_le_pow S hμ hdim hb hbU p.2 n (S.map p.1.1)
-      (S.shift p.1.1) (S.ratio p.1.1) (fun x => by simp [System.map]; ring)
-      (S.ratio_pos p.1.1) subset_rfl (h₀ * q ^ n) (by positivity) ?_
-    rw [hh₀, hq, ← pow_mul, mul_comm m n]
+      (S.shift p.1.1) (S.sign p.1.1 * S.ratio p.1.1) (fun x => by simp [System.map]; ring)
+      (S.sign_mul_ratio_ne_zero p.1.1) subset_rfl (h₀ * q ^ n) (by positivity) ?_
+    rw [S.abs_sign_mul_ratio, hh₀, hq, ← pow_mul, mul_comm m n]
     have hri := S.minRatio_le p.1.1
     have hpow : 0 < S.minRatio ^ (n * m) := pow_pos hrmin _
     have hlt : b * S.minRatio / 2 < b * S.ratio p.1.1 := by nlinarith

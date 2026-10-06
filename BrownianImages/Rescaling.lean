@@ -1,6 +1,6 @@
 /-
 `sec:setup` of `BrownianImagesComplete.tex`: the exact rescaling `eq:smoothing`,
-`S_μ(r) = r^{2s} H_μ(log(1/r))`.
+`S_μ(r) = r^{2s} H_μ^s(log(1/r))`.
 
 The paper reaches `eq:smoothing` from the Stieltjes form of `eq:gaussian-reduction` by
 integration by parts and the substitution `δ = r²η`.  Both steps are carried out here.
@@ -271,7 +271,7 @@ theorem rpow_mul_H_eq {s : ℝ} [IsProbabilityMeasure μ] {r : ℝ} (hr : 0 < r)
 /-! ### `eq:smoothing`, unconditionally on the Stieltjes form -/
 
 /-- `eq:smoothing`, the analytic core: the Stieltjes integral of `eq:gaussian-reduction`
-is `r^{2s} H_μ(log(1/r))`.  This is the whole content of `eq:smoothing`, with the
+is `r^{2s} H_μ^s(log(1/r))`.  This is the whole content of `eq:smoothing`, with the
 Stieltjes form of `thm:gaussian-reduction` already substituted in. -/
 theorem integral_ret_pairLaw {s A : ℝ} (hs0 : 0 < s) (_hs1 : s < 1) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {r : ℝ} (hr : 0 < r) :
@@ -293,7 +293,7 @@ end Rescaling
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-/-- `eq:smoothing`.  The exact rescaling `S_μ(r) = r^{2s} H_μ(log(1/r))`, for every
+/-- `eq:smoothing`.  The exact rescaling `S_μ(r) = r^{2s} H_μ^s(log(1/r))`, for every
 `r > 0`, on the Stieltjes half of `thm:gaussian-reduction` as an explicit hypothesis.
 The hypothesis is the second conjunct of `audit_gaussian_reduction`, verbatim, so
 `audit_smoothing` follows from `audit_gaussian_reduction` by projection. -/
@@ -311,7 +311,7 @@ theorem smoothing_of_gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P
 
 /-- `thm:profile-asymptotics`, the conclusion for `μ_B`: the normalised expected
 correlation integral has a finite positive limit.  `eq:smoothing` turns the limit at
-`r → 0⁺` into the limit of `H_μ` at `+∞`, which is `eq:hb-asymptotic`.  The hypothesis
+`r → 0⁺` into the limit of `H_μ^s` at `+∞`, which is `eq:hb-asymptotic`.  The hypothesis
 is the second conjunct of `audit_gaussian_reduction`, quantified over `r`. -/
 theorem non_lattice_correlation_limit_of_gaussian_reduction {P : Measure Ω}
     [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P)
@@ -333,7 +333,7 @@ theorem non_lattice_correlation_limit_of_gaussian_reduction {P : Measure Ω}
   rw [mul_div_cancel_left₀ _ (ne_of_gt hrpow)]
 
 /-- `thm:profile-asymptotics`, the conclusion for `μ_A`: the normalised expected
-correlation integral oscillates.  `eq:ha-asymptotic` puts `H_A` within `ε` of the
+correlation integral oscillates.  `eq:ha-asymptotic` puts `H_A^s` within `ε` of the
 `log 3 / 2`-periodic function `T G̃_A` far out, and the positive oscillation `d_A` of `sec:concentration` separates the
 extrema of `T G̃_A`; `eq:smoothing` converts the two sequences of times into two
 sequences of scales.  The hypotheses are the conclusion of `audit_smoothing`, quantified

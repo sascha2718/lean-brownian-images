@@ -176,9 +176,9 @@ theorem IsPlanarBrownian.map_tubeMass_brownianStoppingCylinder_eq [IsProbability
       = P.map (fun omega => S.stoppingRatio w *
         tubeMass (tubeRadiusReal (v - S.stoppingHalfLogRatio w))
           (brownianImage W hμ.compactAttractor omega)) := by
-  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_eq (tubeRadiusReal_pos v)
-    (S.stoppingAnchor w) (S.stoppingLength_ne_zero w) hμ.compactAttractor
-    hμ.attractor.2.2.1
+  have hlaw := hW.map_tubeMass_affineBrownianCompactPiece_orientCompact_eq
+    (tubeRadiusReal_pos v) (S.stoppingAnchor w) (S.stoppingLength_ne_zero w)
+    (S.stoppingSign_eq w) hμ.compactAttractor hμ.attractor.2.2.1
   simpa only [hμ.attractor.stoppingCylinder_eq_affineTimeCompact S w,
     affineBrownianCompactPiece, System.IsNatural.compactAttractor, System.coe_stoppingLength,
     ← S.tubeRadiusReal_sub_stoppingHalfLogRatio w v] using hlaw
@@ -222,15 +222,17 @@ theorem IsPlanarBrownian.iIndepFun_normalizedTubeMass_brownianStoppingCylinders
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) (v : ℝ) {J : Type*} [Fintype J] (word : J → StoppingWord iota)
     (hdisj : ∀ j j' : J, j ≠ j' →
-      S.stoppingWordMap (word j) 0 + S.stoppingRatio (word j) ≤ S.stoppingWordMap (word j') 0 ∨
-      S.stoppingWordMap (word j') 0 + S.stoppingRatio (word j') ≤ S.stoppingWordMap (word j) 0) :
+      S.stoppingLeft (word j) + S.stoppingRatio (word j) ≤ S.stoppingLeft (word j') ∨
+      S.stoppingLeft (word j') + S.stoppingRatio (word j') ≤ S.stoppingLeft (word j)) :
     iIndepFun (fun j omega => normalizedTubeMass s v
       (brownianImage W (hμ.attractor.stoppingCylinder S (word j).1 (word j).2) omega)) P := by
   let a : J → NNReal := fun j => S.stoppingAnchor (word j)
   let r : J → NNReal := fun j => S.stoppingLength (word j)
-  let L : J → NonemptyCompacts ℝ := fun _ => hμ.compactAttractor
+  let L : J → NonemptyCompacts ℝ := fun j =>
+    orientCompact (S.stoppingSign (word j)) hμ.compactAttractor
   have hr : ∀ j, r j ≠ 0 := fun j => S.stoppingLength_ne_zero _
-  have hL : ∀ j, (L j : Set ℝ) ⊆ Set.Icc 0 1 := fun _ => hμ.attractor.2.2.1
+  have hL : ∀ j, (L j : Set ℝ) ⊆ Set.Icc 0 1 := fun j =>
+    orientCompact_subset_Icc (S.stoppingSign_eq _) hμ.attractor.2.2.1
   have hdisjoint : ∀ ⦃j j' : J⦄, j ≠ j' → a j + r j ≤ a j' ∨ a j' + r j' ≤ a j := by
     intro j j' hne
     rcases hdisj j j' hne with h | h
@@ -618,8 +620,8 @@ omit [Nonempty iota] in
 theorem ordered_of_disjoint_interior (w w' : StoppingWord iota)
     (h : Disjoint (interior (S.stoppingWordMap w '' Icc (0:ℝ) 1))
       (interior (S.stoppingWordMap w' '' Icc (0:ℝ) 1))) :
-    S.stoppingWordMap w 0 + S.stoppingRatio w ≤ S.stoppingWordMap w' 0 ∨
-      S.stoppingWordMap w' 0 + S.stoppingRatio w' ≤ S.stoppingWordMap w 0 := by
+    S.stoppingLeft w + S.stoppingRatio w ≤ S.stoppingLeft w' ∨
+      S.stoppingLeft w' + S.stoppingRatio w' ≤ S.stoppingLeft w := by
   have hr : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
   have hr' : 0 < S.stoppingRatio w' := S.generationRatio_pos w'.1 w'.2
   rw [S.stoppingWordMap_image_unitInterval, S.stoppingWordMap_image_unitInterval, interior_Icc,

@@ -67,7 +67,7 @@ end Separation
 hypotheses `hlim₁` and `hlim₂` are the conclusion of `audit_non_lattice_limit`, one for
 each system, and `hmain` is `audit_main` at the ambient `W`, `P` and `s`, with the two
 Frostman constants and its three hypotheses left quantified: the constants are produced
-inside the proof by `OpenSetCondition.exists_isFrostman`, `thm:stopping-overlap`.  Everything else is
+inside the proof by the classical bound `OpenSetCondition.exists_isFrostman`. Everything else is
 proved here: `eq:hb-asymptotic` moves the two limits from `G` to `H`, `integral_kern_pos`
 says the common factor `∫₀^∞ φ` does not collapse them, and
 `Separation.exists_separation_of_tendsto` turns the two distinct limits into

@@ -742,12 +742,7 @@ theorem phi_recursion_le {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S.IsN
         ≤ μ (Metric.closedBall (S.map i x) δ) := by
     intro i x
     have hpre : S.map i ⁻¹' Metric.closedBall (S.map i x) δ
-        = Metric.closedBall x (δ / S.ratio i) := by
-      ext y
-      simp only [Set.mem_preimage, Metric.mem_closedBall, Real.dist_eq, System.map]
-      rw [show S.ratio i * y + S.shift i - (S.ratio i * x + S.shift i)
-            = (y - x) * S.ratio i from by ring,
-        abs_mul, abs_of_pos (S.ratio_pos i), le_div_iff₀ (S.ratio_pos i)]
+        = Metric.closedBall x (δ / S.ratio i) := S.preimage_closedBall_map i x δ
     calc ENNReal.ofReal (S.ratio i ^ s) * μ (Metric.closedBall x (δ / S.ratio i))
         = ENNReal.ofReal (S.ratio i ^ s)
             * μ (S.map i ⁻¹' Metric.closedBall (S.map i x) δ) := by rw [hpre]

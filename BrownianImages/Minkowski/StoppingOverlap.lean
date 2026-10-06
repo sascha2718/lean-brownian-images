@@ -294,10 +294,16 @@ omit [Nonempty iota] in
 /-- The gap between two stopping intervals is at most one. -/
 theorem wordGap_le_one (w v : StoppingWord iota) : S.wordGap w v ≤ 1 := by
   unfold wordGap
-  have h1 : (S.stoppingAnchor v : ℝ) ≤ 1 :=
-    (S.mapsTo_stoppingMap_unitInterval v.1 v.2 (show (0:ℝ) ∈ Set.Icc 0 1 by simp)).2
-  have h2 : (S.stoppingAnchor w : ℝ) ≤ 1 :=
-    (S.mapsTo_stoppingMap_unitInterval w.1 w.2 (show (0:ℝ) ∈ Set.Icc 0 1 by simp)).2
+  have h1 : (S.stoppingAnchor v : ℝ) ≤ 1 := by
+    rw [System.coe_stoppingAnchor]
+    have := S.stoppingLeft_add_le_one v
+    have : 0 < S.stoppingRatio v := S.generationRatio_pos v.1 v.2
+    linarith
+  have h2 : (S.stoppingAnchor w : ℝ) ≤ 1 := by
+    rw [System.coe_stoppingAnchor]
+    have := S.stoppingLeft_add_le_one w
+    have : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
+    linarith
   have h3 : (0:ℝ) ≤ S.stoppingAnchor w := NNReal.coe_nonneg _
   have h4 : (0:ℝ) ≤ S.stoppingAnchor v := NNReal.coe_nonneg _
   have h5 : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
@@ -314,8 +320,8 @@ theorem abs_sub_le_wordGap_add {w v : StoppingWord iota} {x y : ℝ}
   rw [S.stoppingWordMap_image_unitInterval] at hx hy
   obtain ⟨hx1, hx2⟩ := hx
   obtain ⟨hy1, hy2⟩ := hy
-  have hw0 : S.stoppingWordMap w 0 = (S.stoppingAnchor w : ℝ) := rfl
-  have hv0 : S.stoppingWordMap v 0 = (S.stoppingAnchor v : ℝ) := rfl
+  have hw0 : S.stoppingLeft w = (S.stoppingAnchor w : ℝ) := rfl
+  have hv0 : S.stoppingLeft v = (S.stoppingAnchor v : ℝ) := rfl
   rw [hw0] at hx1 hx2
   rw [hv0] at hy1 hy2
   have hgap1 := le_max_left ((S.stoppingAnchor v : ℝ) - ((S.stoppingAnchor w : ℝ) + S.stoppingRatio w))
@@ -419,17 +425,21 @@ theorem IsPlanarBrownian.integrable_and_integral_tubeOverlapArea_stoppingCylinde
         rw [NNReal.coe_add, NNReal.coe_add, System.coe_stoppingLength, hqcoe]
         linarith
       have hpiecew : hK.stoppingCylinder S w.1 w.2 =
-          affineTimeCompact (S.stoppingAnchor w) (S.stoppingLength w) hK.toNonemptyCompacts :=
+          affineTimeCompact (S.stoppingAnchor w) (S.stoppingLength w)
+            (orientCompact (S.stoppingSign w) hK.toNonemptyCompacts) :=
         hK.stoppingCylinder_eq_affineTimeCompact S w
       have hpiecev : hK.stoppingCylinder S v.1 v.2 =
           affineTimeCompact (S.stoppingAnchor w + S.stoppingLength w + q) (S.stoppingLength v)
-            hK.toNonemptyCompacts := by
+            (orientCompact (S.stoppingSign v) hK.toNonemptyCompacts) := by
         rw [haqb]
         exact hK.stoppingCylinder_eq_affineTimeCompact S v
       have hr2 : r ^ (2:ℝ) = r ^ 2 := Real.rpow_two r
       have hpair := hW.integrable_and_integral_tubeOverlapArea_affineCompactPieces_gap_le_rpow
         (S.stoppingAnchor w) (S.stoppingLength_ne_zero w) hq (S.stoppingLength_ne_zero v)
-        hK.toNonemptyCompacts hK.toNonemptyCompacts hK.2.2.1 hK.2.2.1 (alpha := 2) (CA := A)
+        (orientCompact (S.stoppingSign w) hK.toNonemptyCompacts)
+        (orientCompact (S.stoppingSign v) hK.toNonemptyCompacts)
+        (orientCompact_subset_Icc (S.stoppingSign_eq w) hK.2.2.1)
+        (orientCompact_subset_Icc (S.stoppingSign_eq v) hK.2.2.1) (alpha := 2) (CA := A)
         (CB := A) hr
         (by simpa [affineBrownianCompactPiece, ← hpiecew] using hintw)
         (by simpa [affineBrownianCompactPiece, ← hpiecev] using hintv)
@@ -644,9 +654,9 @@ theorem stoppingWordMap_preimage_closedBall_self (w : StoppingWord iota) (x h : 
     S.stoppingWordMap w ⁻¹' Metric.closedBall (S.stoppingWordMap w x) h
       = Metric.closedBall x (h / S.stoppingRatio w) := by
   have hr : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
-  ext y
-  simp only [Set.mem_preimage, Metric.mem_closedBall, Real.dist_eq, S.stoppingWordMap_sub,
-    abs_mul, abs_of_pos hr, mul_comm (S.stoppingRatio w), le_div_iff₀ hr]
+  rw [preimage_closedBall_of_affine (S.stoppingWordMap_sub w)
+    (S.stoppingSign_mul_stoppingRatio_ne_zero w), abs_mul, S.abs_stoppingSign, one_mul,
+    abs_of_pos hr]
 
 omit [Nonempty iota] in
 /-- Composing two first-level pieces with the map of a word `w` rescales the

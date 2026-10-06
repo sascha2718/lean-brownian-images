@@ -1,7 +1,7 @@
 /-
-`thm:profile-asymptotics` of `sec:smoothing`: the two asymptotics of the expected
-profile, `eq:hb-asymptotic` in the non-lattice case and `eq:ha-asymptotic` in the
-lattice case.
+The smoothing estimates of `sec:smoothing`: `eq:hb-asymptotic` in the non-lattice
+case and `eq:ha-asymptotic` for the homogeneous lattice system. The general lattice
+branch of `thm:profile-asymptotics` is proved in `LatticeProfile.lean`.
 
 * `profile_asymptotics_nonLattice`: dominated convergence against `A·φ`.
 * `exists_nonneg_bound_of_periodic`: a continuous periodic function is bounded by a

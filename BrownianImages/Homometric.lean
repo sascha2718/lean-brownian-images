@@ -100,17 +100,19 @@ theorem digitFunB_injective : Function.Injective digitFunB := by decide
 noncomputable def homSystem (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : ∀ i, d i ≤ 17) :
     System (Fin 6) where
   ratio _ := 1/30
+  sign _ := 1
   shift i := (d i : ℝ) / 18
   ratio_pos _ := by norm_num
   ratio_lt_one _ := by norm_num
+  sign_eq _ := Or.inl rfl
   mapsTo i x hx := by
     obtain ⟨hx0, hx1⟩ := hx
     have hd0 : (0:ℝ) ≤ (d i : ℝ) := by exact_mod_cast h0 i
     have hd17 : (d i : ℝ) ≤ 17 := by exact_mod_cast h17 i
     constructor
-    · show (0:ℝ) ≤ 1/30 * x + (d i : ℝ)/18
+    · show (0:ℝ) ≤ 1 * (1/30) * x + (d i : ℝ)/18
       linarith
-    · show 1/30 * x + (d i : ℝ)/18 ≤ 1
+    · show 1 * (1/30) * x + (d i : ℝ)/18 ≤ 1
       linarith
 
 /-- The maps of a homometric system are the affine maps `hommap` of its digits. -/

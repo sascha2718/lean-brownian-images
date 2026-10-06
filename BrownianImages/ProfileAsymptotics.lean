@@ -1,17 +1,17 @@
 /-
-`sec:smoothing` of `BrownianImagesComplete.tex`: the `μ_B` conclusion of
-`thm:profile-asymptotics` with its constant named.
+`sec:smoothing` of `BrownianImagesComplete.tex`: the correlation-integral
+consequence of `eq:hb-asymptotic` with its constant named.
 
 `eq:gb-limit` is `thm:non-lattice-limit` read at the paired system.  The support of `ϑ`
-is `{log 2, log(1/c)}`, so `eq:non-lattice` is exactly the non-arithmetic hypothesis of
+is `{log 2, log(1/c)}`, so `eq:non-lattice` is exactly the non-lattice hypothesis of
 that lemma: `pairSystem_nonArithmetic_iff` is the conversion, and
 `pairSystem_isDimension`, `pairSystem_stronglySeparated` and the attractor sitting in
-`[0,1]` are the remaining inputs.  The bundle `thm:profile-asymptotics` in `NonLattice`
+`[0,1]` are the remaining inputs. The paired-profile bundle in `NonLattice`
 carries the renewal constant `C_B` of `eq:gb-limit` through all three conclusions about
 `μ_B`; the piece proved here is the limit of the normalised correlation integral.
 
 * `ProfileAsymptotics.non_lattice_correlation_limit_const`: the `μ_B` conclusion of
-  `thm:profile-asymptotics` with the limit named, `C ∫₀^∞ φ` rather than some `L > 0`.
+  `eq:hb-asymptotic` with the limit named, `C ∫₀^∞ φ` rather than some `L > 0`.
 -/
 import BrownianImages.Endpoints
 
@@ -24,7 +24,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 
 namespace ProfileAsymptotics
 
-/-- `thm:profile-asymptotics`, the conclusion for `μ_B` with the limit named: the
+/-- `eq:hb-asymptotic`, the consequence for `μ_B` with the limit named: the
 normalised expected correlation integral converges to `C ∫₀^∞ φ`, the same constant
 `eq:hb-asymptotic` produces.  `audit_non_lattice_correlation_limit` asserts only that
 some positive limit exists; the bundle needs the value, so it is proved here from

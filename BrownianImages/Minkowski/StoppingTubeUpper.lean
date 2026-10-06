@@ -28,18 +28,19 @@ variable {iota : Type u} [Fintype iota] [Nonempty iota] (S : System iota)
 /-! ### Stopping cylinders are affine time copies -/
 
 omit [Nonempty iota] in
-/-- A nested stopping cylinder is exactly the affine copy of the attractor
-with the word's left endpoint and product ratio. -/
+/-- A nested stopping cylinder is exactly the oriented affine copy of the attractor
+with the word's left endpoint, product ratio and orientation. -/
 theorem IsAttractor.stoppingCylinder_eq_affineTimeCompact {K : Set ℝ}
     (hK : S.IsAttractor K) (w : StoppingWord iota) :
     hK.stoppingCylinder S w.1 w.2 =
       affineTimeCompact (S.stoppingAnchor w) (S.stoppingLength w)
-        hK.toNonemptyCompacts := by
+        (orientCompact (S.stoppingSign w) hK.toNonemptyCompacts) := by
   apply NonemptyCompacts.ext
-  rw [hK.coe_stoppingCylinder S w.1 w.2, coe_affineTimeCompact]
+  rw [hK.coe_stoppingCylinder S w.1 w.2, coe_affineTimeCompact, coe_orientCompact,
+    Set.image_image]
   apply Set.image_congr
-  intro t ht
-  exact S.stoppingMap_eq_zero_add_ratio_mul w.1 w.2 t
+  intro t _ht
+  exact S.stoppingMap_eq_left_add w t
 
 omit [Nonempty iota] in
 /-- The stopping cylinder of the root word is the whole attractor. -/
@@ -72,7 +73,7 @@ theorem IsAttractor.brownianStoppingCylinder_subset_disc
           (S.stoppingLength w) omega) := by
   rw [hK.stoppingCylinder_eq_affineTimeCompact S w]
   exact affineBrownianCompactPiece_subset_intervalOscillation_disc
-    (S.stoppingLength_ne_zero w) hKunit homega
+    (S.stoppingLength_ne_zero w) (orientCompact_subset_Icc (S.stoppingSign_eq w) hKunit) homega
 
 omit [Nonempty iota] in
 /-- At every sufficiently deep stopping level, the full Brownian attractor

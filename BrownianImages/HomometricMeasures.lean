@@ -66,7 +66,9 @@ theorem measurableSet_cyl (k : ℤ) : MeasurableSet (cyl k) := measurableSet_Icc
 theorem map_mem_cyl {d : Fin 6 → ℤ} {h0 : ∀ i, 0 ≤ d i} {h17 : ∀ i, d i ≤ 17} (i : Fin 6)
     {x : ℝ} (hx : x ∈ Set.Icc (0:ℝ) 1) : (homSystem d h0 h17).map i x ∈ cyl (d i) := by
   obtain ⟨hx0, hx1⟩ := hx
-  have hval : (homSystem d h0 h17).map i x = 1/30 * x + (d i : ℝ)/18 := rfl
+  have hval : (homSystem d h0 h17).map i x = 1/30 * x + (d i : ℝ)/18 := by
+    show 1 * (1/30) * x + (d i : ℝ)/18 = _
+    ring
   rw [cyl, hval]
   constructor <;> [linarith; linarith]
 
@@ -155,9 +157,11 @@ pair of digits, the shift determined by the difference of the two digits. -/
 noncomputable def diffSystem (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : ∀ i, d i ≤ 17) :
     System (Fin 6 × Fin 6) where
   ratio _ := 1/30
+  sign _ := 1
   shift p := ((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60
   ratio_pos _ := by norm_num
   ratio_lt_one _ := by norm_num
+  sign_eq _ := Or.inl rfl
   mapsTo p x hx := by
     obtain ⟨hx0, hx1⟩ := hx
     have e1 : (0:ℝ) ≤ ((d p.1 : ℤ) : ℝ) := by exact_mod_cast h0 p.1
@@ -167,15 +171,19 @@ noncomputable def diffSystem (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : 
     have hc : ((d p.1 - d p.2 : ℤ) : ℝ) = ((d p.1 : ℤ) : ℝ) - ((d p.2 : ℤ) : ℝ) := by
       push_cast; ring
     constructor
-    · show (0:ℝ) ≤ 1/30 * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60)
+    · show (0:ℝ) ≤ 1 * (1/30) * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60)
       rw [hc]; linarith
-    · show 1/30 * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60) ≤ 1
+    · show 1 * (1/30) * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60) ≤ 1
       rw [hc]; linarith
 
 /-- The similarity of the difference system at an ordered pair of positions depends on
 the pair only through the difference of the two digits. -/
 theorem diffSystem_map (d : Fin 6 → ℤ) (h0 : ∀ i, 0 ≤ d i) (h17 : ∀ i, d i ≤ 17)
-    (p : Fin 6 × Fin 6) : (diffSystem d h0 h17).map p = diffMap (d p.1 - d p.2) := rfl
+    (p : Fin 6 × Fin 6) : (diffSystem d h0 h17).map p = diffMap (d p.1 - d p.2) := by
+  funext x
+  show 1 * (1/30) * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60)
+    = 1/30 * x + (((d p.1 - d p.2 : ℤ) : ℝ)/36 + 29/60)
+  rw [one_mul]
 
 /-- `thm:homometric-example`: the weight of a single piece is `1/6`. -/
 theorem rpow_tHom : ((1:ℝ)/30) ^ tHom = 1/6 := by
