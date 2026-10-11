@@ -6,7 +6,9 @@ how each result of the paper maps to an endpoint, and where a formal statement c
 quietly diverge from the prose. Labels such as `thm:main` are the labels of the LaTeX
 source. The comparator compares `Challenge.lean` with `Solution.lean` and never with
 the paper, so this correspondence is a human obligation, and this document is where
-it is argued.
+it is argued. [`../paper-correspondence.yaml`](../paper-correspondence.yaml) is the
+structured statement mapping used alongside the Palomar metadata. Its source hashes
+detect drift and do not establish mathematical equivalence.
 
 The paper uses `C_δ(μ)` for the correlation integral of the time measure as well as
 `C_r(ν)` for a planar measure. The library retains the internal names `Phi μ δ` and
@@ -192,51 +194,54 @@ same bound and the same three regimes of `V_s`.
 
 ## The statement layer
 
-`Solution.lean` is the formal statement of the paper: 127 endpoints named
+`Solution.lean` is the formal statement of the paper: 135 endpoints named
 `audit_<slug>`, in document order, proved from the library declarations. Adding a
 result to the paper means adding its statement there first; the
 design work is in the statement.
 
-`Challenge.lean` is the human-facing problem statement and carries only the headline
-theorems, with statement text identical to `Solution.lean` and `sorry` in place of the
-proofs, on Mathlib-only copies of the definitions the statements need: `thm:main` as
-`audit_main`; `thm:cantor-application` as `audit_cantor_application` with
-`audit_cantor_application_pair` and `audit_exceptional_parameters_countable` covering
-its final sentence. It is not part of the library and not a default target, which is
-what lets it carry `sorry` while the library stays clean. The comparator configuration
-kernel-checks exactly these four; the other endpoints are checked by
-`lake build Solution`, and the library declares no axiom.
+`Challenge.lean` contains exactly the nine numbered results of Section 1, with
+identical statement text in `Solution.lean` and `sorry` in place of each proof.
+It imports only Mathlib and contains no proved helper theorems or literature axioms.
+The Comparator configuration selects these nine names:
 
-The main theorem uses `expectedProfile`, defined directly by
-`e^{2st} 𝔼 C_{e^{-t}}(W_*μ)` as in `eq:expected-profile`. The smoothing kernel, time
-correlation integral and normalised profile `G` do not occur in `Challenge.lean`.
-In `Solution.lean`,
-`expectedProfile_eq_H` derives the equality with the library's smoothing formula
-from `smoothing`.
+| Section 1 result | Endpoint |
+| --- | --- |
+| 1. `thm:main` | `audit_main` |
+| 2. `thm:profile-asymptotics` | `audit_profile_asymptotics` |
+| 3. `thm:cantor-application` | `audit_lattice_nonlattice_measures` |
+| 4. `thm:fixed-dimension-separation` | `audit_finite_exceptions` |
+| 5. `thm:small-dimension-monotone` | `audit_small_dimension` |
+| 6. `thm:critical-set-finite` | `audit_finite_critical_set` |
+| 7. `thm:minkowski-reconstruction` | `audit_reconstruction` |
+| 8. `thm:cantor-set-application` | `audit_lattice_nonlattice_sets` |
+| 9. `thm:fixed-dimension-set-application` | `audit_two_contraction_sets` |
 
-The scalar formulas `homogeneousDimension` and `pairedRatio` are defined directly
-in both statement files. They are definitionally equal to the library's
-`homogeneousDim` and `pairRatio`. Separate declaration names keep compiler-generated
-numeral proofs from making the challenge depend on the smoothing kernel's
-declarations; comparator still checks the complete definitions, without exceptions.
+The expected profile is defined by `e^{2st} 𝔼 C_{e^{-t}}(W_*μ)`.
+`expectedProfile_eq_H` identifies it with the internal smoothing formula in Solution.
+The two-contraction pair `(K_p, μ_p)` is selected by its attractor and measure invariance
+equations in `IsTwoContractionNatural`. Hutchinson's theorem, proved in the library,
+supplies the pair, and `twoContraction_natural` identifies it with the library's natural
+measure. `meanProfile` is the limit of the expected-profile averages, not a closed-form
+substitute. `audit_finite_exceptions` proves convergence to that limit. Derivatives
+are transported using equality on a neighbourhood of each interior parameter.
 
-The named measures are specified by `IsHomogeneousMeasure` and `IsPairMeasure`:
-probability measures on `[0,1]` satisfying the two explicit invariance equations of
-`sec:introduction`. Their definitions need no bundled system constructors or proofs.
-The equivalences `isHomogeneousMeasure_iff_exists_isNatural` and
-`isPairMeasure_iff_exists_isNatural` in `Solution.lean` identify them with the
-library's natural measures, using Hutchinson uniqueness. In particular, the paired
-headline has no extra ratio-bound hypotheses: `pairRatio_pos` and
-`pairRatio_lt_half` supply the bounds inside its proof. The general-system headline
-retains arbitrary orientations and the open set condition.
+`levelSet_finite` strengthens the internal countability result: positivity at the chosen
+parameter and the limit zero at p=0 bound the level set away from zero. Compactness
+and the absence of interior accumulation points then give finiteness. The challenge
+states monotonicity on every open interval without critical points, which includes
+each component of the complement of the critical set.
 
-All four theorem bodies in `Challenge.lean` are holes. Its other declarations are
-definitions or structures used by those statements, with no helper theorems,
-constructor tactic proofs or literature axioms. Comparator compares the transitive
-dependencies of the statements with their counterparts in `Solution.lean`, including
-the copied definitions, audits the permitted axioms, and replays the proofs through
-the kernel. Run `./comparator-audit.sh` from `lean/`; the local runner and its platform
-requirements are documented in `README.md`.
+Compact images are points of the Hausdorff hyperspace with its Borel sigma-algebra.
+The cut-off probability is defined by its normalised triangular density. Its probability
+fallback is irrelevant for positive radii, as `cutoffProbability_eq` proves. The
+reconstruction endpoint states both almost-sure weak convergence and Borel recovery.
+The small-dimension set endpoint supplies a threshold for both strict monotonicity
+and compact-image separation; strict monotonicity also gives the occupation conclusion.
+
+The older homogeneous, paired-example and countability endpoints remain proved in
+Solution as special cases and internal results. They are no longer Challenge endpoints.
+Run `./comparator-audit.sh` for the local development check. The separate Palomar
+preflight workflow uses the registry verifier on an immutable repository commit.
 
 **The correspondence is not one endpoint per theorem.** A theorem with several
 assertions appears twice: once as a bundled `audit_thm_*` endpoint carrying the paper's
@@ -266,21 +271,21 @@ unconditional determinant positivity as recorded below.
 ## State
 
 Results and displayed claims of `BrownianImagesComplete.tex`, in document order, against
-the `Solution.lean` endpoint and what stands behind it. All 127 endpoints are proved.
-`Challenge.lean` retains `sorry` only as the independent statement file for the four
+the `Solution.lean` endpoint and what stands behind it. All 135 endpoints are proved.
+`Challenge.lean` retains `sorry` only as the independent statement file for the nine
 headline endpoints; no library or solution declaration uses `sorry`.
 
 | Result | Endpoint | Proved by |
 | --- | --- | --- |
 | `thm:main` | `audit_main` | `main`, after identifying the expected profile with `H` through `smoothing` |
-| `thm:cantor-application` | `audit_cantor_application` | `homogeneous_application`, the general system under the open set condition, with the homogeneous measure specified by its invariance equation |
-| `thm:cantor-application`, named `μ_B` | `audit_cantor_application_pair` | `homogeneous_application_pair`, with both named measures specified by their invariance equations and the paired ratio bounds derived in the proof |
+| Homogeneous special case of `thm:cantor-application` | `audit_cantor_application` | `homogeneous_application`, the general system under the open set condition, with the homogeneous measure specified by its invariance equation |
+| Internal paired example, named `μ_B` | `audit_cantor_application_pair` | `homogeneous_application_pair`, with both named measures specified by their invariance equations and the paired ratio bounds derived in the proof |
 | countability of exceptional homogeneous parameters | `audit_exceptional_parameters_countable` | `exceptionalParameters_countable` |
 | `thm:minkowski-reconstruction` | `audit_minkowski_reconstruction` | `System.IsNatural.minkowskiReconstruction`, under the open set condition; the non-lattice key-renewal limit and the lattice finite-delay periodic limit both feed the generation-cylinder quotient argument, giving pathwise recovery and a measurable reconstruction map from the compact Brownian image |
 | Borel recovery from the pathwise tube limit | `audit_borel_reconstruction_of_pathwise` | `MinkowskiReconstruction.exists_borel_reconstruction_of_pathwise` |
 | transfer from occupation-law singularity to compact-image-law singularity | `audit_brownianImageLaw_mutuallySingular_of_pathwise` | `MinkowskiReconstruction.brownianImageLaw_mutuallySingular_of_pathwise_tubeReconstruction`; `brownianImageLaw_mutuallySingular_of_generation_tubeMassRatio` gives the direct self-similar generation-ratio form |
-| `thm:cantor-set-application` | `audit_cantor_set_application` | `MinkowskiReconstruction.homogeneous_brownianImage_application`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the non-lattice source, under the open set condition, by the general reconstruction theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
-| `thm:cantor-set-application`, named `K_B` | `audit_cantor_set_application_pair` | `MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional` |
+| Homogeneous special case of `thm:cantor-set-application` | `audit_cantor_set_application` | `MinkowskiReconstruction.homogeneous_brownianImage_application`: the homogeneous source is reconstructed directly from its one-delay renewal equation, the non-lattice source, under the open set condition, by the general reconstruction theorem, and occupation-law singularity descends to mutual singularity of the compact-image laws |
+| Internal paired-set example, named `K_B` | `audit_cantor_set_application_pair` | `MinkowskiReconstruction.homogeneous_brownianImage_application_pair_unconditional` |
 | `eq:neighbourhood-union-scaling` | `audit_tube_union_scaling` | `tubeCutoff_compactUnion`, `tubeMass_translate_dilate` |
 | `eq:neighbourhood-defect-elementary` | `audit_tube_defect_elementary` | `tubeDefect_nonneg`, `tubeDefect_le_pairwiseTubeOverlapAreaSum` |
 | `thm:neighbourhood-moments` | `audit_tube_moments` | `System.IsNatural.tubeMoments`, under the open set condition; discrete-martingale maximal estimates give every unit Brownian-radius moment, the stopping cover supplies the stated upper moments, and classical Ahlfors regularity under the open set condition the positive lower mean |
@@ -396,7 +401,7 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | Internal consequence of `thm:fixed-dimension-separation`: an uncountable subfamily with pairwise singular laws | `audit_fixed_dimension_subfamily` | `exists_uncountable_injOn_fixedMean`, by the intermediate value theorem, uncountable because the image of the mean is an interval of positive length, and `audit_fixed_dimension_laws` |
 | `thm:fixed-dimension-separation`, the analytic assertions | `audit_fixed_dimension_separation` | `not_accPt_criticalSet`, `strictMono_or_anti_of_ne_zero`, `not_accPt_levelSet`: the identity theorem `AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero` on `(0,1)` for the derivative and for `H̄_s - H̄_s(p₁)`, non-constancy from the limit `0` at `0` and positivity at `1/2` (`fixedMean_not_const`), the sign of the derivative on an interval free of critical points by the intermediate value theorem |
 | the paragraph after `thm:fixed-dimension-separation`, the interval `(1/2 - ε_s, 1/2)` | `audit_fixed_dimension_eps` | `exists_eps_strictMono`, `ε_s` from the isolated point `1/2` |
-| the paragraph after `thm:fixed-dimension-separation`: for each fixed parameter, at most countably many possible exceptions to singularity, finitely many in every interval bounded away from zero | `audit_fixed_dimension_level_countable`, `audit_fixed_dimension_laws` | `levelSet_countable`, from the finiteness of a level set on each `[1/(n+2), 1/2]`; every interval bounded away from zero is contained in one such interval, and `audit_fixed_dimension_laws` gives both singularities outside the level set |
+| Internal weaker consequence: countability and local finiteness of the exceptional level set | `audit_fixed_dimension_level_countable`, `audit_fixed_dimension_laws` | `levelSet_countable`, from the finiteness of a level set on each `[1/(n+2), 1/2]`; every interval bounded away from zero is contained in one such interval, and `audit_fixed_dimension_laws` gives both singularities outside the level set |
 | `thm:fixed-dimension-separation`, the singular laws | `audit_fixed_dimension_laws` | `MinkowskiReconstruction.fixedSystem_occupationLaw_mutuallySingular`, `fixedSystem_brownianImageLaw_mutuallySingular`: distinct Cesàro means give separated profiles (`exists_ge_abs_sub_of_tendsto_avg`), `thm:main` with Frostman from the open set condition, and the pathwise tube reconstruction of both systems through the common Borel reconstruction map |
 | `thm:fixed-dimension-separation`, bundled | `audit_thm_fixed_dimension_separation` | the two endpoints above |
 
@@ -607,7 +612,7 @@ limits in `thm:profile-asymptotics` differ, the step taken in the proof of
 
 ### What the comparator does not check
 
-Comparator compares the four headline endpoints of `Challenge.lean` with
+Comparator compares the nine headline endpoints of `Challenge.lean` with
 `Solution.lean` and replays their proofs through the kernel; the other endpoints of
 `Solution.lean` rest on `lake build`, on the absence of any `axiom` declaration in the
 library, and on the ban on `native_decide`.  It says nothing
@@ -657,9 +662,10 @@ endpoints; the same bound is proved by dyadic summation in the library. The sepa
 and nested determinant calculations are proved
 in `FourPoint.lean` without endpoints of their own; they imply the common lower bound
 used in the paper.
-The claim the project makes is coverage of every numbered result, plus the displayed
-claims that a later result cites or that carry a hypothesis of their own; it is not
-coverage of every display.
+All nine Section 1 statements have complete independent Challenge endpoints. The
+structured correspondence also records the supporting numbered results, including
+the qualified coverage of the generic level-sum lemma described above. There is no
+claim that every display or every general literature result is formalised.
 `eq:non-lattice`, the rational independence of `log(1/c)/log 2`, is an open lattice
 assertion in the paper. It appears in two forms: as `System.NonArithmetic` in the
 statements about a general system, and literally, as `Irrational (log (1/c) / log 2)`,

@@ -4,7 +4,7 @@
 version: 2
 source_version: "BrownianImagesComplete.tex"
 manuscript_files: ["BrownianImagesComplete.tex"]
-manuscript_sha256: {"BrownianImagesComplete.tex": "80b23649c66fb649e7f5a1602897e95f8c9751ba6b8ab29a6e3dff23fb1acb0e"}
+manuscript_sha256: {"BrownianImagesComplete.tex": "0fe6fa911f37a7c8814ae2a27321914560095d56ede58a4f1357776fd78e3f55"}
 entries:
   - source: "thm:main"
     kind: "theorem"

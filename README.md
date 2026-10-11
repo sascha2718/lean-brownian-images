@@ -5,30 +5,34 @@
 A Lean 4 formalisation, over Mathlib, of the paper
 
 > Sascha Troscheit, *Correlation integrals and Minkowski reconstruction of planar
-> Brownian images*, 2026. arXiv:XXXX.XXXXX (identifier to be filled in).
+> Brownian images*, 2026. Manuscript.
 
-Every numbered result of the paper is stated formally and proved, together with the
-displayed claims that a later result cites or that carry a hypothesis of their own,
-as recorded in [`docs/correspondence.md`](docs/correspondence.md).  Schief's theorem,
-which the paper cites for the open set condition, is proved in
-`BrownianImages/Schief.lean`.
+The nine numbered results of Section 1 are stated independently in `Challenge.lean`
+and proved in `Solution.lean`. Supporting statements, representations and coverage
+qualifications are mapped in [`paper-correspondence.yaml`](paper-correspondence.yaml),
+with proof details in [`docs/correspondence.md`](docs/correspondence.md). Schief's theorem,
+which the paper cites for the open set condition, is proved in `BrownianImages/Schief.lean`.
 The library is `sorry`-free, declares no axiom, and every proof uses only the three
 standard axioms `propext`, `Classical.choice` and `Quot.sound`; `native_decide` is not
 used.
 
 ## What is proved
 
-The separation theorem and its self-similar corollary with the two claims in its final
-sentence are the Comparator-audited endpoints:
+The Comparator configuration selects all nine Section 1 statements:
 
-| Paper | Endpoint |
+| Section 1 result | Endpoint |
 | --- | --- |
-| `thm:main`: separated expected correlation profiles give mutually singular occupation-measure laws | `audit_main` |
-| `thm:cantor-application`: the homogeneous measure separates from every non-lattice natural measure of the same dimension under the open set condition, including the paired example | `audit_cantor_application`, `audit_cantor_application_pair` |
-| `thm:cantor-application`, final sentence: the exceptional parameter set is countable | `audit_exceptional_parameters_countable` |
+| 1. `thm:main` | `audit_main` |
+| 2. `thm:profile-asymptotics` | `audit_profile_asymptotics` |
+| 3. `thm:cantor-application` | `audit_lattice_nonlattice_measures` |
+| 4. `thm:fixed-dimension-separation` | `audit_finite_exceptions` |
+| 5. `thm:small-dimension-monotone` | `audit_small_dimension` |
+| 6. `thm:critical-set-finite` | `audit_finite_critical_set` |
+| 7. `thm:minkowski-reconstruction` | `audit_reconstruction` |
+| 8. `thm:cantor-set-application` | `audit_lattice_nonlattice_sets` |
+| 9. `thm:fixed-dimension-set-application` | `audit_two_contraction_sets` |
 
-Beside them, `Solution.lean` states 127 endpoints in all, named `audit_<slug>` in document
-order, from the Gaussian reduction of the correlation integral through the renewal
+Beside them, `Solution.lean` states 135 endpoints in all, named `audit_<slug>` covering the manuscript, from the Gaussian reduction of the correlation integral through the renewal
 analysis with the non-constancy of the lattice profile, the smoothing operator and its
 Fourier multipliers, the four-point estimate and the concentration argument, to the
 Minkowski reconstruction of the occupation measure from the compact Brownian image, the
@@ -48,13 +52,17 @@ dimension. The table of every result against its endpoint is in
   section, and `BrownianImages/Renewal/` is vendored third-party code, see below.
 - `Solution.lean`: the formal statement of the paper, every endpoint proved by a library
   declaration.
-- `Challenge.lean`: the four headline endpoints restated with `sorry`, on Mathlib-only
+- `Challenge.lean`: the nine headline endpoints restated with `sorry`, on Mathlib-only
   definitions of the expected correlation profile and self-similar measures. It contains
   no helper proofs or bundled constructors for the named systems. It imports only Mathlib, so the audit
   trusts this file and Mathlib alone. Its statement text is character-for-character
   identical to `Solution.lean`.
 - `comparator-config.json`, `comparator-audit.sh`: the audit configuration and a local
   runner for it.
+- `formalization.yaml`: Palomar metadata, source and automation disclosures, and the nine headline mappings.
+- `paper-correspondence.yaml`: all 32 numbered manuscript statements, their Lean correspondences and qualifications.
+- `scripts/check_paper_correspondence.py`: source-drift and declaration consistency checks.
+- `.github/workflows/palomar-preflight.yml`: the pinned Palomar verifier, run on demand.
 - `docs/`: the [correspondence with the paper](docs/correspondence.md), including the
   fidelity boundary; [what Mathlib does not have](docs/mathlib-gaps.md); and the account
   of the [vendored renewal library](docs/renewal-library.md).
@@ -91,7 +99,7 @@ written there, with the library never trusted. The other endpoints of `Solution.
 checked by `lake build Solution`: the library declares no axiom, so they rest on the same
 three axioms.
 
-The GitHub workflow `.github/workflows/comparator.yml` runs the audit on every push, fully
+The development workflow `.github/workflows/comparator.yml` runs the audit on every push, fully
 sandboxed: comparator, `lean4export` and `landrun` are built at pinned commits, the
 sandbox is probed, and comparator runs inside a `systemd-run` unit with network access
 denied.
@@ -106,6 +114,26 @@ COMPARATOR_TOOLS=/path/to/tools ./comparator-audit.sh
 where the tools directory contains the two checkouts; `COMPARATOR_LANDRUN` and
 `COMPARATOR_LEAN4EXPORT` override the individual binaries. On macOS, where `landrun`
 is unavailable, the script uses comparator's unsandboxed shim.
+
+## Palomar upload
+
+The repository contains the two Lean files, pinned Lake files, licence, Comparator
+configuration, and [`formalization.yaml`](formalization.yaml). Submit the public
+repository at an immutable commit with `comparator-config.json` as the configuration
+path. [`Palomar preflight`](.github/workflows/palomar-preflight.yml) runs Palomar's
+verifier on the selected commit. It is separate from the local macOS Comparator
+check and does not register a submission. The toolchain and dependency pins are unchanged.
+
+The paper is kept in the parent research directory. To check the correspondence locally:
+
+```
+python3 scripts/check_paper_correspondence.py
+```
+
+The check covers the source fingerprints, all numbered statements, the nine theorem
+holes, the solution declaration names, the Comparator list and metadata alignment.
+It neither elaborates Lean nor establishes mathematical equivalence. Revisit the
+correspondence when source fingerprints change.
 
 ## Correspondence with the paper
 

@@ -923,45 +923,43 @@ theorem jointReturn_swap_pairs {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (
 end FourPointIntegral
 
 open FourPointIntegral in
-/-- `thm:four-point-integral`: the joint return probability
-integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
-`thm:endpoint-block-mass` at the dyadic values, `audit_endpoint_block_mass_dyadic`; the
-proof covers the overlap set by the permuted dyadic blocks and factors the resulting
-sum. The paper instead integrates the distribution bound over continuous cutoffs. -/
-theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ}
-    (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hμ : IsFrostman s A μ)
-    (hblock : ∃ C > 0, ∀ j l : ℕ,
+/-- `thm:four-point-integral` with its constant chosen uniformly: a fixed dyadic block
+constant `K` yields a four-point constant depending only on `s` and `K`. In particular,
+the constant is independent of the time measure, Brownian law and sample space. -/
+theorem four_point_integral_of_block_uniform {s A K : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1) (hK0 : 0 < K) :
+    ∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+    (∀ j l : ℕ,
       (μ.prod (μ.prod (μ.prod μ)))
         {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
           ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
           ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
           (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
-        ≤ ENNReal.ofReal (C * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
+        ≤ ENNReal.ofReal (K * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
       ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
         ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
         ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
         (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
         (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+            ≤ K * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
                 (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
           (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l)))) :
-    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
+            ≤ K * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l)))) →
+    ∀ r : ℝ, 0 < r → r ≤ 1 →
       ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
         jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
         ∂(μ.prod (μ.prod (μ.prod μ)))
       ≤ ENNReal.ofReal (C * varScale s r) := by
   classical
-  obtain ⟨K, hK0, hK⟩ := hblock
   obtain ⟨D, hD0, hD⟩ := tsum_master_le hs0 hs1
   have hcard : (0:ℝ) < (Fintype.card (Equiv.Perm (Fin 4)) : ℝ) := by
     exact_mod_cast Fintype.card_pos
   refine ⟨(Fintype.card (Equiv.Perm (Fin 4)) : ℝ) * (K * K * D),
     mul_pos hcard (by positivity), ?_⟩
-  intro r hr0 hr1
+  intro Ω _ P _ W _hW μ _ hμ hK r hr0 hr1
   set F : ℝ → ℝ → ℝ → ℝ → ℝ≥0∞ := fun t u t' u' =>
     jointReturn W P r t.toNNReal u.toNNReal t'.toNNReal u'.toNNReal with hFdef
   have hswapL : ∀ t u t' u' : ℝ, F t u t' u' = F u t t' u' := fun t u t' u' =>
@@ -1072,6 +1070,42 @@ theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Meas
           ← ENNReal.ofReal_mul hK0.le, ← ENNReal.ofReal_mul (mul_nonneg hK0.le hK0.le)]
         congr 1
         ring
+
+open FourPointIntegral in
+/-- `thm:four-point-integral`: the joint return probability
+integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
+`thm:endpoint-block-mass` at the dyadic values, `audit_endpoint_block_mass_dyadic`; the
+proof covers the overlap set by the permuted dyadic blocks and factors the resulting
+sum. The paper instead integrates the distribution bound over continuous cutoffs. -/
+theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
+    (hμ : IsFrostman s A μ)
+    (hblock : ∃ C > 0, ∀ j l : ℕ,
+      (μ.prod (μ.prod (μ.prod μ)))
+        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
+          ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
+          ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
+          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
+        ≤ ENNReal.ofReal (C * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
+      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
+        ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
+        ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
+        (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
+        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
+            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
+          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
+            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l)))) :
+    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
+      ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
+        jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
+        ∂(μ.prod (μ.prod (μ.prod μ)))
+      ≤ ENNReal.ofReal (C * varScale s r) := by
+  obtain ⟨K, hK0, hK⟩ := hblock
+  obtain ⟨C, hC0, hC⟩ := four_point_integral_of_block_uniform (A := A) hs0 hs1 hK0
+  exact ⟨C, hC0, hC _hW hμ hK⟩
 
 /-- `thm:variance`: the four-point variance bound.  Two inputs.  The first
 is the dyadic block bound of `thm:endpoint-block-mass`, which `four_point_integral_of_block`

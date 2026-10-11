@@ -44,7 +44,7 @@ to `h y = ∑ₙ ∫ ψ(y − s) dμ^{*n}(s)`, which is the paper's "`G = z + ϑ
 ## The non-lattice hypothesis
 
 Upstream, the theorem asks for `Nonlattice μ`: `μ` charges no affine lattice `a + rℤ`.
-That hypothesis is false for every self-similar system. A measure carried by two atoms
+That hypothesis is false for every two-map IFS. A measure carried by two atoms
 always charges such a lattice, with `a` the first atom and `r` the gap, so the renewal
 law `ϑ = ∑ p_i δ_{α_i}` never satisfies it. `RenewalBridge.not_nonlattice_renewalLaw`
 is the machine-checked statement, and `System.exists_norm_charFun_renewalLaw_eq_one`
@@ -83,15 +83,12 @@ is available: the vendored theorem is load-bearing for every non-arithmetic conc
 
 ## What the audit covers
 
-The vendored theorem sits in the dependency closure of five endpoints of
-`Solution.lean`: `audit_non_lattice_limit`, `audit_tube_renewal`,
-`audit_minkowski_reconstruction`, `audit_cantor_set_application` and
-`audit_cantor_set_application_pair`. It sits in the closure of none of the four
-endpoints the comparator kernel-checks, whose proofs of `thm:cantor-application` go
-through the Choquet-Deny route. So the vendored code is checked by `lake build
-Solution`, with the library's axiom discipline (no `axiom`, no `native_decide`)
-applying to it as to everything else, and it compiles against Mathlib `v4.35.0-rc2`
-unchanged.
+The vendored theorem is a proved dependency of the general non-lattice profile and
+Minkowski reconstruction results. These now occur among the nine Section 1 Challenge
+endpoints selected by Comparator, including `audit_profile_asymptotics`,
+`audit_reconstruction` and the general lattice/non-lattice corollaries. It is not an
+assumed literature input. The library's axiom discipline applies throughout the vendored
+code: no `axiom`, no proof holes and no `native_decide`.
 
 ## Re-syncing with upstream
 

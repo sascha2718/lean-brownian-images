@@ -172,6 +172,51 @@ end BlockMass
 
 /-! ### `thm:endpoint-block-mass` -/
 
+/-- `thm:endpoint-block-mass`, both halves,
+conditional on `eq:joint-return-bound`, which enters as the hypothesis `hfour` in the
+text of the endpoint `audit_gaussian_four_point`.  The constant is `max (A³) 2`: the mass
+half costs `A³`, three applications of `eq:frostman`, and the return half costs `2`. -/
+theorem endpoint_block_mass_of_four_point_explicit {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ} (_hs : 0 < s)
+    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+      (jointReturn W P r t u t' u').toReal
+        ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
+            (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|
+              - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2))))) :
+    ∀ β η : ℝ, 0 < β → β ≤ 1 → 0 < η → η ≤ 1 →
+      (μ.prod (μ.prod (μ.prod μ)))
+        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
+          β / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ β ∧
+          η / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
+          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ η}
+        ≤ ENNReal.ofReal (max (A ^ 3) 2 * β ^ s * η ^ (2 * s)) ∧
+      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
+        β / 2 < x₃ - x₂ → x₃ - x₂ ≤ β →
+        η / 2 < (x₂ - x₁) + (x₄ - x₃) → (x₂ - x₁) + (x₄ - x₃) ≤ η →
+        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
+            ≤ max (A ^ 3) 2 * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) ∧
+          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
+            ≤ max (A ^ 3) 2 * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) := by
+  have hmass := endpoint_block_mass_le_explicit hμ
+  intro β η hβ0 hβ1 hη0 hη1
+  have hβs : (0:ℝ) ≤ β ^ s := (Real.rpow_pos_of_pos hβ0 s).le
+  have hηs : (0:ℝ) ≤ η ^ (2 * s) := (Real.rpow_pos_of_pos hη0 (2 * s)).le
+  constructor
+  · refine le_trans (hmass β η hβ0 hβ1 hη0 hη1) (ENNReal.ofReal_le_ofReal ?_)
+    gcongr
+    exact le_max_left _ _
+  · intro r hr x₁ x₂ x₃ x₄ hx₁ h12 h23 h34 hb _ hh _
+    have hmin : (0:ℝ) ≤ min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) := by
+      have hβη : (0:ℝ) < β + η := by linarith
+      refine le_min zero_le_one (le_min ?_ ?_) <;> positivity
+    have hcoef : (2:ℝ) * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η)))
+        ≤ max (A ^ 3) 2 * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) :=
+      mul_le_mul_of_nonneg_right (le_max_right _ _) hmin
+    exact ⟨le_trans (BlockMass.crossing_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef,
+      le_trans (BlockMass.nested_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef⟩
+
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
 /-- `thm:endpoint-block-mass`, both halves,
 conditional on `eq:joint-return-bound`, which enters as the hypothesis `hfour` in the
@@ -200,24 +245,43 @@ theorem endpoint_block_mass_of_four_point {P : Measure Ω} [IsProbabilityMeasure
             ≤ C * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) ∧
           (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
             ≤ C * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) := by
-  obtain ⟨C₀, hC₀, hmass⟩ := endpoint_block_mass_le hμ
-  refine ⟨max C₀ 2, lt_of_lt_of_le hC₀ (le_max_left _ _), ?_⟩
-  intro β η hβ0 hβ1 hη0 hη1
-  have hβs : (0:ℝ) ≤ β ^ s := (Real.rpow_pos_of_pos hβ0 s).le
-  have hηs : (0:ℝ) ≤ η ^ (2 * s) := (Real.rpow_pos_of_pos hη0 (2 * s)).le
-  constructor
-  · refine le_trans (hmass β η hβ0 hβ1 hη0 hη1) (ENNReal.ofReal_le_ofReal ?_)
-    gcongr
-    exact le_max_left _ _
-  · intro r hr x₁ x₂ x₃ x₄ hx₁ h12 h23 h34 hb _ hh _
-    have hmin : (0:ℝ) ≤ min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) := by
-      have hβη : (0:ℝ) < β + η := by linarith
-      refine le_min zero_le_one (le_min ?_ ?_) <;> positivity
-    have hcoef : (2:ℝ) * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η)))
-        ≤ max C₀ 2 * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) :=
-      mul_le_mul_of_nonneg_right (le_max_right _ _) hmin
-    exact ⟨le_trans (BlockMass.crossing_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef,
-      le_trans (BlockMass.nested_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef⟩
+  refine ⟨max (A ^ 3) 2, lt_of_lt_of_le (by norm_num) (le_max_right _ _), ?_⟩
+  exact endpoint_block_mass_of_four_point_explicit _hW _hs hμ hfour
+
+/-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
+halves of the lemma, conditional on `eq:joint-return-bound` as above.  Every `(1/2)^j`
+lies in `(0,1]`, so this is the general statement read at those values. -/
+theorem endpoint_block_mass_dyadic_of_four_point_explicit {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs : 0 < s)
+    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
+    (hfour : ∀ {r : ℝ} {t u t' u' : ℝ≥0} (_hr : 0 < r)
+      (_hΔ : 0 < |(u:ℝ) - t| * |(u':ℝ) - t'| - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2),
+      (jointReturn W P r t u t' u').toReal
+        ≤ min 1 (min (r ^ 2 / (2 * max |(u:ℝ) - t| |(u':ℝ) - t'|))
+            (r ^ 4 / (4 * (|(u:ℝ) - t| * |(u':ℝ) - t'|
+              - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2))))) :
+    ∀ j l : ℕ,
+      (μ.prod (μ.prod (μ.prod μ)))
+        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
+          ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
+          ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
+          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
+        ≤ ENNReal.ofReal (max (A ^ 3) 2 * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
+      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
+        ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
+        ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
+        (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
+        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
+            ≤ max (A ^ 3) 2 * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
+          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
+            ≤ max (A ^ 3) 2 * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
+                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) := by
+  intro j l
+  exact endpoint_block_mass_of_four_point_explicit hW hs hμ hfour
+    (((1:ℝ)/2) ^ j) (((1:ℝ)/2) ^ l) (by positivity)
+    (pow_le_one₀ (by norm_num) (by norm_num)) (by positivity)
+    (pow_le_one₀ (by norm_num) (by norm_num))
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
 /-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
@@ -249,9 +313,7 @@ theorem endpoint_block_mass_dyadic_of_four_point {P : Measure Ω} [IsProbability
           (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
             ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
                 (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) := by
-  obtain ⟨C, hC, hblock⟩ := endpoint_block_mass_of_four_point hW hs hμ hfour
-  refine ⟨C, hC, fun j l => hblock (((1:ℝ)/2) ^ j) (((1:ℝ)/2) ^ l) (by positivity)
-    (pow_le_one₀ (by norm_num) (by norm_num)) (by positivity)
-    (pow_le_one₀ (by norm_num) (by norm_num))⟩
+  refine ⟨max (A ^ 3) 2, lt_of_lt_of_le (by norm_num) (le_max_right _ _), ?_⟩
+  exact endpoint_block_mass_dyadic_of_four_point_explicit hW hs hμ hfour
 
 end BrownianImages

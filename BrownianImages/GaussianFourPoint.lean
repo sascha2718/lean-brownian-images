@@ -165,18 +165,15 @@ block of ordered quadruples is `O(β^s η^{2s})`.  On the block `x₃` lies with
 `x₂`, `x₁` within `η` of `x₂` and `x₄` within `η` of `x₃`; dropping the ordering
 constraints and integrating in that order applies `eq:frostman` three times, with
 constant `A³`. -/
-theorem endpoint_block_mass_le {s A : ℝ} {μ : Measure ℝ}
+theorem endpoint_block_mass_le_explicit {s A : ℝ} {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    ∃ C > 0, ∀ β η : ℝ, 0 < β → β ≤ 1 → 0 < η → η ≤ 1 →
+    ∀ β η : ℝ, 0 < β → β ≤ 1 → 0 < η → η ≤ 1 →
       (μ.prod (μ.prod (μ.prod μ)))
         {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
           β / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ β ∧
           η / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
           (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ η}
-        ≤ ENNReal.ofReal (C * β ^ s * η ^ (2 * s)) := by
-  have hA : (1:ℝ) ≤ A := hμ.one_le_const
-  have hApos : (0:ℝ) < A := lt_of_lt_of_le zero_lt_one hA
-  refine ⟨A ^ 3, pow_pos hApos 3, ?_⟩
+        ≤ ENNReal.ofReal (A ^ 3 * β ^ s * η ^ (2 * s)) := by
   intro β η hβ0 hβ1 hη0 hη1
   have hβs : (0:ℝ) < β ^ s := Real.rpow_pos_of_pos hβ0 s
   have hηs : (0:ℝ) < η ^ s := Real.rpow_pos_of_pos hη0 s
@@ -199,6 +196,23 @@ theorem endpoint_block_mass_le {s A : ℝ} {μ : Measure ℝ}
     have hprod : A * η ^ s * (A * β ^ s) * (A * η ^ s)
         = A ^ 3 * β ^ s * (η ^ s * η ^ s) := by ring
     rw [hprod, hpow]
+
+/-- `thm:endpoint-block-mass`, the mass half: the `μ⁴`-mass of the dyadic
+block of ordered quadruples is `O(β^s η^{2s})`.  On the block `x₃` lies within `β` of
+`x₂`, `x₁` within `η` of `x₂` and `x₄` within `η` of `x₃`; dropping the ordering
+constraints and integrating in that order applies `eq:frostman` three times, with
+constant `A³`. -/
+theorem endpoint_block_mass_le {s A : ℝ} {μ : Measure ℝ}
+    [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
+    ∃ C > 0, ∀ β η : ℝ, 0 < β → β ≤ 1 → 0 < η → η ≤ 1 →
+      (μ.prod (μ.prod (μ.prod μ)))
+        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
+          β / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ β ∧
+          η / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
+          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ η}
+        ≤ ENNReal.ofReal (C * β ^ s * η ^ (2 * s)) := by
+  refine ⟨A ^ 3, pow_pos (lt_of_lt_of_le zero_lt_one hμ.one_le_const) 3, ?_⟩
+  exact endpoint_block_mass_le_explicit hμ
 
 end BlockMass
 

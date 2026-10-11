@@ -859,21 +859,25 @@ theorem IsAttractor.stoppingCylinder_subset {K : Set ℝ} (hK : S.IsAttractor K)
   exact (S.mapsTo_stoppingMap (fun i => hK.mapsTo_map S i) w.1 w.2).image_subset
 
 set_option maxHeartbeats 800000 in
-/-- **`thm:neighbourhood-overlap` below a node.**  Under the strong open set condition
-there are `C > 0` and `η > 0` such that, for every word `w`, every `0 < r ≤ 1` with
+/-- **`thm:neighbourhood-overlap` below a node.**  For a prescribed cross-piece bound,
+the cross-piece exponent `η ∈ (0, 1-s)` gives `C > 0` such that,
+for every word `w`, every `0 < r ≤ 1` with
 `r² ≤ r_w`, and all distinct `i, j`, the expected overlap of the Brownian
 `r`-neighbourhoods of `S_w S_i K` and `S_w S_j K` is at most `C r_w^{s-η} r^{α+2η}`:
 the overlap is summed over the stopping cylinders at temporal scale `r²` below the two
 children, grouped dyadically by their gap. -/
-theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure P]
-    (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
+theorem IsNatural.exists_pairwise_tubeOverlap_node_of_cross_piece_bound [IsProbabilityMeasure P]
+    (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    {Cc η : ℝ} (hCc : 0 < Cc) (hη : 0 < η) (hηs : η < 1 - s)
+    (hcross : ∀ i j : iota, i ≠ j → ∀ h : ℝ, 0 < h → h ≤ 1 →
+      ((μ.map (S.map i)).prod (μ.map (S.map j))) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}
+        ≤ ENNReal.ofReal (Cc * h ^ (s + η)))
     (hupper : ∃ A₁ : ℝ, 0 < A₁ ∧ ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
       Integrable (fun omega => tubeArea ρ (brownianImage W hμ.compactAttractor omega)) P ∧
       (∫ omega, tubeArea ρ (brownianImage W hμ.compactAttractor omega) ∂P)
         ≤ A₁ * ρ ^ tubeExponent s) :
-    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ η < 1 - s ∧ ∀ (w : StoppingWord iota) (r : ℝ), 0 < r → r ≤ 1 →
+    ∃ C : ℝ, 0 < C ∧ ∀ (w : StoppingWord iota) (r : ℝ), 0 < r → r ≤ 1 →
       r ^ 2 ≤ S.stoppingRatio w → ∀ i j : iota, i ≠ j →
       Integrable (fun omega => tubeOverlapArea r
         (brownianImage W (hμ.attractor.stoppingCylinder S (stoppingChild w i).1
@@ -887,7 +891,6 @@ theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure
           (stoppingChild w j).2) omega) ∂P)
         ≤ C * S.stoppingRatio w ^ (s - η) * r ^ (tubeExponent s + 2 * η) := by
   classical
-  obtain ⟨Cc, η, hCc, hη, hηs, hcross⟩ := hsosc.exists_cross_piece_bound S hs0 hs1 hdim hμ
   obtain ⟨A₁, hA₁, hupper⟩ := hupper
   have hunit : Integrable (fun omega => (1 + standardBrownianRadius W omega) ^ (2:ℝ)) P :=
     hW.integrable_one_add_standardBrownianRadius_rpow (by norm_num)
@@ -912,7 +915,7 @@ theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure
     have h2 : 0 ≤ (3:ℝ) ^ β := Real.rpow_nonneg (by norm_num) _
     have h3 : 0 ≤ S.minRatio ^ (-(2 * s)) := Real.rpow_nonneg hrmin.le _
     positivity
-  refine ⟨C₁ + 1, η, by linarith, hη, hηs, fun w r hr hr1 hrw i j hij => ?_⟩
+  refine ⟨C₁ + 1, by linarith, fun w r hr hr1 hrw i j hij => ?_⟩
   have hrw0 : 0 < S.stoppingRatio w := S.generationRatio_pos w.1 w.2
   have hexp : 0 ≤ S.stoppingRatio w ^ (s - η) * r ^ (tubeExponent s + 2 * η) :=
     mul_nonneg (Real.rpow_nonneg hrw0.le _) (Real.rpow_nonneg hr.le _)
@@ -1000,7 +1003,7 @@ theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure
       ((Finset.univ.filter fun p => d p ≤ h).card : ℝ) ≤ N₀ * h ^ β := by
     intro h hρh
     have hc := hμ.card_closePairs_le S hs0 hij hCc hη.le (fun h' h'0 h'1 =>
-      (hcross i j hij h' h'0 h'1).2) hρ0 hn hrw hρh
+      hcross i j hij h' h'0 h'1) hρ0 hn hrw hρh
     have hpos : 0 < (S.minRatio * ρ) ^ (2 * s) := Real.rpow_pos_of_pos (by positivity) _
     calc ((Finset.univ.filter fun p => d p ≤ h).card : ℝ)
         = ((Finset.univ.filter fun p => d p ≤ h).card : ℝ) * (S.minRatio * ρ) ^ (2 * s) /
@@ -1080,6 +1083,39 @@ theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure
     _ ≤ (C₁ + 1) * S.stoppingRatio w ^ (s - η) * r ^ (tubeExponent s + 2 * η) := by
         rw [mul_assoc, mul_assoc]
         exact mul_le_mul_of_nonneg_right (by linarith) hexp
+
+
+/-- **`thm:neighbourhood-overlap` below a node.**  Under the strong open set condition
+there are `C > 0` and `η > 0` such that, for every word `w`, every `0 < r ≤ 1` with
+`r² ≤ r_w`, and all distinct `i, j`, the expected overlap of the Brownian
+`r`-neighbourhoods of `S_w S_i K` and `S_w S_j K` is at most `C r_w^{s-η} r^{α+2η}`:
+the overlap is summed over the stopping cylinders at temporal scale `r²` below the two
+children, grouped dyadically by their gap. -/
+theorem IsNatural.exists_pairwise_tubeOverlap_node_of_sosc [IsProbabilityMeasure P]
+    (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    (hupper : ∃ A₁ : ℝ, 0 < A₁ ∧ ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
+      Integrable (fun omega => tubeArea ρ (brownianImage W hμ.compactAttractor omega)) P ∧
+      (∫ omega, tubeArea ρ (brownianImage W hμ.compactAttractor omega) ∂P)
+        ≤ A₁ * ρ ^ tubeExponent s) :
+    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ η < 1 - s ∧ ∀ (w : StoppingWord iota) (r : ℝ), 0 < r → r ≤ 1 →
+      r ^ 2 ≤ S.stoppingRatio w → ∀ i j : iota, i ≠ j →
+      Integrable (fun omega => tubeOverlapArea r
+        (brownianImage W (hμ.attractor.stoppingCylinder S (stoppingChild w i).1
+          (stoppingChild w i).2) omega)
+        (brownianImage W (hμ.attractor.stoppingCylinder S (stoppingChild w j).1
+          (stoppingChild w j).2) omega)) P ∧
+      (∫ omega, tubeOverlapArea r
+        (brownianImage W (hμ.attractor.stoppingCylinder S (stoppingChild w i).1
+          (stoppingChild w i).2) omega)
+        (brownianImage W (hμ.attractor.stoppingCylinder S (stoppingChild w j).1
+          (stoppingChild w j).2) omega) ∂P)
+        ≤ C * S.stoppingRatio w ^ (s - η) * r ^ (tubeExponent s + 2 * η) := by
+  obtain ⟨Cc, η, hCc, hη, hηs, hcross⟩ := hsosc.exists_cross_piece_bound S hs0 hs1 hdim hμ
+  obtain ⟨C, hC, hbound⟩ := hμ.exists_pairwise_tubeOverlap_node_of_cross_piece_bound S hW hs0
+    hCc hη hηs (fun i j hij h hh hh1 => (hcross i j hij h hh hh1).2) hupper
+  exact ⟨C, η, hC, hη, hηs, hbound⟩
 
 /-- **`eq:neighbourhood-defect-mean` below a node.**  Under the strong open set condition
 there are `C > 0` and `η > 0` such that, for every word `w` and every `0 < r ≤ 1` with

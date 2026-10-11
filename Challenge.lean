@@ -163,20 +163,30 @@ instance borelSpace_nonemptyCompacts_plane : BorelSpace (NonemptyCompacts Plane)
 section CompactImage
 universe u v
 variable {T : Type u} {E : Type v}
+section
 variable [TopologicalSpace T] [CompactSpace T] [Nonempty T] [MetricSpace E]
 
 /-- The nonempty compact range of a continuous map. -/
 noncomputable def compactRange (f : C(T, E)) : NonemptyCompacts E :=
   (⊤ : NonemptyCompacts T).map f f.continuous
 
+end
+
+section
+variable [MetricSpace T] [CompactSpace T] [Nonempty T] [MetricSpace E]
+
 /-- The image of a function, with singleton fallback away from continuous paths. -/
 noncomputable def compactImageOfFunction (x₀ : E) (f : T → E) : NonemptyCompacts E :=
   compactRange (ContinuousMap.mkD f (ContinuousMap.const T x₀))
+
+universe u_1
+variable {Ω : Type u_1} [MeasurableSpace Ω]
 
 /-- The compact image of a process at a fixed outcome. -/
 noncomputable def compactImageProcess (x₀ : E) (X : T → Ω → E) (ω : Ω) :
     NonemptyCompacts E :=
   compactImageOfFunction x₀ (fun t ↦ X t ω)
+end
 end CompactImage
 
 /-- The compact Brownian image of a compact time set. -/
@@ -199,7 +209,7 @@ noncomputable def cutoffProbability (r : ℝ) (F : CompactPlane) : ProbabilityMe
   let μ := volume.withDensity (fun x : Plane =>
     ENNReal.ofReal (max (1 - Metric.infDist x F / r) 0))
   let ν := (μ Set.univ)⁻¹ • μ
-  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else ⟨Measure.dirac 0, inferInstance⟩
+  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else default
 
 
 /-! ### The two-contraction family -/

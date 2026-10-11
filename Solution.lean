@@ -6,8 +6,8 @@ endpoints and proved by the library declarations.  It is not every display:
 `docs/correspondence.md` says which are covered by a neighbouring endpoint instead,
 and which displays are not formalised.
 
-`Challenge.lean` restates the headline theorems, `thm:main` and
-`thm:cantor-application`, on Mathlib-only copies of the definitions;
+`Challenge.lean` restates all nine numbered results of Section 1
+on Mathlib-only copies of the definitions;
 `comparator-config.json` lists those endpoint names.  Comparator checks each listed
 statement against `Challenge.lean`, audits the axioms of the proofs, and replays
 them through the kernel.  For the listed endpoints the statement text must stay
@@ -1818,7 +1818,7 @@ noncomputable def cutoffProbability (r : ℝ) (F : CompactPlane) : ProbabilityMe
   let μ := volume.withDensity (fun x : Plane =>
     ENNReal.ofReal (max (1 - Metric.infDist x F / r) 0))
   let ν := (μ Set.univ)⁻¹ • μ
-  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else ⟨Measure.dirac 0, inferInstance⟩
+  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else default
 
 private theorem cutoffProbability_eq {r : ℝ} (hr : 0 < r) (F : CompactPlane) :
     cutoffProbability r F = tubeProbability r hr F := by
