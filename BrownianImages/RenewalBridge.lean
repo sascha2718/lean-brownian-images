@@ -1,25 +1,21 @@
 /-
-`thm:non-lattice-limit`: the bridge from this project's self-similar systems to the key
-renewal theorem of `BrownianImages.Renewal`.
+The bridge from self-similar systems to the key renewal theorem used for the paper's
+non-lattice profile limit.
 
 The vendored theorem
-`AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm` takes six
-hypotheses on the increment law.  This module discharges the ones that are properties of
-the renewal measure `ϑ = ∑ p_i δ_{α_i}` alone; `KeyRenewalFourier` discharges the rest.
+`AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm` uses
+`FellerNonlattice`, moment bounds and a strict exponential moment for the increment
+law. This module proves the exponential-moment input for `ϑ = ∑ p_i δ_{α_i}`;
+`KeyRenewalFourier` supplies Feller's condition under non-arithmeticity and assembles
+the profile limit.
 
 * `expTransform_renewalLaw`: the exponential transform of `ϑ` in closed form.
-* `exists_expTransform_lt_one`: the strict exponential moment.  Its content is that the
-  log-ratios are bounded away from zero, which is what `r_i < 1` gives.
-* `not_nonlattice_renewalLaw`: the **refutation**.  The vendored theorem asks that `μ`
-  charge no affine lattice `a + rℤ`, which is the strongly non-lattice condition its
-  Fourier proof needs for `‖charFun μ t‖ < 1` off the origin.  A two-atom measure always
-  charges one, so `ϑ` never satisfies it, and the vendored key renewal limit does not
-  apply to a self-similar renewal measure.  What `thm:non-lattice-limit` needs is
-  Feller's weaker condition, that the atoms lie on no lattice `dℤ` *through the origin*.
-
-Beside `KeyRenewalFourier` and `Minkowski.TubeRenewalLimit`, which consume the key
-renewal theorem, this is the only module of the library that mentions the vendored
-namespace.
+* `exists_expTransform_lt_one`: the strict exponential moment, using positivity of
+  the finitely many log-ratios.
+* `not_nonlattice_renewalLaw`: a counterexample to imposing the stronger `Nonlattice`
+  condition, which excludes probability laws concentrated on any affine lattice
+  `a + rℤ`. Every two-atom law is concentrated on such a lattice. The key renewal
+  theorem instead uses `FellerNonlattice`, which allows non-arithmetic two-atom laws.
 -/
 import BrownianImages.SelfSimilar
 import BrownianImages.Renewal
@@ -33,7 +29,7 @@ namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
-/-- The exponential transform of the renewal measure is the weighted sum of the atom
+/-- The exponential transform of the increment law is the weighted sum of the atom
 transforms. -/
 theorem expTransform_renewalLaw (s θ : ℝ) :
     AbsorptionCutoff.Renewal.expTransform θ (S.renewalLaw s)
@@ -73,20 +69,19 @@ theorem exists_expTransform_lt_one [Nonempty ι] {s : ℝ} (hdim : S.IsDimension
         exact Real.exp_lt_one_iff.mpr (by linarith)
 
 
-/-! ### The vendored key renewal limit does not apply to `ϑ` -/
+/-! ### Two-atom laws refute the stronger affine-lattice condition -/
 
-/-- **Refutation.** `AbsorptionCutoff.Renewal.Nonlattice` asks that `μ` charge no affine
-lattice `a + rℤ`.  A measure carried by two atoms always charges one: take `a` to be the
-first atom and `r` the gap between them.  So the renewal measure of a two-map self-similar
-system never satisfies it, whatever the ratios, and the vendored key renewal theorem
-cannot be applied to `ϑ`.
+/-- `AbsorptionCutoff.Renewal.Nonlattice` excludes probability laws concentrated on
+an affine lattice `a + rℤ`. A two-atom law is concentrated on one: take `a` to be the
+first atom and `r` the gap between the atoms. Thus the renewal law of a two-map system
+never satisfies this stronger condition.
 
-This is not a technicality of the formal statement.  The hypothesis is what gives
-`‖charFun μ t‖ < 1` for `t ≠ 0`, and for `ϑ` that is false: at `t = 2π/(α₁ - α₀)` the two
-atom phases align and the characteristic function has modulus one.  The Fourier route to
-Blackwell's theorem needs a spread-out increment law; `thm:non-lattice-limit` needs
-Feller's non-arithmetic condition, which forbids only lattices `dℤ` through the origin
-and is satisfied by `ϑ` exactly when the log-ratios are rationally independent. -/
+The key renewal theorem uses `FellerNonlattice`, whose characteristic function avoids
+`1` off the origin and has modulus `1` at only countably many frequencies. The
+non-arithmeticity of a self-similar system supplies these properties. For two distinct
+log-ratios, the phases still align at `t = 2π/(α₁ - α₀)`, giving modulus `1`; the
+counterexample therefore also explains why an everywhere strict modulus bound would
+exclude systems covered by the paper's non-lattice profile limit. -/
 theorem not_nonlattice_renewalLaw (S : System (Fin 2)) {s : ℝ} (hdim : S.IsDimension s) :
     ¬ AbsorptionCutoff.Renewal.Nonlattice (S.renewalLaw s) := by
   intro h

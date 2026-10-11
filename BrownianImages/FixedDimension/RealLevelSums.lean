@@ -58,12 +58,6 @@ theorem norm_crossSeq_le' {s x : ℝ} (hs : 0 < s) (hs1 : s < 1) (hx0 : 0 < x) (
   unfold crossSeq
   exact norm_crossKernelC_ofReal_le hs hs1 hx0 hx1 (codeSeq_mem_Icc _ ω m) (codeSeq_mem_Icc _ ω' m)
 
-theorem norm_crossCode_le {s x : ℝ} (hs : 0 < s) (hs1 : s < 1) (hx0 : 0 < x) (hx1 : x < 1)
-    (ω ω' : ℕ → Fin 2) :
-    ‖crossCode s x hs hx0 hx1 ω ω'‖ ≤ crossGap s x ^ (-s) := by
-  unfold crossCode
-  exact norm_crossKernelC_ofReal_le hs hs1 hx0 hx1 (code_mem_Icc _ ω) (code_mem_Icc _ ω')
-
 /-- The level sum at a real parameter is the double Bernoulli integral of the kernel at the
 coded points of the first `m` letters. -/
 theorem levelSum_cross_ofReal' {s x : ℝ} (hs : 0 < s) (hs1 : s < 1) (hx0 : 0 < x) (hx1 : x < 1)

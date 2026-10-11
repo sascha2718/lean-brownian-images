@@ -1,17 +1,16 @@
 /-
-The holomorphic extension of the proof of `thm:remainder-derivative`: on the disc
-`|z - p| ≤ p/2`, the functions `M_z = ∑ z(1-z)ⁿ Λ_n(z)` and
-`J₀(z) = ∑ z(1-z)ⁿ (1 - b^{n+1})^{-s}`, their difference `Δ`, the bound
+The holomorphic remainder in the proof of `thm:remainder-derivative`: on the disc
+`|z - p| ≤ p/2`, the series
+`Δ(z) = ∑ z(1-z)ⁿ (Λ_n(z) - (1 - b^{n+1})^{-s})`, the bound
 `|Δ| ≤ 1296 s λ_{1,max} p^{-1-s}` on the disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`.
-The paper defines `Δ` directly by the series of differences and bounds the disc weights
-by `|z| + |1-z| ≤ 1 + |z-p|²/(2pq)`. This module retains the individual series and
-separate estimates for the two moduli, with the same bound `1 + p/5`.
+The paper bounds the disc weights by `|z| + |1-z| ≤ 1 + |z-p|²/(2pq)`.
+This module estimates the two moduli separately, with the same bound `1 + p/5`.
 Here `discB p = 1 + p/5` majorises the paper's `B`, and
 `1 - discR s p` is a lower bound for its `ξ = 1 - λ_{2,max} B²`.
 
 * `norm_add_norm_one_sub_le`: `|z| + |1 - z| ≤ 1 + p/5` on the disc.
 * `incrementBound_kernel`: the increment bound for the level sums of `ψ_n`.
-* `kernelLimit`, `complexMoment`, `complexMainTerm`, `complexDelta`: `Λ_n`, `M_z`, `J₀(z)`, `Δ`.
+* `kernelLimit`, `complexDelta`: the level-sum limits `Λ_n` and their remainder `Δ`.
 * `differentiableOn_complexDelta`, `continuousOn_complexDelta`, `norm_complexDelta_le`,
   `norm_deriv_complexDelta_le`: holomorphy, the sup bound and Cauchy's estimate.
 -/
@@ -214,13 +213,6 @@ end Bounds
 /-- `Λ_n(z)`, the limit of the level sums of `ψ_n`. -/
 def kernelLimit (s : ℝ) (n : ℕ) (z : ℂ) : ℂ := limitSum (ca s) (cb s) (kernelN s n) z
 
-/-- `M_z = ∑_{n≥0} z (1 - z)ⁿ Λ_n(z)`. -/
-def complexMoment (s : ℝ) (z : ℂ) : ℂ := ∑' n : ℕ, z * (1 - z) ^ n * kernelLimit s n z
-
-/-- `J₀(z) = ∑_{n≥0} z (1 - z)ⁿ (1 - b(z)^{n+1})^{-s}`. -/
-def complexMainTerm (s : ℝ) (z : ℂ) : ℂ :=
-  ∑' n : ℕ, z * (1 - z) ^ n * (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))
-
 /-- `Δ = M_z - J₀(z)`, written as a series. -/
 def complexDelta (s : ℝ) (z : ℂ) : ℂ :=
   ∑' n : ℕ, z * (1 - z) ^ n * (kernelLimit s n z - (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ)))
@@ -243,27 +235,6 @@ theorem one_sub_cb_pow_mem_slitPlane (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
   simp only [Complex.sub_re, Complex.one_re]
   linarith
 
-omit hs1 hp0 in
-theorem norm_one_sub_cb_pow_ge (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
-    1 - betaP s p ^ (n + 1) ≤ ‖1 - cb s z ^ (n + 1)‖ := by
-  have hp1 := hp1_of hp
-  have h1 : ‖cb s z ^ (n + 1)‖ ≤ betaP s p ^ (n + 1) := by
-    rw [norm_pow]; exact pow_le_pow_left₀ (norm_nonneg _) (norm_cb_le hs hp1 hz) _
-  have h2 := Complex.re_le_norm (cb s z ^ (n + 1))
-  calc 1 - betaP s p ^ (n + 1) ≤ (1 - cb s z ^ (n + 1)).re := by
-        simp only [Complex.sub_re, Complex.one_re]; linarith
-    _ ≤ ‖1 - cb s z ^ (n + 1)‖ := Complex.re_le_norm _
-
-omit hs1 in
-theorem norm_one_sub_cb_pow_cpow_le (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
-    ‖(1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))‖ ≤ (1 - betaP s p) ^ (-s) := by
-  have hp1 := hp1_of hp
-  rw [norm_cpow_neg_real]
-  have h1 := norm_one_sub_cb_pow_ge hs hp n hz
-  have h2 : 1 - betaP s p ≤ 1 - betaP s p ^ (n + 1) := by linarith [betaP_pow_le hs hp0 hp1 n]
-  have h0 : 0 < 1 - betaP s p := by linarith [betaP_lt_one hs hp0 hp1]
-  exact rpow_neg_antitone h0 (h2.trans h1) hs.le
-
 /-- `Λ_n(z) - (1 - b^{n+1})^{-s}` is at most `C_n/(1 - r)` on the disc. -/
 theorem norm_kernelLimit_sub_le (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
     ‖kernelLimit s n z - (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))‖ ≤ incC s p n / (1 - discR s p) := by
@@ -273,48 +244,6 @@ theorem norm_kernelLimit_sub_le (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
     unfold kernelN kernelBase; simp
   rw [kernelLimit, ← e]
   exact h
-
-omit hs1 in
-/-- A uniform bound on `C_n/(1 - r)`: `incC s p n ≤ incC s p 0`. -/
-theorem incC_le (n : ℕ) : incC s p n ≤ 4 * (s * alphaP s p * ((1 - betaP s p) / 2) ^ (-s - 1)) *
-    discB p ^ 2 := by
-  unfold incC kernelLip
-  have hp1 := hp1_of hp
-  have h0 : 0 < (1 - betaP s p) / 2 := by linarith [betaP_lt_one hs hp0 hp1]
-  have h2 : (1 - betaP s p) / 2 ≤ (1 - betaP s p ^ (n + 1)) / 2 := by
-    linarith [betaP_pow_le hs hp0 hp1 n]
-  have h3 : ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s - 1) ≤ ((1 - betaP s p) / 2) ^ (-s - 1) := by
-    rw [show (-s - 1) = -(s + 1) by ring]
-    exact rpow_neg_antitone h0 h2 (by linarith)
-  have hα := alphaP_nonneg (s := s) hp0
-  have hB : 0 ≤ discB p ^ 2 := by positivity
-  calc 4 * (s * alphaP s p * ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s - 1)) * discB p ^ 2
-      ≤ 4 * (s * alphaP s p * ((1 - betaP s p) / 2) ^ (-s - 1)) * discB p ^ 2 := by
-        apply mul_le_mul_of_nonneg_right _ hB
-        apply mul_le_mul_of_nonneg_left _ (by norm_num)
-        exact mul_le_mul_of_nonneg_left h3 (by positivity)
-
-/-- The uniform bound `K` on `|Λ_n|` on the disc. -/
-def limitBound (s p : ℝ) : ℝ :=
-  (1 - betaP s p) ^ (-s) +
-    4 * (s * alphaP s p * ((1 - betaP s p) / 2) ^ (-s - 1)) * discB p ^ 2 / (1 - discR s p)
-
-theorem norm_kernelLimit_le (n : ℕ) {z : ℂ} (hz : z ∈ discP p) :
-    ‖kernelLimit s n z‖ ≤ limitBound s p := by
-  have h1 := norm_kernelLimit_sub_le hs hs1 hp0 hp n hz
-  have h2 := norm_one_sub_cb_pow_cpow_le hs hp0 hp n hz
-  have h3 := incC_le hs hp0 hp n
-  have hδ : 0 < 1 - discR s p := by linarith [one_sub_discR_ge hs hs1 hp0 hp]
-  have h4 : incC s p n / (1 - discR s p)
-      ≤ 4 * (s * alphaP s p * ((1 - betaP s p) / 2) ^ (-s - 1)) * discB p ^ 2 / (1 - discR s p) :=
-    div_le_div_of_nonneg_right h3 hδ.le
-  unfold limitBound
-  calc ‖kernelLimit s n z‖
-      = ‖(kernelLimit s n z - (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))) + (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))‖ := by
-        rw [sub_add_cancel]
-    _ ≤ ‖kernelLimit s n z - (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))‖ + ‖(1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))‖ :=
-        norm_add_le _ _
-    _ ≤ _ := by linarith
 
 omit hs hs1 in
 theorem norm_term_le (K : ℝ) (n : ℕ) {z : ℂ} (hz : z ∈ discP p) {w : ℂ}
@@ -351,15 +280,6 @@ theorem differentiableOn_one_sub_cb_pow_cpow (n : ℕ) :
     DifferentiableOn ℂ (fun z => (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))) (discP p) :=
   ((differentiableOn_const _).sub ((differentiableOn_cb hp0 hp).pow (n + 1))).cpow_const
     fun _ hz => one_sub_cb_pow_mem_slitPlane hs hp0 hp n hz
-
-theorem limitBound_nonneg : 0 ≤ limitBound s p := by
-  unfold limitBound
-  have hp1 := hp1_of hp
-  have := betaP_lt_one hs hp0 hp1
-  have hδ : 0 < 1 - discR s p := by linarith [one_sub_discR_ge hs hs1 hp0 hp]
-  have := alphaP_nonneg (s := s) hp0
-  have h0 : 0 < 1 - betaP s p := by linarith
-  positivity
 
 /-- `Δ` is holomorphic on the open disc. -/
 theorem differentiableOn_complexDelta :

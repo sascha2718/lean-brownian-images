@@ -5,18 +5,17 @@ Vendored into `BrownianImages` from
 at commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5, under the Apache License 2.0
 (a copy is in this directory as `LICENSE`).
 
-Modified, twice:
-  1. the `import` lines were rewritten to the module paths of this project;
-  2. the `Nonlattice` hypothesis was weakened to `FellerNonlattice`, which is what
-     the proofs below actually consume.  `FellerNonlattice` and its almost everywhere
-     consequence are defined in `Basic.lean`; the hypothesis is swapped in the
-     declarations that merely forward it, `charFun_ne_one_of_nonlattice` is replaced by
-     the corresponding field, and the one live use of the pointwise bound
-     `norm_charFun_lt_one_of_nonlattice` becomes an almost everywhere statement inside
-     the `filter_upwards` that consumes it.  `Nonlattice`,
-     `charFun_ne_one_of_nonlattice`, `norm_charFun_lt_one_of_nonlattice` and
-     `tendsto_charFun_pow_of_nonlattice` are kept unchanged.
-     See `docs/renewal-library.md`.
+Modifications to the vendored subset:
+  1. project-local imports replace the upstream module paths where needed;
+  2. renewal-limit declarations use `FellerNonlattice`, the weaker hypothesis
+     consumed by their proofs. `Basic.lean` defines it and its almost everywhere
+     consequence; forwarding declarations and three proof sites are adjusted.
+     The upstream `Nonlattice` definition and the lemmas
+     `charFun_ne_one_of_nonlattice` and `norm_charFun_lt_one_of_nonlattice` remain
+     for the proved comparison and the two-atom counterexample;
+  3. unused helper declarations were removed from `Basic.lean`, `Equation.lean`
+     and `Kernel.lean`; related documentation was updated.
+See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
 Copyright (c) 2026 Benny Avelin. All rights reserved.
@@ -64,9 +63,6 @@ at the Cramér-tilted increment law `μ̂_{A,N}` — lives in
 * `Renewal.convPow`: the convolution power `μ^{*n}`, the law of the random walk
   step `S_n = Z_1 + ⋯ + Z_n`.
 * `Renewal.renewalMeasure`: the renewal measure `U = ∑_{n ≥ 0} μ^{*n}`.
-* `Renewal.abelRenewalMeasure`: the Abel-discounted renewal measure
-  `U_r = ∑_{n ≥ 0} rⁿ μ^{*n}`, the regularization used to identify Blackwell's
-  constant `1/m̂`.
 * `Renewal.expTransform`: the `ℝ≥0∞`-valued exponential transform
   `∫ e^{-θz} dμ`, which turns convolution into multiplication.
 
@@ -137,34 +133,6 @@ instance instIsProbabilityMeasureConvPow [MeasurableAdd₂ M] (μ : Measure M)
   | zero => rw [convPow_zero]; infer_instance
   | succ n ih => rw [convPow_succ]; exact Measure.probabilitymeasure_of_probabilitymeasures_conv _ _
 
-@[simp]
-lemma convPow_one [MeasurableAdd₂ M] (μ : Measure M) [SFinite μ] : convPow μ 1 = μ := by
-  rw [convPow_succ, convPow_zero, Measure.dirac_zero_conv]
-
-/-- Peeling the first increment instead of the last one. -/
-lemma convPow_succ' [MeasurableAdd₂ M] (μ : Measure M) [SFinite μ] (n : ℕ) :
-    convPow μ (n + 1) = μ ∗ convPow μ n := by
-  induction n with
-  | zero => rw [convPow_succ, convPow_zero, Measure.dirac_zero_conv, Measure.conv_dirac_zero]
-  | succ n ih =>
-      calc convPow μ (n + 1 + 1) = convPow μ (n + 1) ∗ μ := convPow_succ _ _
-        _ = (μ ∗ convPow μ n) ∗ μ := by rw [ih]
-        _ = μ ∗ (convPow μ n ∗ μ) := Measure.conv_assoc _ _ _
-        _ = μ ∗ convPow μ (n + 1) := by rw [← convPow_succ]
-
-/-- The convolution powers form a monoid homomorphism `(ℕ, +) → (Measure M, ∗)`:
-this is the independent-increments property of the underlying random walk. -/
-lemma convPow_add [MeasurableAdd₂ M] (μ : Measure M) [SFinite μ] (m n : ℕ) :
-    convPow μ (m + n) = convPow μ m ∗ convPow μ n := by
-  induction n with
-  | zero => rw [Nat.add_zero, convPow_zero, Measure.conv_dirac_zero]
-  | succ n ih =>
-      calc convPow μ (m + (n + 1)) = convPow μ (m + n) ∗ μ := by
-            rw [← Nat.add_assoc]; exact convPow_succ _ _
-        _ = (convPow μ m ∗ convPow μ n) ∗ μ := by rw [ih]
-        _ = convPow μ m ∗ (convPow μ n ∗ μ) := Measure.conv_assoc _ _ _
-        _ = convPow μ m ∗ convPow μ (n + 1) := by rw [← convPow_succ]
-
 /-- The **renewal measure** `U = ∑_{n ≥ 0} μ^{*n}` of the increment law `μ`
 (paper: `U := ∑_{k ≥ 0} 𝓛(S_k)`, in the proof of `lem:nd-gaussian-renewal`).
 It is the occupation measure of the random walk: `U s` is the expected number of
@@ -181,120 +149,6 @@ bound on the renewal *measure* of cells control the whole series at once. -/
 lemma lintegral_renewalMeasure (μ : Measure M) (f : M → ℝ≥0∞) :
     ∫⁻ x, f x ∂(renewalMeasure μ) = ∑' n, ∫⁻ x, f x ∂(convPow μ n) :=
   lintegral_sum_measure _ _
-
-/-- Convolution distributes over a countable sum of measures in its left
-argument. Only `SFinite μ` is needed, because `Measure.lintegral_conv` integrates
-the *right* factor first. -/
-lemma sum_conv [MeasurableAdd₂ M] {ι : Type*} (f : ι → Measure M) (μ : Measure M) [SFinite μ] :
-    Measure.sum f ∗ μ = Measure.sum (fun i => f i ∗ μ) := by
-  refine Measure.ext_of_lintegral _ fun g hg => ?_
-  rw [Measure.lintegral_conv hg, lintegral_sum_measure, lintegral_sum_measure]
-  exact tsum_congr fun i => (Measure.lintegral_conv hg).symm
-
-/-- The **renewal equation** in measure form: `U = δ₀ + U ∗ μ`.
-
-Splitting off the `n = 0` term of `U = ∑_{n ≥ 0} μ^{*n}` and peeling the last
-increment from each of the others. Tested against a function `h` this is the
-paper's scalar renewal equation
-`h_y = ∫ h_{y-z} \hat μ_{A,N}(dz) + Ψ_y(𝟏)` (proof of `lem:nd-gaussian-renewal`)
-with `Ψ` the `δ₀` term, and it is the identity that makes every vague/Fourier
-limit argument for Blackwell's theorem go through: as `y → ∞` the `δ₀` term
-disappears and the limit of `U(· + y)` is left invariant under convolution
-by `μ`. -/
-lemma renewalMeasure_eq_dirac_add_conv [MeasurableAdd₂ M] (μ : Measure M) [SFinite μ] :
-    renewalMeasure μ = Measure.dirac 0 + renewalMeasure μ ∗ μ := by
-  rw [renewalMeasure, sum_conv]
-  refine Measure.ext fun s hs => ?_
-  rw [Measure.add_apply, Measure.sum_apply _ hs, Measure.sum_apply _ hs,
-    tsum_eq_zero_add' ENNReal.summable]
-  simp [convPow_succ, convPow_zero]
-
-/-!
-### The Abel-discounted renewal measure
-
-Identifying Blackwell's constant `1/m̂` is done by *Abel regularization*: the
-undiscounted resolvent `(1 - χ(-2πt))⁻¹` has a genuine pole at the origin, and a
-symmetric principal-value treatment of it sees only half the boundary mass,
-producing `1/(2m̂)`. Discounting by `rⁿ` for `0 < r < 1` moves the pole off the
-real axis — `1 - rχ(-2πt)` is bounded away from zero — and the model denominator
-`(1-r) + 2π i r m̂ t` has a *one-sided* exponential inverse transform, which is
-what supplies the missing half. The limits are then taken in the order `r ↑ 1` at
-fixed `y`, and only afterwards `y → ∞`; see `A4G4_BLACKWELL_PROOF_NOTE.tex` §3.
-
-The discounted measure is scaled in `ℝ≥0∞`, so it stays a genuine (nonnegative)
-measure and `abelRenewalMeasure_mono` holds. That monotonicity in `r` is not
-cosmetic: it is what licenses monotone convergence from the discounted series
-back to the actual renewal series at `r = 1`.
--/
-
-/-- The **Abel-discounted renewal measure** `U_r = ∑_{n ≥ 0} rⁿ μ^{*n}`
-(`eq:abel-renewal` of the proof note). At `r = 1` this is `renewalMeasure μ`; for
-`r < 1` and `μ` a probability measure it is *finite*, of total mass `(1-r)⁻¹`. -/
-noncomputable def abelRenewalMeasure (r : ℝ≥0∞) (μ : Measure M) : Measure M :=
-  Measure.sum fun n => r ^ n • convPow μ n
-
-/-- The measurable-set evaluation of `U_r`: `U_r s = ∑_{n ≥ 0} rⁿ μ^{*n}(s)`. -/
-lemma abelRenewalMeasure_apply (r : ℝ≥0∞) (μ : Measure M) {s : Set M} (hs : MeasurableSet s) :
-    abelRenewalMeasure r μ s = ∑' n, r ^ n * convPow μ n s := by
-  rw [abelRenewalMeasure, Measure.sum_apply _ hs]
-  exact tsum_congr fun n => by rw [Measure.smul_apply, smul_eq_mul]
-
-@[simp]
-lemma abelRenewalMeasure_one (μ : Measure M) : abelRenewalMeasure 1 μ = renewalMeasure μ := by
-  simp [abelRenewalMeasure, renewalMeasure]
-
-/-- Integration against `U_r`, in the `ℝ≥0∞` form that needs no integrability
-side condition. -/
-lemma lintegral_abelRenewalMeasure (r : ℝ≥0∞) (μ : Measure M) (f : M → ℝ≥0∞) :
-    ∫⁻ z, f z ∂abelRenewalMeasure r μ = ∑' n, r ^ n * ∫⁻ z, f z ∂convPow μ n := by
-  rw [abelRenewalMeasure, lintegral_sum_measure]
-  exact tsum_congr fun n => by rw [lintegral_smul_measure, smul_eq_mul]
-
-/-- `U_r` is monotone in the discount factor. This is the hypothesis of the
-monotone-convergence step that recovers `U` from `U_r` as `r ↑ 1`. -/
-lemma abelRenewalMeasure_mono {r r' : ℝ≥0∞} (h : r ≤ r') (μ : Measure M) :
-    abelRenewalMeasure r μ ≤ abelRenewalMeasure r' μ := by
-  refine Measure.le_iff.2 fun s hs => ?_
-  rw [abelRenewalMeasure_apply _ _ hs, abelRenewalMeasure_apply _ _ hs]
-  exact ENNReal.tsum_le_tsum fun n => by gcongr
-
-lemma abelRenewalMeasure_le_renewalMeasure {r : ℝ≥0∞} (hr : r ≤ 1) (μ : Measure M) :
-    abelRenewalMeasure r μ ≤ renewalMeasure μ := by
-  rw [← abelRenewalMeasure_one]
-  exact abelRenewalMeasure_mono hr μ
-
-/-- The total mass of the discounted renewal measure is the geometric sum
-`(1-r)⁻¹`: each convolution power of a probability measure has mass one. -/
-@[simp]
-lemma abelRenewalMeasure_univ [MeasurableAdd₂ M] (r : ℝ≥0∞) (μ : Measure M)
-    [IsProbabilityMeasure μ] : abelRenewalMeasure r μ Set.univ = (1 - r)⁻¹ := by
-  rw [abelRenewalMeasure_apply _ _ MeasurableSet.univ]
-  simp [ENNReal.tsum_geometric]
-
-/-- Strict discounting makes the renewal measure *finite*. This is the whole point
-of the regularization: `U` itself is only locally finite, and `U_r` is a finite
-measure whose Fourier transform `(1 - rχ)⁻¹` has no pole. -/
-lemma isFiniteMeasure_abelRenewalMeasure [MeasurableAdd₂ M] {r : ℝ≥0∞} (hr : r < 1)
-    (μ : Measure M) [IsProbabilityMeasure μ] : IsFiniteMeasure (abelRenewalMeasure r μ) := by
-  refine ⟨?_⟩
-  rw [abelRenewalMeasure_univ]
-  exact ENNReal.inv_lt_top.2 (tsub_pos_of_lt hr)
-
-/-- The **discounted renewal equation** `U_r = δ₀ + r (U_r ∗ μ)`, the resolvent
-identity behind the Fourier denominator `1 - r χ`. Compare
-`renewalMeasure_eq_dirac_add_conv`, which is the case `r = 1`. -/
-lemma abelRenewalMeasure_eq_dirac_add_smul_conv [MeasurableAdd₂ M] (r : ℝ≥0∞) (μ : Measure M)
-    [SFinite μ] : abelRenewalMeasure r μ = Measure.dirac 0 + r • (abelRenewalMeasure r μ ∗ μ) := by
-  rw [abelRenewalMeasure, sum_conv]
-  refine Measure.ext fun s hs => ?_
-  rw [Measure.add_apply, Measure.smul_apply, Measure.sum_apply _ hs, Measure.sum_apply _ hs,
-    tsum_eq_zero_add' ENNReal.summable]
-  simp only [pow_zero, one_smul, convPow, Measure.smul_apply, smul_eq_mul, pow_succ]
-  rw [← ENNReal.tsum_mul_left]
-  congr 1
-  refine tsum_congr fun n => ?_
-  rw [Measure.conv_smul_left, Measure.smul_apply, smul_eq_mul]
-  ring
 
 /-!
 ### Local finiteness of the renewal measure
@@ -462,68 +316,6 @@ theorem renewalMeasure_le_ofReal_tsum_integral {μ : Measure ℝ} [IsProbability
     _ = ENNReal.ofReal ((∑' n, ∫ z, v (y - z) ∂(convPow μ n)) / c) := by
         rw [← ENNReal.ofReal_tsum_of_nonneg hnn (hsum.div_const c), tsum_div_const]
 
-/-- **The companion comparison, in the other direction**: a kernel dominated by an
-indicator has smoothed renewal series below the renewal measure,
-
-`∑ₙ ∫w(y−z)dμ^{*n} ≤ U({z : y−z ∈ I})`  whenever `w ≤ 1_I` pointwise.
-
-Together with `renewalMeasure_le_ofReal_tsum_integral` these are the two halves of
-the sandwich that turns Blackwell's theorem for smooth kernels into Blackwell's
-theorem for intervals: a lower kernel `w⁻ ≤ 1_I` bounds `U` from below and an
-upper kernel `w⁺ ≥ 1_I` bounds it from above.
-
-Stated in `ℝ` under a finiteness hypothesis on `U` (available eventually from
-A-4e) rather than in `ℝ≥0∞`. That is deliberate: `w` here is *signed* — a
-bandlimited kernel below an indicator must go negative outside `I` — so the terms
-`∫w(y−z)dμ^{*n}` need not be nonnegative and `ENNReal.ofReal` would not commute
-with the sum. Comparing partial sums in `ℝ` and passing to the limit avoids the
-issue entirely. -/
-theorem tsum_integral_comp_sub_le_toReal_renewalMeasure {μ : Measure ℝ}
-    [IsProbabilityMeasure μ] {w : ℝ → ℝ} {B : ℝ} (hwc : Continuous w) (hB : ∀ x, ‖w x‖ ≤ B)
-    {I : Set ℝ} (hI : MeasurableSet I) {y : ℝ}
-    (hwI : ∀ x, w x ≤ Set.indicator I (1 : ℝ → ℝ) x)
-    (hsum : Summable fun n => ∫ z, w (y - z) ∂(convPow μ n))
-    (hfin : renewalMeasure μ {z : ℝ | y - z ∈ I} ≠ ⊤) :
-    (∑' n, ∫ z, w (y - z) ∂(convPow μ n))
-      ≤ (renewalMeasure μ {z : ℝ | y - z ∈ I}).toReal := by
-  set J : Set ℝ := {z : ℝ | y - z ∈ I} with hJdef
-  have hJ : MeasurableSet J := hI.preimage (by fun_prop)
-  have hterm : ∀ n : ℕ, ∫ z, w (y - z) ∂(convPow μ n) ≤ ((convPow μ n) J).toReal := by
-    intro n
-    have hint : Integrable (fun z : ℝ => w (y - z)) (convPow μ n) := by
-      refine (integrable_const B).mono' ?_ (Filter.Eventually.of_forall fun z => ?_)
-      · exact (hwc.comp (continuous_const.sub continuous_id)).aestronglyMeasurable
-      · exact hB _
-    have hind : Integrable (Set.indicator J (1 : ℝ → ℝ)) (convPow μ n) :=
-      (integrable_indicator_iff hJ).2 (integrableOn_const (by finiteness))
-    have hle : ∀ z : ℝ, w (y - z) ≤ Set.indicator J (1 : ℝ → ℝ) z := by
-      intro z
-      have h := hwI (y - z)
-      by_cases hz : z ∈ J
-      · rw [Set.indicator_of_mem hz]
-        rwa [Set.indicator_of_mem (show y - z ∈ I from hz)] at h
-      · rw [Set.indicator_of_notMem hz]
-        rwa [Set.indicator_of_notMem (show y - z ∉ I from hz)] at h
-    calc ∫ z, w (y - z) ∂(convPow μ n) ≤ ∫ z, Set.indicator J (1 : ℝ → ℝ) z ∂(convPow μ n) :=
-          integral_mono hint hind hle
-      _ = ((convPow μ n) J).toReal := by rw [integral_indicator_one hJ]; rfl
-  have hpart : ∀ N : ℕ, ∑ n ∈ Finset.range N, ∫ z, w (y - z) ∂(convPow μ n)
-      ≤ (renewalMeasure μ J).toReal := by
-    intro N
-    have h1 : ∑ n ∈ Finset.range N, ∫ z, w (y - z) ∂(convPow μ n)
-        ≤ ∑ n ∈ Finset.range N, ((convPow μ n) J).toReal :=
-      Finset.sum_le_sum fun n _ => hterm n
-    have h2 : ∑ n ∈ Finset.range N, ((convPow μ n) J).toReal
-        = (∑ n ∈ Finset.range N, (convPow μ n) J).toReal := by
-      rw [ENNReal.toReal_sum (fun n _ => measure_ne_top _ _)]
-    have h3 : (∑ n ∈ Finset.range N, (convPow μ n) J) ≤ renewalMeasure μ J := by
-      rw [renewalMeasure_apply _ hJ]
-      exact ENNReal.sum_le_tsum _
-    have h4 : (∑ n ∈ Finset.range N, (convPow μ n) J).toReal ≤ (renewalMeasure μ J).toReal :=
-      ENNReal.toReal_mono hfin h3
-    linarith [h1, h2 ▸ h4]
-  exact le_of_tendsto hsum.hasSum.tendsto_sum_nat (Filter.Eventually.of_forall hpart)
-
 /-!
 ### Nonlatticeness and the characteristic function
 
@@ -542,13 +334,14 @@ any arithmetic progression `a + rℤ`.
 This is stated in exactly the form the chapter supplies it: the tilted increment
 law `μ̂_{A,N}` satisfies it by
 `tiltedIncrementLaw_not_concentrated_on_lattice`. Note the degenerate case
-`r = 0` is included, and forces `μ` to be atomless at every point. -/
+`r = 0` is included, and excludes probability measures concentrated at one point. -/
 def Nonlattice (μ : Measure ℝ) : Prop :=
   ∀ a r : ℝ, μ {x : ℝ | ∃ k : ℤ, x = a + k * r} ≠ 1
 
 /-- **Feller's non-lattice condition**, which is what the proofs below actually consume.
-`Nonlattice` is strictly stronger: it fails for every law carried by finitely many atoms,
-while this one holds as soon as the atoms lie on no lattice through the origin. -/
+`Nonlattice` is strictly stronger: it fails for every law carried by two points,
+while this one holds for a two-point probability law with positive weights when the
+atoms lie on no lattice through the origin. -/
 structure FellerNonlattice (μ : Measure ℝ) : Prop where
   /-- The characteristic function avoids the value `1` off the origin. -/
   charFun_ne_one : ∀ t : ℝ, t ≠ 0 → charFun μ t ≠ 1
@@ -629,7 +422,7 @@ The Fourier proof of Blackwell's theorem integrates `(1 - charFun μ t)⁻¹` ag
 the transform of the smoothing kernel, which is supported in a compact interval
 `[-T,T]`; near the origin the integrand is handled by the pole subtraction, and
 on the remaining compact annulus `δ ≤ |t| ≤ T` this lemma keeps it bounded.
-Nonlatticeness enters only through `charFun_ne_one_of_nonlattice`, and
+Nonlatticeness enters only through `FellerNonlattice.charFun_ne_one`, and
 compactness upgrades the pointwise nonvanishing to a uniform bound. -/
 theorem exists_pos_le_norm_one_sub_charFun {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : FellerNonlattice μ) {δ : ℝ} (hδ : 0 < δ) (T : ℝ) :
@@ -752,59 +545,6 @@ theorem exists_le_norm_one_sub_charFun {μ : Measure ℝ} [IsProbabilityMeasure 
       _ ≤ (m / 2) * |t| := mul_le_mul_of_nonneg_right hmul (abs_nonneg t)
   linarith
 
-/-- **The pole subtraction is bounded.** Near the origin the difference between
-the resolvent `(1 - χ(t))⁻¹` and the explicit simple pole `(-i m t)⁻¹` stays
-bounded, because the numerator of the difference is `O(t²)` while the denominator
-is `≳ t²`. This is what makes the corrected integrand integrable on `[-T,T]`, so
-that Riemann–Lebesgue applies to it; the subtracted pole term is the one that
-produces `1/m̂` in Blackwell's limit. -/
-theorem exists_bound_pole_correction {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hint : MemLp id 2 μ) (hm : 0 < ∫ x, x ∂μ) :
-    ∃ δ > 0, ∃ C : ℝ, ∀ t : ℝ, t ≠ 0 → |t| ≤ δ →
-      ‖(1 - charFun μ t)⁻¹ - (-(((∫ x, x ∂μ : ℝ) : ℂ) * t * Complex.I))⁻¹‖ ≤ C := by
-  set m : ℝ := ∫ x, x ∂μ with hmdef
-  obtain ⟨δ₁, hδ₁, K, hK, hbound⟩ := exists_norm_one_sub_charFun_add_le hint
-  obtain ⟨δ₂, hδ₂, hlow⟩ := exists_le_norm_one_sub_charFun hint hm
-  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, 2 * K / m ^ 2, fun t ht0 ht => ?_⟩
-  have ht1 : |t| ≤ δ₁ := le_trans ht (min_le_left _ _)
-  have ht2 : |t| ≤ δ₂ := le_trans ht (min_le_right _ _)
-  have habs : 0 < |t| := abs_pos.mpr ht0
-  set a : ℂ := 1 - charFun μ t with ha_def
-  set b : ℂ := -((m : ℂ) * t * Complex.I) with hb_def
-  have hna : m / 2 * |t| ≤ ‖a‖ := hlow t ht2
-  have hnb : ‖b‖ = m * |t| := by
-    rw [hb_def, norm_neg]
-    simp [abs_of_pos hm]
-  have ha : a ≠ 0 := by
-    intro h
-    rw [h, norm_zero] at hna
-    nlinarith
-  have hb : b ≠ 0 := by
-    intro h
-    rw [h, norm_zero] at hnb
-    nlinarith
-  have hba : ‖b - a‖ ≤ K * t ^ 2 := by
-    have hrw : b - a = -(1 - charFun μ t + (m : ℂ) * t * Complex.I) := by
-      rw [ha_def, hb_def]; ring
-    rw [hrw, norm_neg]
-    exact hbound t ht1
-  have hab : m ^ 2 / 2 * t ^ 2 ≤ ‖a * b‖ := by
-    rw [norm_mul, hnb]
-    have hsq : t ^ 2 = |t| * |t| := by rw [← sq_abs t, sq]
-    calc m ^ 2 / 2 * t ^ 2 = (m / 2 * |t|) * (m * |t|) := by rw [hsq]; ring
-      _ ≤ ‖a‖ * (m * |t|) := by
-          refine mul_le_mul_of_nonneg_right hna ?_
-          positivity
-  have habpos : 0 < ‖a * b‖ := by
-    have hpos : 0 < m ^ 2 / 2 * t ^ 2 := by positivity
-    linarith
-  rw [inv_sub_inv ha hb, norm_div, div_le_iff₀ habpos]
-  calc ‖b - a‖ ≤ K * t ^ 2 := hba
-    _ = 2 * K / m ^ 2 * (m ^ 2 / 2 * t ^ 2) := by field_simp
-    _ ≤ 2 * K / m ^ 2 * ‖a * b‖ := by
-        refine mul_le_mul_of_nonneg_left hab ?_
-        positivity
-
 /-- **A nonlattice probability measure has `‖charFun μ t‖ < 1` for every `t ≠ 0`**
 — strictly stronger than `charFun_ne_one_of_nonlattice`, and what the `N → ∞`
 passage in Blackwell's proof needs: it is what makes `χ(t)^N → 0` pointwise off
@@ -870,13 +610,6 @@ theorem norm_charFun_lt_one_of_nonlattice {μ : Measure ℝ} [IsProbabilityMeasu
     exact ⟨n, by field_simp; linarith [hn]⟩
   exact hμ (θ / t) (2 * Real.pi / t)
     ((prob_compl_eq_zero_iff hcount.measurableSet).mp (ae_iff.mp hsub))
-
-/-- The pointwise input to the `N → ∞` passage: off the origin the geometric
-factor dies. -/
-lemma tendsto_charFun_pow_of_nonlattice {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hμ : Nonlattice μ) {t : ℝ} (ht : t ≠ 0) :
-    Filter.Tendsto (fun n : ℕ => (charFun μ t) ^ n) Filter.atTop (nhds 0) :=
-  tendsto_pow_atTop_nhds_zero_of_norm_lt_one (norm_charFun_lt_one_of_nonlattice hμ ht)
 
 /-- **The resolvent is uniformly controlled by the kernel's transform.**
 

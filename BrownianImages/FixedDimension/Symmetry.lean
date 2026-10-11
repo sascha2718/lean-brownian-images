@@ -36,8 +36,6 @@ theorem flipDigit_one : flipDigit 1 = 0 := rfl
 theorem flipDigit_flipDigit (i : Fin 2) : flipDigit (flipDigit i) = i := by
   rcases fin_two_cases i with rfl | rfl <;> rfl
 
-theorem flipDigit_involutive : Function.Involutive flipDigit := flipDigit_flipDigit
-
 theorem tail_flipWord (ω : ℕ → Fin 2) : tail (flipWord ω) = flipWord (tail ω) := rfl
 
 theorem flipWord_apply (ω : ℕ → Fin 2) (k : ℕ) : flipWord ω k = flipDigit (ω k) := rfl

@@ -1,24 +1,23 @@
 /-
-`sec:renewal` of `BrownianImagesComplete.tex`: `thm:non-lattice-limit` and
-`eq:g-non-lattice-limit`, by the Fourier route.
+The renewal section of `BrownianImagesComplete.tex`: the non-lattice profile limit
+and its renewal representation, by the Fourier argument.
 
 The vendored key renewal theorem
-`AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm_real` asks for
-`Nonlattice`, which `not_nonlattice_renewalLaw` refutes for the renewal law
-`ϑ = ∑ p_i δ_{α_i}` of a self-similar system.  Tracing that hypothesis through the
-vendored proof shows it is consumed at exactly three declarations, and in only two
-forms: `charFun μ t ≠ 1` off the origin, which keeps the resolvent `(1 - charFun μ)⁻¹`
-bounded on a compact annulus, and `‖charFun μ t‖ < 1` inside a dominated convergence
-step, where an almost everywhere statement suffices.  `FellerNonlattice` is exactly
-those two, and `ϑ` satisfies it under `eq:non-lattice` even though it satisfies neither
-`Nonlattice` nor the pointwise `‖charFun F t‖ < 1`.
+`AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm_real` uses
+`FellerNonlattice`. Its two requirements are `charFun μ t ≠ 1` off the origin, which
+keeps the resolvent `(1 - charFun μ)⁻¹` bounded on a compact annulus, and countability
+of the frequencies with `‖charFun μ t‖ = 1`, which gives the almost everywhere strict
+bound needed for dominated convergence. This module proves both requirements for
+the self-similar increment law `ϑ = ∑ p_i δ_{α_i}` under non-arithmeticity.
 
-`FellerNonlattice` is defined in `BrownianImages/Renewal/Basic.lean` and the vendored
-chain carries it directly, so this module states no vendored declaration a second time.
-`Renewal/*.lean` records the change and `docs/renewal-library.md` the account.
+The stronger `Nonlattice` condition excludes all two-atom laws, as
+`not_nonlattice_renewalLaw` proves. The separate characteristic-function counterexample
+shows why a strict modulus bound at every nonzero frequency would also be too strong.
+`FellerNonlattice` is defined in `BrownianImages/Renewal/Basic.lean` and is used directly
+throughout the renewal proof; `docs/renewal-library.md` describes this interface.
 
-* `fellerNonlattice_of_nonlattice`: `FellerNonlattice`, the hypothesis the vendored
-  chain now carries, is weaker than the `Nonlattice` it replaced.
+* `fellerNonlattice_of_nonlattice`: the stronger affine-lattice condition implies
+  the Fourier hypotheses used by the key renewal theorem.
 * `System.charFun_renewalLaw`, `System.charFun_renewalLaw_eq_one_iff`: the
   characteristic function of `ϑ` and the exact description of where it takes the value
   `1`.
@@ -31,15 +30,16 @@ chain carries it directly, so this module states no vendored declaration a secon
   can reach `thm:non-lattice-limit`.
 * `KeyRenewalFourier.tendsto_integral_comp_sub_convPow_zero_of_bounded` and
   `KeyRenewalFourier.eq_tsum_integral_comp_sub_of_bounded`: the terminal term of the
-  iterated renewal equation vanishes for a solution that is merely bounded at `+∞`,
-  which is the case of `G` and not the case the vendored reduction covers.
+  iterated renewal equation vanishes for a bounded solution tending to zero at `-∞`,
+  as the profile `G` does.
 * `System.tendsto_of_renewalEquation`: `eq:g-non-lattice-limit` in the vocabulary of
   `sec:renewal`.
 * `phi_recursion_le`, `renewalDefect_nonneg`, `renewalDefect_pos_of_nonpos`,
   `driNorm_renewalDefect_ne_top`, `integral_renewalDefect_pos`: the two analytic facts
   `sec:renewal` proves about the renewal defect `z = G - F * G`, that it is directly
-  Riemann integrable and that `∫ z > 0`.  The first rests on `z = 0` above `log(1/ρ)`
-  together with `|z| ≤ e^{sw}` below it, the second on the off-diagonal blocks of the
+  Riemann integrable and that `∫ z > 0`. The first uses exponential decay at `+∞`
+  from the cross-piece estimate and `|z(w)| ≤ e^{sw}` for `w ≤ 0`; the second uses
+  the off-diagonal blocks of the
   self-similar decomposition being non-negative, which is `phi_recursion_le`:
   `eq:correlation-recursion` with those blocks kept rather than killed, hence with no separation
   hypothesis and at every scale.
@@ -257,8 +257,8 @@ theorem charFun_renewalLaw_eq_one_iff {s t : ℝ} (hdim : S.IsDimension s) :
 open KeyRenewalFourier in
 /-- `eq:non-lattice` in Fourier form: the system is non-arithmetic exactly when the
 characteristic function of `ϑ` avoids the value `1` off the origin.  This is Feller's
-hypothesis, and it is strictly weaker than the strongly non-lattice condition
-`‖charFun ϑ t‖ < 1`, which `not_nonlattice_renewalLaw` refutes for `ϑ`. -/
+hypothesis. Requiring `‖charFun ϑ t‖ < 1` at every nonzero frequency is stronger,
+and fails for two-map systems by `exists_norm_charFun_renewalLaw_eq_one`. -/
 theorem nonArithmetic_iff_charFun_ne_one [Nonempty ι] {s : ℝ} (hdim : S.IsDimension s) :
     S.NonArithmetic ↔ ∀ t : ℝ, t ≠ 0 → charFun (S.renewalLaw s) t ≠ 1 := by
   constructor
@@ -313,9 +313,9 @@ open KeyRenewalFourier in
 /-- **The frequencies at which `charFun F` has modulus one form a countable set.**
 `‖charFun F t‖ = 1` forces every atom phase to coincide, hence `t (α_i - α_j) ∈ 2πℤ` for
 a pair with `α_i ≠ α_j`, and that confines `t` to a lattice.  This is all that the
-Fourier proof of Blackwell's theorem consumes of the strongly non-lattice condition: the
-pointwise form `‖charFun ϑ t‖ < 1` for every `t ≠ 0` is false for `ϑ`, by
-`exists_norm_charFun_renewalLaw_eq_one`. -/
+Fourier proof of Blackwell's theorem needs for its almost everywhere modulus bound.
+The stronger pointwise bound at every nonzero frequency fails for two-map systems,
+by `exists_norm_charFun_renewalLaw_eq_one`. -/
 theorem countable_norm_charFun_renewalLaw_eq_one [Nonempty ι] {s : ℝ}
     (hdim : S.IsDimension s) (hna : S.NonArithmetic) :
     {t : ℝ | ‖charFun (S.renewalLaw s) t‖ = 1}.Countable := by
@@ -388,9 +388,9 @@ end System
 
 /-! ### Feller's non-lattice hypothesis -/
 
-/-- `AbsorptionCutoff.Renewal.FellerNonlattice` is weaker than the vendored
-`Nonlattice`, which `not_nonlattice_renewalLaw` refutes for the renewal law of a
-self-similar system. -/
+/-- The affine-lattice condition `AbsorptionCutoff.Renewal.Nonlattice` implies
+`FellerNonlattice`. It is stronger than necessary for the non-lattice profile limit:
+`not_nonlattice_renewalLaw` refutes it for every two-map self-similar system. -/
 theorem fellerNonlattice_of_nonlattice {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hμ : AbsorptionCutoff.Renewal.Nonlattice μ) :
     AbsorptionCutoff.Renewal.FellerNonlattice μ where
@@ -413,12 +413,10 @@ open scoped Convolution FourierTransform
 /-- **The terminal term of the iterated renewal equation vanishes**, for a solution that
 is merely bounded at `+∞`.
 
-The vendored `tendsto_integral_comp_sub_convPow_zero` asks that `h` decay at `+∞`
-against an exponential tilt `β` with `∫ e^{-βz} dμ^{*n} = 1`; for a law carried by the
-positive half-line that forces `β = 0`, hence `h → 0` at `+∞`, which the profile `G` does
-not satisfy.  What the paper's argument uses instead is that `G` is bounded and vanishes
-at `-∞`, while `μ^{*n}` escapes to `+∞`, so only two regions arise: the far left, where
-`h` is small, and a left half-line whose mass dies geometrically by Chernoff. -/
+The profile `G` is bounded and vanishes at `-∞`, while `μ^{*n}` escapes to `+∞`.
+The integral splits into two regions: one where the argument of `h` is far enough
+left that `h` is small, and a left half-line of increments whose mass decays
+geometrically by the strict exponential-moment bound. -/
 theorem tendsto_integral_comp_sub_convPow_zero_of_bounded
     {μ : Measure ℝ} [IsProbabilityMeasure μ] {θ : ℝ} (hθ : 0 < θ)
     (hlt : expTransform θ μ < 1) {h : ℝ → ℝ} {A : ℝ} (hA : ∀ u, |h u| ≤ A)
@@ -575,9 +573,8 @@ theorem memLp_id_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
       (fun j _ => abs_nonneg _) (Finset.mem_univ i)
   rw [Measure.dirac_apply' _ hmeas, Set.indicator_of_notMem hnot, mul_zero]
 
-/-- **`eq:non-lattice` gives Feller's hypothesis for `ϑ`.**  This is what
-`thm:non-lattice-limit` needs of the renewal law, and what the vendored `Nonlattice`
-provably is not. -/
+/-- Non-arithmeticity gives `FellerNonlattice` for the self-similar increment law,
+as required by the key renewal theorem in the non-lattice profile limit. -/
 theorem fellerNonlattice_renewalLaw [Nonempty ι] {s : ℝ} (hdim : S.IsDimension s)
     (hna : S.NonArithmetic) :
     AbsorptionCutoff.Renewal.FellerNonlattice (S.renewalLaw s) where
@@ -967,16 +964,16 @@ theorem non_lattice_limit_of_driNorm {ι : Type*} [Fintype ι] [Nonempty ι] (S 
   rw [System.renewalDefect]
   ring
 
-/-- **`thm:non-lattice-limit`, `eq:g-non-lattice-limit`.**  Under the strong open set
+/-- The non-lattice profile limit. Under the strong open set
 condition and in the non-arithmetic case, the normalised profile converges to
 `m⁻¹ ∫ z`, which is finite and strictly positive, where `m = ∑ p_i α_i` is the renewal
 mean and `z = G - F * G` the renewal defect.
 
-The vendored key renewal theorem does not apply: `not_nonlattice_renewalLaw` refutes its
-`Nonlattice` hypothesis for `ϑ`, and `exists_norm_charFun_renewalLaw_eq_one` refutes even
-the analytic condition `‖charFun ϑ t‖ < 1` behind it.  What replaces it is
-`FellerNonlattice`, which is what the Fourier proof actually consumes and what
-`eq:non-lattice` supplies. -/
+The vendored key renewal theorem applies with `FellerNonlattice`, supplied by the
+system's non-arithmeticity. The retained counterexamples
+`not_nonlattice_renewalLaw` and `exists_norm_charFun_renewalLaw_eq_one` show why the
+stronger affine-lattice condition and an everywhere strict characteristic-function
+modulus bound would exclude two-map systems covered by this result. -/
 theorem non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hsosc : S.StrongOpenSetCondition K)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)

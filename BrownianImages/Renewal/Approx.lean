@@ -5,18 +5,17 @@ Vendored into `BrownianImages` from
 at commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5, under the Apache License 2.0
 (a copy is in this directory as `LICENSE`).
 
-Modified, twice:
-  1. the `import` lines were rewritten to the module paths of this project;
-  2. the `Nonlattice` hypothesis was weakened to `FellerNonlattice`, which is what
-     the proofs below actually consume.  `FellerNonlattice` and its almost everywhere
-     consequence are defined in `Basic.lean`; the hypothesis is swapped in the
-     declarations that merely forward it, `charFun_ne_one_of_nonlattice` is replaced by
-     the corresponding field, and the one live use of the pointwise bound
-     `norm_charFun_lt_one_of_nonlattice` becomes an almost everywhere statement inside
-     the `filter_upwards` that consumes it.  `Nonlattice`,
-     `charFun_ne_one_of_nonlattice`, `norm_charFun_lt_one_of_nonlattice` and
-     `tendsto_charFun_pow_of_nonlattice` are kept unchanged.
-     See `docs/renewal-library.md`.
+Modifications to the vendored subset:
+  1. project-local imports replace the upstream module paths where needed;
+  2. renewal-limit declarations use `FellerNonlattice`, the weaker hypothesis
+     consumed by their proofs. `Basic.lean` defines it and its almost everywhere
+     consequence; forwarding declarations and three proof sites are adjusted.
+     The upstream `Nonlattice` definition and the lemmas
+     `charFun_ne_one_of_nonlattice` and `norm_charFun_lt_one_of_nonlattice` remain
+     for the proved comparison and the two-atom counterexample;
+  3. unused helper declarations were removed from `Basic.lean`, `Equation.lean`
+     and `Kernel.lean`; related documentation was updated.
+See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
 Copyright (c) 2026 Benny Avelin. All rights reserved.

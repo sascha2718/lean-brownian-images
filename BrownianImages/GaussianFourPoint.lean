@@ -1,8 +1,8 @@
 /-
 `sec:setup` and `sec:variance` of `BrownianImagesComplete.tex`.
 
-* `endpoint_block_mass_le_explicit`, `endpoint_block_mass_le`: the mass half of `thm:endpoint-block-mass`, with the three
-  Frostman applications behind its explicit constant `A³`
+* `endpoint_block_mass_le_explicit`: the mass half of `thm:endpoint-block-mass`,
+  with three Frostman applications behind its explicit constant `A³`
   (`block_inner_le`, `block_mid_le`, `block_relaxed_le`).
 * `disjoint_increments_indep`: the first assertion of
   `thm:gaussian-four-point`, together with the two lemmas it rests on:
@@ -198,22 +198,6 @@ theorem endpoint_block_mass_le_explicit {s A : ℝ} {μ : Measure ℝ}
         = A ^ 3 * β ^ s * (η ^ s * η ^ s) := by ring
     rw [hprod, hpow]
 
-/-- `thm:endpoint-block-mass`, the mass half: the `μ⁴`-mass of the dyadic
-block of ordered quadruples is `O(β^s η^{2s})`.  On the block `x₃` lies within `β` of
-`x₂`, `x₁` within `η` of `x₂` and `x₄` within `η` of `x₃`; dropping the ordering
-constraints and integrating in that order applies `eq:frostman` three times, with
-constant `A³`. -/
-theorem endpoint_block_mass_le {s A : ℝ} {μ : Measure ℝ}
-    [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    ∃ C > 0, ∀ β η : ℝ, 0 < β → β ≤ 1 → 0 < η → η ≤ 1 →
-      (μ.prod (μ.prod (μ.prod μ)))
-        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
-          β / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ β ∧
-          η / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
-          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ η}
-        ≤ ENNReal.ofReal (C * β ^ s * η ^ (2 * s)) := by
-  refine ⟨A ^ 3, pow_pos (lt_of_lt_of_le zero_lt_one hμ.one_le_const) 3, ?_⟩
-  exact endpoint_block_mass_le_explicit hμ
 
 end BlockMass
 

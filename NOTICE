@@ -9,17 +9,21 @@ BrownianImages/Renewal/
             RenewalSinc, RenewalApprox, RenewalEquation}.lean
             (renamed to Basic, Abel, Kernel, Sinc, Approx, Equation).
 
-    Modifications, two:
-      (1) in Abel.lean, Sinc.lean, Approx.lean and Equation.lean the 'import' lines
-          were rewritten to the module paths of this project;
-      (2) in Basic.lean, Abel.lean, Sinc.lean, Approx.lean and Equation.lean the
-          'Nonlattice' hypothesis was weakened to 'FellerNonlattice', which is what
-          the proofs consume. Basic.lean gains that definition and one almost
-          everywhere consequence; the hypothesis is swapped in the declarations that
-          forward it; and three proof sites are adjusted. 'Nonlattice' and the three
-          lemmas proved from it are kept unchanged.
-    Kernel.lean is byte-identical to the original. No other change was made, and
-    each file carries this statement in its own header.
+    This project retains the declarations needed by its proofs and documented
+    renewal interfaces. The vendored subset has the following modifications:
+      (1) imports use this project's module paths where needed;
+      (2) the renewal-limit chain uses 'FellerNonlattice' in place of the stronger
+          upstream 'Nonlattice'. Basic.lean defines that condition and its almost
+          everywhere consequence; forwarding declarations and three proof sites
+          are adjusted. The original 'Nonlattice' definition and its two
+          characteristic-function bounds remain for the proved comparison and
+          counterexamples;
+      (3) unused helpers are omitted from Basic.lean, Equation.lean and Kernel.lean,
+          including the discounted renewal-measure API and the upstream scalar
+          limit and angular-reconstruction wrappers. Related documentation is
+          updated, including two corrections to comments on non-lattice laws.
+    Each file carries a provenance header. See docs/renewal-library.md for the
+    retained mathematical interfaces and the non-lattice distinction.
 
     A copy of the Apache License 2.0 is at BrownianImages/Renewal/LICENSE.
 

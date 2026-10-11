@@ -9,8 +9,6 @@ statements without an additional maximal-moment hypothesis.
 `thm:cross-piece-mass` in the pairwise overlap and multiple-counting defect bounds
 of `thm:neighbourhood-overlap`.
 -/
-import BrownianImages.Minkowski.BrownianMaximalMoment
-import BrownianImages.Minkowski.TubeMomentAssembly
 import BrownianImages.Minkowski.TubeRenewalAssembly
 import BrownianImages.Minkowski.StoppingConcentration
 
@@ -118,32 +116,6 @@ theorem IsNatural.tubeOverlap_of_crossPhi_bound
         C * r ^ (tubeExponent s + 2 * η) := by
   obtain ⟨Cpair, hCpair, hpair⟩ := hmu.exists_cross_piece_bound_of_crossPhi_bound S hs0 hCc hcross
   exact hmu.tubeOverlap_of_cross_piece_bound hW S hs0 hs1 hosc hdim hCpair hη hηs hpair
-
-/-- `thm:neighbourhood-overlap`, with both the tube moments and Brownian maximal input
-discharged. -/
-theorem IsNatural.tubeOverlap
-    {P : Measure Omega} [IsProbabilityMeasure P]
-    {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
-    (S : System iota) {K : Set Real} {s : Real}
-    (hs0 : 0 < s) (hs1 : s < 1)
-    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
-    {mu : Measure Real} (hmu : S.IsNatural K s mu) :
-    ∃ C η : Real, 0 < C ∧ 0 < η ∧ ∀ r : Real, 0 < r → r ≤ 1 →
-      (∀ i j : iota, i ≠ j →
-        Integrable (fun omega => tubeOverlapArea r
-          (brownianImage W (hmu.compactPiece S i) omega)
-          (brownianImage W (hmu.compactPiece S j) omega)) P ∧
-        (∫ omega, tubeOverlapArea r
-            (brownianImage W (hmu.compactPiece S i) omega)
-            (brownianImage W (hmu.compactPiece S j) omega) ∂P) ≤
-          C * r ^ (tubeExponent s + 2 * η)) ∧
-      Integrable (fun omega => tubeDefect r
-        (fun i => brownianImage W (hmu.compactPiece S i) omega)) P ∧
-      (∫ omega, tubeDefect r
-          (fun i => brownianImage W (hmu.compactPiece S i) omega) ∂P) ≤
-        C * r ^ (tubeExponent s + 2 * η) := by
-  have hmom := hmu.tubeMoments hW S hs0 hs1 (hsosc.openSetCondition S) hdim
-  exact hmu.tubeOverlap_of_sosc_of_tubeMoments S hW hs0 hs1 hsosc hdim hmom.1
 
 /-- The internal non-arithmetic limit giving the shift relation in
 `thm:neighbourhood-renewal`, with the unit Brownian radius moments discharged. -/

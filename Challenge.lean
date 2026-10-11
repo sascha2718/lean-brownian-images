@@ -199,9 +199,6 @@ noncomputable def brownianImageLaw (W : ℝ≥0 → Ω → Plane) (P : Measure �
     (K : NonemptyCompacts ℝ) : Measure (NonemptyCompacts Plane) :=
   P.map (brownianImage W K)
 
-instance : MeasurableSpace CompactPlane := borel CompactPlane
-instance : BorelSpace CompactPlane := ⟨rfl⟩
-
 /-- The cut-off probability `ν_{F,r}` in Section 1, with an irrelevant fallback
 when the normalised density is not a probability measure. -/
 noncomputable def cutoffProbability (r : ℝ) (F : CompactPlane) : ProbabilityMeasure Plane :=
@@ -274,7 +271,8 @@ theorem audit_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
       Tendsto (expectedProfile W P s μ) atTop (𝓝 C)) := by
   sorry
 
-/-- Corollary 1.3 (`thm:cantor-application`), for arbitrary lattice and non-lattice IFSs. -/
+/-- Lattice/non-lattice occupation-law separation, for arbitrary IFSs under the
+open set condition. -/
 theorem audit_lattice_nonlattice_measures {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
@@ -360,8 +358,8 @@ theorem audit_lattice_nonlattice_sets {P : Measure Ω} [IsProbabilityMeasure P]
     (brownianImageLaw W P K₁).MutuallySingular (brownianImageLaw W P K₂) := by
   sorry
 
-/-- Corollary 1.9 (`thm:fixed-dimension-set-application`). The final clause supplies
-one threshold for both the strict increase of Theorem 1.5 and compact-image separation. -/
+/-- Two-contraction compact-image separation. The final clause supplies one threshold
+for both small-dimension monotonicity and compact-image separation. -/
 theorem audit_two_contraction_sets {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) :
     (∀ s ∈ Set.Ioo (0:ℝ) 1, ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),

@@ -519,15 +519,15 @@ theorem IsPlanarBrownian.indepFun_compactPieces_gapIncrement
         (finiteRange fun t : LK =>
           (Real.sqrt (r : Real))⁻¹ • z (inK t.1) : CompactPlane)) :=
       (@measurable_finiteRange Plane LK inferInstance inferInstance inferInstance
-        inferInstance inferInstance instMeasurableSpaceCompactPlane
-        instBorelSpaceCompactPlane).comp hsamples
+        inferInstance inferInstance measurableSpace_nonemptyCompacts_plane
+        borelSpace_nonemptyCompacts_plane).comp hsamples
     have hcompact : Measurable (fun z : unitIntervalCompact → Plane =>
         smulCompact (Real.sqrt (r : Real))
           (finiteImage LK hLK
             (fun t : K => (Real.sqrt (r : Real))⁻¹ • z (inK t)))) := by
       have hsmulMeas := measurable_smulCompact (Real.sqrt (r : Real))
-      change @Measurable CompactPlane CompactPlane instMeasurableSpaceCompactPlane
-        instMeasurableSpaceCompactPlane (smulCompact (Real.sqrt (r : Real))) at hsmulMeas
+      change @Measurable CompactPlane CompactPlane measurableSpace_nonemptyCompacts_plane
+        measurableSpace_nonemptyCompacts_plane (smulCompact (Real.sqrt (r : Real))) at hsmulMeas
       simpa only [finiteImage_eq_finiteRange, Function.comp_def] using
         hsmulMeas.comp hrange
     exact (measurable_translateCompact_pair.comp
@@ -549,15 +549,15 @@ theorem IsPlanarBrownian.indepFun_compactPieces_gapIncrement
         (finiteRange fun t : LL =>
           (Real.sqrt (s : Real))⁻¹ • z (inL t.1) : CompactPlane)) :=
       (@measurable_finiteRange Plane LL inferInstance inferInstance inferInstance
-        inferInstance inferInstance instMeasurableSpaceCompactPlane
-        instBorelSpaceCompactPlane).comp hsamples
+        inferInstance inferInstance measurableSpace_nonemptyCompacts_plane
+        borelSpace_nonemptyCompacts_plane).comp hsamples
     have hcompact : Measurable (fun z : unitIntervalCompact → Plane =>
         smulCompact (Real.sqrt (s : Real))
           (finiteImage LL hLL
             (fun t : L => (Real.sqrt (s : Real))⁻¹ • z (inL t)))) := by
       have hsmulMeas := measurable_smulCompact (Real.sqrt (s : Real))
-      change @Measurable CompactPlane CompactPlane instMeasurableSpaceCompactPlane
-        instMeasurableSpaceCompactPlane (smulCompact (Real.sqrt (s : Real))) at hsmulMeas
+      change @Measurable CompactPlane CompactPlane measurableSpace_nonemptyCompacts_plane
+        measurableSpace_nonemptyCompacts_plane (smulCompact (Real.sqrt (s : Real))) at hsmulMeas
       simpa only [finiteImage_eq_finiteRange, Function.comp_def] using
         hsmulMeas.comp hrange
     exact hcompact.prodMk measurable_const

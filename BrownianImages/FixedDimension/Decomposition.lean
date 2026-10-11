@@ -115,15 +115,6 @@ theorem measurable_auxKernel (n : ℕ) : Measurable (Function.uncurry (auxKernel
   exact ((measurable_const.sub (measurable_const.mul (measurable_const.sub h2))).sub
     (measurable_const.mul h1)).pow_const _
 
-omit hs hs1 hp0 hp1 in
-theorem measurable_termKernel (n : ℕ) : Measurable (Function.uncurry (termKernel s p n)) := by
-  have h1 : Measurable fun q : (ℕ → Fin 2) × (ℕ → Fin 2) => fixedCode s p q.1 :=
-    (measurable_fixedCode s p).comp measurable_fst
-  have h2 : Measurable fun q : (ℕ → Fin 2) × (ℕ → Fin 2) => fixedCode s p q.2 :=
-    (measurable_fixedCode s p).comp measurable_snd
-  exact ((measurable_const.sub measurable_const).sub
-    (measurable_const.mul (h1.sub (measurable_const.mul h2)))).pow_const _
-
 theorem auxKernel_mem (n : ℕ) (ω ω' : ℕ → Fin 2) :
     1 ≤ auxKernel s p n ω ω' ∧ auxKernel s p n ω ω' ≤ (1 - fixedA s p - fixedB s p) ^ (-s) := by
   obtain ⟨h1, h2⟩ := leadingAux_base_mem hs hs1 hp0 hp1 n ω ω'
@@ -137,11 +128,6 @@ theorem termKernel_mem (n : ℕ) (ω ω' : ℕ → Fin 2) :
 theorem abs_auxKernel_le (n : ℕ) (ω ω' : ℕ → Fin 2) :
     |auxKernel s p n ω ω'| ≤ (1 - fixedA s p - fixedB s p) ^ (-s) := by
   obtain ⟨h1, h2⟩ := auxKernel_mem hs hs1 hp0 hp1 n ω ω'
-  rw [abs_of_nonneg (by linarith)]; exact h2
-
-theorem abs_termKernel_le (n : ℕ) (ω ω' : ℕ → Fin 2) :
-    |termKernel s p n ω ω'| ≤ (1 - fixedA s p - fixedB s p) ^ (-s) := by
-  obtain ⟨h1, h2⟩ := termKernel_mem hs hs1 hp0 hp1 n ω ω'
   rw [abs_of_nonneg (by linarith)]; exact h2
 
 omit hs hs1 in

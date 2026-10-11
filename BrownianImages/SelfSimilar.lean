@@ -12,10 +12,10 @@ proofs need beyond the definitions:
   `image_ball_of_affine`, `preimage_closedBall_of_affine`: the elementary geometry of an
   affine map of the line with non-zero slope, shared by every composition of similarities.
 * `measurable_map`, the `IsNatural` extractors and `logRatio_pos`.
-* `abs_sign`, `map_sub`, `abs_map_sub`, `map_injective`, `inv`: the orientation of a
+* `abs_sign`, `map_sub`, `abs_map_sub`, `inv`: the orientation of a
   similarity, its signed slope `ε_i r_i`, and its inverse.
-* `left`, `map_image_unitInterval`: the left endpoint `ℓ_i = min(S_i(0), S_i(1))` of the
-  first-level interval `S_i([0,1]) = [ℓ_i, ℓ_i + r_i]`.
+* `left`, `map_eq_left_add`: the left endpoint `ℓ_i = min(S_i(0), S_i(1))` and the
+  oriented affine form of each first-level similarity.
 * `log_two_pos`, `log_inv_pos`, `homogeneousDim_pos`, `homogeneousDim_lt_one`,
   `rpow_homogeneousDim`: the similarity dimension `log 2 / log(1/λ)` of the homogeneous
   system and its elementary bounds.
@@ -232,10 +232,6 @@ theorem abs_sign (i : ι) : |S.sign i| = 1 := by
 theorem sign_ne_zero (i : ι) : S.sign i ≠ 0 := by
   rcases S.sign_eq i with h | h <;> simp [h]
 
-/-- The orientation squares to one. -/
-theorem sign_mul_self (i : ι) : S.sign i * S.sign i = 1 := by
-  rcases S.sign_eq i with h | h <;> simp [h]
-
 /-- The signed ratio `ε_i r_i` has modulus `r_i`. -/
 theorem abs_sign_mul_ratio (i : ι) : |S.sign i * S.ratio i| = S.ratio i := by
   rw [abs_mul, abs_sign, one_mul, abs_of_pos (S.ratio_pos i)]
@@ -257,10 +253,6 @@ theorem abs_map_sub (i : ι) (x y : ℝ) : |S.map i x - S.map i y| = S.ratio i *
 theorem dist_map_map (i : ι) (x y : ℝ) :
     dist (S.map i x) (S.map i y) = S.ratio i * dist x y := by
   rw [Real.dist_eq, Real.dist_eq, abs_map_sub]
-
-/-- Each similarity is injective. -/
-theorem map_injective (i : ι) : Function.Injective (S.map i) :=
-  injective_of_affine (S.map_sub i) (S.sign_mul_ratio_ne_zero i)
 
 /-- The inverse similarity `S_i⁻¹(y) = ε_i (y - b_i) / r_i`. -/
 noncomputable def inv (i : ι) (y : ℝ) : ℝ := S.sign i * (y - S.shift i) / S.ratio i
@@ -313,17 +305,6 @@ theorem left_eq_min (i : ι) : S.left i = min (S.map i 0) (S.map i 1) := by
     rw [min_eq_right (by linarith)]
     ring
 
-/-- The right endpoint `ℓ_i + r_i` is the larger of the two endpoint images. -/
-theorem max_map_eq (i : ι) : max (S.map i 0) (S.map i 1) = S.left i + S.ratio i := by
-  rw [left_eq_min]
-  have h := max_sub_min_eq_abs (S.map i 0) (S.map i 1)
-  have h' : |S.map i 0 - S.map i 1| = S.ratio i := by
-    rw [abs_map_sub]; norm_num
-  have h'' : |S.map i 1 - S.map i 0| = S.ratio i := by
-    rw [abs_map_sub]; norm_num
-  simp only [h''] at h
-  linarith
-
 /-- `S_i(x) = ℓ_i + r_i ((1 - ε_i)/2 + ε_i x)`: the similarity is the orientation-preserving
 similarity of ratio `r_i` onto its interval, preceded by the reflection `x ↦ 1 - x` when
 `ε_i = -1`. -/
@@ -335,21 +316,6 @@ theorem map_eq_left_add (i : ι) (x : ℝ) :
 theorem left_nonneg (i : ι) : 0 ≤ S.left i := by
   rw [left_eq_min]
   exact le_min (S.mapsTo i ⟨le_rfl, zero_le_one⟩).1 (S.mapsTo i ⟨zero_le_one, le_rfl⟩).1
-
-/-- The first-level interval ends at or before `1`. -/
-theorem left_add_ratio_le_one (i : ι) : S.left i + S.ratio i ≤ 1 := by
-  rw [← max_map_eq]
-  exact max_le (S.mapsTo i ⟨le_rfl, zero_le_one⟩).2 (S.mapsTo i ⟨zero_le_one, le_rfl⟩).2
-
-/-- The image of a closed interval under a similarity. -/
-theorem map_image_Icc (i : ι) {c d : ℝ} (hcd : c ≤ d) :
-    S.map i '' Set.Icc c d = Set.Icc (min (S.map i c) (S.map i d)) (max (S.map i c) (S.map i d)) :=
-  image_Icc_of_affine (S.map_sub i) (S.sign_mul_ratio_ne_zero i) hcd
-
-/-- The first-level interval `S_i([0,1]) = [ℓ_i, ℓ_i + r_i]`. -/
-theorem map_image_unitInterval (i : ι) :
-    S.map i '' Set.Icc (0:ℝ) 1 = Set.Icc (S.left i) (S.left i + S.ratio i) := by
-  rw [map_image_Icc S i zero_le_one, ← left_eq_min, max_map_eq]
 
 /-- The natural measure is a probability measure; `IsNatural` already carries this, and
 this is the extractor that lets a consumer avoid a separate instance binder. -/

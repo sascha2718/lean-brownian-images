@@ -107,7 +107,8 @@ theorem lattice_G_limit {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     dsimp [m, d, tubeRenewalConv, tubeWeight, renewalDefect, renewalConv]
     simp_rw [mul_sub]
     rw [Finset.sum_sub_distrib, ← Finset.sum_mul, hdim, one_mul]
-    simp only [halfLogRatio]
+    simp only [halfLogRatio, ← mul_assoc, show (2 : ℝ) * (1 / 2) = 1 by norm_num,
+      one_mul]
     ring
   have hdefect : ∀ v : ℝ, (∀ i, S.halfLogRatio i ≤ v) →
       0 ≤ d v ∧ d v ≤ D * Real.exp (-(2 * γ) * v) := by

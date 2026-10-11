@@ -75,14 +75,6 @@ theorem tail_cons {ι : Type*} (i : ι) (ω : ℕ → ι) : tail (cons i ω) = �
 
 theorem cons_zero' {ι : Type*} (i : ι) (ω : ℕ → ι) : cons i ω 0 = i := rfl
 
-theorem cpointSeq_cons (a b : ℂ) (m : ℕ) (i : Fin 2) (ω : ℕ → Fin 2) :
-    cpointSeq a b (m + 1) (cons i ω) = cmap a b i (cpointSeq a b m ω) := by
-  rw [cpointSeq_succ, cons_zero', tail_cons]
-
-theorem cratioSeq_cons (a b : ℂ) (m : ℕ) (i : Fin 2) (ω : ℕ → Fin 2) :
-    cratioSeq a b (m + 1) (cons i ω) = cratioOf a b i * cratioSeq a b m ω := by
-  rw [cratioSeq_succ, cons_zero', tail_cons]
-
 theorem weightSeq_cons {R : Type*} [CommRing R] (z : R) (m : ℕ) (i : Fin 2) (ω : ℕ → Fin 2) :
     weightSeq z (m + 1) (cons i ω) = (if i = 0 then z else 1 - z) * weightSeq z m ω := by
   rw [weightSeq_succ, cons_zero', tail_cons]
@@ -270,9 +262,6 @@ theorem sum_norm_weightSeq (z : ℂ) (m : ℕ) :
     simp only [extend_cons, weightSeq_cons, norm_mul, ← Finset.mul_sum, ih, Fin.sum_univ_two]
     simp [pow_succ]
     ring
-
-theorem norm_weightSeq_nonneg (z : ℂ) (m : ℕ) (ω : ℕ → Fin 2) : 0 ≤ ‖weightSeq z m ω‖ :=
-  norm_nonneg _
 
 /-! ### Real parameters -/
 

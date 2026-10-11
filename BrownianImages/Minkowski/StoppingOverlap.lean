@@ -30,14 +30,13 @@ sum over the gaps gives the bound.
   `IsNatural.exists_tubeDefect_node_of_sosc`: the same bounds below an arbitrary node
   of the stopping tree, with the factor `r_w^{s-η}` that Brownian scaling predicts; the
   concentration argument consumes them at every internal node.
-* `IsNatural.exists_pairwise_tubeOverlap_of_sosc`, `IsNatural.tubeOverlap_of_sosc`:
-  `thm:neighbourhood-overlap`.
+* `IsNatural.tubeOverlap_of_sosc`: `thm:neighbourhood-overlap`, using the exponent
+  supplied by the cross-piece estimate under the strong open set condition.
 -/
 import BrownianImages.CrossPiece
 import BrownianImages.Minkowski.StoppingTubeUpper
 import BrownianImages.Minkowski.BrownianMaximalMoment
 import BrownianImages.Minkowski.BrownianOverlapGeometry
-import BrownianImages.Minkowski.DefectExpectation
 import BrownianImages.Minkowski.TubeRenewal
 
 namespace BrownianImages
@@ -1215,35 +1214,6 @@ theorem IsNatural.exists_tubeDefect_node_of_sosc [IsProbabilityMeasure P]
           fun i j hij => (hnode w r hr hr1 hrw i j hij).2
     _ = _ := by ring
 
-/-- **`thm:neighbourhood-overlap`, the pairwise bound.**  Under the strong open set
-condition there are `C > 0` and `η > 0` such that, for all distinct `i, j` and
-`0 < r ≤ 1`, the expected overlap of the Brownian `r`-neighbourhoods of `S_i K` and
-`S_j K` is at most `C r^{α+2η}`, where `α = 2 - 2s`. -/
-theorem IsNatural.exists_pairwise_tubeOverlap_of_sosc [IsProbabilityMeasure P]
-    (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
-    (hupper : ∃ A₁ : ℝ, 0 < A₁ ∧ ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
-      Integrable (fun omega => tubeArea ρ (brownianImage W hμ.compactAttractor omega)) P ∧
-      (∫ omega, tubeArea ρ (brownianImage W hμ.compactAttractor omega) ∂P)
-        ≤ A₁ * ρ ^ tubeExponent s) :
-    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ ∀ r : ℝ, 0 < r → r ≤ 1 → ∀ i j : iota, i ≠ j →
-      Integrable (fun omega => tubeOverlapArea r
-        (brownianImage W (hμ.compactPiece S i) omega)
-        (brownianImage W (hμ.compactPiece S j) omega)) P ∧
-      (∫ omega, tubeOverlapArea r
-        (brownianImage W (hμ.compactPiece S i) omega)
-        (brownianImage W (hμ.compactPiece S j) omega) ∂P)
-        ≤ C * r ^ (tubeExponent s + 2 * η) := by
-  obtain ⟨C, η, hC, hη, -, hnode⟩ :=
-    hμ.exists_pairwise_tubeOverlap_node_of_sosc S hW hs0 hs1 hsosc hdim hupper
-  refine ⟨C, η, hC, hη, fun r hr hr1 i j hij => ?_⟩
-  have h := hnode stoppingRoot r hr hr1 (by rw [stoppingRatio_root]; exact pow_le_one₀ hr.le hr1)
-    i j hij
-  rw [hμ.stoppingCylinder_child_root, hμ.stoppingCylinder_child_root, stoppingRatio_root,
-    Real.one_rpow, mul_one] at h
-  exact h
-
 /-- **`thm:neighbourhood-overlap`** for a prescribed cross-piece exponent:
 one constant controls every distinct first-level pair and the multiple-counting
 defect with the bound `C r^{α+2η}`, preserving the exponent in `eq:cross-piece-mass`. -/
@@ -1312,15 +1282,10 @@ theorem IsNatural.tubeOverlap_of_sosc [IsProbabilityMeasure P]
       (∫ omega, tubeDefect r
         (fun i => brownianImage W (hμ.compactPiece S i) omega) ∂P)
         ≤ C * r ^ (tubeExponent s + 2 * η) := by
-  obtain ⟨C₀, η, hC₀, hη, hpair⟩ :=
-    hμ.exists_pairwise_tubeOverlap_of_sosc S hW hs0 hs1 hsosc hdim hupper
-  obtain ⟨C, hC, hall⟩ := exists_pairwise_overlap_and_defect_bound
-    (F := fun i omega => brownianImage W (hμ.compactPiece S i) omega)
-    (fun i => hW.aemeasurable_brownianImage _)
-    (scale := fun r => r ^ (tubeExponent s + 2 * η))
-    (fun r hr _ => Real.rpow_nonneg hr.le _)
-    ⟨C₀, hC₀, fun r hr hr1 i j hij => hpair r hr hr1 i j hij⟩
-  exact ⟨C, η, hC, hη, hall⟩
+  obtain ⟨Cc, η, hCc, hη, hηs, hcross⟩ := hsosc.exists_cross_piece_bound S hs0 hs1 hdim hμ
+  obtain ⟨C, hC, hbound⟩ := hμ.tubeOverlap_of_cross_piece_bound_of_mean_bound S hW hs0
+    hCc hη hηs (fun i j hij h hh hh1 => (hcross i j hij h hh hh1).2) hupper
+  exact ⟨C, η, hC, hη, hbound⟩
 
 omit [Nonempty iota] in
 /-- The `q = 1` case of `thm:neighbourhood-moments`, in the shape the overlap bound

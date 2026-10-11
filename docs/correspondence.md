@@ -201,9 +201,8 @@ design work is in the statement.
 `Challenge.lean` contains exactly the nine numbered results of Section 1, with
 identical statement text in `Solution.lean` and `sorry` in place of each proof.
 It imports only Mathlib and contains no proved helper theorems or literature axioms.
-The Comparator configuration selects these nine endpoints. The lattice/non-lattice
-occupation-law separation and two-contraction compact-image separation corollaries are intentionally
-unlabelled in the manuscript and are identified here by their mathematical content:
+The Comparator configuration selects these nine endpoints. The results are identified
+here by human-readable mathematical names, independently of the manuscript's internal labels:
 
 | Section 1 result | Endpoint |
 | --- | --- |

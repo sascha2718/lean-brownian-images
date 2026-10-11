@@ -5,7 +5,9 @@ Vendored into `BrownianImages` from
 at commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5, under the Apache License 2.0
 (a copy is in this directory as `LICENSE`).
 
-Not modified: this file is byte-identical to the upstream original.
+Modified: two unused helper lemmas, `hasCompactSupport_triangle` and
+`integrable_ofReal_sincSq`, were removed. The remaining declarations are unchanged.
+See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
 Copyright (c) 2026 Benny Avelin. All rights reserved.
@@ -218,14 +220,6 @@ lemma support_triangle_subset : Function.support triangle ⊆ Set.Icc (-2 : ℝ)
   rw [support_unitBox, Set.Icc_add_Icc (by norm_num) (by norm_num)]
   norm_num
 
-/-- The triangle has compact support — this is what makes the Fourier transform
-of the kernel compactly supported, and hence the Riemann–Lebesgue step in
-Blackwell's theorem legitimate without any decay of `charFun μ` at infinity. -/
-lemma hasCompactSupport_triangle : HasCompactSupport triangle := by
-  refine HasCompactSupport.intro (isCompact_Icc (a := (-2 : ℝ)) (b := 2)) fun x hx => ?_
-  by_contra hne
-  exact hx (support_triangle_subset hne)
-
 /-- The kernel is dominated by a multiple of the Cauchy density: `|sin| ≤ |·|`
 near the origin gives the bound `4`, and `|sin| ≤ 1` gives `(πt)^{-2}` away from
 it. This is what makes it integrable. -/
@@ -284,9 +278,6 @@ lemma integrable_fourier_triangle : Integrable (𝓕 triangle) := by
     funext t; rw [ofReal_sincSq]
   rw [h]
   exact integrable_sincSq.ofReal
-
-lemma integrable_ofReal_sincSq : Integrable (fun t : ℝ => ((sincSq t : ℝ) : ℂ)) :=
-  integrable_sincSq.ofReal
 
 /-- **The triangle in closed form**: `(1_{[-1,1]} ⋆ 1_{[-1,1]})(x) = (2 - |x|)⁺`.
 

@@ -95,9 +95,6 @@ theorem continuousOn_mainF'' (s : ℝ) : ContinuousOn (mainF'' s) (Ioi 0) := by
   exact (Real.continuous_exp.continuousOn.sub continuousOn_const).rpow_const
     fun x hx => Or.inl (exp_sub_one_pos hx).ne'
 
-theorem continuousOn_mainG' (s : ℝ) : ContinuousOn (mainG' s) (Ioi 0) :=
-  (continuousOn_mainF' s).add (continuousOn_id.mul (continuousOn_mainF'' s))
-
 /-! ### Pointwise bounds -/
 
 /-- `f(x) ≤ x^{-s}`, since `eˣ - 1 ≥ x`. -/

@@ -27,7 +27,7 @@ and the null set it exposes is where the modification is traded back for `W`.
 * `variance_le_overlap_lintegral`: the variance expansion opening the proof of `thm:variance`.
 * `variance_four_point_uniform`, `variance_bundled_uniform`: `thm:variance`, with one
   constant depending only on `s` and `A` for every Frostman measure and Brownian law.
-* `variance_four_point`, `variance_bundled`: specialisations to a fixed measure and law.
+* `variance_four_point`: the specialisation to a fixed measure and law used by concentration.
 -/
 import BrownianImages.Endpoints
 
@@ -422,14 +422,5 @@ theorem variance_four_point {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ�
   obtain ⟨C, hC0, hC⟩ := variance_four_point_uniform (A := A) hs0 hs1
   exact ⟨C, hC0, hC hW hμ⟩
 
-/-- `thm:variance` as one statement: the bound of `thm:variance` together with the
-`o(r^{4s})` consequence. -/
-theorem variance_bundled {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
-    (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    (∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-        variance (fun ω => (corr (occupation W μ ω) r).toReal) P ≤ C * varScale s r) ∧
-      Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
-  ⟨variance_four_point hW hs0 hs1 hμ, varScale_div_tendsto_zero hs0 hs1⟩
 
 end BrownianImages

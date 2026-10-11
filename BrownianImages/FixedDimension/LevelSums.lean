@@ -30,9 +30,6 @@ noncomputable section
 /-- The weight of a letter, `z` for `0` and `1 - z` for `1`. -/
 def letterWeight {R : Type*} [CommRing R] (z : R) (i : Fin 2) : R := if i = 0 then z else 1 - z
 
-theorem sum_letterWeight {R : Type*} [CommRing R] (z : R) : ∑ i, letterWeight z i = 1 := by
-  simp [Fin.sum_univ_two, letterWeight]
-
 theorem weightSeq_cons' {R : Type*} [CommRing R] (z : R) (m : ℕ) (i : Fin 2) (ω : ℕ → Fin 2) :
     weightSeq z (m + 1) (cons i ω) = letterWeight z i * weightSeq z m ω :=
   weightSeq_cons z m i ω

@@ -10,6 +10,7 @@ and has strictly positive finite mass.  They also record the exact density formu
 normalized probability measure.
 -/
 import BrownianImages.WeakBorel
+import BrownianImages.CompactImage
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.WithDensity
@@ -23,10 +24,6 @@ open scoped BoundedContinuousFunction ENNReal NNReal Topology
 
 /-- The Hausdorff space of nonempty compact subsets of the plane. -/
 abbrev CompactPlane := NonemptyCompacts Plane
-
-instance : MeasurableSpace CompactPlane := borel CompactPlane
-
-instance : BorelSpace CompactPlane := ⟨rfl⟩
 
 /-- The triangular distance cut-off `(1 - dist(x, F) / r)₊`. -/
 noncomputable def tubeCutoff (r : ℝ) (F : CompactPlane) (x : Plane) : ℝ :=

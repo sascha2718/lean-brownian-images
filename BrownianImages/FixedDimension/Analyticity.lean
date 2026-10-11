@@ -57,9 +57,6 @@ theorem norm_le_of_mem_nbhdIcc {δ : ℝ} {x : ℂ} (hx : x ∈ nbhdIcc δ) : �
         rw [Complex.norm_real, Real.norm_of_nonneg ht.1]
         exact add_le_add ht.2 hxt
 
-theorem ofReal_mem_nbhdIcc {δ : ℝ} (hδ : 0 ≤ δ) {t : ℝ} (ht : t ∈ Icc (0:ℝ) 1) :
-    (t : ℂ) ∈ nbhdIcc δ := ⟨t, ht, by rw [sub_self, norm_zero]; exact hδ⟩
-
 section Disc
 
 variable {s p r : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
@@ -316,11 +313,6 @@ theorem differentiableOn_crossLimit_disc :
   differentiableOn_limitSum (discRatio_nonneg (s := s) (r := r) hp0) (gamma1_mul_sq_lt_one hs hp0 hp1 hr)
     (incrementBound_disc hs hs1 hp0 hp1 hr) isOpen_ball ball_subset_closedBall
     fun m => (differentiableOn_levelSum_disc hs hs1 hp0 hp1 hr m).mono ball_subset_closedBall
-
-theorem continuousOn_crossLimit_disc : ContinuousOn (crossLimit s) (closedBall (p : ℂ) r) :=
-  continuousOn_limitSum (discRatio_nonneg (s := s) (r := r) hp0) (gamma1_mul_sq_lt_one hs hp0 hp1 hr)
-    (incrementBound_disc hs hs1 hp0 hp1 hr)
-    fun m => (differentiableOn_levelSum_disc hs hs1 hp0 hp1 hr m).continuousOn
 
 omit hs hs1 hp0 hp1 hr in
 theorem ofReal_mem_closedBall_of_mem_Ioo {x : ℝ} (hx : x ∈ Ioo (p - r) (p + r)) :

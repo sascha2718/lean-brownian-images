@@ -108,14 +108,6 @@ theorem measurable_stoppingWordMap (w : StoppingWord iota) :
   (S.continuous_stoppingWordMap w).measurable
 
 omit [Nonempty iota] in
-/-- The image of a closed interval under the map of a stopping word. -/
-theorem stoppingWordMap_image_Icc (w : StoppingWord iota) {a b : ℝ} (hab : a ≤ b) :
-    S.stoppingWordMap w '' Icc a b =
-      Icc (min (S.stoppingWordMap w a) (S.stoppingWordMap w b))
-        (max (S.stoppingWordMap w a) (S.stoppingWordMap w b)) :=
-  image_Icc_of_affine (S.stoppingWordMap_sub w) (S.stoppingSign_mul_stoppingRatio_ne_zero w) hab
-
-omit [Nonempty iota] in
 /-- The image of an open interval under the map of a stopping word. -/
 theorem stoppingWordMap_image_Ioo (w : StoppingWord iota) {a b : ℝ} (hab : a ≤ b) :
     S.stoppingWordMap w '' Ioo a b =

@@ -2,7 +2,8 @@
 `sec:variance` of `BrownianImagesComplete.tex`: the dyadic block of ordered quadruples.
 
 `thm:endpoint-block-mass` has two halves.  The mass half is
-`endpoint_block_mass_le` of `GaussianFourPoint.lean`, three applications of `eq:frostman`.
+`endpoint_block_mass_le_explicit` of `GaussianFourPoint.lean`, three applications of
+`eq:frostman`.
 The return half is the four-point bound `eq:joint-return-bound`
 evaluated on the block: on `E_{β,η}` the determinant of either overlapping pairing is at
 least `βη/4` and the longer of the two intervals has length at least `(β+η)/4`, so the

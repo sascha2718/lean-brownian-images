@@ -78,10 +78,6 @@ theorem Icc_cell_subset_Ici {T : ℝ} (hT : 0 < T) (m : ℕ) :
   have : T ≤ ((m:ℝ) + 1) * T := by nlinarith [(Nat.cast_nonneg m : (0:ℝ) ≤ m)]
   exact le_trans this hx.1
 
-theorem volume_cell (T : ℝ) (m : ℕ) : volume (cell T m) = ENNReal.ofReal T := by
-  rw [cell_eq, Real.volume_Ioc]
-  congr 1; ring
-
 theorem volume_real_Ioc_add {a T : ℝ} (hT : 0 < T) :
     volume.real (Ioc a (a + T)) = T := by
   rw [measureReal_def, Real.volume_Ioc, ENNReal.toReal_ofReal (by linarith)]

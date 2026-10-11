@@ -23,12 +23,6 @@ namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
-/-- The translation part of every similarity is nonnegative, since the similarity
-maps the left endpoint of the unit interval back into that interval. -/
-theorem shift_nonneg (i : ι) : 0 ≤ S.shift i := by
-  have h := S.mapsTo i (show (0 : ℝ) ∈ Set.Icc 0 1 by norm_num)
-  simpa using h.1
-
 /-- The renewal convolution for Brownian tube profiles, with half-logarithmic
 steps `α_i/2` and natural weights `p_i`. -/
 noncomputable def tubeRenewalConv (s : ℝ) (g : ℝ → ℝ) (v : ℝ) : ℝ :=

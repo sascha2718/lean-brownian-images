@@ -177,9 +177,6 @@ theorem listMap_mapsTo_unitInterval (w : List ι) :
 noncomputable def listLeft (w : List ι) : ℝ :=
   S.listMap w 0 + (S.listSign w - 1) / 2 * S.listRatio w
 
-theorem listLeft_eq_min (w : List ι) : S.listLeft w = min (S.listMap w 0) (S.listMap w 1) :=
-  (min_eq_of_affine (S.listMap_sub w) (S.listSign_eq w) (S.listRatio_pos w)).symm
-
 /-- `S_w(x) = ℓ_w + r_w ((1 - ε_w)/2 + ε_w x)`. -/
 theorem listMap_eq_listLeft_add (w : List ι) (x : ℝ) :
     S.listMap w x = S.listLeft w + S.listRatio w * ((1 - S.listSign w) / 2 + S.listSign w * x) :=

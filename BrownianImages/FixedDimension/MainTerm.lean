@@ -43,9 +43,6 @@ def mainTerm (s p : ℝ) : ℝ :=
 
 /-! ### Summability and the Riemann-sum bounds -/
 
-theorem mem_Ici_of_cell {T : ℝ} (hT : 0 < T) (m : ℕ) : ((m:ℝ) + 1) * T ∈ Ici T := by
-  show T ≤ _; nlinarith [(Nat.cast_nonneg m : (0:ℝ) ≤ m)]
-
 /-- The Riemann-sum bounds for `f`: `J ≤ T S(T) ≤ J + T f(T)`. -/
 theorem mainS_bounds {s T : ℝ} (hs : 0 < s) (hs2 : s ≤ 2) (hT : 0 < T) :
     Summable (fun m : ℕ => mainF s (((m:ℝ) + 1) * T)) ∧

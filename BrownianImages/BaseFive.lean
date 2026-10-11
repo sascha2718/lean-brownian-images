@@ -375,7 +375,7 @@ theorem phiB_recursion (hμ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le
       rw [hx, hy]
   rw [hcorner (0 - 2) (by norm_num), hcorner (2 - 0) (by norm_num), hcorner (2 - 4) (by norm_num),
     hcorner (4 - 2) (by norm_num), hgap (0 - 4) (by norm_num), hgap (4 - 0) (by norm_num)]
-  simp only [ENNReal.toReal_zero]
+  simp only [sub_self, add_zero, ENNReal.toReal_zero]
   ring
 
 /-- Shifting the contact set by at least `3` empties it on the unit square. -/
@@ -423,7 +423,7 @@ theorem phiA_recursion (hμ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le
     phiSet_shift_null hsupp hδ1 (k := 4 - 0) (by norm_num),
     phiSet_shift_null hsupp hδ1 (k := 1 - 4) (by norm_num),
     phiSet_shift_null hsupp hδ1 (k := 4 - 1) (by norm_num)]
-  simp only [ENNReal.toReal_zero]
+  simp only [sub_self, add_zero, ENNReal.toReal_zero]
   ring
 
 /-- **The contact mass rescales**: `Ψ(a) = Ψ(5a)/9` for `0 < a ≤ 1/5`, since the event

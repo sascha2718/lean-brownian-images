@@ -5,7 +5,7 @@
 version: 3
 source_version: "BrownianImagesComplete.tex"
 manuscript_files: ["BrownianImagesComplete.tex"]
-manuscript_sha256: {"BrownianImagesComplete.tex": "2b3fdb67683a01d5fe251996f51060b6cb4bf5b27fa10e0c6bfbd90b459b5688"}
+manuscript_sha256: {"BrownianImagesComplete.tex": "42e265b203aedf846ea6d3792cf09d8f3e667745a8f3c5109be5fd8651308c9c"}
 entries:
   - source: "Separation by expected profiles"
     label: "thm:main"
@@ -26,9 +26,9 @@ entries:
     headline: true
     note: "The expected Brownian profile has a positive nonconstant periodic limit in the lattice case and a positive constant limit in the non-lattice case."
   - source: "Lattice/non-lattice occupation-law separation"
-    match: "Let $\\muA$ and $\\muB$ be the natural self-similar probability measures of two IFSs"
+    label: "thm:cantor-application"
     kind: "corollary"
-    sha256: "a4d05857ac9ccad7c8fe6e46d6af09768880629abd30f5cd7f36f97c6c69773a"
+    sha256: "e450df4785c68467a16dd863fbb6168992b24d6a48e2578d00b6753d0809bcec"
     status: "formalized"
     lean: ["BrownianImages.audit_lattice_nonlattice_measures"]
     relation: "representation"

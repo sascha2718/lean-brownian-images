@@ -75,14 +75,6 @@ theorem abs_stoppingMap_sub (k : ℕ) (w : GenerationWord iota k) (x y : ℝ) :
     |S.stoppingMap k w x - S.stoppingMap k w y| = S.generationRatio k w * |x - y| := by
   rw [stoppingMap_sub, abs_mul, abs_generationSign_mul_generationRatio]
 
-omit [Nonempty iota] in
-/-- Affine normal form of a prefix map. -/
-theorem stoppingMap_eq_zero_add_ratio_mul
-    (k : ℕ) (w : GenerationWord iota k) (x : ℝ) :
-    S.stoppingMap k w x = S.stoppingMap k w 0 +
-      S.generationSign k w * S.generationRatio k w * x := by
-  linear_combination S.stoppingMap_sub k w x 0
-
 /-- The nested compact cylinder associated to a stopping word. -/
 def IsAttractor.stoppingCylinder {K : Set ℝ} (hK : S.IsAttractor K)
     (k : ℕ) (w : GenerationWord iota k) : NonemptyCompacts ℝ :=

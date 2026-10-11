@@ -1,6 +1,6 @@
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: a dyadic proof of
-`thm:four-point-integral` and the variance bound `thm:variance` that follows from it.
+`thm:four-point-integral`, used by the variance bound `thm:variance`.
 
 The paper integrates the distribution bound for the overlap and outer-gap lengths.
 This module uses dyadic blocks for the same estimate. The master sum factors as a product
@@ -18,10 +18,6 @@ is a geometric series split at the dyadic scale nearest `λ`.
   be applied to every labelled arrangement.
 * `four_point_integral_of_block_uniform`: one constant for each `s` and dyadic block
   constant, independent of the Frostman measure and Brownian process.
-* `four_point_integral_of_block`: `thm:four-point-integral`,
-  on the dyadic block bound of `thm:endpoint-block-mass`.
-* `variance_of_block`, `thm_variance_of_block`: `thm:variance`, on that
-  bound and on the expansion of the variance over `μ⁴`.
 -/
 import BrownianImages.Frostman
 import BrownianImages.FourPoint
@@ -1073,120 +1069,6 @@ theorem four_point_integral_of_block_uniform {s A K : ℝ}
         congr 1
         ring
 
-open FourPointIntegral in
-/-- `thm:four-point-integral`: the joint return probability
-integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
-`thm:endpoint-block-mass` at the dyadic values, `audit_endpoint_block_mass_dyadic`; the
-proof covers the overlap set by the permuted dyadic blocks and factors the resulting
-sum. The paper instead integrates the distribution bound over continuous cutoffs. -/
-theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ}
-    (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hμ : IsFrostman s A μ)
-    (hblock : ∃ C > 0, ∀ j l : ℕ,
-      (μ.prod (μ.prod (μ.prod μ)))
-        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
-          ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
-          ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
-          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
-        ≤ ENNReal.ofReal (C * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
-      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
-        ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
-        ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
-        (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
-        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
-          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l)))) :
-    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-      ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
-        jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
-        ∂(μ.prod (μ.prod (μ.prod μ)))
-      ≤ ENNReal.ofReal (C * varScale s r) := by
-  obtain ⟨K, hK0, hK⟩ := hblock
-  obtain ⟨C, hC0, hC⟩ := four_point_integral_of_block_uniform (A := A) hs0 hs1 hK0
-  exact ⟨C, hC0, hC _hW hμ hK⟩
-
-/-- `thm:variance`: the four-point variance bound.  Two inputs.  The first
-is the dyadic block bound of `thm:endpoint-block-mass`, which `four_point_integral_of_block`
-turns into `thm:four-point-integral`.  The second, `hcov`, is the opening sentence of the
-proof of `thm:variance`: expanding the variance and applying Fubini writes it as the
-`μ⁴`-integral of the covariance of the two return events, that covariance vanishes off the
-overlap set because disjoint increments are independent (`disjoint_increments_indep`), and
-on the overlap set it is at most the joint return probability.  The covariance expansion is carried as a hypothesis here;
-`variance_le_overlap_lintegral` in `VarianceCovariance.lean` proves it from a jointly
-measurable continuous modification. -/
-theorem variance_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ}
-    (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hμ : IsFrostman s A μ)
-    (hblock : ∃ C > 0, ∀ j l : ℕ,
-      (μ.prod (μ.prod (μ.prod μ)))
-        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
-          ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
-          ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
-          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
-        ≤ ENNReal.ofReal (C * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
-      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
-        ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
-        ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
-        (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
-        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
-          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))))
-    (hcov : ∀ r : ℝ, 0 < r → r ≤ 1 →
-      variance (fun ω => (corr (occupation W μ ω) r).toReal) P
-        ≤ (∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
-            jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
-            ∂(μ.prod (μ.prod (μ.prod μ)))).toReal) :
-    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-      variance (fun ω => (corr (occupation W μ ω) r).toReal) P
-        ≤ C * varScale s r := by
-  obtain ⟨C, hC0, hC⟩ := four_point_integral_of_block hW hs0 hs1 hμ hblock
-  refine ⟨C, hC0, fun r hr0 hr1 => ?_⟩
-  refine le_trans (hcov r hr0 hr1) ?_
-  refine le_trans (ENNReal.toReal_mono ENNReal.ofReal_ne_top (hC r hr0 hr1)) ?_
-  exact le_of_eq (ENNReal.toReal_ofReal
-    (mul_nonneg hC0.le (FourPointIntegral.varScale_nonneg hr0 hr1)))
-
-/-- `thm:variance` as one statement: the bound of `thm:variance` together with the
-`o(r^{4s})` consequence.  The second half is `varScale_div_tendsto_zero`; the first is
-`variance_of_block` and carries its two hypotheses. -/
-theorem thm_variance_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ}
-    (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (hμ : IsFrostman s A μ)
-    (hblock : ∃ C > 0, ∀ j l : ℕ,
-      (μ.prod (μ.prod (μ.prod μ)))
-        {p : ℝ × ℝ × ℝ × ℝ | p.1 < p.2.1 ∧ p.2.1 < p.2.2.1 ∧ p.2.2.1 < p.2.2.2 ∧
-          ((1:ℝ)/2) ^ j / 2 < p.2.2.1 - p.2.1 ∧ p.2.2.1 - p.2.1 ≤ ((1:ℝ)/2) ^ j ∧
-          ((1:ℝ)/2) ^ l / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
-          (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ ((1:ℝ)/2) ^ l}
-        ≤ ENNReal.ofReal (C * (((1:ℝ)/2) ^ j) ^ s * (((1:ℝ)/2) ^ l) ^ (2 * s)) ∧
-      ∀ r : ℝ, 0 < r → ∀ x₁ x₂ x₃ x₄ : ℝ, 0 ≤ x₁ → x₁ < x₂ → x₂ < x₃ → x₃ < x₄ →
-        ((1:ℝ)/2) ^ j / 2 < x₃ - x₂ → x₃ - x₂ ≤ ((1:ℝ)/2) ^ j →
-        ((1:ℝ)/2) ^ l / 2 < (x₂ - x₁) + (x₄ - x₃) →
-        (x₂ - x₁) + (x₄ - x₃) ≤ ((1:ℝ)/2) ^ l →
-        (jointReturn W P r x₁.toNNReal x₃.toNNReal x₂.toNNReal x₄.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) ∧
-          (jointReturn W P r x₁.toNNReal x₄.toNNReal x₂.toNNReal x₃.toNNReal).toReal
-            ≤ C * min 1 (min (r ^ 2 / (((1:ℝ)/2) ^ j + ((1:ℝ)/2) ^ l))
-                (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))))
-    (hcov : ∀ r : ℝ, 0 < r → r ≤ 1 →
-      variance (fun ω => (corr (occupation W μ ω) r).toReal) P
-        ≤ (∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
-            jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
-            ∂(μ.prod (μ.prod (μ.prod μ)))).toReal) :
-    (∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-        variance (fun ω => (corr (occupation W μ ω) r).toReal) P ≤ C * varScale s r) ∧
-      Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
-  ⟨variance_of_block hW hs0 hs1 hμ hblock hcov, varScale_div_tendsto_zero hs0 hs1⟩
 
 end BrownianImages
 

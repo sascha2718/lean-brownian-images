@@ -4,8 +4,8 @@ differentiable at `p` and `|M_p' - J₀'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`.
 
 At a real parameter `x` of the disc, the level sums of the kernel are the Bernoulli double
 integrals of `ψ_n` at the coded points of the first `m` letters, which converge by dominated
-convergence to `g_n`; so `Λ_n(x) = g_n`, `M_x = M_x(s)` by `eq:initial-symbol-decomposition`, `J₀(x)` is the
-main term, and `Δ(x) = M_x(s) - J₀(x)`.  Cauchy's estimate for `Δ` then bounds the real
+convergence to `g_n`. Summing `Λ_n(x) = g_n` and using `eq:initial-symbol-decomposition`
+gives `Δ(x) = M_x(s) - J₀(x)`. Cauchy's estimate for `Δ` then bounds the real
 derivative of `M - J₀` at `p`.
 
 * `levelSum_kernel_ofReal`, `tendsto_integral_kernel_codeSeq`, `kernelLimit_ofReal`:
@@ -73,11 +73,6 @@ theorem measurable_kernelSeq {s x : ℝ} (hs : 0 < s) (hx0 : 0 < x) (hx1 : x < 1
     Measurable (Function.uncurry (kernelSeq s x hs hx0 hx1 n m)) :=
   measurable_kernelN_comp ((continuous_codeSeq _ m).measurable.comp measurable_fst)
     ((continuous_codeSeq _ m).measurable.comp measurable_snd) n
-
-theorem measurable_kernelCode {s x : ℝ} (hs : 0 < s) (hx0 : 0 < x) (hx1 : x < 1) (n : ℕ) :
-    Measurable (Function.uncurry (kernelCode s x hs hx0 hx1 n)) :=
-  measurable_kernelN_comp ((measurable_code _).comp measurable_fst)
-    ((measurable_code _).comp measurable_snd) n
 
 theorem norm_kernelSeq_le {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (hx : x ∈ Icc (p / 2) (3 * p / 2)) (n m : ℕ) (ω ω' : ℕ → Fin 2) :
@@ -199,24 +194,6 @@ theorem kernelLimit_ofReal {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0
     exact integral_congr_ae (Eventually.of_forall fun ω => hreal ω ω')
   rw [integral_congr_ae (Eventually.of_forall hinner), integral_complex_ofReal]
   rfl
-
-/-- `J₀(x)` is the main term at a real parameter of the disc. -/
-theorem complexMainTerm_ofReal {s p x : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp : p ≤ 1/50)
-    (hx : x ∈ Icc (p / 2) (3 * p / 2)) :
-    complexMainTerm s (x : ℂ) = ((mainTerm s x : ℝ) : ℂ) := by
-  have hx0 := pos_of_mem hp0 hx
-  have hx1 := lt_one_of_mem hp hx
-  unfold complexMainTerm mainTerm
-  rw [Complex.ofReal_tsum]
-  refine tsum_congr fun n => ?_
-  have hb0 := fixedB_pos (s := s) hx1
-  have hb1 := fixedB_le_one hs hx0 hx1
-  have hbn : fixedB s x ^ (n + 1) ≤ 1 := pow_le_one₀ hb0.le hb1
-  have e := Complex.ofReal_cpow (show (0:ℝ) ≤ 1 - fixedB s x ^ (n + 1) by linarith) (-s)
-  push_cast at e
-  rw [cb_ofReal hx1.le, ← e]
-  push_cast
-  ring
 
 /-- `Δ(x) = M_x(s) - J₀(x)` at a real parameter of the disc. -/
 theorem complexDelta_ofReal {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)

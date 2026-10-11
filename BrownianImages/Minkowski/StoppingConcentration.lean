@@ -756,8 +756,7 @@ theorem IsNatural.centeredL2Norm_sum_leaves_le [IsProbabilityMeasure P]
     _ = Real.sqrt M * B * u ^ (s / 2) := by
         rw [Real.sqrt_mul (Nat.cast_nonneg _), Real.sqrt_mul (sq_nonneg B), Real.sqrt_sq hB,
           Real.sqrt_eq_rpow (u ^ s), ← Real.rpow_mul hu0.le, mul_assoc]
-        congr 2
-        ring
+        rw [← div_eq_mul_one_div s 2]
 
 /-! ### The third moment of `Y` -/
 
