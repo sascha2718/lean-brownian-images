@@ -5,6 +5,9 @@ The unit-interval Brownian radius moments are proved in
 `Minkowski.BrownianMaximalMoment`.  This file feeds that input into the existing
 moment, overlap, renewal, and concentration assemblies and exposes the final
 statements without an additional maximal-moment hypothesis.
+`IsNatural.tubeOverlap_of_crossPhi_bound` preserves the prescribed exponent of
+`thm:cross-piece-mass` in the pairwise overlap and multiple-counting defect bounds
+of `thm:neighbourhood-overlap`.
 -/
 import BrownianImages.Minkowski.BrownianMaximalMoment
 import BrownianImages.Minkowski.TubeMomentAssembly
@@ -55,6 +58,66 @@ theorem IsNatural.tubeMoments
   intro p hp
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp
+
+/-- `thm:neighbourhood-overlap` for any prescribed exponent in the cross-piece
+product bound, with the tube moments and Brownian maximal input discharged. -/
+theorem IsNatural.tubeOverlap_of_cross_piece_bound
+    {P : Measure Omega} [IsProbabilityMeasure P]
+    {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
+    (S : System iota) {K : Set Real} {s : Real}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {mu : Measure Real} (hmu : S.IsNatural K s mu)
+    {Cc η : Real} (hCc : 0 < Cc) (hη : 0 < η) (hηs : η < 1 - s)
+    (hcross : ∀ i j : iota, i ≠ j → ∀ h : Real, 0 < h → h ≤ 1 →
+      ((mu.map (S.map i)).prod (mu.map (S.map j))) {p : Real × Real | |p.1 - p.2| ≤ h}
+        ≤ ENNReal.ofReal (Cc * h ^ (s + η))) :
+    ∃ C : Real, 0 < C ∧ ∀ r : Real, 0 < r → r ≤ 1 →
+      (∀ i j : iota, i ≠ j →
+        Integrable (fun omega => tubeOverlapArea r
+          (brownianImage W (hmu.compactPiece S i) omega)
+          (brownianImage W (hmu.compactPiece S j) omega)) P ∧
+        (∫ omega, tubeOverlapArea r
+            (brownianImage W (hmu.compactPiece S i) omega)
+            (brownianImage W (hmu.compactPiece S j) omega) ∂P) ≤
+          C * r ^ (tubeExponent s + 2 * η)) ∧
+      Integrable (fun omega => tubeDefect r
+        (fun i => brownianImage W (hmu.compactPiece S i) omega)) P ∧
+      (∫ omega, tubeDefect r
+          (fun i => brownianImage W (hmu.compactPiece S i) omega) ∂P) ≤
+        C * r ^ (tubeExponent s + 2 * η) := by
+  have hmom := hmu.tubeMoments hW S hs0 hs1 hosc hdim
+  exact hmu.tubeOverlap_of_cross_piece_bound_of_mean_bound S hW hs0 hCc hη hηs hcross
+    (hmu.exists_tubeArea_mean_bound_of_tubeMoments S hmom.1)
+
+/-- `thm:neighbourhood-overlap` with exactly the exponent prescribed by the total
+cross-correlation bound of `thm:cross-piece-mass`. The positive natural cylinder weights
+convert the total bound to a bound on each pair without changing that exponent. -/
+theorem IsNatural.tubeOverlap_of_crossPhi_bound
+    {P : Measure Omega} [IsProbabilityMeasure P]
+    {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
+    (S : System iota) {K : Set Real} {s : Real}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {mu : Measure Real} (hmu : S.IsNatural K s mu)
+    {Cc η : Real} (hCc : 0 < Cc) (hη : 0 < η) (hηs : η < 1 - s)
+    (hcross : ∀ h : Real, 0 < h → h ≤ 1 → S.crossPhi s mu h ≤ Cc * h ^ (s + η)) :
+    ∃ C : Real, 0 < C ∧ ∀ r : Real, 0 < r → r ≤ 1 →
+      (∀ i j : iota, i ≠ j →
+        Integrable (fun omega => tubeOverlapArea r
+          (brownianImage W (hmu.compactPiece S i) omega)
+          (brownianImage W (hmu.compactPiece S j) omega)) P ∧
+        (∫ omega, tubeOverlapArea r
+            (brownianImage W (hmu.compactPiece S i) omega)
+            (brownianImage W (hmu.compactPiece S j) omega) ∂P) ≤
+          C * r ^ (tubeExponent s + 2 * η)) ∧
+      Integrable (fun omega => tubeDefect r
+        (fun i => brownianImage W (hmu.compactPiece S i) omega)) P ∧
+      (∫ omega, tubeDefect r
+          (fun i => brownianImage W (hmu.compactPiece S i) omega) ∂P) ≤
+        C * r ^ (tubeExponent s + 2 * η) := by
+  obtain ⟨Cpair, hCpair, hpair⟩ := hmu.exists_cross_piece_bound_of_crossPhi_bound S hs0 hCc hcross
+  exact hmu.tubeOverlap_of_cross_piece_bound hW S hs0 hs1 hosc hdim hCpair hη hηs hpair
 
 /-- `thm:neighbourhood-overlap`, with both the tube moments and Brownian maximal input
 discharged. -/

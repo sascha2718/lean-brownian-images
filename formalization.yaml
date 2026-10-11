@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
 version: "v0.4"
 project:
-  name: "Correlation integrals and Minkowski reconstruction of planar Brownian images"
+  name: "Distinguishing sets and measures from their planar Brownian images"
   description: "Lean formalisation of distinguishing planar Brownian images through their correlation profiles and reconstructing occupation measures from compact images. The results separate lattice from non-lattice natural measures and sets, give finitely many possible exceptions in a two-contraction family, and remove all exceptions for sufficiently small dimension."
   authors: ["Sascha Troscheit"]
   license: "Apache-2.0"
@@ -10,7 +10,7 @@ classification:
   arxiv: ["math.PR", "math.MG"]
   msc2020: ["60J65", "28A80"]
 sources:
-  - title: "Correlation integrals and Minkowski reconstruction of planar Brownian images"
+  - title: "Distinguishing sets and measures from their planar Brownian images"
     authors: ["Sascha Troscheit"]
     type: "paper"
     location: "BrownianImagesComplete.tex, Section 1 and supporting Sections 2–9"
@@ -22,7 +22,7 @@ related_formalizations:
     relationship: "adapts"
     note: "Six renewal-theory modules are vendored from commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5. The non-lattice hypothesis is weakened to the Feller condition used by the proofs; see NOTICE and docs/renewal-library.md."
 status:
-  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 135 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. The generic level-sum lemma is implemented through generic bounds and its particular kernel applications; the explicit lattice periodisation formula in the renewal proof is not separately formalised. Counts exclude the nine intentional Challenge theorem holes."
+  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 136 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. The general level-sum lemma is proved for arbitrary holomorphic kernels, with uniform convergence, its exact bound and the natural-measure expectation identity. The explicit lattice periodisation formula in the renewal proof is not separately formalised. Counts exclude the nine intentional Challenge theorem holes."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -104,47 +104,47 @@ review:
 alignment:
   namespace: "BrownianImages"
   statements:
-    - source: "thm:main"
+    - source: "Separation by expected profiles"
       lean: "BrownianImages.audit_main"
       module: "Challenge"
       status: "proved"
       note: "Separated expected correlation profiles give singular occupation laws."
-    - source: "thm:profile-asymptotics"
+    - source: "Lattice and non-lattice profile asymptotics"
       lean: "BrownianImages.audit_profile_asymptotics"
       module: "Challenge"
       status: "proved"
       note: "The expected Brownian profile has a positive nonconstant periodic limit in the lattice case and a positive constant limit in the non-lattice case."
-    - source: "thm:cantor-application"
+    - source: "Lattice/non-lattice occupation-law separation"
       lean: "BrownianImages.audit_lattice_nonlattice_measures"
       module: "Challenge"
       status: "proved"
       note: "Arbitrary lattice and non-lattice natural measures of a common dimension under the open set condition have singular occupation laws."
-    - source: "thm:fixed-dimension-separation"
+    - source: "Finite exceptions in the two-contraction family"
       lean: "BrownianImages.audit_finite_exceptions"
       module: "Challenge"
       status: "proved"
       note: "The mean is the limit of the expected-profile averages, whose convergence is proved. Its level sets on (0,1/2] are finite. Distinct means give singular occupation laws. The critical set has no accumulation in (0,1/2], and the mean is strictly monotone on every open interval without critical points, hence on every component of the complement."
-    - source: "thm:small-dimension-monotone"
+    - source: "Small-dimension monotonicity"
       lean: "BrownianImages.audit_small_dimension"
       module: "Challenge"
       status: "proved"
       note: "For a sufficiently small positive dimension threshold, the mean is strictly increasing on (0,1/2] and every distinct pair gives singular occupation laws."
-    - source: "thm:critical-set-finite"
+    - source: "Finiteness of the critical set"
       lean: "BrownianImages.audit_finite_critical_set"
       module: "Challenge"
       status: "proved"
       note: "For each 0<s<=1/2 the mean is strictly increasing near p=0 and the critical set is finite."
-    - source: "thm:minkowski-reconstruction"
+    - source: "Minkowski reconstruction"
       lean: "BrownianImages.audit_reconstruction"
       module: "Challenge"
       status: "proved"
       note: "Normalised triangular cut-off measures at radii exp(-n) converge weakly almost surely to the occupation measure, which is a Borel function of the compact image."
-    - source: "thm:cantor-set-application"
+    - source: "Lattice/non-lattice compact-image separation"
       lean: "BrownianImages.audit_lattice_nonlattice_sets"
       module: "Challenge"
       status: "proved"
       note: "Arbitrary lattice and non-lattice attractors of a common dimension under the open set condition have singular compact-image laws. Natural measures are constructed inside the proof."
-    - source: "thm:fixed-dimension-set-application"
+    - source: "Two-contraction compact-image separation"
       lean: "BrownianImages.audit_two_contraction_sets"
       module: "Challenge"
       status: "proved"

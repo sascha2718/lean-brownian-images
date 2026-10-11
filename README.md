@@ -1,11 +1,10 @@
-# Correlation integrals and Minkowski reconstruction of planar Brownian images: the Lean formalisation
+# Distinguishing sets and measures from their planar Brownian images: the Lean formalisation
 
 [![Comparator audit](https://github.com/sascha2718/lean-brownian-images/actions/workflows/comparator.yml/badge.svg)](https://github.com/sascha2718/lean-brownian-images/actions/workflows/comparator.yml)
 
 A Lean 4 formalisation, over Mathlib, of the paper
 
-> Sascha Troscheit, *Correlation integrals and Minkowski reconstruction of planar
-> Brownian images*, 2026. Manuscript.
+> Sascha Troscheit, *Distinguishing sets and measures from their planar Brownian images*, 2026. Manuscript.
 
 The nine numbered results of Section 1 are stated independently in `Challenge.lean`
 and proved in `Solution.lean`. Supporting statements, representations and coverage
@@ -22,17 +21,17 @@ The Comparator configuration selects all nine Section 1 statements:
 
 | Section 1 result | Endpoint |
 | --- | --- |
-| 1. `thm:main` | `audit_main` |
-| 2. `thm:profile-asymptotics` | `audit_profile_asymptotics` |
-| 3. `thm:cantor-application` | `audit_lattice_nonlattice_measures` |
-| 4. `thm:fixed-dimension-separation` | `audit_finite_exceptions` |
-| 5. `thm:small-dimension-monotone` | `audit_small_dimension` |
-| 6. `thm:critical-set-finite` | `audit_finite_critical_set` |
-| 7. `thm:minkowski-reconstruction` | `audit_reconstruction` |
-| 8. `thm:cantor-set-application` | `audit_lattice_nonlattice_sets` |
-| 9. `thm:fixed-dimension-set-application` | `audit_two_contraction_sets` |
+| 1. Separation by expected profiles | `audit_main` |
+| 2. Lattice and non-lattice profile asymptotics | `audit_profile_asymptotics` |
+| 3. Lattice/non-lattice occupation-law separation | `audit_lattice_nonlattice_measures` |
+| 4. Finite exceptions in the two-contraction family | `audit_finite_exceptions` |
+| 5. Small-dimension monotonicity | `audit_small_dimension` |
+| 6. Finiteness of the critical set | `audit_finite_critical_set` |
+| 7. Minkowski reconstruction | `audit_reconstruction` |
+| 8. Lattice/non-lattice compact-image separation | `audit_lattice_nonlattice_sets` |
+| 9. Two-contraction compact-image separation | `audit_two_contraction_sets` |
 
-Beside them, `Solution.lean` states 135 endpoints in all, named `audit_<slug>` covering the manuscript, from the Gaussian reduction of the correlation integral through the renewal
+Beside them, `Solution.lean` states 136 endpoints in all, named `audit_<slug>` covering the manuscript, from the Gaussian reduction of the correlation integral through the renewal
 analysis with the non-constancy of the lattice profile, the smoothing operator and its
 Fourier multipliers, the four-point estimate and the concentration argument, to the
 Minkowski reconstruction of the occupation measure from the compact Brownian image, the
@@ -45,7 +44,7 @@ dimension. The table of every result against its endpoint is in
 
 ## Layout
 
-- `BrownianImages/`: the library, 137 modules organised along the sections of the paper.
+- `BrownianImages/`: the library, 140 modules organised along the sections of the paper.
   The root module `BrownianImages.lean` is the index: it lists every module with the part
   of the paper it certifies. `BrownianImages/FixedDimension/` carries the fixed-dimension
   family, `BrownianImages/Minkowski/` carries the reconstruction
@@ -68,8 +67,8 @@ dimension. The table of every result against its endpoint is in
   of the [vendored renewal library](docs/renewal-library.md).
 
 Every module opens with a comment naming the section of the paper it mirrors and the
-declarations that matter, and every declaration carries a doc comment naming the label of
-the paper it certifies.
+declarations that matter, and every declaration carries a doc comment identifying the
+paper result it formalises.
 
 The concise companion for §9.3 is
 [`Section9Estimates.lean`](BrownianImages/FixedDimension/Section9Estimates.lean). It states

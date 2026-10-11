@@ -16,6 +16,8 @@ is a geometric series split at the dyadic scale nearest `λ`.
 * `measurePreserving_perm4`: `μ⁴` is invariant under permuting the four times, which is
   what lets the mass bound of `thm:endpoint-block-mass`, stated for ordered quadruples,
   be applied to every labelled arrangement.
+* `four_point_integral_of_block_uniform`: one constant for each `s` and dyadic block
+  constant, independent of the Frostman measure and Brownian process.
 * `four_point_integral_of_block`: `thm:four-point-integral`,
   on the dyadic block bound of `thm:endpoint-block-mass`.
 * `variance_of_block`, `thm_variance_of_block`: `thm:variance`, on that
@@ -1113,9 +1115,9 @@ turns into `thm:four-point-integral`.  The second, `hcov`, is the opening senten
 proof of `thm:variance`: expanding the variance and applying Fubini writes it as the
 `μ⁴`-integral of the covariance of the two return events, that covariance vanishes off the
 overlap set because disjoint increments are independent (`disjoint_increments_indep`), and
-on the overlap set it is at most the joint return probability.  The Fubini step needs joint
-measurability of the process in time and sample point, which this development does not yet
-have, so it is carried as a hypothesis. -/
+on the overlap set it is at most the joint return probability.  The covariance expansion is carried as a hypothesis here;
+`variance_le_overlap_lintegral` in `VarianceCovariance.lean` proves it from a jointly
+measurable continuous modification. -/
 theorem variance_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
     [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ}
     (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]

@@ -17,6 +17,8 @@ whose text is that of the endpoint `audit_gaussian_four_point`.
   pairings of `eq:crossing-determinant` and `eq:nested-determinant` is `x₃ - x₂`.
 * `BlockMass.crossing_le`, `BlockMass.nested_le`: the return bound for one
   pairing.
+* `endpoint_block_mass_of_four_point_explicit`,
+  `endpoint_block_mass_dyadic_of_four_point_explicit`: the fixed constant `max (A³) 2`.
 * `endpoint_block_mass_of_four_point`, `endpoint_block_mass_dyadic_of_four_point`:
   `thm:endpoint-block-mass`, general and dyadic, conditional on `hfour`.
 -/
@@ -217,7 +219,6 @@ theorem endpoint_block_mass_of_four_point_explicit {P : Measure Ω} [IsProbabili
     exact ⟨le_trans (BlockMass.crossing_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef,
       le_trans (BlockMass.nested_le hfour hr hβ0 hη0 hx₁ h12 h23 h34 hb hh) hcoef⟩
 
--- the statement text is frozen against `Challenge.lean`, so unused binders stay
 /-- `thm:endpoint-block-mass`, both halves,
 conditional on `eq:joint-return-bound`, which enters as the hypothesis `hfour` in the
 text of the endpoint `audit_gaussian_four_point`.  The constant is `max (A³) 2`: the mass
@@ -283,7 +284,6 @@ theorem endpoint_block_mass_dyadic_of_four_point_explicit {P : Measure Ω} [IsPr
     (pow_le_one₀ (by norm_num) (by norm_num)) (by positivity)
     (pow_le_one₀ (by norm_num) (by norm_num))
 
--- the statement text is frozen against `Challenge.lean`, so unused binders stay
 /-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
 halves of the lemma, conditional on `eq:joint-return-bound` as above.  Every `(1/2)^j`
 lies in `(0,1]`, so this is the general statement read at those values. -/

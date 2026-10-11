@@ -21,6 +21,11 @@ sum over the gaps gives the bound.
   `eq:stopping-brownian-overlap`.
 * `IsNatural.card_closePairs_le`: `eq:stopping-close-pairs`.
 * `sum_dyadic_le`: the dyadic summation.
+* `IsNatural.exists_cross_piece_bound_of_crossPhi_bound`: the total cross-correlation
+  estimate implies individual pair estimates with the same exponent.
+* `IsNatural.exists_pairwise_tubeOverlap_node_of_cross_piece_bound`,
+  `IsNatural.tubeOverlap_of_cross_piece_bound_of_mean_bound`: the node and first-level
+  estimates for any prescribed cross-piece exponent `η ∈ (0, 1-s)`.
 * `IsNatural.exists_pairwise_tubeOverlap_node_of_sosc`,
   `IsNatural.exists_tubeDefect_node_of_sosc`: the same bounds below an arbitrary node
   of the stopping tree, with the factor `r_w^{s-η}` that Brownian scaling predicts; the
@@ -858,6 +863,58 @@ theorem IsAttractor.stoppingCylinder_subset {K : Set ℝ} (hK : S.IsAttractor K)
   rw [IsAttractor.coe_stoppingCylinder]
   exact (S.mapsTo_stoppingMap (fun i => hK.mapsTo_map S i) w.1 w.2).image_subset
 
+/-- `eq:cross-piece-mass`: a bound on the total cross correlation bounds each
+unweighted pair with the same exponent, since every natural cylinder weight is positive. -/
+theorem IsNatural.exists_cross_piece_bound_of_crossPhi_bound {K : Set ℝ} {s : ℝ}
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (hs0 : 0 < s)
+    {Cc η : ℝ} (hCc : 0 < Cc)
+    (hcross : ∀ h : ℝ, 0 < h → h ≤ 1 → S.crossPhi s μ h ≤ Cc * h ^ (s + η)) :
+    ∃ C : ℝ, 0 < C ∧ ∀ i j : iota, i ≠ j → ∀ h : ℝ, 0 < h → h ≤ 1 →
+      ((μ.map (S.map i)).prod (μ.map (S.map j))) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}
+        ≤ ENNReal.ofReal (C * h ^ (s + η)) := by
+  classical
+  have := hμ.isProbabilityMeasure
+  let q : ℝ := S.minRatio ^ s
+  have hq : 0 < q := Real.rpow_pos_of_pos S.minRatio_pos _
+  have hqle (i : iota) : q ≤ S.ratio i ^ s :=
+    Real.rpow_le_rpow S.minRatio_pos.le (S.minRatio_le i) hs0.le
+  refine ⟨Cc / (q * q), div_pos hCc (mul_pos hq hq), fun i j hij h hh hh1 => ?_⟩
+  let m : ℝ :=
+    (((μ.map (S.map i)).prod (μ.map (S.map j))) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}).toReal
+  have hm : 0 ≤ m := ENNReal.toReal_nonneg
+  have hterm : S.ratio i ^ s * S.ratio j ^ s * m ≤ S.crossPhi s μ h := by
+    unfold System.crossPhi
+    have hn (i j : iota) : 0 ≤ if i = j then 0 else
+        S.ratio i ^ s * S.ratio j ^ s *
+          (((μ.map (S.map i)).prod (μ.map (S.map j)))
+            {p : ℝ × ℝ | |p.1 - p.2| ≤ h}).toReal := by
+      split_ifs
+      · exact le_rfl
+      · exact mul_nonneg (mul_nonneg (Real.rpow_nonneg (S.ratio_pos i).le _)
+          (Real.rpow_nonneg (S.ratio_pos j).le _)) ENNReal.toReal_nonneg
+    calc
+      S.ratio i ^ s * S.ratio j ^ s * m =
+          if i = j then 0 else S.ratio i ^ s * S.ratio j ^ s *
+            (((μ.map (S.map i)).prod (μ.map (S.map j)))
+              {p : ℝ × ℝ | |p.1 - p.2| ≤ h}).toReal := by simp [hij, m]
+      _ ≤ ∑ j, if i = j then 0 else S.ratio i ^ s * S.ratio j ^ s *
+          (((μ.map (S.map i)).prod (μ.map (S.map j)))
+            {p : ℝ × ℝ | |p.1 - p.2| ≤ h}).toReal :=
+        Finset.single_le_sum (fun j _ => hn i j) (Finset.mem_univ j)
+      _ ≤ _ := Finset.single_le_sum
+        (fun i _ => Finset.sum_nonneg (fun j _ => hn i j)) (Finset.mem_univ i)
+  have hbound : q * q * m ≤ Cc * h ^ (s + η) :=
+    (mul_le_mul_of_nonneg_right
+      (mul_le_mul (hqle i) (hqle j) hq.le (Real.rpow_pos_of_pos (S.ratio_pos i) _).le) hm).trans
+      (hterm.trans (hcross h hh hh1))
+  have hm_bound : m ≤ Cc / (q * q) * h ^ (s + η) := by
+    calc
+      m ≤ (Cc * h ^ (s + η)) / (q * q) :=
+        (le_div_iff₀ (mul_pos hq hq)).mpr (by simpa only [mul_comm m] using hbound)
+      _ = Cc / (q * q) * h ^ (s + η) := by ring
+  rw [← ENNReal.ofReal_toReal (measure_ne_top _ _)]
+  exact ENNReal.ofReal_le_ofReal hm_bound
+
 set_option maxHeartbeats 800000 in
 /-- **`thm:neighbourhood-overlap` below a node.**  For a prescribed cross-piece bound,
 the cross-piece exponent `η ∈ (0, 1-s)` gives `C > 0` such that,
@@ -1084,7 +1141,6 @@ theorem IsNatural.exists_pairwise_tubeOverlap_node_of_cross_piece_bound [IsProba
         rw [mul_assoc, mul_assoc]
         exact mul_le_mul_of_nonneg_right (by linarith) hexp
 
-
 /-- **`thm:neighbourhood-overlap` below a node.**  Under the strong open set condition
 there are `C > 0` and `η > 0` such that, for every word `w`, every `0 < r ≤ 1` with
 `r² ≤ r_w`, and all distinct `i, j`, the expected overlap of the Brownian
@@ -1187,6 +1243,49 @@ theorem IsNatural.exists_pairwise_tubeOverlap_of_sosc [IsProbabilityMeasure P]
   rw [hμ.stoppingCylinder_child_root, hμ.stoppingCylinder_child_root, stoppingRatio_root,
     Real.one_rpow, mul_one] at h
   exact h
+
+/-- **`thm:neighbourhood-overlap`** for a prescribed cross-piece exponent:
+one constant controls every distinct first-level pair and the multiple-counting
+defect with the bound `C r^{α+2η}`, preserving the exponent in `eq:cross-piece-mass`. -/
+theorem IsNatural.tubeOverlap_of_cross_piece_bound_of_mean_bound [IsProbabilityMeasure P]
+    (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    {Cc η : ℝ} (hCc : 0 < Cc) (hη : 0 < η) (hηs : η < 1 - s)
+    (hcross : ∀ i j : iota, i ≠ j → ∀ h : ℝ, 0 < h → h ≤ 1 →
+      ((μ.map (S.map i)).prod (μ.map (S.map j))) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}
+        ≤ ENNReal.ofReal (Cc * h ^ (s + η)))
+    (hupper : ∃ A₁ : ℝ, 0 < A₁ ∧ ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
+      Integrable (fun omega => tubeArea ρ (brownianImage W hμ.compactAttractor omega)) P ∧
+      (∫ omega, tubeArea ρ (brownianImage W hμ.compactAttractor omega) ∂P)
+        ≤ A₁ * ρ ^ tubeExponent s) :
+    ∃ C : ℝ, 0 < C ∧ ∀ r : ℝ, 0 < r → r ≤ 1 →
+      (∀ i j : iota, i ≠ j →
+        Integrable (fun omega => tubeOverlapArea r
+          (brownianImage W (hμ.compactPiece S i) omega)
+          (brownianImage W (hμ.compactPiece S j) omega)) P ∧
+        (∫ omega, tubeOverlapArea r
+          (brownianImage W (hμ.compactPiece S i) omega)
+          (brownianImage W (hμ.compactPiece S j) omega) ∂P)
+          ≤ C * r ^ (tubeExponent s + 2 * η)) ∧
+      Integrable (fun omega => tubeDefect r
+        (fun i => brownianImage W (hμ.compactPiece S i) omega)) P ∧
+      (∫ omega, tubeDefect r
+        (fun i => brownianImage W (hμ.compactPiece S i) omega) ∂P)
+        ≤ C * r ^ (tubeExponent s + 2 * η) := by
+  obtain ⟨C₀, hC₀, hnode⟩ :=
+    hμ.exists_pairwise_tubeOverlap_node_of_cross_piece_bound S hW hs0 hCc hη hηs hcross hupper
+  have hpair := fun r hr hr1 i j hij =>
+    hnode stoppingRoot r hr hr1
+      (by rw [stoppingRatio_root]; exact pow_le_one₀ hr.le hr1) i j hij
+  simp only [hμ.stoppingCylinder_child_root, stoppingRatio_root,
+    Real.one_rpow, mul_one] at hpair
+  obtain ⟨C, hC, hall⟩ := exists_pairwise_overlap_and_defect_bound
+    (F := fun i omega => brownianImage W (hμ.compactPiece S i) omega)
+    (fun i => hW.aemeasurable_brownianImage _)
+    (scale := fun r => r ^ (tubeExponent s + 2 * η))
+    (fun r hr _ => Real.rpow_nonneg hr.le _)
+    ⟨C₀, hC₀, fun r hr hr1 i j hij => hpair r hr hr1 i j hij⟩
+  exact ⟨C, hC, hall⟩
 
 /-- **`thm:neighbourhood-overlap`**, under the strong open set condition: one constant
 and one exponent `η > 0` control every distinct first-level pair and the resulting

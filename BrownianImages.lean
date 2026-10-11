@@ -240,6 +240,10 @@ with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
   increment bound, their uniform limit with `eq:level-sum-bound`, holomorphic on the open
   disc and continuous on the closed one, and the identification of a level sum with a
   double Bernoulli integral.
+* `FixedDimension.LevelSumsGeneral`, `FixedDimension.LevelSumsExpectation`,
+  `FixedDimension.LevelSumsTheorem`: the full `thm:level-sums` for an arbitrary
+  holomorphic kernel, including uniform convergence, the exact supremum bound and
+  identification with the expectation under the natural measure.
 * `FixedDimension.Kernel`: the kernels `φ_n` of `thm:remainder-derivative` on the disc
   `|z - p| ≤ p/2`, `eq:contraction-modulus-bounds` and `eq:kernel-bounds`.
 * `FixedDimension.Decomposition`: `eq:initial-symbol-decomposition`, `M_p = ∑ p qⁿ Λ_n(p)`.
@@ -395,6 +399,9 @@ import BrownianImages.FixedDimension.MainTermIntegrals
 import BrownianImages.FixedDimension.MainTerm
 import BrownianImages.FixedDimension.ComplexCoding
 import BrownianImages.FixedDimension.LevelSums
+import BrownianImages.FixedDimension.LevelSumsGeneral
+import BrownianImages.FixedDimension.LevelSumsExpectation
+import BrownianImages.FixedDimension.LevelSumsTheorem
 import BrownianImages.FixedDimension.Kernel
 import BrownianImages.FixedDimension.Decomposition
 import BrownianImages.FixedDimension.RemainderBound

@@ -34,7 +34,6 @@ STATEMENT_ENVIRONMENTS = {
 LABEL_PREFIXES = ("thm", "lem", "prop", "cor", "def", "rem")
 LABEL_RE = re.compile(r"\\label\{((?:" + "|".join(LABEL_PREFIXES) + r"):[^}]+)\}")
 SOURCE_LABEL_RE = re.compile(r"^(?:" + "|".join(LABEL_PREFIXES) + r"):")
-UNLABELLED_PREFIX = "unlabelled:"
 BEGIN_RE = re.compile(
     r"\\begin\{(" + "|".join(sorted(STATEMENT_ENVIRONMENTS)) + r")\}"
 )
@@ -227,12 +226,21 @@ def validate_manifest(data: dict[str, Any], path: Path) -> tuple[list[str], list
         if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
             raise ManifestError(f"{where}: a reviewed sha256 fingerprint is required")
         if kind == "prose":
-            if not source.startswith("prose:") or entry.get("file") not in manuscript_files:
-                raise ManifestError(f"{where}: prose needs a prose: source and a manuscript file")
+            if entry.get("file") not in manuscript_files:
+                raise ManifestError(f"{where}: prose needs a manuscript file")
             if not all(isinstance(entry.get(k), str) and entry[k] for k in ("start", "end")):
                 raise ManifestError(f"{where}: prose needs nonempty start and end anchors")
-        elif source.startswith(UNLABELLED_PREFIX) and not entry.get("match"):
-            raise ManifestError(f"{where}: an unlabelled entry needs a unique text match")
+        else:
+            # The displayed source name is independent of its machine lookup key.
+            # A labelled statement uses `label`; an unlabelled one uses `match`.
+            if ("label" in entry) == ("match" in entry):
+                raise ManifestError(f"{where}: provide exactly one of label or match")
+            if "label" in entry:
+                label = entry["label"]
+                if not isinstance(label, str) or not SOURCE_LABEL_RE.match(label):
+                    raise ManifestError(f"{where}: label must be a paper statement label")
+            elif not isinstance(entry["match"], str) or not entry["match"].strip():
+                raise ManifestError(f"{where}: an unlabelled entry needs a unique text match")
         if status not in ALLOWED_STATUSES:
             raise ManifestError(f"{where}: status must be one of {sorted(ALLOWED_STATUSES)}")
         if isinstance(lean, str):
@@ -248,12 +256,6 @@ def validate_manifest(data: dict[str, Any], path: Path) -> tuple[list[str], list
             raise ManifestError(f"{where}: an intentionally unformalized entry needs a reason")
         if "headline" in entry and not isinstance(entry["headline"], bool):
             raise ManifestError(f"{where}: headline must be true or false")
-        if not (SOURCE_LABEL_RE.match(source) or source.startswith(UNLABELLED_PREFIX)
-                or (kind == "prose" and source.startswith("prose:"))):
-            raise ManifestError(
-                f"{where}: source must be a paper label ({', '.join(LABEL_PREFIXES)}) "
-                f"or begin with {UNLABELLED_PREFIX!r}"
-            )
     return manuscript_files, entries
 
 
@@ -339,12 +341,12 @@ def check_paper_coverage(repo_root: Path, manuscript_files: list[str],
                 errors.append(f"{source}: {exc}")
                 continue
         else:
-            if source.startswith(UNLABELLED_PREFIX):
+            if "match" in entry:
                 candidates = [d for d in declarations if d.label is None
                               and d.kind == entry["kind"]
                               and normalized_text(entry["match"]) in normalized_text(d.text)]
             else:
-                candidates = [d for d in declarations if d.label == source]
+                candidates = [d for d in declarations if d.label == entry["label"]]
             if len(candidates) != 1:
                 errors.append(f"{source}: expected exactly one matching statement, found {len(candidates)}")
                 continue

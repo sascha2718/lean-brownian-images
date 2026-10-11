@@ -273,16 +273,18 @@ theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
   hμ.tubeMoments hW S hs0 hs1 hosc hdim
 
 /-- `thm:neighbourhood-overlap`, including integrability of the overlap and defect random
-variables.  One constant and one exponent `η > 0` control every distinct first-level
-pair and the resulting multiple-counting defect, with the bound `C r^{2-2s+2η}`; `η` is
-the exponent of `thm:cross-piece-mass`, which the statement of the lemma inherits. -/
+variables. The prescribed exponent `η ∈ (0,1-s)` comes from the total cross-correlation
+bound of `thm:cross-piece-mass`. One constant controls every distinct first-level pair
+and the multiple-counting defect with the same exponent `2-2s+2η`. -/
 theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    ∃ C η : ℝ, 0 < C ∧ 0 < η ∧ ∀ r : ℝ, 0 < r → r ≤ 1 →
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    {Cc η : ℝ} (hCc : 0 < Cc) (hη : 0 < η) (hηs : η < 1 - s)
+    (hcross : ∀ δ : ℝ, 0 < δ → δ ≤ 1 → S.crossPhi s μ δ ≤ Cc * δ ^ (s + η)) :
+    ∃ C : ℝ, 0 < C ∧ ∀ r : ℝ, 0 < r → r ≤ 1 →
       (∀ i j : ι, i ≠ j →
         Integrable (fun ω ↦ tubeOverlapArea r
           (brownianImage W (hμ.compactPiece S i) ω)
@@ -296,7 +298,7 @@ theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
       (∫ ω, tubeDefect r
           (fun i ↦ brownianImage W (hμ.compactPiece S i) ω) ∂P)
         ≤ C * r ^ (tubeExponent s + 2 * η) :=
-  hμ.tubeOverlap hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
+  hμ.tubeOverlap_of_crossPhi_bound hW S hs0 hs1 hosc hdim hCc hη hηs hcross
 
 /-- `thm:neighbourhood-renewal`: positive uniform bounds and the real-time shift
 relation `eq:neighbourhood-renewal-shift`. Integrability makes the defining means
@@ -834,9 +836,9 @@ theorem audit_exists_periodic_profile {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam 
       (∀ x, 0 < g x) ∧ ∃ x y, g x ≠ g y :=
   homogeneous_periodic_profile hlam0 hlam hA
 
-/-- `thm:smoothing-injective` as one statement: injectivity of `T` on the continuous
-`p`-periodic functions, together with the named conclusion that `T G̃_A` is
-non-constant. -/
+/-- A homogeneous special case of `thm:smoothing-injective`: injectivity at the
+homogeneous dimension and period, together with non-constancy of `T G̃_A`.
+The general statements are `audit_smoothing_injective` and `audit_smoothing_nonconstant`. -/
 theorem audit_thm_smoothing_injective {KA : Set ℝ} {μA : Measure ℝ}
     {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
     (hA : (homogeneousSystem lam hlam0 hlam).IsNatural KA (homogeneousDim lam) μA) :
@@ -969,17 +971,18 @@ theorem audit_endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure 
                 (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) :=
   endpoint_block_mass_dyadic hW hs hμ
 
-/-- `thm:four-point-integral`: the joint return probability
-integrates over the overlap set to `O(V_s(r))`. -/
-theorem audit_four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-      ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
-        jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
-        ∂(μ.prod (μ.prod (μ.prod μ)))
-      ≤ ENNReal.ofReal (C * varScale s r) :=
-  four_point_integral hW hs0 hs1 hμ
+/-- `thm:four-point-integral`: the joint return probability integrates over the
+ overlap set to `O(V_s(r))`, with one constant depending only on `s` and `A`. -/
+theorem audit_four_point_integral {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    ∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
+          jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
+          ∂(μ.prod (μ.prod (μ.prod μ)))
+        ≤ ENNReal.ofReal (C * varScale s r) :=
+  four_point_integral_uniform hs0 hs1
 
 /-- `thm:main`.  Two `s`-Frostman measures whose expected profiles do not converge to
 one another have mutually singular Brownian occupation laws, as laws on `𝒫(ℝ²)`.  The
@@ -997,24 +1000,28 @@ theorem audit_main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
   simpa only [expectedProfile_eq_H hW hs0 hs1 h₁,
     expectedProfile_eq_H hW hs0 hs1 h₂] using hsep
 
-/-- `thm:variance`.  The four-point variance bound. -/
-theorem audit_variance {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
-    (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-      variance (fun ω => (corr (occupation W μ ω) r).toReal) P
-        ≤ C * varScale s r :=
-  variance_four_point hW hs0 hs1 hμ
+/-- `thm:variance`: one variance constant depending only on `s` and `A`,
+uniformly over the time measure, Brownian process and probability space. -/
+theorem audit_variance {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    ∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        variance (fun ω => (corr (occupation W μ ω) r).toReal) P
+          ≤ C * varScale s r :=
+  variance_four_point_uniform hs0 hs1
 
-/-- `thm:variance` as one statement: the bound together with the `o(r^{4s})`
-consequence. -/
-theorem audit_thm_variance {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}
-    (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
-    (∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
-        variance (fun ω => (corr (occupation W μ ω) r).toReal) P ≤ C * varScale s r) ∧
+/-- `thm:variance`: the bound with a constant depending only on `s` and `A`,
+together with the deterministic `o(r^{4s})` consequence. -/
+theorem audit_thm_variance {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    (∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        variance (fun ω => (corr (occupation W μ ω) r).toReal) P
+          ≤ C * varScale s r) ∧
       Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
-  variance_bundled hW hs0 hs1 hμ
+  variance_bundled_uniform hs0 hs1
 
 /-- `eq:y-variance`: the variance bound of `thm:variance` in the exponential
 coordinate. -/
@@ -1381,6 +1388,37 @@ theorem audit_fixed_dimension_symmetry {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (h
     (hp1 : p < 1) :
     fixedMoment s (1 - p) = fixedMoment s p ∧ fixedMean s (1 - p) = fixedMean s p :=
   ⟨fixedMoment_symm hs hs1 hp0 hp1, fixedMean_symm hs hs1 hp0 hp1⟩
+
+/-- `thm:level-sums`: uniform convergence for every holomorphic kernel, the bound
+`eq:level-sum-bound` with the actual supremum `B`, and the natural-measure expectation
+at every real parameter. The boundedness assumption on `D` is unnecessary. -/
+theorem audit_level_sums {s : ℝ} (hs : 0 < s) (hs1 : s < 1)
+    {φ : ℂ → ℂ → ℂ → ℂ} {z₀ : ℂ} {r ρ L : ℝ} {D : Set ℂ}
+    (hr : 0 < r) (hDo : IsOpen D) (hDc : Convex ℝ D)
+    (ha : DifferentiableOn ℂ (ca s) (Metric.ball z₀ r))
+    (hb : DifferentiableOn ℂ (cb s) (Metric.ball z₀ r))
+    (hρ1 : ρ < 1)
+    (hsmall : ρ * (sSup ((fun z : ℂ => ‖z‖ + ‖1 - z‖) '' Metric.ball z₀ r)) ^ 2 < 1)
+    (hρ : ∀ z ∈ Metric.ball z₀ r, max ‖ca s z‖ ‖cb s z‖ ≤ ρ)
+    (hD : ∀ z ∈ Metric.ball z₀ r, ∀ (m : ℕ) (ω : ℕ → Fin 2),
+      cpointSeq (ca s z) (cb s z) m ω ∈ D)
+    (hφ : DifferentiableOn ℂ (fun w : ℂ × ℂ × ℂ => φ w.1 w.2.1 w.2.2)
+      (Metric.ball z₀ r ×ˢ (D ×ˢ D)))
+    (hLx : ∀ z ∈ Metric.ball z₀ r, ∀ x ∈ D, ∀ y ∈ D,
+      ‖deriv (fun t => φ z t y) x‖ ≤ L)
+    (hLy : ∀ z ∈ Metric.ball z₀ r, ∀ x ∈ D, ∀ y ∈ D,
+      ‖deriv (fun t => φ z x t) y‖ ≤ L) :
+    TendstoUniformlyOn (levelSum (ca s) (cb s) φ) (limitSum (ca s) (cb s) φ) atTop
+      (Metric.ball z₀ r) ∧
+    DifferentiableOn ℂ (limitSum (ca s) (cb s) φ) (Metric.ball z₀ r) ∧
+    (∀ z ∈ Metric.ball z₀ r, ‖limitSum (ca s) (cb s) φ z - φ z 0 0‖ ≤
+      4 * L * (sSup ((fun w : ℂ => ‖w‖ + ‖1 - w‖) '' Metric.ball z₀ r)) ^ 2 /
+        (1 - ρ * (sSup ((fun w : ℂ => ‖w‖ + ‖1 - w‖) '' Metric.ball z₀ r)) ^ 2)) ∧
+    ∀ (p : ℝ) (_hpU : (p : ℂ) ∈ Metric.ball z₀ r) (hp0 : 0 < p) (hp1 : p < 1)
+      (K : Set ℝ) (μ : Measure ℝ),
+      (fixedSystem s p hs hp0 hp1).IsNatural K s μ →
+      limitSum (ca s) (cb s) φ p = ∫ y, ∫ x, φ p x y ∂μ ∂μ :=
+  levelSums hs hs1 hr hDo hDc ha hb hρ1 hsmall hρ hD hφ hLx hLy
 
 /-- `thm:fixed-dimension-analyticity`: `p ↦ M_p(s)` and `p ↦ H̄_s(p)` are real analytic on
 `(0,1)`. -/

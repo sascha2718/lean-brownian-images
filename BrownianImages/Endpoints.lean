@@ -1,14 +1,15 @@
 /-
 The endpoints of `BrownianImagesComplete.tex` that no single module proves: each is a
-composition of results from two or more of the modules above, in the shape
-`Challenge.lean` states it.
+composition of results from two or more of the modules above, in the statement shapes
+used by `Solution.lean`.
 
 * `smoothing`, `non_lattice_correlation_limit`: `eq:smoothing` and the `μ_B` consequence
   of `eq:hb-asymptotic`, the analytic core of `Rescaling` fed with the Stieltjes
   form of `thm:gaussian-reduction`.
 * `endpoint_block_mass`, `endpoint_block_mass_dyadic`, `four_point_integral`: the
   variance chain of `sec:variance`, `eq:joint-return-bound` fed through the block bound
-  into the dyadic summation.
+  into the dyadic summation. `four_point_integral_uniform` chooses the constant before
+  the time measure, Brownian law and sample space.
 * `homogeneous_periodic_profile`, `homogeneous_profile_asymptotics_lattice`,
   `thm_smoothing_injective_homogeneous`, `homogeneous_lattice_correlation_oscillation`:
   the periodic profile `G̃_A` of `sec:renewal` for every `0 < λ < 1/2`, built from the
@@ -100,6 +101,25 @@ theorem endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure P]
   endpoint_block_mass_dyadic_of_four_point hW hs hμ
     (fun hr hΔ => gaussian_four_point hW hr hΔ)
 
+/-- `thm:four-point-integral`, with one constant for every `s`-Frostman probability
+measure with constant `A` and every planar Brownian motion. The quantifier order records
+the paper's dependence only on `s` and `A`, independently of the sample space. -/
+theorem four_point_integral_uniform {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    ∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
+          jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
+          ∂(μ.prod (μ.prod (μ.prod μ)))
+        ≤ ENNReal.ofReal (C * varScale s r) := by
+  obtain ⟨C, hC0, hC⟩ := four_point_integral_of_block_uniform (A := A)
+    hs0 hs1 (lt_of_lt_of_le (by norm_num : (0:ℝ) < 2) (le_max_right (A ^ 3) 2))
+  refine ⟨C, hC0, ?_⟩
+  intro Ω _ P _ W hW μ _ hμ
+  exact hC hW hμ (endpoint_block_mass_dyadic_of_four_point_explicit hW hs0 hμ
+    (fun hr hΔ => gaussian_four_point hW hr hΔ))
+
 /-- `thm:four-point-integral`.  The four dyadic sums, summed:
 the joint return probability integrates over the overlap set to `O(V_s(r))`. -/
 theorem four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
@@ -109,10 +129,9 @@ theorem four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
       ∫⁻ p : ℝ × ℝ × ℝ × ℝ in {p | 0 < overlap p.1 p.2.1 p.2.2.1 p.2.2.2},
         jointReturn W P r p.1.toNNReal p.2.1.toNNReal p.2.2.1.toNNReal p.2.2.2.toNNReal
         ∂(μ.prod (μ.prod (μ.prod μ)))
-      ≤ ENNReal.ofReal (C * varScale s r) :=
-  four_point_integral_of_block hW hs0 hs1 hμ
-    (endpoint_block_mass_dyadic_of_four_point hW hs0 hμ
-      (fun hr hΔ => gaussian_four_point hW hr hΔ))
+      ≤ ENNReal.ofReal (C * varScale s r) := by
+  obtain ⟨C, hC0, hC⟩ := four_point_integral_uniform (A := A) hs0 hs1
+  exact ⟨C, hC0, hC hW hμ⟩
 
 /-- `thm:homogeneous-nonconstancy` and the paragraph following it, on the full range
 `0 < λ < 1/2`: the homogeneous natural measure has a positive non-constant periodic

@@ -25,7 +25,9 @@ and the null set it exposes is where the modification is traded back for `W`.
 * `VarianceCovariance.measure_inter_eq_mul_of_overlap_nonpos`: off the overlap set the
   two return events are independent, the degenerate time pairs included.
 * `variance_le_overlap_lintegral`: the variance expansion opening the proof of `thm:variance`.
-* `variance_four_point`, `variance_bundled`: `thm:variance`, unconditionally.
+* `variance_four_point_uniform`, `variance_bundled_uniform`: `thm:variance`, with one
+  constant depending only on `s` and `A` for every Frostman measure and Brownian law.
+* `variance_four_point`, `variance_bundled`: specialisations to a fixed measure and law.
 -/
 import BrownianImages.Endpoints
 
@@ -378,6 +380,36 @@ theorem variance_le_overlap_lintegral {P : Measure Ω} [IsProbabilityMeasure P]
   exact (jointReturn_eq_measure_inter W P r q.1.1.toNNReal q.1.2.toNNReal
     q.2.1.toNNReal q.2.2.toNNReal).symm
 
+/-- `thm:variance`: the variance constant depends only on `s` and `A`, uniformly over
+all Frostman probability measures with those parameters and all Brownian laws and sample
+spaces. The same constant as in `thm:four-point-integral` suffices. -/
+theorem variance_four_point_uniform {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    ∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        variance (fun ω => (corr (occupation W μ ω) r).toReal) P
+          ≤ C * varScale s r := by
+  obtain ⟨C, hC0, hC⟩ := four_point_integral_uniform (A := A) hs0 hs1
+  refine ⟨C, hC0, ?_⟩
+  intro Ω _ P _ W hW μ _ hμ r hr0 hr1
+  refine (variance_le_overlap_lintegral hW hr0).trans ?_
+  refine (ENNReal.toReal_mono ENNReal.ofReal_ne_top (hC hW hμ r hr0 hr1)).trans ?_
+  exact le_of_eq (ENNReal.toReal_ofReal
+    (mul_nonneg hC0.le (FourPointIntegral.varScale_nonneg hr0 hr1)))
+
+/-- `thm:variance` in its full uniform form: one constant depending only on `s` and `A`,
+together with the deterministic `o(r^{4s})` consequence. -/
+theorem variance_bundled_uniform {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
+    (∃ C > 0, ∀ {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
+      [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane}, IsPlanarBrownian W P →
+      ∀ {μ : Measure ℝ} [IsProbabilityMeasure μ], IsFrostman s A μ →
+      ∀ r : ℝ, 0 < r → r ≤ 1 →
+        variance (fun ω => (corr (occupation W μ ω) r).toReal) P
+          ≤ C * varScale s r) ∧
+      Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
+  ⟨variance_four_point_uniform hs0 hs1, varScale_div_tendsto_zero hs0 hs1⟩
+
 /-- `thm:variance`: the four-point variance bound.  The dyadic block bound
 of `thm:endpoint-block-mass` is summed by `thm:four-point-integral`, and the variance
 expansion above is what feeds the four-point integral. -/
@@ -386,9 +418,9 @@ theorem variance_four_point {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ�
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
     ∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
       variance (fun ω => (corr (occupation W μ ω) r).toReal) P
-        ≤ C * varScale s r :=
-  variance_of_block hW hs0 hs1 hμ (endpoint_block_mass_dyadic hW hs0 hμ)
-    fun _r hr0 _ => variance_le_overlap_lintegral hW hr0
+        ≤ C * varScale s r := by
+  obtain ⟨C, hC0, hC⟩ := variance_four_point_uniform (A := A) hs0 hs1
+  exact ⟨C, hC0, hC hW hμ⟩
 
 /-- `thm:variance` as one statement: the bound of `thm:variance` together with the
 `o(r^{4s})` consequence. -/
@@ -398,7 +430,6 @@ theorem variance_bundled {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 
     (∃ C > 0, ∀ r : ℝ, 0 < r → r ≤ 1 →
         variance (fun ω => (corr (occupation W μ ω) r).toReal) P ≤ C * varScale s r) ∧
       Tendsto (fun r : ℝ => varScale s r / r ^ (4 * s)) (𝓝[>] 0) (𝓝 0) :=
-  thm_variance_of_block hW hs0 hs1 hμ (endpoint_block_mass_dyadic hW hs0 hμ)
-    fun _r hr0 _ => variance_le_overlap_lintegral hW hr0
+  ⟨variance_four_point hW hs0 hs1 hμ, varScale_div_tendsto_zero hs0 hs1⟩
 
 end BrownianImages

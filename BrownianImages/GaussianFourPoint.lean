@@ -1,8 +1,8 @@
 /-
 `sec:setup` and `sec:variance` of `BrownianImagesComplete.tex`.
 
-* `endpoint_block_mass_le`: the mass half of `thm:endpoint-block-mass`, with the three
-  Frostman applications behind it
+* `endpoint_block_mass_le_explicit`, `endpoint_block_mass_le`: the mass half of `thm:endpoint-block-mass`, with the three
+  Frostman applications behind its explicit constant `A³`
   (`block_inner_le`, `block_mid_le`, `block_relaxed_le`).
 * `disjoint_increments_indep`: the first assertion of
   `thm:gaussian-four-point`, together with the two lemmas it rests on:
@@ -174,6 +174,7 @@ theorem endpoint_block_mass_le_explicit {s A : ℝ} {μ : Measure ℝ}
           η / 2 < (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ∧
           (p.2.1 - p.1) + (p.2.2.2 - p.2.2.1) ≤ η}
         ≤ ENNReal.ofReal (A ^ 3 * β ^ s * η ^ (2 * s)) := by
+  have hApos : (0:ℝ) < A := lt_of_lt_of_le zero_lt_one hμ.one_le_const
   intro β η hβ0 hβ1 hη0 hη1
   have hβs : (0:ℝ) < β ^ s := Real.rpow_pos_of_pos hβ0 s
   have hηs : (0:ℝ) < η ^ s := Real.rpow_pos_of_pos hη0 s
