@@ -5,7 +5,7 @@ renewal theorem of `BrownianImages.Renewal`.
 The vendored theorem
 `AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm` takes six
 hypotheses on the increment law.  This module discharges the ones that are properties of
-the renewal measure `ϑ = ∑ p_i δ_{a_i}` alone; `KeyRenewalFourier` discharges the rest.
+the renewal measure `ϑ = ∑ p_i δ_{α_i}` alone; `KeyRenewalFourier` discharges the rest.
 
 * `expTransform_renewalLaw`: the exponential transform of `ϑ` in closed form.
 * `exists_expTransform_lt_one`: the strict exponential moment.  Its content is that the
@@ -82,7 +82,7 @@ system never satisfies it, whatever the ratios, and the vendored key renewal the
 cannot be applied to `ϑ`.
 
 This is not a technicality of the formal statement.  The hypothesis is what gives
-`‖charFun μ t‖ < 1` for `t ≠ 0`, and for `ϑ` that is false: at `t = 2π/(a₁ - a₀)` the two
+`‖charFun μ t‖ < 1` for `t ≠ 0`, and for `ϑ` that is false: at `t = 2π/(α₁ - α₀)` the two
 atom phases align and the characteristic function has modulus one.  The Fourier route to
 Blackwell's theorem needs a spread-out increment law; `thm:non-lattice-limit` needs
 Feller's non-arithmetic condition, which forbids only lattices `dℤ` through the origin

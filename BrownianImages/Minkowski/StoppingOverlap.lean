@@ -1,13 +1,13 @@
 /-
 `thm:neighbourhood-overlap` of `sec:reconstruction`, under the strong open set
 condition: the expected overlap of the Brownian `r`-neighbourhoods of two distinct
-first-level pieces is `O(r^{α+2η})`, and so is the expected multiple-counting defect.
+first-level pieces is `O(r^{2-2s+2η})`, and so is the expected multiple-counting defect.
 
 The first-level time intervals may overlap, so the Gaussian-gap estimate is applied
-not to the pieces but to the stopping cylinders at temporal scale `ρ = r²` below each
-of them.  For two such cylinders the expected overlap is at most `C ρ² / max(ρ, d)`,
-where `d` is the gap between their time intervals: for `d ≤ ρ` by the area of one
-neighbourhood, for `d > ρ` by the Gaussian density of the increment across the gap.
+not to the pieces but to the stopping cylinders at temporal scale `r²` below each
+of them.  For two such cylinders the expected overlap is at most `C r⁴ / max(r², d)`,
+where `d` is the gap between their time intervals: for `d ≤ r²` by the area of one
+neighbourhood, for `d > r²` by the Gaussian density of the increment across the gap.
 The number of cylinder pairs with gap at most `h` is controlled through
 `eq:cross-piece-mass`, since the stopping words carry the natural measure, and a dyadic
 sum over the gaps gives the bound.
@@ -488,7 +488,7 @@ theorem IsPlanarBrownian.integrable_and_integral_tubeOverlapArea_stoppingCylinde
 namespace System
 
 omit [Nonempty iota] in
-/-- The Fubini form of the pair-distance mass of a product of two push-forwards. -/
+/-- The Fubini form of the cross-correlation integral of two push-forwards. -/
 theorem IsNatural.prod_map_apply_eq' {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) {f g : ℝ → ℝ} (hf : Measurable f) (_hg : Measurable g) (h : ℝ) :
     ((μ.map f).prod (μ.map g)) {p : ℝ × ℝ | |p.1 - p.2| ≤ h}
@@ -502,7 +502,7 @@ omit [Nonempty iota] in
 /-- **The stopping words partition address space**, in the form the pair count uses:
 below a node `w`, the weighted product of the two children `w·i` and `w·j` is the
 double sum of the weighted products of the stopping cylinders below them, on the
-pair-distance set. -/
+set of close pairs. -/
 theorem IsNatural.prod_map_pieces_eq_sum_leaves {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) (w : StoppingWord iota) (i j : iota) (delta : ℝ) (n : ℕ)
     (h : ℝ) :
@@ -592,7 +592,7 @@ theorem IsNatural.map_apply_image_eq_one {K : Set ℝ} {s : ℝ} {μ : Measure �
 omit [Nonempty iota] in
 /-- **Close pairs have full product mass.**  If two stopping words of ratio at most
 `ρ ≤ h` have gap at most `h`, every pair of points of their cylinders is at distance
-at most `3h`, so the product of their push-forwards gives the pair-distance set full
+at most `3h`, so the product of their push-forwards gives the set of close pairs full
 mass. -/
 theorem IsNatural.prod_map_close_eq_one {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) {w v : StoppingWord iota} {ρ h : ℝ} (hρh : ρ ≤ h)
@@ -660,7 +660,7 @@ theorem stoppingWordMap_preimage_closedBall_self (w : StoppingWord iota) (x h : 
 
 omit [Nonempty iota] in
 /-- Composing two first-level pieces with the map of a word `w` rescales the
-pair-distance set by `r_w`. -/
+set of close pairs by `r_w`. -/
 theorem IsNatural.prod_map_comp_apply {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) (w : StoppingWord iota) (i j : iota) (h : ℝ) :
     ((μ.map (S.stoppingWordMap w ∘ S.map i)).prod (μ.map (S.stoppingWordMap w ∘ S.map j)))

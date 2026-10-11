@@ -2,21 +2,23 @@
 `thm:neighbourhood-concentration` of `sec:reconstruction`, under the strong open set
 condition.
 
-At logarithmic scale `t = log(1/r)` the profile `X(t)` is compared with the sum
+At logarithmic scale `t = log(1/r)` the mass `r^{2s-2} M_r(E)` is compared with the sum
 `Y_{r,u}` of the normalised tube masses of the Brownian images of the stopping cylinders
-at temporal scale `u`.  Brownian scaling gives each summand the law of `p_w X(t - β_w)`;
+at temporal scale `u`. Brownian scaling bounds each summand's second moment by `C p_w²`;
 the partition of `thm:stopping-overlap` into `M` classes of cylinders with disjoint
 interiors makes each class independent, so `eq:stopping-neighbourhood-variance` bounds
-the variance of `Y_{r,u}` by `M ∑ p_w² Var X(t - β_w) = O(u^s)`.  The error
-`F_{r,u} = Y_{r,u} - X(t)` is the multiple-counting defect of the leaf family; it
+the variance of `Y_{r,u}` by `C ∑ p_w² = O(u^s)`. The error
+`F_{r,u} = Y_{r,u} - r^{2s-2} M_r(E)` is the multiple-counting defect of the leaf family; it
 telescopes into the internal defects `D_{v,r}` of the stopping tree, each bounded in
 expectation by `eq:neighbourhood-defect-mean` below the node `v`, which gives
 `eq:stopping-neighbourhood-defect`; since `0 ≤ F_{r,u} ≤ Y_{r,u}`, its third moment is
 bounded, and interpolation gives the `L²` bound.  With `u = r` both terms decay
-exponentially in `t`.
+exponentially in `t`. The names `Y_{r,u}` and `F_{r,u}` describe internal quantities;
+the paper writes the stopping sum and `∑_{v∈𝒯(r)} D_{v,r}` directly, with the
+normalising powers outside its variance and moment estimates.
 
 * `stoppingHalfLogRatio`, `IsPlanarBrownian.identDistrib_normalizedTubeMass_brownianStoppingCylinder`:
-  Brownian scaling for a stopping cylinder, `M_r(BM(S_w K)) ~ p_w X_w(t - β_w)`.
+  Brownian scaling for a stopping cylinder, `M_r(BM(S_w K)) ~ r_w M_{r/√r_w}(E)`.
 * `IsPlanarBrownian.iIndepFun_normalizedTubeMass_brownianStoppingCylinders`: cylinders
   whose time intervals have disjoint interiors have independent tube masses.
 * `IsNatural.stoppingLeafDefect`, `IsNatural.stoppingLeafDefect_succ_of_not_le`: the
@@ -118,7 +120,7 @@ namespace System
 /-! ### Brownian scaling for a stopping cylinder -/
 
 omit [Nonempty iota] in
-/-- The half-logarithmic delay `β_w = (1/2) log(1/r_w)` of a stopping word. -/
+/-- The half-logarithmic delay `α_w/2 = (1/2) log(1/r_w)` of a stopping word. -/
 def stoppingHalfLogRatio (w : StoppingWord iota) : ℝ :=
   (1 / 2 : ℝ) * Real.log (S.stoppingRatio w)⁻¹
 
@@ -184,8 +186,8 @@ theorem IsPlanarBrownian.map_tubeMass_brownianStoppingCylinder_eq [IsProbability
     ← S.tubeRadiusReal_sub_stoppingHalfLogRatio w v] using hlaw
 
 omit [Nonempty iota] in
-/-- **Brownian scaling for a stopping cylinder**: the normalised tube mass of
-`BM(S_w K)` has the law of `p_w X(t - β_w)`. -/
+/-- **Brownian scaling for a stopping cylinder**: multiplying the identity in law
+`M_r(BM(S_w K)) ~ r_w M_{r/√r_w}(E)` by `r^{2s-2}` gives the normalised form. -/
 theorem IsPlanarBrownian.identDistrib_normalizedTubeMass_brownianStoppingCylinder
     [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) (w : StoppingWord iota) (v : ℝ) :
@@ -900,8 +902,8 @@ theorem IsNatural.exists_brownianTubeProfile_cube_bound_of_tubeMomentsUpper
 
 set_option maxHeartbeats 1600000 in
 /-- **`thm:neighbourhood-concentration`** under the strong open set condition, given the
-moments of the unit-interval Brownian radius: the centred profile satisfies
-`eq:neighbourhood-concentration`, and `eq:neighbourhood-grid-concentration` follows. -/
+moments of the unit-interval Brownian radius: the centred profile satisfies the
+concentration bound, and `eq:neighbourhood-grid-concentration` follows. -/
 theorem IsNatural.tubeConcentration_of_sosc [IsProbabilityMeasure P]
     (hW : IsPlanarBrownian W P) {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)

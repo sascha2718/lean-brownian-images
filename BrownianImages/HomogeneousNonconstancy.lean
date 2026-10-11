@@ -130,7 +130,7 @@ theorem pairDiff_homogeneous_decomp {lam : ℝ} (hlam0 : 0 < lam)
   ring
 
 /-- The cross term of `thm:renewal-recursion` for the homogeneous system: the
-pair-distance distribution of two points in different first-level pieces. -/
+correlation integral for points in different first-level pieces. -/
 noncomputable def crossCDF (lam : ℝ) (μ : Measure ℝ) (δ : ℝ) : ℝ :=
   (pairDiff μ (homBlockSet lam (1 - lam) (Set.Icc (-δ) δ))).toReal
 
@@ -270,7 +270,7 @@ theorem homSource_eq {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
   rw [hδ, he, hrec]
   ring
 
-/-- `eq:g-definition`: the normalised profile vanishes at `-∞`, since `Φ ≤ 1` and
+/-- `sec:setup`: the normalised profile vanishes at `-∞`, since `Φ ≤ 1` and
 `e^{sw} → 0`. -/
 theorem tendsto_G_atBot_zero {s : ℝ} (hs : 0 < s) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] : Tendsto (G s μ) atBot (𝓝 0) := by

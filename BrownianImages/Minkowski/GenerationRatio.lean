@@ -317,19 +317,25 @@ theorem System.IsNatural.ae_generation_tubeMassRatio_of_exponential_concentratio
   exact hmu.ae_generation_tubeMassRatio_of_centered S hW hc
     hfull hcylinder hmean hlower
 
+/-- `eq:renewal-shift`: a constant renewal limit gives invariance under every
+fixed real shift. -/
+theorem tendsto_sub_shift_sub_of_tendsto_atTop
+    (m : ℝ → ℝ) {L beta : ℝ} (hm : Tendsto m atTop (nhds L)) :
+    Tendsto (fun t : ℝ => m (t - beta) - m t) atTop (nhds 0) := by
+  have hshift : Tendsto (fun t : ℝ => t - beta) atTop atTop := by
+    simpa only [sub_eq_add_neg, id_eq] using
+      (Filter.atTop.tendsto_atTop_add_const_right (-beta)
+        (tendsto_id : Tendsto (fun t : ℝ => t) atTop atTop))
+  have h := (hm.comp hshift).sub hm
+  simpa only [Function.comp_apply, sub_self] using h
+
 /-- A convergent mean profile is asymptotically unchanged by every fixed
-generation delay. -/
+generation delay along the integer grid. -/
 theorem tendsto_natCast_sub_shift_sub_of_tendsto_atTop
     (m : ℝ → ℝ) {L beta : ℝ} (hm : Tendsto m atTop (nhds L)) :
     Tendsto (fun n : ℕ => m ((n : ℝ) - beta) - m (n : ℝ))
-      atTop (nhds 0) := by
-  have hnat : Tendsto (fun n : ℕ => (n : ℝ)) atTop atTop :=
-    tendsto_natCast_atTop_atTop
-  have hshift : Tendsto (fun n : ℕ => (n : ℝ) - beta) atTop atTop := by
-    simpa only [sub_eq_add_neg] using
-      (Filter.atTop.tendsto_atTop_add_const_right (-beta) hnat)
-  have h := (hm.comp hshift).sub (hm.comp hnat)
-  simpa only [Function.comp_apply, sub_self] using h
+      atTop (nhds 0) :=
+  (tendsto_sub_shift_sub_of_tendsto_atTop m hm).comp tendsto_natCast_atTop_atTop
 
 /-- Uniform convergence on the lattice sections of one period is equivalent to
 ordinary convergence to the periodic profile on the whole positive half-line. -/
@@ -375,8 +381,37 @@ theorem tendsto_sub_periodic_of_uniform_lattice
   rw [Real.dist_eq, sub_zero, hper, hv_eq]
   exact hbound.trans_lt (by linarith)
 
-/-- If a delay is an integral multiple of the period, a mean profile converging
-uniformly to that periodic profile is asymptotically unchanged by the delay. -/
+/-- `eq:renewal-shift`: a uniform lattice limit gives invariance under every
+shift in the period lattice, as the real argument tends to infinity. -/
+theorem tendsto_sub_period_sub_of_uniform_lattice
+    {m periodicProfile : ℝ → ℝ} {h beta : ℝ} (hh : 0 < h)
+    (hperiodic : Function.Periodic periodicProfile h)
+    (hbeta : beta ∈ AddSubgroup.zmultiples h)
+    (huniform : ∀ epsilon : ℝ, 0 < epsilon → ∃ N : ℕ,
+      ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) h,
+        |m (t + (n : ℝ) * h) - periodicProfile t| ≤ epsilon) :
+    Tendsto (fun t : ℝ => m (t - beta) - m t) atTop (nhds 0) := by
+  have hglobal := tendsto_sub_periodic_of_uniform_lattice hh hperiodic huniform
+  have hshift : Tendsto (fun t : ℝ => t - beta) atTop atTop := by
+    simpa only [sub_eq_add_neg, id_eq] using
+      (Filter.atTop.tendsto_atTop_add_const_right (-beta)
+        (tendsto_id : Tendsto (fun t : ℝ => t) atTop atTop))
+  obtain ⟨z, hz⟩ := AddSubgroup.mem_zmultiples_iff.mp hbeta
+  have hperShift : ∀ t : ℝ, periodicProfile (t - beta) = periodicProfile t := by
+    intro t
+    have hpz := hperiodic.int_mul z (t - beta)
+    have hz' : (z : ℝ) * h = beta := by
+      simpa only [zsmul_eq_mul] using hz
+    rw [hz'] at hpz
+    simpa only [sub_add_cancel] using hpz.symm
+  have h := (hglobal.comp hshift).sub hglobal
+  convert h using 1
+  · funext t
+    rw [Function.comp_apply, hperShift]
+    ring
+  · simp
+
+/-- The lattice shift relation along the integer grid used for generation ratios. -/
 theorem tendsto_natCast_sub_period_sub_of_uniform_lattice
     {m periodicProfile : ℝ → ℝ} {h beta : ℝ} (hh : 0 < h)
     (hperiodic : Function.Periodic periodicProfile h)
@@ -385,28 +420,9 @@ theorem tendsto_natCast_sub_period_sub_of_uniform_lattice
       ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) h,
         |m (t + (n : ℝ) * h) - periodicProfile t| ≤ epsilon) :
     Tendsto (fun n : ℕ => m ((n : ℝ) - beta) - m (n : ℝ))
-      atTop (nhds 0) := by
-  have hglobal := tendsto_sub_periodic_of_uniform_lattice hh hperiodic huniform
-  have hnat : Tendsto (fun n : ℕ => (n : ℝ)) atTop atTop :=
+      atTop (nhds 0) :=
+  (tendsto_sub_period_sub_of_uniform_lattice hh hperiodic hbeta huniform).comp
     tendsto_natCast_atTop_atTop
-  have hshift : Tendsto (fun n : ℕ => (n : ℝ) - beta) atTop atTop := by
-    simpa only [sub_eq_add_neg] using
-      (Filter.atTop.tendsto_atTop_add_const_right (-beta) hnat)
-  obtain ⟨z, hz⟩ := AddSubgroup.mem_zmultiples_iff.mp hbeta
-  have hperShift : ∀ n : ℕ,
-      periodicProfile ((n : ℝ) - beta) = periodicProfile (n : ℝ) := by
-    intro n
-    have hpz := hperiodic.int_mul z ((n : ℝ) - beta)
-    have hz' : (z : ℝ) * h = beta := by
-      simpa only [zsmul_eq_mul] using hz
-    rw [hz'] at hpz
-    simpa only [sub_add_cancel] using hpz.symm
-  have h := (hglobal.comp hshift).sub (hglobal.comp hnat)
-  convert h using 1
-  · funext n
-    rw [Function.comp_apply, Function.comp_apply, hperShift]
-    ring
-  · simp
 
 omit [Nonempty iota] in
 /-- Arithmeticity places every generation delay in the corresponding lattice. -/

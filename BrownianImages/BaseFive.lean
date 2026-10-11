@@ -3,14 +3,14 @@
 base-five missing-digit sets with digit sets `D₁ = {0,1,4}` and `D₂ = {0,2,4}`.
 
 Both systems have three maps of ratio `1/5`, dimension `s = log 3 / log 5`, and the
-open set condition with `U = (0,1)`.  Conditioning on the first digits turns
-Hutchinson's identity into `eq:base-five-recursion`,
+open set condition with `U = (0,1)`.  The paper proves `eq:base-five-correlation` by
+counting touching level-n cylinders.  This module uses equivalent first-digit recursions:
 `Φ₁(δ) = Φ₁(5δ)/3 + 2Ψ(5δ)/9` and `Φ₂(δ) = Φ₂(5δ)/3` for `0 < δ ≤ 1/5`, where
-`Ψ(a) = P((1 - X) + Y ≤ a)` is the mass near the contact of the pieces `f₀K₁` and
-`f₁K₁`; `Ψ` satisfies `Ψ(a) = Ψ(5a)/9` and `Ψ(1) = 1/2`, and the exact values
-`eq:base-five-distances` follow.  In logarithmic coordinates the recursion says that
-`G₁(w) - G₁(w - p)` is non-negative and `O(e^{-sw})` while `G₂` is exactly periodic, so
-both profiles converge along the period `p = log 5` to continuous periodic limits, with
+`Ψ(a) = P((1 - X) + Y ≤ a)` is the mass near the contact of the pieces `S₀K₁` and
+`S₁K₁`; `Ψ` satisfies `Ψ(a) = Ψ(5a)/9` and `Ψ(1) = 1/2`, and the exact values
+`eq:base-five-correlation` follow.  In logarithmic coordinates the recursion says that
+`G₁(w) - G₁(w - h)` is non-negative and `O(e^{-sw})` while `G₂` is exactly periodic, so
+both profiles converge along the period `h = log 5` to continuous periodic limits, with
 `G̃₁(0) = 3/2` and `G̃₂(0) = 1`.  The expected profiles `H_j` then converge to the
 smoothed limits, which `thm:smoothing-injective` keeps apart.
 
@@ -20,7 +20,7 @@ smoothed limits, which `thm:smoothing-injective` keeps apart.
 * `IsNatural.prod_apply_eq_double_sum`: Hutchinson's identity for `μ × μ` on any set.
 * `Psi`, `psi_recursion`, `psi_one`, `psi_five_pow`: the contact mass.
 * `phiA_recursion`, `phiB_recursion`, `phiA_five_pow`, `phiB_five_pow`:
-  `eq:base-five-recursion` and `eq:base-five-distances`.
+  the internal recursions and `eq:base-five-correlation`.
 -/
 import BrownianImages.Schief
 import BrownianImages.Recursion
@@ -215,7 +215,7 @@ theorem prod_measure_eq_of_eqOn_unitSquare {μ : Measure ℝ} [SFinite μ]
 /-! ### The contact mass `Ψ` -/
 
 /-- `Ψ(a) = (μ × μ){(x,y) : (1 - x) + y ≤ a}`, the mass near the contact point of the
-pieces `f₀K` and `f₁K`. -/
+pieces `S₀K` and `S₁K`. -/
 noncomputable def Psi (μ : Measure ℝ) (a : ℝ) : ℝ :=
   ((μ.prod μ) {p : ℝ × ℝ | (1 - p.1) + p.2 ≤ a}).toReal
 
@@ -254,7 +254,7 @@ theorem baseFive_prod_eq {D : Fin 3 → ℕ} {hD : ∀ i, D i ≤ 4} {K : Set �
   simp only [baseFiveSystem_map]
   ring
 
-/-- The pulled-back pair-distance set. -/
+/-- The pulled-back set of close pairs. -/
 theorem pullback_phiSet (d d' δ : ℝ) :
     {p : ℝ × ℝ | ((p.1 + d) / 5, (p.2 + d') / 5) ∈ {q : ℝ × ℝ | |q.1 - q.2| ≤ δ}}
       = {p : ℝ × ℝ | |p.1 - p.2 + (d - d')| ≤ 5 * δ} := by
@@ -304,7 +304,7 @@ theorem prod_measure_eq_one_of_unitSquare_subset {μ : Measure ℝ} [IsProbabili
         rw [Measure.prod_prod, hIcc, mul_one]
     _ ≤ (μ.prod μ) A := measure_mono h
 
-/-! ### `eq:base-five-recursion` -/
+/-! ### Internal correlation recursions for `thm:base-five-profiles` -/
 
 section Recursion
 
@@ -320,7 +320,7 @@ theorem phi_one_of_support [IsProbabilityMeasure μ] (hsupp : μ (Icc (0:ℝ) 1)
   rw [abs_le]
   constructor <;> linarith
 
-/-- Shifting the pair-distance set by at least `3` empties it on the unit square. -/
+/-- Shifting the set of close pairs by at least `3` empties it on the unit square. -/
 theorem phiSet_shift_null [SFinite μ] (hsupp : μ (Icc (0:ℝ) 1)ᶜ = 0) {δ : ℝ}
     (hδ1 : δ ≤ 1 / 5) {k : ℝ} (hk : 3 ≤ |k|) :
     (μ.prod μ) {p : ℝ × ℝ | |p.1 - p.2 + k| ≤ 5 * δ} = 0 := by
@@ -335,7 +335,8 @@ theorem phiSet_shift_null [SFinite μ] (hsupp : μ (Icc (0:ℝ) 1)ᶜ = 0) {δ :
   have h2 : |x - y| ≤ 1 := abs_le.mpr ⟨by linarith, by linarith⟩
   linarith
 
-/-- **`eq:base-five-recursion` for `D₂ = {0,2,4}`**: `Φ₂(δ) = Φ₂(5δ)/3` for `0 < δ ≤ 1/5`,
+/-- The internal recursion for `D₂ = {0,2,4}` in `thm:base-five-profiles`:
+`Φ₂(δ) = Φ₂(5δ)/3` for `0 < δ ≤ 1/5`,
 since distinct first digits keep the pieces at distance at least `1/5`, with equality
 only at endpoints. -/
 theorem phiB_recursion (hμ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le).IsNatural K
@@ -387,7 +388,8 @@ theorem psiSet_shift_null [SFinite μ] (hsupp : μ (Icc (0:ℝ) 1)ᶜ = 0) {a : 
   dsimp only at hx0 hx1 hy0 hy1
   linarith
 
-/-- **`eq:base-five-recursion` for `D₁ = {0,1,4}`**: `Φ₁(δ) = Φ₁(5δ)/3 + 2Ψ(5δ)/9` for
+/-- The internal recursion for `D₁ = {0,1,4}` in `thm:base-five-profiles`:
+`Φ₁(δ) = Φ₁(5δ)/3 + 2Ψ(5δ)/9` for
 `0 < δ ≤ 1/5`; the digits `0` and `1` contribute `Ψ(5δ)` in each order and the digit
 `4` is too far from the others. -/
 theorem phiA_recursion (hμ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K
@@ -497,7 +499,7 @@ theorem psi_one [IsProbabilityMeasure μ] (hFrost : IsFrostman baseFiveDim A μ)
   rw [hpsi]
   linarith
 
-/-! ### `eq:base-five-distances` -/
+/-! ### `eq:base-five-correlation` -/
 
 /-- `Ψ(5^{-m}) = 9^{-m}/2`. -/
 theorem psi_five_pow (hμ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K
@@ -514,7 +516,7 @@ theorem psi_five_pow (hμ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).
       rw [pow_succ]; ring, ih, pow_succ]
     ring
 
-/-- **`eq:base-five-distances` for `D₂`**: `Φ₂(5^{-n}) = 3^{-n}`. -/
+/-- **`eq:base-five-correlation` for `D₂`**: `Φ₂(5^{-n}) = 3^{-n}`. -/
 theorem phiB_five_pow (hμ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le).IsNatural K
     baseFiveDim μ) (hFrost : IsFrostman baseFiveDim A μ) (n : ℕ) :
     Phi μ ((1 / 5 : ℝ) ^ n) = (1 / 3 : ℝ) ^ n := by
@@ -529,7 +531,7 @@ theorem phiB_five_pow (hμ : (baseFiveSystem baseFiveDigitsB baseFiveDigitsB_le)
       rw [pow_succ]; ring, ih, pow_succ]
     ring
 
-/-- **`eq:base-five-distances` for `D₁`**: `Φ₁(5^{-n}) = (3/2) 3^{-n} - (1/2) 9^{-n}`. -/
+/-- **`eq:base-five-correlation` for `D₁`**: `Φ₁(5^{-n}) = (3/2) 3^{-n} - (1/2) 9^{-n}`. -/
 theorem phiA_five_pow (hμ : (baseFiveSystem baseFiveDigitsA baseFiveDigitsA_le).IsNatural K
     baseFiveDim μ) (hFrost : IsFrostman baseFiveDim A μ) (n : ℕ) :
     Phi μ ((1 / 5 : ℝ) ^ n) = 3 / 2 * (1 / 3 : ℝ) ^ n - 1 / 2 * (1 / 9 : ℝ) ^ n := by
@@ -971,7 +973,7 @@ end Profiles
 /-! ### `thm:base-five-profiles` -/
 
 /-- **`thm:base-five-profiles`.**  For the natural measures `μ₁`, `μ₂` of the two base-five
-systems, the pair-distance distributions take the values `eq:base-five-distances` at the
+systems, the correlation integrals take the values `eq:base-five-correlation` at the
 scales `5⁻ⁿ`, and the expected profiles `H_{μ₁}^s`, `H_{μ₂}^s` stay a fixed distance apart along
 a sequence tending to infinity. -/
 theorem baseFive_profiles {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}

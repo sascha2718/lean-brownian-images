@@ -1,9 +1,10 @@
 /-
 `thm:neighbourhood-concentration` of `sec:reconstruction`: the `L²` input that
 `thm:neighbourhood-moments` provides.  The `q = 2` moment bound gives a bound for the
-`L²` norm of the normalised profile `X(t)`, uniform in `t ≥ 0`; the concentration proof
-uses it for the variance of every summand of `Y_{r,u}` and at the small scales the
-stopping argument does not cover.
+`L²` norm of `e^{(2-2s)t} M_{e^{-t}}(E)`, uniform in `t ≥ 0`; the concentration proof
+uses it for the variance of every summand of the stopping sum and at the scales the
+stopping argument does not cover. The paper writes this sum directly rather than
+using the internal notation `Y_{r,u}`.
 
 * `MinkowskiL2Recurrence.centeredL2Norm_const_mul`: homogeneity of the centred norm.
 * `IsNatural.exists_brownianTubeProfile_lpNorm_bound_of_tubeMomentsUpper`: the uniform

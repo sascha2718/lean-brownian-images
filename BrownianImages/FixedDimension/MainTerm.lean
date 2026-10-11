@@ -1,13 +1,18 @@
 /-
-`thm:main-term-derivative`: the main term `Σ(p) = ∑_{n≥0} p qⁿ (1 - b^{n+1})^{-s}` of
-`eq:main-term` equals `(e^{sT} - 1) S(T)` with `S(T) = ∑_{m≥1} f(mT)` and `T = log(1/b)`,
-and its derivative satisfies `|Σ'(p)| ≤ 6 p^{-s}` for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`.
+`thm:main-term-derivative`: the main term `J₀(p) = ∑_{n≥0} p qⁿ (1 - b^{n+1})^{-s}` of
+`eq:main-term` equals `(e^{sT(p)} - 1) S(T(p))`, where `T(p) = log(1/b)`
+and `S(T) = ∑_{m≥1} f(mT)`,
+and its derivative satisfies `|J₀'(p)| ≤ 6 p^{-s}` for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`.
+The paper writes out the sums and integrals directly; `S` and `J = ∫_T^∞ f` below are
+internal abbreviations for the same Riemann-sum calculation. Here `T` is an independent
+variable, evaluated at `fixedT s p` when applying the chain rule. The paper keeps `T(p)`
+and `T'(p)` explicit throughout.
 
 * `mainS`, `mainS'`, `mainTermT`, `fixedT`, `mainTerm`: the objects.
 * `hasDerivAt_mainS`: termwise differentiation of `S`.
-* `abs_deriv_mainTermT_le`: `|dΣ/dT| ≤ s e^{sT} (sJ/2 + 3 f(T) + |g(T)|)`, by the
+* `abs_deriv_mainTermT_le`: `|d(mainTermT s)/dT| ≤ s e^{sT} (sJ/2 + 3 f(T) + |g(T)|)`, by the
   Riemann-sum bounds.
-* `mainTerm_eq`, `hasDerivAt_mainTerm`: the change of variables `T = T(p)`.
+* `mainTerm_eq`, `hasDerivAt_mainTerm`: composition with `T(p) = fixedT s p`.
 * `exists_hasDerivAt_mainTerm`: the derivative bound of `thm:main-term-derivative`.
 -/
 import BrownianImages.FixedDimension.MainTermIntegrals
@@ -26,13 +31,13 @@ def mainS (s T : ℝ) : ℝ := ∑' m : ℕ, mainF s (((m:ℝ) + 1) * T)
 /-- `S'(T) = ∑_{m≥1} m f'(mT)`. -/
 def mainS' (s T : ℝ) : ℝ := ∑' m : ℕ, ((m:ℝ) + 1) * mainF' s (((m:ℝ) + 1) * T)
 
-/-- `Σ(T) = (e^{sT} - 1) S(T)`. -/
+/-- The main term as a function of the independent logarithmic variable: `(e^{sT} - 1) S(T)`. -/
 def mainTermT (s T : ℝ) : ℝ := (Real.exp (s * T) - 1) * mainS s T
 
 /-- `T(p) = log(1/b) = s⁻¹ log(1/(1-p))`. -/
 def fixedT (s p : ℝ) : ℝ := s⁻¹ * Real.log (1 - p)⁻¹
 
-/-- The main term `Σ(p) = ∑_{n≥0} p qⁿ (1 - b^{n+1})^{-s}` of `eq:main-term`. -/
+/-- The main term `J₀(p) = ∑_{n≥0} p qⁿ (1 - b^{n+1})^{-s}` of `eq:main-term`. -/
 def mainTerm (s p : ℝ) : ℝ :=
   ∑' n : ℕ, p * (1 - p) ^ n * (1 - fixedB s p ^ (n + 1)) ^ (-s)
 
@@ -166,7 +171,7 @@ theorem hasDerivAt_mainS {s T : ℝ} (hs : 0 < s) (hs2 : s ≤ 2) (hT : 0 < T) :
     hterm hmaj hTt (mainS_bounds hs hs2 hT).1 hTt
   exact h
 
-/-! ### The derivative of `Σ(T)` and its bound -/
+/-! ### The derivative of `mainTermT` and its bound -/
 
 theorem hasDerivAt_mainTermT {s T : ℝ} (hs : 0 < s) (hs2 : s ≤ 2) (hT : 0 < T) :
     HasDerivAt (mainTermT s)
@@ -210,7 +215,7 @@ theorem mul_exp_sub_exp_bounds {x : ℝ} (hx : 0 ≤ x) :
 theorem exp_sub_one_le_mul_exp {x : ℝ} (hx : 0 ≤ x) : Real.exp x - 1 ≤ x * Real.exp x := by
   have := (mul_exp_sub_exp_bounds hx).1; linarith
 
-/-- `|dΣ/dT| ≤ s e^{sT} (sJ/2 + 3 f(T) + |g(T)|)`, `J = ∫_T^∞ f`. -/
+/-- `|d(mainTermT s)/dT| ≤ s e^{sT} (sJ/2 + 3 f(T) + |g(T)|)`, `J = ∫_T^∞ f`. -/
 theorem abs_deriv_mainTermT_le {s T : ℝ} (hs : 0 < s) (hs2 : s ≤ 2) (hT : 0 < T) :
     |s * Real.exp (s * T) * mainS s T + (Real.exp (s * T) - 1) * mainS' s T|
       ≤ s * Real.exp (s * T) *
@@ -350,7 +355,7 @@ theorem summable_mainTerm_terms {s p : ℝ} (hs : 0 < s) (hs2 : s ≤ 2) (hp0 : 
     (Real.exp (s * fixedT s p) - 1)
   exact h.congr fun n => (mainTerm_term_eq hs hp0 hp1 n).symm
 
-/-- `Σ(p) = Σ(T(p))`. -/
+/-- `J₀(p) = mainTermT s (T(p))`, with `T(p) = fixedT s p`. -/
 theorem mainTerm_eq {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) :
     mainTerm s p = mainTermT s (fixedT s p) := by
   unfold mainTerm mainTermT mainS
@@ -399,7 +404,7 @@ theorem mul_fixedT_le {s p : ℝ} (hs : 0 < s) (hp1 : p < 1) :
     _ = p / (1 - p) := by field_simp; ring
 
 /-- **`thm:main-term-derivative`.**  For `0 < s ≤ 1/2` and `0 < p ≤ 1/50` the main term is
-differentiable at `p` with `|Σ'(p)| ≤ 6 p^{-s}`. -/
+differentiable at `p` with `|J₀'(p)| ≤ 6 p^{-s}`. -/
 theorem exists_hasDerivAt_mainTerm {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
     (hp : p ≤ 1/50) : ∃ D, HasDerivAt (mainTerm s) D p ∧ |D| ≤ 6 * p ^ (-s) := by
   have hs2 : s ≤ 2 := by linarith

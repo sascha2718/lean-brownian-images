@@ -1,8 +1,8 @@
 /-
 `thm:small-dimension-monotone` and the monotone part of `thm:critical-set-finite`.
 
-By `eq:log-derivative-mean`, the mean `H̄_s(p) = C_s pq M_p / E(p)` has derivative
-`C_s (pq/E) (κ M_p + M_p')`, and since `M_p ≥ 1` and `κ > 0` it is positive wherever
+By `eq:log-derivative-mean`, the mean `H̄_s(p) = C_s pq M_p / h(p)` has derivative
+`C_s (pq/h) (κ M_p + M_p')`, and since `M_p ≥ 1` and `κ > 0` it is positive wherever
 `|M_p'| < κ(p)`. For `p ≤ 10⁻⁴` this follows from `thm:entropy-factor`,
 `thm:main-term-derivative` and `thm:remainder-derivative`; for `10⁻⁴ ≤ p < 1/2` from
 `thm:second-derivative-small-s`, the symmetry `M_{1/2}' = 0` and the mean value theorem, once
@@ -83,7 +83,7 @@ theorem fixedMean_const_pos {s : ℝ} (hs1 : s < 1) :
     0 < (2:ℝ) ^ (1 - s) * Real.Gamma (1 - s) :=
   mul_pos (Real.rpow_pos_of_pos (by norm_num) _) (Real.Gamma_pos_of_pos (by linarith))
 
-/-- `eq:log-derivative-mean` in product form: `H̄_s' = C_s (pq/E) (κ M_p + M_p')`. -/
+/-- `eq:log-derivative-mean` in product form: `H̄_s' = C_s (pq/h) (κ M_p + M_p')`. -/
 theorem hasDerivAt_fixedMean {s p D : ℝ} (hp0 : 0 < p) (hp1 : p < 1)
     (hM : HasDerivAt (fixedMoment s) D p) :
     HasDerivAt (fixedMean s)
@@ -301,7 +301,7 @@ theorem sqrt_mul_one_sub_log_le_rpow {p : ℝ} (hp0 : 0 < p) :
   rw [hsq, hlog]
   nlinarith [h2, h3, hv0, sq_nonneg v]
 
-/-- `|M_p'| (p log(e/p)) ≤ C √p log(e/p)` for `0 < p ≤ 1/50` and `s ≤ 1/2`, with
+/-- `|M_p'| (p (1 - log p)) ≤ C √p (1 - log p)` for `0 < p ≤ 1/50` and `s ≤ 1/2`, with
 `C = 6 + 3000 s (3/2)^{1/s}`. -/
 theorem abs_deriv_fixedMoment_mul_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
     (hp : p ≤ 1/50) :

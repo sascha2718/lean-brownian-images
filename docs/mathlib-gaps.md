@@ -35,7 +35,7 @@ Each item is a piece of the paper that the library builds itself. Labels such as
   open set condition: the stopping family below a node, its multiplicity bound and its partition
   into `M` families with disjoint interiors, through the greedy interval colouring of
   `IntervalColoring`, the Ahlfors regularity of the natural measure at every centre
-  (`StoppingGeometry`, with the geometric part in `thm:stopping-overlap` and Ahlfors
+  (`StoppingGeometry`, with the geometric part cited in `sec:osc-geometry` and Ahlfors
   regularity cited from Falconer in the paper), and the boundary and cross-piece mass
   estimates through the iterated Hutchinson identity (`CrossPiece`,
   `thm:cross-piece-mass`).
@@ -44,7 +44,7 @@ Each item is a piece of the paper that the library builds itself. Labels such as
   `thm:non-lattice-limit` goes through it: `KeyRenewalFourier` verifies Feller's
   non-lattice condition from `eq:non-lattice` and the exponential tail of the renewal
   defect `z`, which under the open set condition is the cross-term bound of
-  `thm:renewal-recursion`.
+  `sec:renewal-equation`.
 - **Time reversal of Brownian motion.** Mathlib's `IsPreBrownianReal` has the shift,
   scaling, negation and time-inversion invariances but no time reversal.
   `reverseReal B b` is `t ↦ B(b - t) - B(b)` up to time `b`, continued past `b` by the
@@ -113,36 +113,22 @@ Each item is a piece of the paper that the library builds itself. Labels such as
   and `Minkowski.BrownianMaximalMoment` supply the unit-interval radius moments from
   discrete martingale maximal estimates and Brownian scaling.
 - **Cesàro means and the renewal equation.** Mathlib has Cesàro means of sequences but
-  none of functions on the line. `TwoContraction.Cesaro` proves that a convergent function
+  none of functions on the line. `Cesaro` proves that a convergent function
   has convergent averages (`tendsto_avg_of_tendsto`), and the renewal average
   `tendsto_avg_of_renewal`: for a bounded continuous `g` with integrable renewal defect
-  `z = g - ∑ p_i g(· - a_i)`, `T⁻¹ ∫₀ᵀ g → (∫ z)/m`, with no lattice or non-lattice
+  `z = g - ∑ p_i g(· - α_i)`, `T⁻¹ ∫₀ᵀ g → (∫ z)/m`, with no lattice or non-lattice
   hypothesis.  Integrating the defect over `(-∞, T]` and averaging once more is the whole
   proof.  With a character `e^{-iξw}` that is trivial on the delays, the same lemma gives
-  the Fourier coefficients of the lattice limit (`TwoContraction.Periodic`), and
+  the Fourier coefficients of the lattice limit (`LatticeFourier`), and
   `tendsto_avg_of_periodic` is the periodic case.
 - **Bernoulli codings with general weights.** Mathlib has `Measure.infinitePi` but no
   splitting off of the first coordinate; `infinitePi_eq_sum_map_cons` proves it for any
   probability measure on a finite alphabet, generalising the library's natural-weight
-  version, and `integral_infinitePi_cons` is its integral form.  The monotone coupling of
-  two Bernoulli measures through a three-letter alphabet (`triBern`, `lowWord`,
-  `highWord`) is built from `Measure.infinitePi_map_pi`.
-- **Inequalities for `Γ` and `ψ`.** Mathlib has the digamma function but not its series
-  `ψ(1 + z) = -γ + ∑ z/(n(n + z))`, and no bound on `|Γ|` off the real axis.  `TwoContraction.Digamma` derives
-  `-ψ(1-s) ≥ γ + s/(1-s) + s(π²/6 - 1)` from the convexity of `log Γ`
-  (`Real.convexOn_log_Gamma`): the functional equation gives
-  `ψ(x) = ψ(x+N) - ∑_{k<N} 1/(x+k)`, convexity gives `ψ(y) ≤ log y`, and Mathlib's limits
-  `H_N - log(N+1) → γ` and `∑ 1/n² = π²/6` finish.  `norm_Gamma_le` is `|Γ(z)| ≤ Γ(Re z)`,
-  from the Euler integral.
-- **Chebyshev's integral inequality.** `integral_mul_le_of_similar`: two similarly
-  ordered bounded measurable functions are non-negatively correlated, through the double
-  integral of `(f(a) - f(b))(g(a) - g(b))`.
+  version, and `integral_infinitePi_cons` is its integral form.
+- **A bound on `|Γ|` off the real axis.** Mathlib has none; `norm_Gamma_le` is
+  `|Γ(z)| ≤ Γ(Re z)`, from the Euler integral, and with the functional equation it gives
+  the `O(k⁻²)` decay of the coefficients of `eq:fixed-dimension-periodic`.
 - **Fourier inversion on the line.** Mathlib's `has_pointwise_sum_fourier_series_of_summable`
   lives on `AddCircle`; `hasSum_fourierCoeffP` transports it to continuous periodic
   functions on the line with summable coefficients, through the same lift as the
   uniqueness theorem.
-- **Local to global monotonicity.** `strictMonoOn_of_local`: a function that is locally
-  strictly increasing on both sides at every point of an open interval is strictly
-  increasing, with no continuity hypothesis.  It is what lets
-  `thm:two-contraction-distinction` use one-sided finite differences of the moment `M(s)`
-  in place of its derivative.

@@ -1,7 +1,7 @@
 /-
 The symmetry `M_p = M_{1-p}` and `H̄_s(p) = H̄_s(1-p)` of `sec:fixed-dimension-separation`,
-for every `p ∈ (0,1)`: reflection in `1/2` takes `μ_p` to `μ_{1-p}` and preserves pair
-distances.  The proof flips every letter in the level sums, which reflects the coded points
+for every `p ∈ (0,1)`: reflection in `1/2` takes `μ_p` to `μ_{1-p}` and preserves
+correlation integrals. The proof flips every letter in the level sums, which reflects the coded points
 up to the base point, `1 - x_u = x'_{σu} + r_u`; the cross kernel is Lipschitz on `[0,1]²`
 with constant `s (1 - a - b)^{-s-1}`, so the level sums of `p` and `1 - p` differ by
 `O(γ^m)` and their limits agree.
@@ -272,6 +272,17 @@ theorem fixedMean_symm {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1
     fixedMean s (1 - p) = fixedMean s p := by
   unfold fixedMean
   rw [fixedMoment_symm hs hs1 hp0 hp1, entropy_one_sub, sub_sub_cancel, mul_comm (1 - p) p]
+
+/-- The remark after `thm:small-dimension-monotone`: if the mean is strictly increasing on
+`(0, 1/2]`, then by the symmetry `H̄_s(p) = H̄_s(1-p)` it attains its maximum over `(0, 1)`
+at the homogeneous parameter `p = 1/2` alone. -/
+theorem fixedMean_lt_half_of_strictMonoOn {s : ℝ} (hs : 0 < s) (hs1 : s < 1)
+    (hmono : StrictMonoOn (fixedMean s) (Set.Ioc 0 (1/2))) {p : ℝ} (hp : p ∈ Set.Ioo (0:ℝ) 1)
+    (hne : p ≠ 1/2) : fixedMean s p < fixedMean s (1/2) := by
+  rcases lt_or_gt_of_ne hne with hlt | hgt
+  · exact hmono ⟨hp.1, hlt.le⟩ ⟨by norm_num, le_rfl⟩ hlt
+  · rw [← fixedMean_symm hs hs1 hp.1 hp.2]
+    exact hmono ⟨by linarith [hp.2], by linarith⟩ ⟨by norm_num, le_rfl⟩ (by linarith)
 
 end
 

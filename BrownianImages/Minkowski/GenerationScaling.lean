@@ -47,7 +47,7 @@ theorem generationHalfLogRatio_zero (w : GenerationWord iota 0) :
     S.generationHalfLogRatio 0 w = 0 := rfl
 
 omit [Nonempty iota] in
-/-- Appending a letter adds its half-logarithmic ratio `β_i`. -/
+/-- Appending a letter adds its half-logarithmic ratio `α_i/2`. -/
 @[simp]
 theorem generationHalfLogRatio_succ (k : ℕ)
     (w : GenerationWord iota (Nat.succ k)) :

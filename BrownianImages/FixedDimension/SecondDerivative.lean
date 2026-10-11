@@ -3,7 +3,7 @@
 `M_p(s)` is twice differentiable at `p` with `|M_p''| ≤ 10¹¹ s γ`, `γ = (1 - 5·10⁻⁵)^{1/s}`.
 
 On the disc `|z - p| ≤ r = 5·10⁻⁵` both complex contractions have modulus at most `γ ≤ 1/12`,
-the cross kernel `φ(z; x, y) = (1 - b + by - ax)^{-s}` is within `18 s γ` of `1` on the bidisc
+the cross kernel `ψ(z; x, y) = (1 - b + by - ax)^{-s}` is within `18 s γ` of `1` on the bidisc
 of radius `5/2`, and its level sums converge to a holomorphic `M_z` with `|M_z - 1| ≤ 32 s γ`;
 at real parameters `M_z = M_x(s)`, and Cauchy's estimate bounds the second derivative.
 
@@ -263,7 +263,7 @@ theorem norm_crossKernelC_sub_le {s p : ℝ} (hs : 0 < s) (hsQ : s ≤ 2 / 10000
     _ ≤ 3 * s * gammaQ s * ‖x' - x‖ + 3 * s * gammaQ s * ‖y' - y‖ := add_le_add h1 h2
     _ = 3 * s * gammaQ s * (‖x' - x‖ + ‖y' - y‖) := by ring
 
-/-- `|φ - 1| ≤ 18 s γ` on the bidisc, by the mean value inequality for `ζ ↦ ζ^{-s}` on the
+/-- `|ψ - 1| ≤ 18 s γ` on the bidisc, by the mean value inequality for `ζ ↦ ζ^{-s}` on the
 disc `|ζ - 1| ≤ 1/2`. -/
 theorem norm_crossKernelC_sub_one_le {s p : ℝ} (hs : 0 < s) (hsQ : s ≤ 2 / 100000)
     (hp0 : 1 / 10000 ≤ p) (hp1 : p ≤ 1/2) {z x y : ℂ} (hz : z ∈ discQ p) (hx : ‖x‖ ≤ 5/2)

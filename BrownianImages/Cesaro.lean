@@ -1,19 +1,23 @@
 /-
-`thm:renewal-average` of `sec:two-contraction-formula`, the Cesàro mean of the expected
-profile, which defines `H̄(c)` in `sec:introduction` before
-`thm:two-contraction-distinction`.
+The Cesàro mean of the expected profile: for the natural measure of any system under the
+open set condition, `T⁻¹ ∫₀ᵀ H_μ^s → (∫₀^∞ φ)(∫ z)/m`, in the lattice and in the
+non-lattice case alike.  This is the existence of the mean profile `H̄_s(p)` in
+`thm:fixed-dimension-profiles`, and `eq:fixed-dimension-mean` evaluates the limit for the
+fixed-dimension family in `FixedDimension.Profiles`.
 
-The mean comes from the renewal equation directly, for lattice and non-lattice systems
-at once: integrating
-`G = z + ϑ * G` over `(-∞, T]` gives `∑ p_i ∫_{T-a_i}^T G → ∫ z`, and one more average
-turns this into `T⁻¹ ∫₀ᵀ G → (∫ z)/m`.  Dominated convergence then carries the mean
-through the smoothing formula `eq:h-definition`.
+The mean comes from the renewal equation directly: integrating `G = z + ϑ * G` over
+`(-∞, T]` gives `∑ p_i ∫_{T-α_i}^T G → ∫ z`, and one more average turns this into
+`T⁻¹ ∫₀ᵀ G → (∫ z)/m`.  Dominated convergence then carries the mean through the smoothing
+formula `eq:h-definition`.
 
 * `tendsto_avg_of_tendsto`: the Cesàro mean of a convergent function.
 * `tendsto_avg_of_renewal`: the renewal average, for a bounded continuous function with
   an integrable renewal defect.
 * `System.IsNatural.tendsto_avg_G`, `System.IsNatural.tendsto_avg_H`: the means of `G`
   and of `H_μ^s` for the natural measure of a system under the open set condition.
+* `exists_ge_abs_sub_of_tendsto_avg`: distinct Cesàro means force two bounded continuous
+  functions apart, the passage from distinct means to `eq:profile-separation` in
+  `thm:fixed-dimension-range` and `thm:fixed-dimension-separation`.
 -/
 import BrownianImages.KeyRenewalFourier
 import BrownianImages.Schief
@@ -77,10 +81,10 @@ theorem tendsto_avg_of_tendsto {f : ℝ → E} {L : E}
     _ = ε := by field_simp; ring
 
 /-- **The renewal average.**  Let `g` be continuous and bounded, integrable on
-`(-∞, 0]`, and let its renewal defect `z = g - ∑ p_i g(· - a_i)` be integrable, where the
-weights `p_i ≥ 0` sum to one and the delays `a_i` are positive.  Then
-`T⁻¹ ∫₀ᵀ g → (∫ z)/m` with `m = ∑ p_i a_i`.  Integrating the defect over `(-∞, T]` gives
-`A(T) - ∑ p_i A(T - a_i) → ∫ z` for `A(T) = ∫_{-∞}^T g`, and averaging this once more
+`(-∞, 0]`, and let its renewal defect `z = g - ∑ p_i g(· - α_i)` be integrable, where the
+weights `p_i ≥ 0` sum to one and the delays `α_i` are positive.  Then
+`T⁻¹ ∫₀ᵀ g → (∫ z)/m` with `m = ∑ p_i α_i`.  Integrating the defect over `(-∞, T]` gives
+`A(T) - ∑ p_i A(T - α_i) → ∫ z` for `A(T) = ∫_{-∞}^T g`, and averaging this once more
 gives `m A(T) + O(1)`, since `A` is Lipschitz. -/
 theorem tendsto_avg_of_renewal {ι : Type*} [Fintype ι] {g : ℝ → E} {B : ℝ}
     (hg : Continuous g) (hB : ∀ w, ‖g w‖ ≤ B) (hint : IntegrableOn g (Iic 0))
@@ -254,7 +258,7 @@ namespace System
 
 variable {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
 
-/-- The Cesàro mean of the normalised pair-distance profile `G` of a natural measure under
+/-- The Cesàro mean of the normalised correlation profile `G` of a natural measure under
 the open set condition is the renewal limit `(∫ z)/m`, in the lattice and in the
 non-lattice case alike. -/
 theorem IsNatural.tendsto_avg_G {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -319,9 +323,9 @@ theorem IsNatural.tendsto_avg_G_comp {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 
   rw [hsub T]
   field_simp
 
-/-- **`eq:mean-profile` of `thm:renewal-average`.**  For the natural measure of a system
-under the open set condition, `T⁻¹ ∫₀ᵀ H_μ^s → (∫₀^∞ φ) (∫ z)/m`.  This is the existence
-of `H̄(c)` before `thm:two-contraction-distinction`, and it holds for every such system. -/
+/-- **The mean profile exists.**  For the natural measure of a system under the open set
+condition, `T⁻¹ ∫₀ᵀ H_μ^s → (∫₀^∞ φ) (∫ z)/m`, in the lattice and in the non-lattice case
+alike; `eq:fixed-dimension-mean` is this limit for the fixed-dimension family. -/
 theorem IsNatural.tendsto_avg_H {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) {μ : Measure ℝ}
     (hμ : S.IsNatural K s μ) :
@@ -405,5 +409,64 @@ theorem IsNatural.tendsto_avg_H {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s <
   ring
 
 end System
+
+/-! ### Separation of two profiles with distinct means -/
+
+/-- **Distinct means force the profiles apart**: if the Cesàro means of two bounded
+continuous functions converge to different limits, then
+`limsup |f₁ - f₂| > 0`, in the written-out form of `eq:profile-separation`. -/
+theorem exists_ge_abs_sub_of_tendsto_avg {f₁ f₂ : ℝ → ℝ} (hf₁ : Continuous f₁)
+    (hf₂ : Continuous f₂) {L₁ L₂ : ℝ} (hne : L₁ ≠ L₂)
+    (h₁ : Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, f₁ t) atTop (𝓝 L₁))
+    (h₂ : Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, f₂ t) atTop (𝓝 L₂)) :
+    ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |f₁ t - f₂ t| := by
+  refine ⟨|L₁ - L₂| / 2, by have := abs_pos.2 (sub_ne_zero.2 hne); linarith, fun V => ?_⟩
+  by_contra hcon
+  push Not at hcon
+  set V' := max V 0 with hV'
+  set ε := |L₁ - L₂| / 2 with hε
+  have hεpos : 0 < ε := by have := abs_pos.2 (sub_ne_zero.2 hne); rw [hε]; linarith
+  have hdiff := h₁.sub h₂
+  have hint : ∀ T, IntervalIntegrable (fun t => f₁ t - f₂ t) volume 0 T := fun T =>
+    (hf₁.sub hf₂).intervalIntegrable 0 T
+  have hsplit : ∀ T, (T⁻¹ * ∫ t in (0:ℝ)..T, f₁ t) - T⁻¹ * ∫ t in (0:ℝ)..T, f₂ t
+      = T⁻¹ * ((∫ t in (0:ℝ)..V', (f₁ t - f₂ t)) + ∫ t in V'..T, (f₁ t - f₂ t)) := by
+    intro T
+    rw [← mul_sub, ← intervalIntegral.integral_sub (hf₁.intervalIntegrable 0 T)
+      (hf₂.intervalIntegrable 0 T), intervalIntegral.integral_add_adjacent_intervals
+        (hint V') ((hint V').symm.trans (hint T))]
+  set C := |∫ t in (0:ℝ)..V', (f₁ t - f₂ t)| with hC
+  -- the averages of the difference stay within `ε` of `0` in the limit
+  have hbound : ∀ T, V' + 1 ≤ T → |(T⁻¹ * ∫ t in (0:ℝ)..T, f₁ t) - T⁻¹ * ∫ t in (0:ℝ)..T, f₂ t|
+      ≤ C / T + ε := by
+    intro T hT
+    have hT0 : 0 < T := by linarith [le_max_right V 0]
+    rw [hsplit, abs_mul, abs_of_pos (inv_pos.2 hT0)]
+    have htail : |∫ t in V'..T, (f₁ t - f₂ t)| ≤ ε * |T - V'| := by
+      rw [← Real.norm_eq_abs]
+      refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht => ?_
+      rw [Set.uIoc_of_le (by linarith)] at ht
+      rw [Real.norm_eq_abs]
+      exact (hcon t (le_trans (le_max_left _ _) ht.1.le)).le
+    rw [abs_of_nonneg (show 0 ≤ T - V' by linarith)] at htail
+    calc T⁻¹ * |(∫ t in (0:ℝ)..V', (f₁ t - f₂ t)) + ∫ t in V'..T, (f₁ t - f₂ t)|
+        ≤ T⁻¹ * (C + ε * (T - V')) :=
+          mul_le_mul_of_nonneg_left ((abs_add_le _ _).trans (add_le_add le_rfl htail))
+            (inv_pos.2 hT0).le
+      _ ≤ C / T + ε := by
+          rw [div_eq_inv_mul, mul_add]
+          have : T⁻¹ * (ε * (T - V')) ≤ ε := by
+            rw [show T⁻¹ * (ε * (T - V')) = ε * ((T - V') / T) by field_simp]
+            have : (T - V') / T ≤ 1 := by
+              rw [div_le_one hT0]; linarith [le_max_right V 0]
+            nlinarith
+          linarith
+  have hlim : Tendsto (fun T : ℝ => C / T + ε) atTop (𝓝 (0 + ε)) :=
+    (tendsto_const_nhds.div_atTop tendsto_id).add tendsto_const_nhds
+  have hle := le_of_tendsto_of_tendsto (hdiff.abs) hlim
+    (eventually_atTop.2 ⟨V' + 1, hbound⟩)
+  rw [zero_add, hε] at hle
+  have := abs_pos.2 (sub_ne_zero.2 hne)
+  linarith
 
 end BrownianImages

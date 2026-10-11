@@ -1,9 +1,10 @@
 /-
-Level sums over words of length `m` for the proofs of `thm:remainder-derivative` and
-`thm:second-derivative-small-s`: `Λ^{(m)}(z) = ∑_{u,v} P_u(z) P_v(z) φ_z(x_u(z), x_v(z))`,
+Level sums over words of length `m`, `thm:level-sums`, applied in
+`thm:fixed-dimension-analyticity`, `thm:remainder-derivative` and `thm:second-derivative-small-s`: `Λ^{(m)}(z) = ∑_{u,v} P_u(z) P_v(z) ψ_z(x_u(z), x_v(z))`,
 their telescoping, the geometric bound on the increments, the uniform limit with its
 holomorphy and continuity, and the identification of a level sum at a real parameter with
 the Bernoulli double integral of the kernel at the coded points of the first `m` letters.
+The internal kernel argument `φ` represents the paper's `ψ`.
 
 * `letterWeight`, `levelSum`: the weight of a letter and the level sums.
 * `levelSum_succ`, `norm_levelSum_succ_sub_le`: the last-letter decomposition of
@@ -58,8 +59,8 @@ theorem cpointSeq_extend_snoc (a b : ℂ) {m : ℕ} (u : Fin m → Fin 2) (i : F
   rw [cpointSeq_succ_eq, extend_snoc_last, cpointSeq_congr a b m (extend_snoc_agree u i),
     cratioSeq_congr a b m (extend_snoc_agree u i)]
 
-/-- The level sum `Λ^{(m)}(z) = ∑_{u,v} P_u(z) P_v(z) φ_z(x_u(z), x_v(z))` over words of
-length `m`, for contractions `a z`, `b z` and a kernel `φ z`. -/
+/-- The level sum `Λ^{(m)}(z) = ∑_{u,v} P_u(z) P_v(z) ψ_z(x_u(z), x_v(z))` over words of
+length `m`, for contractions `a z`, `b z` and a kernel `ψ z`. -/
 def levelSum (a b : ℂ → ℂ) (φ : ℂ → ℂ → ℂ → ℂ) (m : ℕ) (z : ℂ) : ℂ :=
   ∑ u : Fin m → Fin 2, ∑ v : Fin m → Fin 2,
     weightSeq z m (extend u) * weightSeq z m (extend v) *

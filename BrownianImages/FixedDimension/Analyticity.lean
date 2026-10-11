@@ -1,6 +1,9 @@
 /-
-`thm:fixed-dimension-analyticity`: for every `s ∈ (0,1)`, `p ↦ M_p(s)` and `p ↦ H̄_s(p)` are
-real analytic on `(0,1)`.
+`thm:fixed-dimension-analyticity`: for every `s ∈ (0,1)`, the cross-term integral
+`p ↦ ∫₀¹ δ^{-s} dC^×_δ(μ_p)` and `p ↦ H̄_s(p)` are real analytic on `(0,1)`.
+The first integral is `2pq · fixedMoment s p`, so its analyticity follows by multiplying
+`analyticAt_fixedMoment` by the polynomial `2p(1-p)`. The internal moment notation
+`M_p(s)` denotes the normalised integral, called `J(p)` in `sec:fixed-dimension-separation`.
 
 On the disc `|z - p₀| ≤ r` of `GoodRadius`, the coded points stay in the `δ`-neighbourhood
 `D` of `[0,1]`, `δ = C r`, every cross distance `d_{u,v}(z)` has real part at least `g₀/2`,
@@ -346,8 +349,9 @@ end Disc
 
 /-! ### `thm:fixed-dimension-analyticity` -/
 
-/-- **`thm:fixed-dimension-analyticity`** for the moment: `p ↦ M_p(s)` is real analytic at
-every `p ∈ (0,1)`. -/
+/-- **`thm:fixed-dimension-analyticity`** for the normalised cross-term integral:
+`p ↦ J(p)` is real analytic at every `p ∈ (0,1)`. Multiplication by `2p(1-p)` gives
+the paper's unnormalised integral. -/
 theorem analyticAt_fixedMoment {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1) :
     AnalyticAt ℝ (fixedMoment s) p := by
   obtain ⟨r, hr⟩ := exists_goodRadius hs hs1 hp0 hp1

@@ -1,5 +1,5 @@
 /-
-A Lean formalisation of "Pair-distance profiles and Minkowski reconstruction of planar
+A Lean formalisation of "Correlation integrals and Minkowski reconstruction of planar
 Brownian images" (`BrownianImagesComplete.tex`).
 
 The library is organised along the paper.  `Solution.lean` carries the formal statement
@@ -9,7 +9,7 @@ gives the build and audit instructions, and `docs/` the correspondence with the 
 
 The objects, and `sec:setup`:
 
-* `Defs`: the objects the paper is phrased in, from `eq:correlation-functional` to
+* `Defs`: the objects the paper is phrased in, from `eq:correlation-integral` to
   `eq:variance-scale`, together with self-similar systems, orientation-preserving or
   orientation-reversing, their natural measures, and the two systems of the
   application, placed here so `Challenge.lean` can copy them from one module.
@@ -18,7 +18,7 @@ The objects, and `sec:setup`:
 * `Empirical`: the empirical profile `Y_ν` of `sec:concentration` and the grid monotonicity
   `eq:monotone-fill`.
 * `Frostman`: the Frostman condition, the two ball conventions, atomlessness, and the
-  pair-distance bound `eq:phi-frostman`.
+  correlation integral bound `eq:correlation-frostman`.
 * `Kernel`: the smoothing kernel `φ` of `eq:h-definition`, its logarithmic form, and
   the two-sided domination that puts it in `L¹(ℝ)`.
 * `WeakBorel`: the Borel σ-algebra of the weak topology on `𝒫(ℝ²)` is the Giry one.
@@ -26,7 +26,7 @@ The objects, and `sec:setup`:
 * `JointMeasurability`: joint measurability of the process, and the measurability of
   the occupation law that follows from it.
 * `Reduction`: `thm:gaussian-reduction`, the Fubini interchange and the Gaussian
-  transform of the pair-distance law.
+  transform of the Stieltjes measure.
 * `Rescaling`: `eq:smoothing`, the layer cake identity and the substitution `δ = r²η`,
   and the correlation-integral consequences of the paired profile asymptotics.
 * `UniformContinuity`: `thm:profile-uniform-continuity`, on the substitution `η = e^x`
@@ -37,7 +37,8 @@ The objects, and `sec:setup`:
 * `SelfSimilar`: the elementary geometry of an affine map of the line with non-zero
   slope, the orientation and the first-level interval of a similarity, strongly
   separated self-similar systems, the dimensions and gaps of the two named systems, the
-  ratio `c` of `eq:c-definition`, and the renewal data of `thm:non-lattice-limit`.
+  ratio `c` from the introductory two-contraction example, and the renewal data of
+  `thm:non-lattice-limit`.
 * `Hutchinson`: the coding map on `ℕ → ι`, Hutchinson's theorem for a general system,
   and the two natural measures of `sec:renewal`.
 * `AhlforsRegular`: Ahlfors regularity of the natural measure of a strongly separated
@@ -82,23 +83,28 @@ The objects, and `sec:setup`:
 * `Asymptotics`: the smoothing limit and the homogeneous bound `eq:ha-asymptotic`.
 * `LatticeProfile`: the general lattice branch of `thm:profile-asymptotics`, via
   finite-delay renewal and smoothing of the vanishing error.
-* `ProfileAsymptotics`: the `μ_B` consequence of `eq:hb-asymptotic` with its
-  constant named.
+* `LatticeNonconstancy`: `thm:lattice-nonconvergence`, the periodised source
+  `eq:lattice-periodisation` and the Lipschitz bound `eq:cross-lipschitz`, and with them
+  the non-constancy of the periodic limit in the lattice branch of
+  `thm:profile-asymptotics`.
+* `ProfileAsymptotics`: `thm:profile-asymptotics` in the non-lattice case read at `μ_B`,
+  internally `eq:hb-asymptotic`, with its constant named.
 
 `sec:variance`:
 
-* `FourPoint`: the covariance determinants of the two overlapping pairings,
-  `eq:crossing-determinant` and `eq:nested-determinant`, with their dyadic block bounds.
-* `GaussianFourPoint`: the mass half of `thm:endpoint-block-mass`, the independence of
-  disjoint planar increments, and the planar return probability of
-  `eq:gaussian-reduction`.
-* `FourPointBound`: `eq:joint-return-bound`, through the regression decomposition of the
-  second increment and the disc bound for a planar Gaussian.
-* `BlockMass`: `thm:endpoint-block-mass`, both halves, on the two overlapping pairings.
+* `FourPoint`: the covariance determinants of the two overlapping pairings and their
+  dyadic block bounds, used in the proof of `thm:four-point-integral`.
+* `GaussianFourPoint`: the block mass estimate in the proof of `thm:four-point-integral`,
+  the independence of disjoint planar increments used in `thm:variance`, and the planar
+  return probability of `eq:gaussian-reduction`.
+* `FourPointBound`: the Gaussian return bound in the proof of `thm:four-point-integral`,
+  through the regression decomposition and the disc bound for a planar Gaussian.
+* `BlockMass`: the mass and return estimates in the proof of `thm:four-point-integral`,
+  on the two overlapping pairings.
 * `FourPointIntegral`: `thm:four-point-integral`, the dyadic summation and the
   permutation invariance of `μ⁴`, and `thm:variance` on the block bound.
 * `VarianceCovariance`: the variance expansion of `thm:variance`, the second moment of
-  the correlation functional as a `μ⁴`-mass, and the covariance killed off the overlap
+  the correlation integral as a `μ⁴`-mass, and the covariance killed off the overlap
   set.
 
 `sec:concentration`:
@@ -106,8 +112,9 @@ The objects, and `sec:setup`:
 * `Concentration`: `sec:concentration`, from `eq:y-variance` through
   `thm:uniform-concentration`.
 * `MainTheorem`: `thm:main`, the end of `sec:concentration`.
-* `Separation`, `CantorApplication`: the conditional forms of
-  `thm:non-lattice-separation` and `thm:cantor-application`.
+* `Separation`, `CantorApplication`: the conditional forms of `thm:cantor-application`
+  and of the internal `thm:non-lattice-separation`, `thm:main` for two non-lattice
+  measures with distinct limits.
 * `NonLattice`: those two, `eq:gb-limit` and the paired profile asymptotics, discharged
   through `thm:non-lattice-limit`.
 * `Endpoints`: the results that no single module proves, each a composition of two or
@@ -154,7 +161,8 @@ The objects, and `sec:setup`:
   `Minkowski.TubeRenewalAssembly`, `Minkowski.TubeArithmeticRenewal`,
   `Minkowski.TubeDiscreteRenewal`: the exact mean renewal recurrence, the non-arithmetic
   limit by the key renewal theorem, its assembly, and the arithmetic periodic limit by
-  finite-delay renewal convergence, `thm:neighbourhood-renewal`.
+  finite-delay renewal convergence. These internal limits give the shift relation
+  in `thm:neighbourhood-renewal`.
 * `Minkowski.L2Recurrence`, `Minkowski.DefectL2`, `Minkowski.ProfileL2`,
   `Minkowski.AlmostSure`, `Minkowski.StoppingConcentration`,
   `Minkowski.TubeEndpointAssembly`: the centred `L²` norm and its square-sum bound
@@ -181,7 +189,7 @@ The objects, and `sec:setup`:
 `sec:base-five`:
 
 * `BaseFive`: `thm:base-five-profiles`, the two base-five systems, the recursions
-  `eq:base-five-recursion`, the values `eq:base-five-distances`, and the separation of
+  `eq:base-five-recursion`, the values `eq:base-five-correlation`, and the separation of
   the expected profiles through the continuous periodic limits of the two profiles.
 * `Minkowski.BaseFiveApplication`: the two displays after `thm:base-five-profiles`, the
   mutual singularity of the occupation laws and of the compact-image laws.
@@ -194,33 +202,21 @@ The objects, and `sec:setup`:
   non-isometry of their attractors, and the equality of their signed convolutions,
   through the difference system.
 
-`sec:two-contraction-formula`, in `TwoContraction/`:
+Shared machinery of the renewal, Fourier and coding arguments:
 
-* `TwoContraction.Cesaro`: `thm:renewal-average` at zero frequency, the Cesàro mean of
-  `G` and of `H_μ^s` for the natural measure of any system under the open set condition,
-  from the renewal equation, lattice or not; this is the existence of `H̄(c)` before
-  `thm:two-contraction-distinction`.
-* `TwoContraction.Formula`: the cross-distance `Z_c`, `Φ_× = 2pq ℙ(Z_c ≤ δ)`, the forcing
-  transform at zero frequency, `∫ φ = 2^{-s} Γ(1-s)`, and `eq:two-contraction-mean` and
-  `eq:two-contraction-constant` of `thm:two-contraction-formula`.
-* `TwoContraction.Coding`: Bernoulli codings with general weights, the first-letter
-  splitting, and the word-by-word comparisons in the word and in the contraction.
-* `TwoContraction.Moment`: `thm:parameter-steps`, `J(α, b, v) = 𝔼 Z^{-α}` and its three
-  one-sided steps, in the exponent, the contraction and the weight, the last through a
-  monotone coupling.
-* `TwoContraction.Parameter`: the parametrisation `c(s)`, `eq:natural-weight-bound`, and
-  the moment-loss bound `eq:loss-rate-bound`.
-* `TwoContraction.Digamma`: the digamma bound, from the convexity of `log Γ`.
-* `TwoContraction.Prefactor`: the prefactor `F(s)` and its logarithmic derivative,
-  `eq:rate-comparison`.
-* `TwoContraction.Local`: `thm:local-monotonicity`, local strict increase on both sides
-  gives strict monotonicity.
-* `TwoContraction.Distinction`: `thm:two-contraction-distinction`, the one-sided bounds
-  `eq:moment-above` and `eq:moment-below`, the strict monotonicity of the mean and the
-  separation of the profiles.
-* `TwoContraction.Periodic`: `eq:two-contraction-periodic`, the forcing transform
-  `eq:two-contraction-forcing-transform`, the Fourier coefficients of the lattice limit
-  from the renewal average with a character, and their `O(k⁻²)` decay.
+* `Cesaro`: the Cesàro mean of `G` and of `H_μ^s` for the natural measure of any system
+  under the open set condition, read off the renewal equation, lattice or not, which is
+  the existence of the mean profile in `thm:fixed-dimension-profiles`; and the separation
+  of two profiles with distinct Cesàro means, the step from distinct means to
+  `eq:profile-separation` in `thm:fixed-dimension-separation`.
+* `LatticeFourier`: the Fourier coefficients of the lattice limit of `G`, from the renewal
+  average with a character, Fourier inversion on the line for summable coefficients, the
+  bound `|Γ(z)| ≤ Γ(Re z)`, the frequencies `ζ_k = s - 2πik/h` of
+  `eq:fixed-dimension-periodic`, and the dichotomy that every system is non-lattice or has
+  a span.
+* `BernoulliCoding`: Bernoulli measures on two-letter words, the splitting off of the
+  first letter of a product measure, and the elementary integration lemmas that the
+  codings of `sec:fixed-dimension-family` and `sec:small-dimension` use.
 
 `sec:small-dimension`, in `FixedDimension/`, on the family of `sec:fixed-dimension-family`
 with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
@@ -239,21 +235,24 @@ with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
   and `g'` on `(T, ∞)`, and `s ∫_T^∞ f ≤ 2.3`.
 * `FixedDimension.MainTerm`: `eq:main-term` and `thm:main-term-derivative`.
 * `FixedDimension.ComplexCoding`: the coded points `x_u(z)` and weights `P_u(z)` of finite
-  words for complex contractions, with their bounds.
-* `FixedDimension.LevelSums`: the level sums `Λ^{(m)}`, the telescoping increment bound,
-  their uniform limit, holomorphic on the open disc and continuous on the closed one, and
-  the identification of a level sum with a double Bernoulli integral.
+  words for complex contractions, with their bounds `eq:coded-point-bounds`.
+* `FixedDimension.LevelSums`: the level sums `Λ^{(m)}` of `thm:level-sums`, the telescoping
+  increment bound, their uniform limit with `eq:level-sum-bound`, holomorphic on the open
+  disc and continuous on the closed one, and the identification of a level sum with a
+  double Bernoulli integral.
 * `FixedDimension.Kernel`: the kernels `φ_n` of `thm:remainder-derivative` on the disc
-  `|z - p| ≤ p/2`, `eq:alpha-beta` and `eq:phi-bounds`.
-* `FixedDimension.Decomposition`: `eq:leading-ones`, `M_p = ∑ p qⁿ Λ_n(p)`.
+  `|z - p| ≤ p/2`, `eq:contraction-modulus-bounds` and `eq:kernel-bounds`.
+* `FixedDimension.Decomposition`: `eq:initial-symbol-decomposition`, `M_p = ∑ p qⁿ Λ_n(p)`.
 * `FixedDimension.RemainderBound`, `FixedDimension.RemainderSup`,
   `FixedDimension.Remainder`: `eq:contraction-disc` and `eq:lambda-bound`, the
-  holomorphic remainder `Δ = M - Σ` on the disc, `sup_U |Δ| ≤ 1296 s α p^{-1-s}` and the
-  Cauchy estimate for `Δ'`, the identification `Δ(x) = M_x - Σ(x)` at real parameters by
+  holomorphic remainder `Δ = M - J₀` on the disc, `sup_U |Δ| ≤ 1296 s α p^{-1-s}` and the
+  Cauchy estimate for `Δ'`, the identification `Δ(x) = M_x - J₀(x)` at real parameters by
   dominated convergence of the level sums, and `thm:remainder-derivative`.
 * `FixedDimension.SecondDerivative`: `thm:second-derivative-small-s`.
 * `FixedDimension.Symmetry`: the symmetry `M_{1-z} = M_z` on the disc around `1/2`, through
   the flipped-letter level sums, and `M_{1/2}' = 0`.
+* `FixedDimension.Section9Estimates`: concise statements and proofs of the entropy and
+  derivative estimates in §9.3, with the small-parameter comparison used for monotonicity.
 * `FixedDimension.Monotone`: `thm:small-dimension-monotone` and the strict increase on
   `(0, p₀]` of `thm:critical-set-finite`.
 
@@ -261,10 +260,10 @@ with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
 
 * `FixedDimension.Profiles`, `FixedDimension.ProfilesLattice`:
   `thm:fixed-dimension-profiles`, the strong separation and the open set condition of the
-  system, `Φ_× = 2pq ℙ(Z_p ≤ δ)`, the renewal mean `E(p)/s`, the forcing transform
-  `eq:fixed-dimension-forcing`, `eq:fixed-dimension-mean` as the Cesàro mean of the
-  expected profile, the non-lattice limit, and `eq:fixed-dimension-periodic` with the
-  `O(k⁻²)` decay of its coefficients.
+  system, `Φ_× = 2pq ℙ(Z_p ≤ δ)`, the renewal mean `E(p)/s`, the Fourier transform of the
+  inhomogeneous term, `eq:fixed-dimension-mean` as the Cesàro mean of the expected profile,
+  the non-lattice limit, and, beyond the paper's statement, the lattice Fourier expansion
+  of the profile with the `O(k⁻²)` decay of its coefficients.
 * `FixedDimension.Correlation`: `eq:fixed-dimension-correlation`, through Hutchinson's
   identity in both coordinates and the Pascal step on the antidiagonals, with the uniform
   remainder `(p² + q²)^m`.
@@ -277,7 +276,7 @@ with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
   of the branches and of the coded points on the parameter, the holomorphic extension on a
   disc of radius depending on `p₀` and `s`, and the restriction to the real line.
 * `FixedDimension.Range`: `thm:fixed-dimension-range`, continuity and positivity of the
-  mean, its limit `0` as `p ↓ 0` from the bound `M_p ≤ 2^s Σ(p)`, and the uncountable
+  mean, its limit `0` as `p ↓ 0` from the bound `M_p ≤ 2^s J₀(p)`, and the uncountable
   subfamily with distinct means.
 * `FixedDimension.Separation`: `thm:fixed-dimension-separation`, the critical set and the
   level sets without accumulation points, strict monotonicity on intervals free of critical
@@ -383,16 +382,10 @@ import BrownianImages.Minkowski.FullEndpointAssembly
 import BrownianImages.Minkowski.CantorSetApplication
 import BrownianImages.Minkowski.BaseFiveApplication
 import BrownianImages.LatticeProfile
-import BrownianImages.TwoContraction.Cesaro
-import BrownianImages.TwoContraction.Formula
-import BrownianImages.TwoContraction.Coding
-import BrownianImages.TwoContraction.Moment
-import BrownianImages.TwoContraction.Parameter
-import BrownianImages.TwoContraction.Digamma
-import BrownianImages.TwoContraction.Prefactor
-import BrownianImages.TwoContraction.Local
-import BrownianImages.TwoContraction.Distinction
-import BrownianImages.TwoContraction.Periodic
+import BrownianImages.LatticeNonconstancy
+import BrownianImages.Cesaro
+import BrownianImages.LatticeFourier
+import BrownianImages.BernoulliCoding
 import BrownianImages.FixedDimension.System
 import BrownianImages.FixedDimension.Natural
 import BrownianImages.FixedDimension.Entropy
@@ -410,6 +403,7 @@ import BrownianImages.FixedDimension.Remainder
 import BrownianImages.FixedDimension.SecondDerivative
 import BrownianImages.FixedDimension.Symmetry
 import BrownianImages.FixedDimension.Monotone
+import BrownianImages.FixedDimension.Section9Estimates
 import BrownianImages.FixedDimension.RealLevelSums
 import BrownianImages.FixedDimension.SymmetryAll
 import BrownianImages.FixedDimension.LevelSumsDomain

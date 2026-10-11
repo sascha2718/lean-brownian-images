@@ -1,4 +1,7 @@
 /-
+The period parameter `p` in this module is the paper's `ℓ`; the smoothed
+function has period `ℓ/2`.
+
 `sec:concentration`: the oscillation `d_A`, the gap between the extremes of a non-constant
 smoothed profile, together with the analytic facts it rests on.
 
@@ -8,7 +11,7 @@ smoothed profile, together with the analytic facts it rests on.
   domination by `M·φ` that makes the integrals converge.
 * `kernel_trivial_of_multiplier`, `injective_of_multiplier`,
   `nonconstant_of_multiplier`: `thm:smoothing-injective` reduced to the two multiplier
-  facts `eq:fourier-multiplier` and `M_k ≠ 0`.
+  facts `eq:fourier-multiplier` and non-vanishing of the integral in that identity.
 * `continuous_smoothOp`: the smoothing operator of `eq:periodic-smoothing` preserves
   continuity, by dominated convergence against `M·φ`.
 * `exists_measure_closedBall_pos`, `phi_pos`, `G_pos`: `Φ(δ) > 0` for `δ > 0`, hence the
@@ -176,7 +179,7 @@ theorem continuous_smoothOp {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {g : ℝ → �
   · refine Filter.Eventually.of_forall fun η => ?_
     exact continuous_const.mul (hg.comp (by fun_prop))
 
-/-! ### Strict positivity of the pair-distance distribution -/
+/-! ### Strict positivity of the correlation integral -/
 
 /-- Some closed ball of any positive radius carries positive mass: the line is covered
 by countably many of them. -/
@@ -224,7 +227,7 @@ theorem phi_pos {μ : Measure ℝ} [IsProbabilityMeasure μ] {δ : ℝ} (hδ : 0
     exact ENNReal.mul_pos hc.ne' hc.ne'
   exact ENNReal.toReal_pos (lt_of_lt_of_le hprod (measure_mono hsub)).ne' (measure_ne_top _ _)
 
-/-- `eq:g-definition`: the normalised profile is strictly positive. -/
+/-- `sec:setup`: the normalised profile is strictly positive. -/
 theorem G_pos {s : ℝ} {μ : Measure ℝ} [IsProbabilityMeasure μ] (w : ℝ) : 0 < G s μ w :=
   mul_pos (Real.exp_pos _) (phi_pos (Real.exp_pos _))
 

@@ -1,16 +1,18 @@
 /-
-The headline results `thm:main`, `thm:cantor-application` and
-`thm:two-contraction-distinction` of `BrownianImagesComplete.tex`, including the paired
-example and its countable exceptional set.
+The nine headline results of Section 1 of BrownianImagesComplete.tex.
+Only the vocabulary needed to state these results is defined here.
 -/
 import Mathlib.Probability.BrownianMotion.Basic
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.NumberTheory.Real.Irrational
+import Mathlib.Topology.MetricSpace.Closeds
+import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 namespace BrownianImages
 
-open MeasureTheory ProbabilityTheory Filter
+open MeasureTheory ProbabilityTheory Filter TopologicalSpace
 open scoped ENNReal NNReal Topology
 
 /-! ### Brownian occupation measures and their correlation profiles -/
@@ -18,7 +20,7 @@ open scoped ENNReal NNReal Topology
 /-- The plane `ℝ²`, carrying the Euclidean metric. -/
 abbrev Plane : Type := EuclideanSpace ℝ (Fin 2)
 
-/-- `eq:correlation-functional`: the correlation functional
+/-- `eq:correlation-integral`: the correlation integral
 `C_r(ν) = (ν × ν){(x,y) : |x - y| < r}`. -/
 noncomputable def corr (ν : Measure Plane) (r : ℝ) : ℝ≥0∞ :=
   (ν.prod ν) {p : Plane × Plane | dist p.1 p.2 < r}
@@ -149,47 +151,88 @@ def NonArithmetic : Prop :=
 
 end System
 
-/-- The similarity dimension `log 2 / log (1/λ)` of the homogeneous system. -/
-noncomputable def homogeneousDimension (lam : ℝ) : ℝ := Real.log 2 / Real.log lam⁻¹
+/-! ### Compact Brownian images -/
 
-/-- The contraction ratio `c` of `eq:c-definition`: the solution of `c^s = 1 - 2^{-s}`. -/
-noncomputable def pairedRatio (s : ℝ) : ℝ := (1 - (2:ℝ) ^ (-s)) ^ s⁻¹
+/-- The Hausdorff space of nonempty compact subsets of the plane. -/
+abbrev CompactPlane := NonemptyCompacts Plane
 
-/-- `sec:introduction`: the homogeneous equal-weight probability measure `μ_A`
-on `[0,1]`, invariant under `x ↦ λx` and `x ↦ λx + 1 - λ`. -/
-structure IsHomogeneousMeasure (lam : ℝ) (μ : Measure ℝ) : Prop where
-  /-- The measure is a probability measure. -/
+noncomputable instance measurableSpace_nonemptyCompacts_plane :
+    MeasurableSpace (NonemptyCompacts Plane) := borel (NonemptyCompacts Plane)
+instance borelSpace_nonemptyCompacts_plane : BorelSpace (NonemptyCompacts Plane) := ⟨rfl⟩
+
+section CompactImage
+universe u v
+variable {T : Type u} {E : Type v}
+variable [TopologicalSpace T] [CompactSpace T] [Nonempty T] [MetricSpace E]
+
+/-- The nonempty compact range of a continuous map. -/
+noncomputable def compactRange (f : C(T, E)) : NonemptyCompacts E :=
+  (⊤ : NonemptyCompacts T).map f f.continuous
+
+/-- The image of a function, with singleton fallback away from continuous paths. -/
+noncomputable def compactImageOfFunction (x₀ : E) (f : T → E) : NonemptyCompacts E :=
+  compactRange (ContinuousMap.mkD f (ContinuousMap.const T x₀))
+
+/-- The compact image of a process at a fixed outcome. -/
+noncomputable def compactImageProcess (x₀ : E) (X : T → Ω → E) (ω : Ω) :
+    NonemptyCompacts E :=
+  compactImageOfFunction x₀ (fun t ↦ X t ω)
+end CompactImage
+
+/-- The compact Brownian image of a compact time set. -/
+noncomputable def brownianImage (W : ℝ≥0 → Ω → Plane)
+    (K : NonemptyCompacts ℝ) (ω : Ω) : NonemptyCompacts Plane :=
+  compactImageProcess (T := K) (0 : Plane) (fun t : K ↦ W t.1.toNNReal) ω
+
+/-- Its law on the Hausdorff hyperspace. -/
+noncomputable def brownianImageLaw (W : ℝ≥0 → Ω → Plane) (P : Measure Ω)
+    (K : NonemptyCompacts ℝ) : Measure (NonemptyCompacts Plane) :=
+  P.map (brownianImage W K)
+
+instance : MeasurableSpace CompactPlane := borel CompactPlane
+instance : BorelSpace CompactPlane := ⟨rfl⟩
+
+/-- The cut-off probability `ν_{F,r}` in Section 1, with an irrelevant fallback
+when the normalised density is not a probability measure. -/
+noncomputable def cutoffProbability (r : ℝ) (F : CompactPlane) : ProbabilityMeasure Plane :=
+  open scoped Classical in
+  let μ := volume.withDensity (fun x : Plane =>
+    ENNReal.ofReal (max (1 - Metric.infDist x F / r) 0))
+  let ν := (μ Set.univ)⁻¹ • μ
+  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else ⟨Measure.dirac 0, inferInstance⟩
+
+
+/-! ### The two-contraction family -/
+
+/-- The natural measure and attractor of the two-contraction family in Section 1. -/
+structure IsTwoContractionNatural (s p : ℝ) (K : NonemptyCompacts ℝ)
+    (μ : Measure ℝ) : Prop where
   isProbability : IsProbabilityMeasure μ
-  /-- The measure is carried by the unit interval. -/
-  support : μ (Set.Icc (0 : ℝ) 1)ᶜ = 0
-  /-- The invariance equation with equal weights. -/
-  selfSimilar : μ = ENNReal.ofReal (1/2) • μ.map (fun x => lam * x) +
-    ENNReal.ofReal (1/2) • μ.map (fun x => lam * x + (1 - lam))
+  unitInterval : (K : Set ℝ) ⊆ Set.Icc 0 1
+  invariant : (K : Set ℝ) =
+    (fun x => p ^ s⁻¹ * x) '' (K : Set ℝ) ∪
+    (fun x => (1 - p) ^ s⁻¹ * x + (1 - (1 - p) ^ s⁻¹)) '' (K : Set ℝ)
+  support : μ (K : Set ℝ)ᶜ = 0
+  selfSimilar : μ = ENNReal.ofReal p • μ.map (fun x => p ^ s⁻¹ * x) +
+    ENNReal.ofReal (1 - p) •
+      μ.map (fun x => (1 - p) ^ s⁻¹ * x + (1 - (1 - p) ^ s⁻¹))
 
-/-- `sec:introduction`: the paired probability measure `μ_B` on `[0,1]`, with
-maps `x ↦ x/2`, `x ↦ cx + 1 - c` and weights `2^{-s}`, `c^s`, where `c = pairedRatio s`. -/
-structure IsPairMeasure (s : ℝ) (μ : Measure ℝ) : Prop where
-  /-- The measure is a probability measure. -/
-  isProbability : IsProbabilityMeasure μ
-  /-- The measure is carried by the unit interval. -/
-  support : μ (Set.Icc (0 : ℝ) 1)ᶜ = 0
-  /-- The invariance equation with the similarity weights. -/
-  selfSimilar : μ = ENNReal.ofReal ((1/2 : ℝ) ^ s) • μ.map (fun x => 1/2 * x) +
-    ENNReal.ofReal (pairedRatio s ^ s) • μ.map (fun x => pairedRatio s * x + (1 - pairedRatio s))
+/-- The pair `(K_p, μ_p)` specified by its invariance equations. -/
+noncomputable def twoContractionData (s p : ℝ) : NonemptyCompacts ℝ × Measure ℝ :=
+  Classical.epsilon fun a => IsTwoContractionNatural s p a.1 a.2
 
-/-- `sec:introduction`: the natural probability measure `μ_c` on `[0,1]` of the IFS
-`x ↦ x/2`, `x ↦ cx + 1 - c`, with weights `2^{-s}` and `c^s`.  At the dimension `s(c)`,
-where `2^{-s(c)} + c^{s(c)} = 1`, these are the `s`th powers of the contraction ratios. -/
-structure IsTwoContractionMeasure (c s : ℝ) (μ : Measure ℝ) : Prop where
-  /-- The measure is a probability measure. -/
-  isProbability : IsProbabilityMeasure μ
-  /-- The measure is carried by the unit interval. -/
-  support : μ (Set.Icc (0 : ℝ) 1)ᶜ = 0
-  /-- The invariance equation with the similarity weights. -/
-  selfSimilar : μ = ENNReal.ofReal ((1/2 : ℝ) ^ s) • μ.map (fun x => 1/2 * x) +
-    ENNReal.ofReal (c ^ s) • μ.map (fun x => c * x + (1 - c))
+/-- The Cesàro mean of the expected Brownian correlation profile. Its existence
+on the parameter range is part of `audit_finite_exceptions`. -/
+noncomputable def meanProfile (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (s p : ℝ) : ℝ :=
+  limUnder atTop (fun R : ℝ => R⁻¹ * ∫ t in (0:ℝ)..R,
+    expectedProfile W P s (twoContractionData s p).2 t)
 
-/-! ### The headline theorems -/
+/-- The critical parameters in `(0,1/2)`. -/
+noncomputable def meanCriticalSet (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (s : ℝ) : Set ℝ :=
+  {p | p ∈ Set.Ioo 0 (1/2) ∧ deriv (meanProfile W P s) p = 0}
+
+
+/-! ### The headline results, in manuscript order -/
 
 /-- `thm:main`.  Two `s`-Frostman measures whose expected profiles do not converge to
 one another have mutually singular Brownian occupation laws, as laws on `𝒫(ℝ²)`.  The
@@ -202,64 +245,128 @@ theorem audit_main {P : Measure Ω} [IsProbabilityMeasure P] {W : ℝ≥0 → Ω
     (h₁ : IsFrostman s A₁ μ₁) (h₂ : IsFrostman s A₂ μ₂)
     (hsep : ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V,
       ε ≤ |expectedProfile W P s μ₁ t - expectedProfile W P s μ₂ t|) :
-    (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := sorry
+    (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
+  sorry
 
-/-- `thm:cantor-application`.  The homogeneous equal-weight measure at any ratio
-`0 < λ < 1/2` separates from the natural measure of every non-lattice system of the
-same dimension satisfying the open set condition. -/
-theorem audit_cantor_application {P : Measure Ω} [IsProbabilityMeasure P]
+/-- Theorem 1.2 (`thm:profile-asymptotics`). -/
+theorem audit_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
-    {μA : Measure ℝ} (hA : IsHomogeneousMeasure lam μA)
-    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι) {K : Set ℝ}
-    (hosc : S.OpenSetCondition) (hna : S.NonArithmetic)
-    (hdim : S.IsDimension (homogeneousDimension lam)) {μ : Measure ℝ}
-    (hμ : S.IsNatural K (homogeneousDimension lam) μ) :
-    (occupationLaw W P μA).MutuallySingular (occupationLaw W P μ) := sorry
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    (∀ h : ℝ, 0 < h →
+      AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h →
+      ∃ Q : ℝ → ℝ, Continuous Q ∧ Function.Periodic Q (h / 2) ∧
+        (∀ t, 0 < Q t) ∧ (∃ v w, Q v ≠ Q w) ∧
+        Tendsto (fun t => expectedProfile W P s μ t - Q t) atTop (𝓝 0)) ∧
+    (S.NonArithmetic → ∃ C : ℝ, 0 < C ∧
+      Tendsto (expectedProfile W P s μ) atTop (𝓝 C)) := by
+  sorry
 
-/-- The paired instance of `thm:cantor-application`, at a parameter satisfying
-`eq:non-lattice`. -/
-theorem audit_cantor_application_pair {P : Measure Ω} [IsProbabilityMeasure P]
+/-- Corollary 1.3 (`thm:cantor-application`), for arbitrary lattice and non-lattice IFSs. -/
+theorem audit_lattice_nonlattice_measures {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2)
-    {μA : Measure ℝ} (hA : IsHomogeneousMeasure lam μA)
-    {μB : Measure ℝ} (hB : IsPairMeasure (homogeneousDimension lam) μB)
-    (hnl : Irrational (Real.log (pairedRatio (homogeneousDimension lam))⁻¹ / Real.log 2)) :
-    (occupationLaw W P μA).MutuallySingular (occupationLaw W P μB) := sorry
+    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {s : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
+    (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
+    (hlat : ∃ h > 0, AddSubgroup.closure (Set.range S₁.logRatio) = AddSubgroup.zmultiples h)
+    (hnl : S₂.NonArithmetic) {μ₁ μ₂ : Measure ℝ}
+    (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂) :
+    (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
+  sorry
 
-/-- The exceptional parameters in the last sentence of `thm:cantor-application` form
-a countable set. -/
-theorem audit_exceptional_parameters_countable :
-    {lam : ℝ | 0 < lam ∧ lam < 1/2 ∧
-      ¬ Irrational (Real.log (pairedRatio (homogeneousDimension lam))⁻¹ / Real.log 2)}.Countable := sorry
-
-/-- `thm:two-contraction-distinction`.  Along the family `x ↦ x/2`, `x ↦ cx + 1 - c`,
-`0 < c < 1/2`, normalise the natural measure `μ_c` at its own dimension `s(c)`, where
-`2^{-s(c)} + c^{s(c)} = 1`.  The mean `H̄(c) = lim_{T→∞} T⁻¹ ∫₀ᵀ H_{μ_c}^{s(c)}(t) dt`
-exists and is strictly increasing in `c`. -/
-theorem audit_two_contraction_distinction {P : Measure Ω} [IsProbabilityMeasure P]
+/-- Theorem 1.4 (`thm:fixed-dimension-separation`), including the existence of
+its mean as defined in the preceding paragraph. -/
+theorem audit_finite_exceptions {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c₁ c₂ s₁ s₂ : ℝ} (hc₁ : 0 < c₁) (hc : c₁ < c₂) (hc₂ : c₂ < 1/2)
-    (hs₁ : (2:ℝ) ^ (-s₁) + c₁ ^ s₁ = 1) (hs₂ : (2:ℝ) ^ (-s₂) + c₂ ^ s₂ = 1)
-    {μ₁ μ₂ : Measure ℝ} (h₁ : IsTwoContractionMeasure c₁ s₁ μ₁)
-    (h₂ : IsTwoContractionMeasure c₂ s₂ μ₂) :
-    ∃ H₁ H₂ : ℝ, H₁ < H₂ ∧
-      Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s₁ μ₁ t)
-        atTop (𝓝 H₁) ∧
-      Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s₂ μ₂ t)
-        atTop (𝓝 H₂) := sorry
+    {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
+    (∀ p ∈ Set.Ioo (0:ℝ) 1, Tendsto
+      (fun R : ℝ => R⁻¹ * ∫ t in (0:ℝ)..R,
+        expectedProfile W P s (twoContractionData s p).2 t)
+      atTop (𝓝 (meanProfile W P s p))) ∧
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      {p₂ | p₂ ∈ Set.Ioc (0:ℝ) (1/2) ∧
+        meanProfile W P s p₂ = meanProfile W P s p₁}.Finite) ∧
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2),
+      meanProfile W P s p₁ ≠ meanProfile W P s p₂ →
+      (occupationLaw W P (twoContractionData s p₁).2).MutuallySingular
+        (occupationLaw W P (twoContractionData s p₂).2)) ∧
+    (∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (meanCriticalSet W P s))) ∧
+    (∀ α β : ℝ, Set.Ioo α β ⊆ Set.Ioo 0 (1/2) →
+      (∀ q ∈ Set.Ioo α β, deriv (meanProfile W P s) q ≠ 0) →
+      StrictMonoOn (meanProfile W P s) (Set.Ioo α β) ∨
+        StrictAntiOn (meanProfile W P s) (Set.Ioo α β)) := by
+  sorry
 
-/-- The final assertion of `thm:two-contraction-distinction`: for distinct parameters,
-`limsup_{t→∞} |H_{μ_{c₁}}^{s(c₁)}(t) - H_{μ_{c₂}}^{s(c₂)}(t)| > 0`, written out as in
-`eq:profile-separation`. -/
-theorem audit_two_contraction_separation {P : Measure Ω} [IsProbabilityMeasure P]
+/-- Theorem 1.5 (`thm:small-dimension-monotone`). -/
+theorem audit_small_dimension {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) :
+    ∃ s₀ ∈ Set.Ioo (0:ℝ) 1, ∀ s ∈ Set.Ioc (0:ℝ) s₀,
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 (1/2)) ∧
+      ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), p₁ ≠ p₂ →
+        (occupationLaw W P (twoContractionData s p₁).2).MutuallySingular
+          (occupationLaw W P (twoContractionData s p₂).2) := by
+  sorry
+
+/-- Corollary 1.6 (`thm:critical-set-finite`). -/
+theorem audit_finite_critical_set {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c₁ c₂ s₁ s₂ : ℝ} (hc₁ : 0 < c₁) (hc₁' : c₁ < 1/2) (hc₂ : 0 < c₂) (hc₂' : c₂ < 1/2)
-    (hne : c₁ ≠ c₂)
-    (hs₁ : (2:ℝ) ^ (-s₁) + c₁ ^ s₁ = 1) (hs₂ : (2:ℝ) ^ (-s₂) + c₂ ^ s₂ = 1)
-    {μ₁ μ₂ : Measure ℝ} (h₁ : IsTwoContractionMeasure c₁ s₁ μ₁)
-    (h₂ : IsTwoContractionMeasure c₂ s₂ μ₂) :
-    ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V,
-      ε ≤ |expectedProfile W P s₁ μ₁ t - expectedProfile W P s₂ μ₂ t| := sorry
+    {s : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) :
+    (∃ p₀ ∈ Set.Ioo (0:ℝ) (1/2),
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 p₀)) ∧
+    (meanCriticalSet W P s).Finite := by
+  sorry
+
+/-- Theorem 1.7 (`thm:minkowski-reconstruction`). Convergence in the probability-measure
+space is weak convergence. -/
+theorem audit_reconstruction {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : NonemptyCompacts ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural (K : Set ℝ) s μ) :
+    (∀ᵐ ω ∂P, Tendsto
+      (fun n : ℕ => cutoffProbability (Real.exp (-(n:ℝ))) (brownianImage W K ω))
+      atTop (𝓝 (occupationProb W μ ω))) ∧
+    ∃ reconstruct : CompactPlane → ProbabilityMeasure Plane,
+      Measurable reconstruct ∧
+      (fun ω => reconstruct (brownianImage W K ω)) =ᵐ[P] occupationProb W μ := by
+  sorry
+
+/-- Corollary 1.8 (`thm:cantor-set-application`). -/
+theorem audit_lattice_nonlattice_sets {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : NonemptyCompacts ℝ} {s : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
+    (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
+    (hlat : ∃ h > 0, AddSubgroup.closure (Set.range S₁.logRatio) = AddSubgroup.zmultiples h)
+    (hnl : S₂.NonArithmetic) (hK₁ : S₁.IsAttractor (K₁ : Set ℝ))
+    (hK₂ : S₂.IsAttractor (K₂ : Set ℝ)) :
+    (brownianImageLaw W P K₁).MutuallySingular (brownianImageLaw W P K₂) := by
+  sorry
+
+/-- Corollary 1.9 (`thm:fixed-dimension-set-application`). The final clause supplies
+one threshold for both the strict increase of Theorem 1.5 and compact-image separation. -/
+theorem audit_two_contraction_sets {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) :
+    (∀ s ∈ Set.Ioo (0:ℝ) 1, ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), meanProfile W P s p₁ ≠ meanProfile W P s p₂ →
+        (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1)) ∧
+    (∀ s ∈ Set.Ioo (0:ℝ) 1, ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      {p₂ | p₂ ∈ Set.Ioc (0:ℝ) (1/2) ∧
+        ¬ (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1)}.Finite) ∧
+    ∃ s₀ ∈ Set.Ioo (0:ℝ) 1, ∀ s ∈ Set.Ioc (0:ℝ) s₀,
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 (1/2)) ∧
+      ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), p₁ ≠ p₂ →
+        (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1) := by
+  sorry
 
 end BrownianImages

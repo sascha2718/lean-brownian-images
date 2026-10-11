@@ -1,0 +1,264 @@
+# Statement correspondence for the manuscript beside this Lean repository.
+# Source hashes detect drift; they do not prove mathematical equivalence.
+# Wider proof details and qualifications remain in docs/correspondence.md.
+version: 2
+source_version: "BrownianImagesComplete.tex"
+manuscript_files: ["BrownianImagesComplete.tex"]
+manuscript_sha256: {"BrownianImagesComplete.tex": "80b23649c66fb649e7f5a1602897e95f8c9751ba6b8ab29a6e3dff23fb1acb0e"}
+entries:
+  - source: "thm:main"
+    kind: "theorem"
+    sha256: "06856c837c96c5b1f3d5e56a74b34b4d42c06973d2713c85da86061320bac78c"
+    status: "formalized"
+    lean: ["BrownianImages.audit_main"]
+    relation: "exact"
+    headline: true
+    note: "Separated expected correlation profiles give singular occupation laws."
+  - source: "thm:profile-asymptotics"
+    kind: "theorem"
+    sha256: "dda3ccf9360dbd020dde45d254ccce8a0d37fdbb49e4294041d307f1139c106d"
+    status: "formalized"
+    lean: ["BrownianImages.audit_profile_asymptotics"]
+    relation: "representation"
+    headline: true
+    note: "The expected Brownian profile has a positive nonconstant periodic limit in the lattice case and a positive constant limit in the non-lattice case."
+  - source: "thm:cantor-application"
+    kind: "corollary"
+    sha256: "e450df4785c68467a16dd863fbb6168992b24d6a48e2578d00b6753d0809bcec"
+    status: "formalized"
+    lean: ["BrownianImages.audit_lattice_nonlattice_measures"]
+    relation: "representation"
+    headline: true
+    note: "Arbitrary lattice and non-lattice natural measures of a common dimension under the open set condition have singular occupation laws."
+  - source: "thm:fixed-dimension-separation"
+    kind: "theorem"
+    sha256: "6be8a1ad0b8e836f17696c39386c03e77191a43306945d34f169beaa68907938"
+    status: "formalized"
+    lean: ["BrownianImages.audit_finite_exceptions"]
+    relation: "representation"
+    headline: true
+    note: "The mean is the limit of the expected-profile averages, whose convergence is proved. Its level sets on (0,1/2] are finite. Distinct means give singular occupation laws. The critical set has no accumulation in (0,1/2], and the mean is strictly monotone on every open interval without critical points, hence on every component of the complement."
+  - source: "thm:small-dimension-monotone"
+    kind: "theorem"
+    sha256: "04eb6baa89cd14465027b97561b005ad93aa0e8a52c79e852b91cdfe440bf2fe"
+    status: "formalized"
+    lean: ["BrownianImages.audit_small_dimension"]
+    relation: "representation"
+    headline: true
+    note: "For a sufficiently small positive dimension threshold, the mean is strictly increasing on (0,1/2] and every distinct pair gives singular occupation laws."
+  - source: "thm:critical-set-finite"
+    kind: "corollary"
+    sha256: "363e09698d8b2ddef5b78eaaa3c309b2dcefb401cade44c5cea2a5938f4689b0"
+    status: "formalized"
+    lean: ["BrownianImages.audit_finite_critical_set"]
+    relation: "representation"
+    headline: true
+    note: "For each 0<s<=1/2 the mean is strictly increasing near p=0 and the critical set is finite."
+  - source: "thm:minkowski-reconstruction"
+    kind: "theorem"
+    sha256: "eb2502b1cb12d8608fee9242e072253d6d3c6a7f848f1447f050ab21c8117abf"
+    status: "formalized"
+    lean: ["BrownianImages.audit_reconstruction"]
+    relation: "representation"
+    headline: true
+    note: "Normalised triangular cut-off measures at radii exp(-n) converge weakly almost surely to the occupation measure, which is a Borel function of the compact image."
+  - source: "thm:cantor-set-application"
+    kind: "corollary"
+    sha256: "9aecf0dc24d53b34d39ba0e534ebdf65f3c212e4006dd7f1e34cb12050d959ac"
+    status: "formalized"
+    lean: ["BrownianImages.audit_lattice_nonlattice_sets"]
+    relation: "representation"
+    headline: true
+    note: "Arbitrary lattice and non-lattice attractors of a common dimension under the open set condition have singular compact-image laws. Natural measures are constructed inside the proof."
+  - source: "thm:fixed-dimension-set-application"
+    kind: "corollary"
+    sha256: "5e09e0f149d4bd6478d82453fb410597bbf1451895aae748df04fecede4fac93"
+    status: "formalized"
+    lean: ["BrownianImages.audit_two_contraction_sets"]
+    relation: "representation"
+    headline: true
+    note: "Distinct means give singular compact-image laws, with at most finitely many exceptions for each fixed parameter. A single small-dimension threshold gives both strict increase of the mean and separation of every distinct pair, so it also serves Theorem 1.5."
+  - source: "thm:gaussian-reduction"
+    kind: "lemma"
+    sha256: "7df9e395bff27074becc86c509073e23be93c909ab6bde3f72fb4c0dad4ca097"
+    status: "formalized"
+    lean: ["BrownianImages.audit_gaussian_reduction"]
+    relation: "exact"
+    headline: false
+    note: "Frostman regularity removes the diagonal, where the formal integrand has a default value."
+  - source: "thm:renewal-defect-left-tail"
+    kind: "lemma"
+    sha256: "b854001739eb742ccebbda3e6ef1b58eb385c034a71e34718fbbb058acb6528f"
+    status: "formalized"
+    lean: ["BrownianImages.renewalDefect_pos_of_nonpos", "BrownianImages.renewalDefect_eq", "BrownianImages.exists_abs_renewalDefect_le_exp"]
+    relation: "split"
+    headline: false
+    note: "The exact negative-time identity is a calculation within renewalDefect_pos_of_nonpos. Continuity follows from the finite-sum definition. These are library results rather than a separate bundled Solution endpoint."
+  - source: "thm:cross-piece-mass"
+    kind: "lemma"
+    sha256: "68de485efa62d5eaacfc7ff30232699cfc3eba6c1dbc76aff367847e9e3ec6f1"
+    status: "formalized"
+    lean: ["BrownianImages.audit_crossPhi_bound", "BrownianImages.audit_cross_piece_mass"]
+    relation: "split"
+    headline: false
+    note: "The library proves the individual cross-piece bounds and sums them. The positive-time exponential defect bound is System.exists_abs_renewalDefect_le_exp."
+  - source: "thm:renewal-limits"
+    kind: "proposition"
+    sha256: "3de01f32bf7fde2984901060837b912df15cef5de6be08fd92040e657f70d177"
+    status: "formalized"
+    lean: ["BrownianImages.audit_non_lattice_limit", "BrownianImages.System.lattice_G_limit"]
+    relation: "split"
+    headline: false
+    note: "Both limits in the numbered proposition are proved. The explicit lattice periodisation formula discussed in the proof is not separately formalised."
+  - source: "thm:lattice-nonconvergence"
+    kind: "lemma"
+    sha256: "d2521ac372fe11695845d1fde8015a7e4d2d5ad616c3e57c590c7fce77f6f5d3"
+    status: "formalized"
+    lean: ["BrownianImages.audit_lattice_nonconvergence"]
+    relation: "representation"
+    headline: false
+    note: "The paper compares two phases directly. Lean argues by contradiction: convergence gives constant periodisation and a cross-term Lipschitz bound, contradicting Ahlfors regularity for s<1."
+  - source: "thm:smoothing-injective"
+    kind: "lemma"
+    sha256: "50bcdd3e28cdb760f1651cbafa07901cc1ce404c7a7a99a83ad9c6ac89b0c7a9"
+    status: "formalized"
+    lean: ["BrownianImages.audit_thm_smoothing_injective"]
+    relation: "exact"
+    headline: false
+    note: "Fourier multipliers and uniqueness prove injectivity and preservation of non-constancy."
+  - source: "thm:four-point-integral"
+    kind: "proposition"
+    sha256: "f12f3c345abd27411cef514a893b74dd9d07e2341512e748b8f505d68544c661"
+    status: "formalized"
+    lean: ["BrownianImages.audit_four_point_integral"]
+    relation: "exact"
+    headline: false
+    note: "Lean obtains the same three regimes by dyadic summation instead of the paper's two elementary integrals."
+  - source: "thm:variance"
+    kind: "theorem"
+    sha256: "03b25fb2e06417fcb293d6aed22704be15aa822c19bdc9692dc7641344b9af61"
+    status: "formalized"
+    lean: ["BrownianImages.audit_thm_variance"]
+    relation: "exact"
+    headline: false
+    note: "The bundled endpoint includes the displayed bound and the little-o consequence."
+  - source: "thm:uniform-concentration"
+    kind: "theorem"
+    sha256: "821e3a3c75b1124b6d84d25f985273147b24cf87398beb0630319a4e108be240"
+    status: "formalized"
+    lean: ["BrownianImages.audit_uniform_concentration"]
+    relation: "exact"
+    headline: false
+    note: "The eventual almost-sure uniform bound is proved from the variance estimate and Borel--Cantelli."
+  - source: "thm:neighbourhood-moments"
+    kind: "lemma"
+    sha256: "b3f4208109532b2a3477f7ac70cc96d2e419e52de5ac1249a50044b323540663"
+    status: "formalized"
+    lean: ["BrownianImages.audit_tube_moments"]
+    relation: "representation"
+    headline: false
+    note: "The open set condition supplies Ahlfors regularity. Brownian radius moments and stopping covers give the moment bounds."
+  - source: "thm:neighbourhood-overlap"
+    kind: "lemma"
+    sha256: "e72f260c46130e53eb2cbca6b4c1f0c31411f40b342a06ee24c60ec9329ea45e"
+    status: "formalized"
+    lean: ["BrownianImages.audit_tube_overlap"]
+    relation: "representation"
+    headline: false
+    note: "Gaussian-gap overlap bounds feed the expected defect estimate, with integrability included."
+  - source: "thm:neighbourhood-renewal"
+    kind: "lemma"
+    sha256: "b9189c971f5c14e9a25a12ccc2514c15f6ce989e92538bf63533e4254702ae67"
+    status: "formalized"
+    lean: ["BrownianImages.audit_tube_renewal"]
+    relation: "representation"
+    headline: false
+    note: "The endpoint gives the bounds and shift invariance used by reconstruction. The non-lattice and lattice limits are proved internally."
+  - source: "thm:neighbourhood-concentration"
+    kind: "lemma"
+    sha256: "fb0aec91e14af83e4bd5b134b27fe2979b1e78f8ab567905355c58ed9b410b85"
+    status: "formalized"
+    lean: ["BrownianImages.audit_tube_concentration"]
+    relation: "representation"
+    headline: false
+    note: "The formal variance statement follows by squaring a centred L2 bound. Lean uses third-moment interpolation where the paper uses first/fourth-moment interpolation; both give a positive exponential rate."
+  - source: "thm:base-five-profiles"
+    kind: "proposition"
+    sha256: "756ddc2a45c1131d49dac99b256a1bb428a27645aa74947ba96662dcf0e46bf8"
+    status: "formalized"
+    lean: ["BrownianImages.audit_base_five_profiles", "BrownianImages.audit_base_five_occupation_laws", "BrownianImages.audit_base_five_image_laws"]
+    relation: "split"
+    headline: false
+    note: "The profiles are computed by first-digit recursions, equivalent to the paper's cylinder counting. The occupation and compact-image singularities have separate endpoints."
+  - source: "thm:homometric-example"
+    kind: "proposition"
+    sha256: "57cc030e9255e3e2f20924e227ad52561efc89c1c6b4acdcd260777da8a42126"
+    status: "formalized"
+    lean: ["BrownianImages.audit_homometric_example"]
+    relation: "exact"
+    headline: false
+    note: "The result includes equality of correlations and non-isometry of the attractors."
+  - source: "thm:fixed-dimension-profiles"
+    kind: "proposition"
+    sha256: "763492b62c8acfe8e3c867ebd3482d7530a1050e132e90fff14d9c67a6734b70"
+    status: "formalized"
+    lean: ["BrownianImages.audit_thm_fixed_dimension_profiles"]
+    relation: "representation"
+    headline: false
+    note: "The expectation-based endpoint combines the correlation formula, Cesàro mean and non-lattice limit. The lattice Fourier expansion is an additional internal result."
+  - source: "thm:level-sums"
+    kind: "lemma"
+    sha256: "45f803c2273742bfb52f1ff10b11e5ca6ac5c5f4cd419d26a5166f4c940300bf"
+    status: "formalized"
+    lean: ["BrownianImages.norm_levelSum_succ_sub_le", "BrownianImages.tendsto_levelSum", "BrownianImages.norm_limitSum_sub_le", "BrownianImages.differentiableOn_limitSum"]
+    relation: "partial"
+    headline: false
+    note: "The generic increment, convergence and holomorphic-limit bounds are proved. Holomorphy of the summands and identification with the real expectation are proved for each kernel used by the paper, rather than as one theorem with the full generality of this lemma."
+  - source: "thm:fixed-dimension-analyticity"
+    kind: "lemma"
+    sha256: "73e4840b3c5dabfdaeda699fd6dd34787455da04a2f3af62e3c53f0eed87b0fe"
+    status: "formalized"
+    lean: ["BrownianImages.audit_fixed_dimension_analyticity"]
+    relation: "representation"
+    headline: false
+    note: "The endpoint states analyticity of fixedMoment and fixedMean. The paper's unnormalised cross-term integral is 2p(1-p) times fixedMoment, so its analyticity follows by multiplication."
+  - source: "thm:fixed-dimension-range"
+    kind: "proposition"
+    sha256: "4c3c3bdf23d9417449c37652a19031c43c039fb5dffb8e7072b50028ab71bdde"
+    status: "formalized"
+    lean: ["BrownianImages.audit_fixed_dimension_range"]
+    relation: "exact"
+    headline: false
+    note: "Continuity, positivity and the limit zero as p decreases to zero are proved."
+  - source: "thm:entropy-factor"
+    kind: "lemma"
+    sha256: "8792dde5f23ac829f71e66a66d3245cf06dc6c728951b31a289bb088c76b0d3e"
+    status: "formalized"
+    lean: ["BrownianImages.audit_entropy_factor"]
+    relation: "exact"
+    headline: false
+    note: "The entropy-factor inequalities are proved by strict concavity and elementary logarithmic bounds."
+  - source: "thm:main-term-derivative"
+    kind: "lemma"
+    sha256: "8751e6269124ae7483f1d91000b43ef3c6b40bf7b57ada60221af5e7c678b561"
+    status: "formalized"
+    lean: ["BrownianImages.audit_main_term_derivative"]
+    relation: "exact"
+    headline: false
+    note: "Termwise differentiation and a Riemann-sum comparison give the stated derivative bound."
+  - source: "thm:remainder-derivative"
+    kind: "lemma"
+    sha256: "41e4a28e8eb538e604c1b3117fe48a0203d217722336db3d98b4ccb8e3a84ef4"
+    status: "formalized"
+    lean: ["BrownianImages.audit_remainder_derivative"]
+    relation: "exact"
+    headline: false
+    note: "A Cauchy estimate bounds the derivative of the remainder, including existence of that derivative."
+  - source: "thm:second-derivative-small-s"
+    kind: "lemma"
+    sha256: "009de603507dc33e5f623b6ef8cc761dca1c4a64ea1b4f85e0ec0f592568c38f"
+    status: "formalized"
+    lean: ["BrownianImages.audit_second_derivative_small_s"]
+    relation: "exact"
+    headline: false
+    note: "The formal endpoint includes existence and the bound for the second derivative."

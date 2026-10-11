@@ -14,7 +14,7 @@ uncountable subfamily of pairwise singular laws.
 import BrownianImages.FixedDimension.Profiles
 import BrownianImages.MainTheorem
 import BrownianImages.Minkowski.FullEndpointAssembly
-import BrownianImages.TwoContraction.Distinction
+import BrownianImages.Cesaro
 
 namespace BrownianImages
 

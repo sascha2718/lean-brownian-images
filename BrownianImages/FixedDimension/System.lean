@@ -1,19 +1,24 @@
 /-
 `sec:fixed-dimension-family`: the two-contraction family of fixed dimension `s`, with
-contractions `a = p^{1/s}` and `b = q^{1/s}`, `q = 1 - p`, so that `a^s + b^s = 1`, and the
+contractions `λ₁ = p^{1/s}` and `λ₂ = q^{1/s}`, `q = 1 - p`, so that `λ₁^s + λ₂^s = 1`, and the
 objects of `sec:small-dimension` built on it.
 
-* `fixedA`, `fixedB`: the contractions `a` and `b`.
-* `fixedSystem`: the system `x ↦ ax`, `x ↦ bx + 1 - b`, on `0 < p < 1` and `0 < s`.
+* `fixedA`, `fixedB`: the paper's contractions `λ₁` and `λ₂` (internally also `a`, `b`).
+* `fixedSystem`: the system `x ↦ λ₁x`, `x ↦ λ₂x + 1 - λ₂`, on `0 < p < 1` and `0 < s`.
 * `fixedCode`: its coding map, `0` outside the parameter range.
-* `fixedCross`: the cross-distance `Z_p = 1 - b + bY - aX`.
-* `fixedMoment`: `M_p(s) = 𝔼 Z_p^{-s}` over two independent Bernoulli codings with letter
-  weights `p` and `q`.
-* `entropy`, `fixedMean`: `E(p) = -p log p - q log q` and the right-hand side of
+* `fixedCross`: the distance `S₂(Y) - S₁(X) = 1 - λ₂ + λ₂Y - λ₁X`, written out in the paper.
+* `fixedMoment`: the normalised cross-term integral
+  `J(p) = (2pq)^{-1} ∫₀¹ δ^{-s} dC^×_δ(μ_p)` of `sec:small-dimension`, represented as
+  `𝔼 (S₂(Y) - S₁(X))^{-s}` over independent Bernoulli codings with weights `p`, `q`.
+* `entropy`, `fixedMean`: `h(p) = -p log p - q log q` and the right-hand side of
   `eq:fixed-dimension-mean`.
 * `kappa`: the logarithmic derivative of the entropy factor, `eq:log-derivative-mean`.
+
+Internal comments using `Z_p` and `M_p(s)` denote this distance and `fixedMoment`.
+The paper introduces no such notation and uses `J(p)` in `sec:fixed-dimension-separation`.
+Its maps `S₁`, `S₂` and symbols `1`, `2` correspond to indices `0`, `1` of `Fin 2`.
 -/
-import BrownianImages.TwoContraction.Moment
+import BrownianImages.BernoulliCoding
 
 namespace BrownianImages
 
@@ -24,10 +29,10 @@ noncomputable section
 
 /-! ### The contractions -/
 
-/-- The first contraction `a = p^{1/s}`. -/
+/-- The first contraction `λ₁ = p^{1/s}`. -/
 def fixedA (s p : ℝ) : ℝ := p ^ s⁻¹
 
-/-- The second contraction `b = (1 - p)^{1/s}`. -/
+/-- The second contraction `λ₂ = (1 - p)^{1/s}`. -/
 def fixedB (s p : ℝ) : ℝ := (1 - p) ^ s⁻¹
 
 theorem fixedA_pos {s p : ℝ} (hp0 : 0 < p) : 0 < fixedA s p :=
@@ -85,7 +90,7 @@ theorem fixedA_add_fixedB_lt_one {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0
 
 /-! ### The system and its coding map -/
 
-/-- The system `x ↦ ax`, `x ↦ bx + 1 - b` of `sec:fixed-dimension-family`. -/
+/-- The system `x ↦ λ₁x`, `x ↦ λ₂x + 1 - λ₂` of `sec:fixed-dimension-family`. -/
 def fixedSystem (s p : ℝ) (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) : System (Fin 2) where
   ratio i := if i = 0 then fixedA s p else fixedB s p
   sign _ := 1
@@ -156,7 +161,7 @@ theorem fixedCode_cons_one {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) 
 
 /-! ### The cross-distance and its moment -/
 
-/-- The cross-distance `Z_p = 1 - b + bY - aX` at `X = x`, `Y = y`. -/
+/-- The cross-distance `S₂(y) - S₁(x) = 1 - λ₂ + λ₂y - λ₁x`. -/
 def fixedCross (s p x y : ℝ) : ℝ := 1 - fixedB s p + fixedB s p * y - fixedA s p * x
 
 /-- At two points of the unit interval the cross-distance lies in `[1 - a - b, 1]`. -/
@@ -180,7 +185,7 @@ theorem continuous_fixedCross (s p : ℝ) :
     Continuous fun q : ℝ × ℝ => fixedCross s p q.1 q.2 := by
   unfold fixedCross; fun_prop
 
-/-- The kernel `Z_p^{-s}` at two words. -/
+/-- The kernel `(S₂(Y) - S₁(X))^{-s}` at two words. -/
 def fixedKernel (s p : ℝ) (ω ω' : ℕ → Fin 2) : ℝ :=
   fixedCross s p (fixedCode s p ω) (fixedCode s p ω') ^ (-s)
 
@@ -217,7 +222,8 @@ theorem abs_fixedKernel_le {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) 
   rw [abs_of_nonneg (by linarith)]
   exact h2
 
-/-- `M_p(s) = 𝔼 Z_p^{-s}`: `X` and `Y` are the coded points of two independent Bernoulli
+/-- The paper's normalised cross-term integral `J(p) = 𝔼 (S₂(Y) - S₁(X))^{-s}`:
+`X` and `Y` are the coded points of two independent Bernoulli
 words with letter weights `p` (letter `0`, the map `x ↦ ax`) and `q = 1 - p` (letter `1`,
 the map `x ↦ bx + 1 - b`). -/
 def fixedMoment (s p : ℝ) : ℝ :=
@@ -227,7 +233,7 @@ theorem isProbabilityMeasure_twoBern_fixed {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1)
     IsProbabilityMeasure (twoBern (1 - p)) :=
   isProbabilityMeasure_twoBern (by linarith) (by linarith)
 
-/-- `M_p(s) ≥ 1`, since `Z_p ≤ 1`. -/
+/-- `J(p) ≥ 1`, since `S₂(Y) - S₁(X) ≤ 1`. -/
 theorem one_le_fixedMoment {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1) :
     1 ≤ fixedMoment s p := by
   have := isProbabilityMeasure_twoBern_fixed hp0 hp1
@@ -249,16 +255,17 @@ theorem one_le_fixedMoment {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) 
 
 /-! ### The entropy and the mean -/
 
-/-- `E(p) = -p log p - q log q`. -/
+/-- `h(p) = -p log p - q log q`. -/
 def entropy (p : ℝ) : ℝ := -(p * Real.log p) - (1 - p) * Real.log (1 - p)
 
 /-- The right-hand side of `eq:fixed-dimension-mean`,
-`H̄_s(p) = 2^{1-s} Γ(1-s) pq M_p(s) / E(p)`. -/
+`H̄_s(p) = 2^{-s} Γ(1-s) (∫₀¹ δ^{-s} dC^×_δ(μ_p)) / h(p)`,
+using `∫₀¹ δ^{-s} dC^×_δ(μ_p) = 2pq · fixedMoment s p`. -/
 def fixedMean (s p : ℝ) : ℝ :=
   (2:ℝ) ^ (1 - s) * Real.Gamma (1 - s) * (p * (1 - p) / entropy p) * fixedMoment s p
 
-/-- `κ(p) = (q² log(1/q) - p² log(1/p)) / (pq E(p))`, the logarithmic derivative of the
-entropy factor `pq/E(p)` in `eq:log-derivative-mean`. -/
+/-- `κ(p) = (q² log(1/q) - p² log(1/p)) / (pq h(p))`, the logarithmic derivative of the
+entropy factor `pq/h(p)` in `eq:log-derivative-mean`. -/
 def kappa (p : ℝ) : ℝ :=
   ((1 - p) ^ 2 * Real.log (1 - p)⁻¹ - p ^ 2 * Real.log p⁻¹) / (p * (1 - p) * entropy p)
 

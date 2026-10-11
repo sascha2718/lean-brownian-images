@@ -45,7 +45,7 @@ theorem grid_convergence {P : Measure Ω} [IsProbabilityMeasure P]
   grid_convergence_of_y_variance hW hs0 hs1 hμ hm (hW.aemeasurable_occupationProb μ)
     (fun _ hr => smoothing hW hs0 hs1 hμ hr) (y_variance hW hs0 hs1 hμ)
 
-/-- `thm:uniform-concentration`, `eq:uniform-concentration`.  Almost surely the
+/-- `thm:uniform-concentration`.  Almost surely the
 empirical profile converges to the expected profile, uniformly on tails. -/
 theorem uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)

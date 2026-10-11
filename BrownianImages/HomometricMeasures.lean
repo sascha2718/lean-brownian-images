@@ -1,5 +1,7 @@
 /-
 `sec:obstruction`: the two homometric measures of `thm:homometric-example`.
+The paper denotes these source measures by `μ_{D_A}`, `μ_{D_B}`; the internal
+notation `σ_A`, `σ_B` refers to the same measures for `digitFunA`, `digitFunB`.
 
 `Homometric.lean` carries the finite content, the homometry of the digit sets and the
 common dimension `t = log 6 / log 30`.  This module carries the measures themselves.
@@ -7,7 +9,8 @@ The natural measures `σ_A` and `σ_B` come from `System.exists_unique_isNatural
 they are distinct because the interval of the digit `4`, which lies in `𝒜` and not in
 `ℬ`, has mass `(1/30)^t` for one and mass zero for the other.
 
-The equality of the signed convolutions is a fixed point argument.  The law of
+The paper proves equality of the signed convolutions using random digit expansions;
+this module uses the equivalent fixed point argument.  The law of
 `(X - X' + 1)/2`, for `X` and `X'` independent with law `σ_D`, satisfies Hutchinson's
 identity for the system of thirty-six similarities `u ↦ u/30 + (k/36 + 29/60)` indexed
 by the ordered pairs of digits, at the dimension `2t` that makes the weights `1/36`.
@@ -27,7 +30,8 @@ identity and `Hutchinson.eq_of_selfSimilar` identifies them.
   runs from `0` to `85/87`, contains the fixed point of each of its similarities, and
   misses the first-level interval of every digit outside its digit set.
 * `not_exists_isometry_onto`, `isEmpty_isometryEquiv`: the two attractors are not
-  isometric, the paper's argument by the extreme points and two fixed points.
+  isometric: the common extreme points force identity or reflection, and fixed points
+  witness the digit-set discrepancies used in the paper.
 * `homometric_example`: `thm:homometric-example`, the endpoint
   `audit_homometric_example`.
 -/
@@ -547,8 +551,8 @@ end HomometricMeasures
 
 /-- `thm:homometric-example`.  Two distinct strongly separated self-similar measures,
 Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, whose attractors are
-not isometric, with equal signed convolutions `σ * σ̃`, hence identical pair-distance
-distributions and identical expected profiles. -/
+not isometric, with equal signed convolutions `σ * σ̃`, hence identical correlation
+integrals and identical expected profiles. -/
 theorem homometric_example :
     ∃ (KA KB : Set ℝ) (σA σB : Measure ℝ) (A : ℝ),
       (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsNatural KA tHom σA ∧

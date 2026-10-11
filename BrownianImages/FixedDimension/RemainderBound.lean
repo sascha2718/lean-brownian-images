@@ -1,12 +1,17 @@
 /-
 The holomorphic extension of the proof of `thm:remainder-derivative`: on the disc
 `|z - p| ≤ p/2`, the functions `M_z = ∑ z(1-z)ⁿ Λ_n(z)` and
-`Σ(z) = ∑ z(1-z)ⁿ (1 - b^{n+1})^{-s}`, their difference `Δ`, the bound
-`|Δ| ≤ 1296 s α p^{-1-s}` on the disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s α p^{-2-s}`.
+`J₀(z) = ∑ z(1-z)ⁿ (1 - b^{n+1})^{-s}`, their difference `Δ`, the bound
+`|Δ| ≤ 1296 s λ_{1,max} p^{-1-s}` on the disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`.
+The paper defines `Δ` directly by the series of differences and bounds the disc weights
+by `|z| + |1-z| ≤ 1 + |z-p|²/(2pq)`. This module retains the individual series and
+separate estimates for the two moduli, with the same bound `1 + p/5`.
+Here `discB p = 1 + p/5` majorises the paper's `B`, and
+`1 - discR s p` is a lower bound for its `ξ = 1 - λ_{2,max} B²`.
 
 * `norm_add_norm_one_sub_le`: `|z| + |1 - z| ≤ 1 + p/5` on the disc.
-* `incrementBound_kernel`: the increment bound for the level sums of `φ_n`.
-* `kernelLimit`, `complexMoment`, `complexMainTerm`, `complexDelta`: `Λ_n`, `M_z`, `Σ(z)`, `Δ`.
+* `incrementBound_kernel`: the increment bound for the level sums of `ψ_n`.
+* `kernelLimit`, `complexMoment`, `complexMainTerm`, `complexDelta`: `Λ_n`, `M_z`, `J₀(z)`, `Δ`.
 * `differentiableOn_complexDelta`, `continuousOn_complexDelta`, `norm_complexDelta_le`,
   `norm_deriv_complexDelta_le`: holomorphy, the sup bound and Cauchy's estimate.
 -/
@@ -99,7 +104,7 @@ end Disc
 
 /-! ### The increment bound for the kernels -/
 
-/-- `B = 1 + p/5` and `r = β B²`. -/
+/-- `B = 1 + p/5` and `r = λ_{2,max} B²`. -/
 def discB (p : ℝ) : ℝ := 1 + p / 5
 
 def discR (s p : ℝ) : ℝ := betaP s p * discB p ^ 2
@@ -123,7 +128,7 @@ theorem alphaP_le_fifth : alphaP s p ≤ 1 / 5 := by
   have := alphaP_le_sq hs hs1 hp0 hp
   nlinarith
 
-/-- `r = βB² ≤ e^{-3p/(10s)}` and `1 - r ≥ p/4`, `eq:contraction-disc`. -/
+/-- `r = λ_{2,max}B² ≤ e^{-3p/(10s)}` and `1 - r ≥ p/4`, `eq:contraction-disc`. -/
 theorem discR_le : discR s p ≤ Real.exp (-(3 * p / (10 * s))) := by
   unfold discR discB
   have hβ := betaP_le_exp hs (hp1_of hp)
@@ -175,7 +180,7 @@ theorem one_sub_discR_ge : p / 4 ≤ 1 - discR s p := by
       linarith
   linarith
 
-/-- The increment bound for the level sums of `φ_n` on the disc. -/
+/-- The increment bound for the level sums of `ψ_n` on the disc. -/
 theorem incrementBound_kernel (n : ℕ) :
     IncrementBound (ca s) (cb s) (kernelN s n) (discP p) (incC s p n) (discR s p) := by
   intro z hz m
@@ -206,17 +211,17 @@ end Bounds
 
 /-! ### The holomorphic functions on the disc -/
 
-/-- `Λ_n(z)`, the limit of the level sums of `φ_n`. -/
+/-- `Λ_n(z)`, the limit of the level sums of `ψ_n`. -/
 def kernelLimit (s : ℝ) (n : ℕ) (z : ℂ) : ℂ := limitSum (ca s) (cb s) (kernelN s n) z
 
 /-- `M_z = ∑_{n≥0} z (1 - z)ⁿ Λ_n(z)`. -/
 def complexMoment (s : ℝ) (z : ℂ) : ℂ := ∑' n : ℕ, z * (1 - z) ^ n * kernelLimit s n z
 
-/-- `Σ(z) = ∑_{n≥0} z (1 - z)ⁿ (1 - b(z)^{n+1})^{-s}`. -/
+/-- `J₀(z) = ∑_{n≥0} z (1 - z)ⁿ (1 - b(z)^{n+1})^{-s}`. -/
 def complexMainTerm (s : ℝ) (z : ℂ) : ℂ :=
   ∑' n : ℕ, z * (1 - z) ^ n * (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ))
 
-/-- `Δ = M_z - Σ(z)`, written as a series. -/
+/-- `Δ = M_z - J₀(z)`, written as a series. -/
 def complexDelta (s : ℝ) (z : ℂ) : ℂ :=
   ∑' n : ℕ, z * (1 - z) ^ n * (kernelLimit s n z - (1 - cb s z ^ (n + 1)) ^ (-(s : ℂ)))
 

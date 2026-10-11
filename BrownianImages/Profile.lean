@@ -1,8 +1,7 @@
 /-
-`sec:setup`: elementary bounds on the normalised pair-distance profile `G` of
-`eq:g-definition`.
+`sec:setup`: elementary bounds on the normalised correlation profile `G`.
 
-`Φ ≤ 1` because it is a probability, and `eq:phi-frostman` bounds it above `0`; together
+`Φ ≤ 1` because it is a probability, and `eq:correlation-frostman` bounds it above `0`; together
 they bound `G` on the whole line by the Frostman constant.  Measurability of `Φ` comes
 from monotonicity alone, so `G` is measurable with no Frostman hypothesis.
 
@@ -46,7 +45,7 @@ theorem measurable_G {s : ℝ} {μ : Measure ℝ} [IsProbabilityMeasure μ] : Me
   (Real.measurable_exp.comp (measurable_const.mul measurable_id)).mul
     (measurable_Phi.comp (Real.measurable_exp.comp measurable_neg))
 
-/-- `eq:phi-frostman` gives the uniform bound `|G| ≤ A`: the trivial bound below `0`,
+/-- `eq:correlation-frostman` gives the uniform bound `|G| ≤ A`: the trivial bound below `0`,
 the Frostman bound above it. -/
 theorem abs_G_le {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : IsFrostman s A μ) (w : ℝ) : |G s μ w| ≤ A := by

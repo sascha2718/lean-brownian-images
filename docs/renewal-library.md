@@ -46,9 +46,9 @@ to `h y = ∑ₙ ∫ ψ(y − s) dμ^{*n}(s)`, which is the paper's "`G = z + ϑ
 Upstream, the theorem asks for `Nonlattice μ`: `μ` charges no affine lattice `a + rℤ`.
 That hypothesis is false for every self-similar system. A measure carried by two atoms
 always charges such a lattice, with `a` the first atom and `r` the gap, so the renewal
-law `ϑ = ∑ p_i δ_{a_i}` never satisfies it. `RenewalBridge.not_nonlattice_renewalLaw`
+law `ϑ = ∑ p_i δ_{α_i}` never satisfies it. `RenewalBridge.not_nonlattice_renewalLaw`
 is the machine-checked statement, and `System.exists_norm_charFun_renewalLaw_eq_one`
-sharpens it to the analytic level: at `t = 2π/(a₁ − a₀)` the atom phases align and
+sharpens it to the analytic level: at `t = 2π/(α₁ − α₀)` the atom phases align and
 `‖charFun ϑ t‖ = 1`, so no route asking for `‖charFun‖ < 1` pointwise can work.
 
 The upstream statement is far stronger than its proof uses. Of the vendored
@@ -74,7 +74,7 @@ state the modification, as the Apache License requires.
 `KeyRenewalFourier` is the paper's route and proves the endpoint
 `audit_non_lattice_limit`: it feeds `FellerNonlattice`, which `eq:non-lattice`
 supplies, and the exponential tail of the renewal defect `z = G - F*G`, which under the
-open set condition is the cross-term bound of `thm:renewal-recursion`, to the vendored
+open set condition is the cross-term bound in `sec:renewal-equation`, to the vendored
 key renewal theorem. The consequences drawn in `NonLattice`, among them
 `thm:cantor-application`, rest on it, and `Minkowski.TubeRenewalLimit` uses the
 vendored theorem again for `thm:neighbourhood-renewal`. Under the open set condition

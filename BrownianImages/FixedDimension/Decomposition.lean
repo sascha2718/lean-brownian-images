@@ -1,5 +1,5 @@
 /-
-`eq:leading-ones` in integral form, for the proof of `thm:remainder-derivative`: with `N`
+`eq:initial-symbol-decomposition` in integral form, for the proof of `thm:remainder-derivative`: with `N`
 the number of initial ones of the coding of `Y`, `Y = 1 - b^N + a b^N Y''`, so
 `M_p(s) = ∑_{n≥0} p qⁿ g_n` with `g_n = 𝔼[(1 - b^{n+1} - a(X - b^{n+1} Y''))^{-s}]`; and the
 level sum of the kernel `φ_n` at the real parameter `p` is the Bernoulli double integral of
@@ -162,7 +162,7 @@ theorem abs_inner_integral_le {K : (ℕ → Fin 2) → (ℕ → Fin 2) → ℝ} 
     (Eventually.of_forall fun ω => by rw [Real.norm_eq_abs]; exact hC ω ω')
   simpa [Real.norm_eq_abs] using h
 
-/-- `eq:leading-ones`: `h_n = q h_{n+1} + p g_n`, by splitting off the first letter of `Y`. -/
+/-- `eq:initial-symbol-decomposition`: `h_n = q h_{n+1} + p g_n`, by splitting off the first letter of `Y`. -/
 theorem leadingAux_rec (n : ℕ) :
     leadingAux s p n = (1 - p) * leadingAux s p (n + 1) + p * leadingTerm s p n := by
   have hprob : IsProbabilityMeasure (twoDigit (1 - p)) :=
@@ -221,7 +221,7 @@ theorem leadingTerm_nonneg (n : ℕ) : 0 ≤ leadingTerm s p n := by
   refine integral_nonneg fun ω' => integral_nonneg fun ω => ?_
   exact le_trans zero_le_one (termKernel_mem hs hs1 hp0 hp1 n ω ω').1
 
-/-- The partial sums of `eq:leading-ones`. -/
+/-- The partial sums of `eq:initial-symbol-decomposition`. -/
 theorem fixedMoment_eq_partial (N : ℕ) :
     fixedMoment s p = (∑ n ∈ Finset.range N, p * (1 - p) ^ n * leadingTerm s p n)
       + (1 - p) ^ N * leadingAux s p N := by
@@ -231,7 +231,7 @@ theorem fixedMoment_eq_partial (N : ℕ) :
     rw [ih, Finset.sum_range_succ, leadingAux_rec hs hs1 hp0 hp1 N]
     ring
 
-/-- **`eq:leading-ones`.**  `M_p(s) = ∑_{n≥0} p qⁿ g_n`. -/
+/-- **`eq:initial-symbol-decomposition`.**  `M_p(s) = ∑_{n≥0} p qⁿ g_n`. -/
 theorem hasSum_leadingTerm :
     HasSum (fun n => p * (1 - p) ^ n * leadingTerm s p n) (fixedMoment s p) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg fun n => by

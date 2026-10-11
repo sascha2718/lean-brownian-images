@@ -41,7 +41,7 @@ theorem retKernel_mem (r : ℝ) {t : ℝ} (ht : 0 ≤ t) : 0 ≤ retKernel r t �
 theorem measurable_retKernel (r : ℝ) : Measurable (retKernel r) := by
   unfold retKernel; fun_prop
 
-/-- The scaled correlation functional `T(c) = ∫ g_r(c|x - y|) d(μ × μ)`. -/
+/-- The scaled expected correlation integral `T(c) = ∫ g_r(c|x - y|) d(μ × μ)`. -/
 def corrScale (μ : Measure ℝ) (r c : ℝ) : ℝ :=
   ∫ q : ℝ × ℝ, retKernel r (c * |q.1 - q.2|) ∂(μ.prod μ)
 

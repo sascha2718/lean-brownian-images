@@ -5,7 +5,7 @@
 The vendored key renewal theorem
 `AbsorptionCutoff.Renewal.tendsto_tsum_integral_comp_sub_of_driNorm_real` asks for
 `Nonlattice`, which `not_nonlattice_renewalLaw` refutes for the renewal law
-`ϑ = ∑ p_i δ_{a_i}` of a self-similar system.  Tracing that hypothesis through the
+`ϑ = ∑ p_i δ_{α_i}` of a self-similar system.  Tracing that hypothesis through the
 vendored proof shows it is consumed at exactly three declarations, and in only two
 forms: `charFun μ t ≠ 1` off the origin, which keeps the resolvent `(1 - charFun μ)⁻¹`
 bounded on a compact annulus, and `‖charFun μ t‖ < 1` inside a dominated convergence
@@ -41,7 +41,7 @@ chain carries it directly, so this module states no vendored declaration a secon
   Riemann integrable and that `∫ z > 0`.  The first rests on `z = 0` above `log(1/ρ)`
   together with `|z| ≤ e^{sw}` below it, the second on the off-diagonal blocks of the
   self-similar decomposition being non-negative, which is `phi_recursion_le`:
-  `eq:phi-recursion` with those blocks kept rather than killed, hence with no separation
+  `eq:correlation-recursion` with those blocks kept rather than killed, hence with no separation
   hypothesis and at every scale.
 * `non_lattice_limit`: `thm:non-lattice-limit`, the endpoint
   `audit_non_lattice_limit`.  `non_lattice_limit_of_driNorm` and
@@ -63,7 +63,7 @@ namespace System
 
 variable {ι : Type*} [Fintype ι] (S : System ι)
 
-/-- The characteristic function of the renewal law `ϑ = ∑ p_i δ_{a_i}` of
+/-- The characteristic function of the renewal law `ϑ = ∑ p_i δ_{α_i}` of
 `thm:non-lattice-limit`, in closed form. -/
 theorem charFun_renewalLaw (s t : ℝ) :
     charFun (S.renewalLaw s) t
@@ -213,7 +213,7 @@ variable {ι : Type*} [Fintype ι] (S : System ι)
 
 open KeyRenewalFourier in
 /-- If the characteristic function of `ϑ` has modulus one at `t` then all the atom
-phases coincide: `e^{i t a_i} = e^{i t a_j}` for every pair. -/
+phases coincide: `e^{i t α_i} = e^{i t α_j}` for every pair. -/
 theorem exp_logRatio_eq_of_norm_charFun_eq_one {s t : ℝ} (hdim : S.IsDimension s)
     (h : ‖charFun (S.renewalLaw s) t‖ = 1) (i j : ι) :
     Complex.exp (t * S.logRatio i * Complex.I)
@@ -311,8 +311,8 @@ theorem exists_logRatio_ne [Nonempty ι] {s : ℝ} (hdim : S.IsDimension s)
 
 open KeyRenewalFourier in
 /-- **The frequencies at which `charFun F` has modulus one form a countable set.**
-`‖charFun F t‖ = 1` forces every atom phase to coincide, hence `t (a_i - a_j) ∈ 2πℤ` for
-a pair with `a_i ≠ a_j`, and that confines `t` to a lattice.  This is all that the
+`‖charFun F t‖ = 1` forces every atom phase to coincide, hence `t (α_i - α_j) ∈ 2πℤ` for
+a pair with `α_i ≠ α_j`, and that confines `t` to a lattice.  This is all that the
 Fourier proof of Blackwell's theorem consumes of the strongly non-lattice condition: the
 pointwise form `‖charFun ϑ t‖ < 1` for every `t ≠ 0` is false for `ϑ`, by
 `exists_norm_charFun_renewalLaw_eq_one`. -/
@@ -586,7 +586,7 @@ theorem fellerNonlattice_renewalLaw [Nonempty ι] {s : ℝ} (hdim : S.IsDimensio
 
 /-- The renewal convolution `ϑ * g` of `thm:non-lattice-limit` is the integral against
 the renewal law: `(F * g)(y) = ∫ g(y - u) dF(u)`.  This is the bridge between the
-paper's `∑ p_i g(w - a_i)` and the shape the key renewal theorem is stated in. -/
+paper's `∑ p_i g(w - α_i)` and the shape the key renewal theorem is stated in. -/
 theorem integral_comp_sub_renewalLaw (s y : ℝ) (f : ℝ → ℝ) :
     ∫ u, f (y - u) ∂(S.renewalLaw s) = S.renewalConv s f y := by
   have hint : ∀ i ∈ (Finset.univ : Finset ι),
@@ -725,7 +725,7 @@ theorem phi_eq_one_of_one_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
   rw [Phi, (prob_compl_eq_zero_iff (measurableSet_phiSet δ)).mp hnull, ENNReal.toReal_one]
 
 /-- **The self-similar decomposition dominates its diagonal blocks**, at every scale:
-`∑ r_i^{2s} Φ(δ/r_i) ≤ Φ(δ)`.  This is `eq:phi-recursion` with the off-diagonal blocks
+`∑ r_i^{2s} Φ(δ/r_i) ≤ Φ(δ)`.  This is `eq:correlation-recursion` with the off-diagonal blocks
 kept rather than killed, so no separation hypothesis and no restriction on `δ` are
 needed. -/
 theorem phi_recursion_le {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
@@ -780,7 +780,7 @@ theorem phi_recursion_le {K : Set ℝ} {s : ℝ} {μ : Measure ℝ} (hμ : S.IsN
   exact ENNReal.toReal_mono (hfin δ) hkey
 
 /-- The renewal defect in terms of `Φ`: `z(w) = e^{sw}(Φ(δ) - ∑ r_i^{2s} Φ(δ/r_i))` at
-`δ = e^{-w}`.  This is the substitution `eq:g-definition` performs in the proof of
+`δ = e^{-w}`. This uses the definition of `G` in `sec:setup`, as in the proof of
 `eq:g-recursion`, kept as an identity rather than combined with the recursion. -/
 theorem renewalDefect_eq {s : ℝ} {μ : Measure ℝ} (w : ℝ) :
     S.renewalDefect s μ w
@@ -935,7 +935,7 @@ end RenewalDefect
 
 /-- **`thm:non-lattice-limit`, reduced to two analytic facts about the renewal defect.**
 Everything the paper's proof needs of the ambient set-up is discharged here: `G` is
-continuous and bounded by `eq:phi-frostman`, it vanishes at `-∞` by `Φ ≤ 1`, the renewal
+continuous and bounded by `eq:correlation-frostman`, it vanishes at `-∞` by `Φ ≤ 1`, the renewal
 recursion `eq:g-recursion` is the definition of `z = G - ϑ * G`, and `ϑ` satisfies
 Feller's hypothesis by `eq:non-lattice`.  What is assumed is exactly what `sec:renewal`
 proves about `z` and nothing else: that `z` is directly Riemann integrable, and that its
@@ -969,7 +969,7 @@ theorem non_lattice_limit_of_driNorm {ι : Type*} [Fintype ι] [Nonempty ι] (S 
 
 /-- **`thm:non-lattice-limit`, `eq:g-non-lattice-limit`.**  Under the strong open set
 condition and in the non-arithmetic case, the normalised profile converges to
-`m⁻¹ ∫ z`, which is finite and strictly positive, where `m = ∑ p_i a_i` is the renewal
+`m⁻¹ ∫ z`, which is finite and strictly positive, where `m = ∑ p_i α_i` is the renewal
 mean and `z = G - F * G` the renewal defect.
 
 The vendored key renewal theorem does not apply: `not_nonlattice_renewalLaw` refutes its

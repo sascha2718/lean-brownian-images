@@ -2,13 +2,11 @@
 `thm:smoothing-injective` of `sec:smoothing`: the Fourier multipliers of the Gaussian
 smoothing operator `T`.
 
-`eq:fourier-multiplier` defines the `k`-th multiplier as an integral, `multInt`, and
-`eq:gamma-multiplier` evaluates it in closed form, `gammaMult`.  Neither the evaluation,
-which is the substitution `x = 1/(2η)`, nor the Fourier identity `T̂g(k) = M_k ĝ(k)` that
-gives the multipliers their name is proved here: they are `audit_gamma_multiplier` and
-`audit_fourier_multiplier`, both open.  What is proved is the sentence the paper draws
-from the closed form, that neither of its two factors vanishes.  The Fourier
-coefficients themselves are `fourierCoeffP` of `Defs`.
+`eq:fourier-multiplier` writes the `k`-th multiplier explicitly as an integral,
+called `multInt` internally, and `eq:gamma-multiplier` evaluates it in closed form,
+called `gammaMult` internally. The evaluation and non-vanishing are proved here.
+`FourierMultiplier.lean` proves the Fourier identity, using the coefficients
+`fourierCoeffP` of `Defs`.
 
 * `multInt`: the multiplier as the integral `eq:fourier-multiplier`.
 * `gammaMult`: the closed form `eq:gamma-multiplier`.
@@ -26,6 +24,8 @@ coefficients themselves are `fourierCoeffP` of `Defs`.
 * `fourierCoeffP_eq_fourierCoeffOn`: the coefficient of `sec:smoothing` is Mathlib's
   `fourierCoeffOn`, which is what puts the `AddCircle` Fourier API, and with it the
   uniqueness theorem `thm:smoothing-injective` needs, within reach.
+* `integral_kern_eq_Gamma`: `∫₀^∞ φ = 2^{-s} Γ(1-s)`, the multiplier at `k = 0`, which is
+  the constant of `eq:fixed-dimension-mean`.
 -/
 import BrownianImages.Defs
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
@@ -44,7 +44,7 @@ noncomputable def freq (p : ℝ) (k : ℤ) : ℂ := 2 * Real.pi * Complex.I * k 
   simp [freq, Complex.div_re]
 
 /-- `eq:fourier-multiplier`: the `k`-th Fourier multiplier of the smoothing operator,
-`M_k = ∫₀^∞ φ(η) η^{-2πik/p} dη`. -/
+`∫₀^∞ φ(η) η^{-2πik/p} dη`. -/
 noncomputable def multInt (s p : ℝ) (k : ℤ) : ℂ :=
   ∫ η in Set.Ioi (0 : ℝ), (kern s η : ℂ) * (η : ℂ) ^ (-freq p k)
 
@@ -214,5 +214,23 @@ smoothing operator vanishes. -/
 theorem multInt_ne_zero {s : ℝ} (hs1 : s < 1) (p : ℝ) (k : ℤ) : multInt s p k ≠ 0 := by
   rw [multInt_eq_gammaMult hs1 p k]
   exact gammaMult_ne_zero hs1 p k
+
+/-! ### The multiplier at `k = 0` -/
+
+/-- `∫₀^∞ φ = 2^{-s} Γ(1-s)`: the multiplier `eq:gamma-multiplier` at `k = 0`. -/
+theorem integral_kern_eq_Gamma {s : ℝ} (hs1 : s < 1) :
+    ∫ η in Set.Ioi (0:ℝ), kern s η = (2:ℝ) ^ (-s) * Real.Gamma (1 - s) := by
+  have h := multInt_eq_gammaMult hs1 1 0
+  simp only [multInt, gammaMult, freq, Int.cast_zero, mul_zero, zero_div, neg_zero,
+    Complex.cpow_zero, mul_one, add_zero] at h
+  have h1 : (((∫ η in Set.Ioi (0:ℝ), kern s η) : ℝ) : ℂ) = ∫ η in Set.Ioi (0:ℝ), (kern s η : ℂ) :=
+    integral_ofReal.symm
+  rw [← h1] at h
+  have h2 : (2:ℂ) ^ (-(s:ℂ)) * Complex.Gamma (1 - (s:ℂ))
+      = (((2:ℝ) ^ (-s) * Real.Gamma (1 - s) : ℝ) : ℂ) := by
+    rw [Complex.ofReal_mul, Complex.ofReal_cpow (by norm_num), ← Complex.Gamma_ofReal]
+    push_cast
+    ring_nf
+  exact_mod_cast h.trans h2
 
 end BrownianImages

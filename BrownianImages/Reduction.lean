@@ -2,9 +2,9 @@
 `sec:setup` of `BrownianImagesComplete.tex`: `thm:gaussian-reduction`,
 `eq:gaussian-reduction`.
 
-The expected correlation integral `S_μ(r) = 𝔼 C_r(W_*μ)` is the Gaussian transform of
-the pair-distance law, first against `μ × μ` and then, by the pushforward
-`(x,y) ↦ |x - y|`, against `dΦ`.  The chain is the Fubini interchange
+The expected correlation integral `S_μ(r) = 𝔼 C_r(W_*μ)` is an integral of the Gaussian
+return probability against `μ × μ` and then, by the pushforward `(x,y) ↦ |x - y|`,
+against the Stieltjes measure `dΦ`.  The chain is the Fubini interchange
 `∫_ω (μ×μ)(A_ω) dP = ∫_{μ×μ} P(A_p)`, the planar return probability
 `IsPlanarBrownian.return_prob`, and the change of variables defining `pairLaw`.
 
@@ -108,7 +108,7 @@ theorem exists_modification (hW : IsPlanarBrownian W P) :
     exact ((hcont ω).tendsto t).comp hxt
   exact ⟨V, hVmeas, hcont, M, hMmeas, hMnull, hVout⟩
 
-/-- `eq:correlation-functional` for a pushforward: the correlation functional of `f_*μ`
+/-- `eq:correlation-integral` for a pushforward: the correlation integral of `f_*μ`
 is the `μ × μ`-measure of the pairs whose images are within `r`. -/
 theorem corr_map {μ : Measure ℝ} [SFinite μ] {f : ℝ → Plane} (hf : Measurable f) (r : ℝ) :
     corr (μ.map f) r = (μ.prod μ) {p : ℝ × ℝ | dist (f p.1) (f p.2) < r} := by
@@ -166,7 +166,7 @@ section ExpCorr
 variable {P : Measure Ω} {W : ℝ≥0 → Ω → Plane}
 
 /-- `eq:gaussian-reduction`, the first identity: the expected correlation integral is
-the Gaussian transform of the pair-distance law against `μ × μ`.  The Frostman
+the integral of the Gaussian return probability against `μ × μ`.  The Frostman
 hypothesis with `0 < s` is what makes `μ` atomless, hence the diagonal null; on the
 diagonal the integrand reads `0`, not `1`, so without it the identity is false. -/
 theorem expCorr_eq_integral_prod [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
@@ -239,7 +239,7 @@ theorem expCorr_eq_integral_prod [IsProbabilityMeasure P] (hW : IsPlanarBrownian
   rw [hLHS, hRHS, hfub, hkey]
 
 /-- `eq:gaussian-reduction`, the second identity: the Stieltjes form, against the
-pair-distance law `dΦ`.  It is the first identity carried along the pushforward
+Stieltjes measure `dΦ`.  It is the first identity carried along the pushforward
 `(x,y) ↦ |x - y|` that defines `pairLaw`. -/
 theorem expCorr_eq_integral_pairLaw [IsProbabilityMeasure P] (hW : IsPlanarBrownian W P)
     {s A : ℝ} (hs0 : 0 < s) {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
@@ -251,7 +251,7 @@ theorem expCorr_eq_integral_pairLaw [IsProbabilityMeasure P] (hW : IsPlanarBrown
 end ExpCorr
 
 /-- `thm:gaussian-reduction`, `eq:gaussian-reduction`.  The expected correlation
-integral is the Gaussian transform of the pair-distance law, in both the `μ × μ` form
+integral is the Gaussian transform of the Stieltjes measure, in both the `μ × μ` form
 and the Stieltjes form against `dΦ`.  The Frostman hypothesis is what makes `μ`
 atomless, so that the diagonal, where the exponent is undefined, is null. -/
 theorem gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P]
@@ -264,4 +264,3 @@ theorem gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P]
   ⟨expCorr_eq_integral_prod hW hs0 hμ hr, expCorr_eq_integral_pairLaw hW hs0 hμ hr⟩
 
 end BrownianImages
-

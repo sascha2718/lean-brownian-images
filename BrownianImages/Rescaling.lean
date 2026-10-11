@@ -80,15 +80,15 @@ theorem intervalIntegral_expDens (r δ : ℝ) :
   simp only [mul_zero, zero_div, neg_zero, Real.exp_zero]
   ring
 
-/-! ### The pair-distance law on the half line -/
+/-! ### The Stieltjes measure on the half line -/
 
-/-- The pair-distance law is a probability measure. -/
+/-- The Stieltjes measure is a probability measure. -/
 theorem isProbabilityMeasure_pairLaw [IsProbabilityMeasure μ] :
     IsProbabilityMeasure (pairLaw μ) := by
   rw [pairLaw]
   exact inferInstance
 
-/-- The pair-distance law charges no non-positive number: distances are non-negative,
+/-- The Stieltjes measure charges no non-positive number: distances are non-negative,
 and the atomlessness of `sec:setup` removes the value `0`. -/
 theorem pairLaw_Iic_zero [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (hμ : IsFrostman s A μ) : pairLaw μ (Set.Iic 0) = 0 := by
@@ -105,7 +105,7 @@ theorem pairLaw_Iic_zero [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
   rw [hsplit]
   exact measure_union_null hneg (pairLaw_measure_singleton hs hμ 0)
 
-/-- `Φ` is also the mass the pair-distance law puts on `(0, δ]`: the left endpoint and
+/-- `Φ` is also the mass the Stieltjes measure puts on `(0, δ]`: the left endpoint and
 the atom at `δ` are both null. -/
 theorem pairLaw_Ioo [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (hμ : IsFrostman s A μ) (c : ℝ) :

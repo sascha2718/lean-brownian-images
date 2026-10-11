@@ -1,16 +1,16 @@
 /-
 `thm:remainder-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, the moment `M_p(s)` is
-differentiable at `p` and `|M_p' - Σ'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`.
+differentiable at `p` and `|M_p' - J₀'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`.
 
 At a real parameter `x` of the disc, the level sums of the kernel are the Bernoulli double
-integrals of `φ_n` at the coded points of the first `m` letters, which converge by dominated
-convergence to `g_n`; so `Λ_n(x) = g_n`, `M_x = M_x(s)` by `eq:leading-ones`, `Σ(x)` is the
-main term, and `Δ(x) = M_x(s) - Σ(x)`.  Cauchy's estimate for `Δ` then bounds the real
-derivative of `M - Σ` at `p`.
+integrals of `ψ_n` at the coded points of the first `m` letters, which converge by dominated
+convergence to `g_n`; so `Λ_n(x) = g_n`, `M_x = M_x(s)` by `eq:initial-symbol-decomposition`, `J₀(x)` is the
+main term, and `Δ(x) = M_x(s) - J₀(x)`.  Cauchy's estimate for `Δ` then bounds the real
+derivative of `M - J₀` at `p`.
 
 * `levelSum_kernel_ofReal`, `tendsto_integral_kernel_codeSeq`, `kernelLimit_ofReal`:
   `Λ_n(x) = g_n`.
-* `complexDelta_ofReal`: `Δ(x) = M_x(s) - Σ(x)`.
+* `complexDelta_ofReal`: `Δ(x) = M_x(s) - J₀(x)`.
 * `exists_hasDerivAt_sub_mainTerm`, `exists_hasDerivAt_fixedMoment`: the derivative bounds.
 -/
 import BrownianImages.FixedDimension.RemainderSup
@@ -200,7 +200,7 @@ theorem kernelLimit_ofReal {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0
   rw [integral_congr_ae (Eventually.of_forall hinner), integral_complex_ofReal]
   rfl
 
-/-- `Σ(x)` is the main term at a real parameter of the disc. -/
+/-- `J₀(x)` is the main term at a real parameter of the disc. -/
 theorem complexMainTerm_ofReal {s p x : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (hx : x ∈ Icc (p / 2) (3 * p / 2)) :
     complexMainTerm s (x : ℂ) = ((mainTerm s x : ℝ) : ℂ) := by
@@ -218,7 +218,7 @@ theorem complexMainTerm_ofReal {s p x : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp : p 
   push_cast
   ring
 
-/-- `Δ(x) = M_x(s) - Σ(x)` at a real parameter of the disc. -/
+/-- `Δ(x) = M_x(s) - J₀(x)` at a real parameter of the disc. -/
 theorem complexDelta_ofReal {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (hx : x ∈ Icc (p / 2) (3 * p / 2)) :
     complexDelta s (x : ℂ) = ((fixedMoment s x - mainTerm s x : ℝ) : ℂ) := by
@@ -250,7 +250,7 @@ theorem complexDelta_ofReal {s p x : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 
 
 /-! ### `thm:remainder-derivative` -/
 
-/-- The real derivative of `M - Σ` at `p` is the real part of `Δ'(p)`. -/
+/-- The real derivative of `M - J₀` at `p` is the real part of `Δ'(p)`. -/
 theorem exists_hasDerivAt_sub_mainTerm {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
     (hp : p ≤ 1/50) :
     ∃ D, HasDerivAt (fun x => fixedMoment s x - mainTerm s x) D p ∧

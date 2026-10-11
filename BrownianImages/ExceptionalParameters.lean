@@ -14,7 +14,7 @@ namespace BrownianImages
 open Set Real
 
 /-- The ratio `log(1/c) / log 2` of `eq:non-lattice` as a function of the dimension `s`,
-with `c = c(s)` the ratio of `eq:c-definition`. -/
+with `c = c(s)` the ratio from the introductory two-contraction example. -/
 noncomputable def nonArithmeticRatio (s : ℝ) : ℝ :=
   Real.log (pairRatio s)⁻¹ / Real.log 2
 
@@ -33,13 +33,13 @@ lemma pos_eq_two_rpow_neg_log_inv_div_log_two {c : ℝ} (hc : 0 < c) :
       _ = Real.log c := by rw [Real.log_inv]; ring
   rw [he, Real.exp_log hc]
 
-/-- `eq:c-definition` in terms of the logarithmic ratio: `c(s) = 2^{-q(s)}` with `q =
+/-- The introductory definition of `c` in terms of the logarithmic ratio: `c(s) = 2^{-q(s)}` with `q =
 nonArithmeticRatio`. -/
 lemma pairRatio_eq_two_rpow_neg_nonArithmeticRatio {s : ℝ} (hs : 0 < s) :
     pairRatio s = (2 : ℝ) ^ (-nonArithmeticRatio s) := by
   exact pos_eq_two_rpow_neg_log_inv_div_log_two (pairRatio_pos hs)
 
-/-- With `x = 2^{-s}`, `eq:c-definition` reads `x^q + x = 1` for `q = nonArithmeticRatio
+/-- With `x = 2^{-s}`, the defining equation for `c` reads `x^q + x = 1` for `q = nonArithmeticRatio
 s`. -/
 lemma pairRatio_equation_in_x {s : ℝ} (hs0 : 0 < s) (_hs1 : s < 1) :
     let x := (2 : ℝ) ^ (-s)

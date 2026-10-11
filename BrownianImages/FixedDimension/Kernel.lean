@@ -1,14 +1,17 @@
 /-
 The kernel of the proof of `thm:remainder-derivative`: the complex contractions
-`a(z) = z^{1/s}` and `b(z) = (1 - z)^{1/s}`, and
-`φ_n(z; x, y) = (1 - b^{n+1} - a (x - b^{n+1} y))^{-s}`, on the disc `|z - p| ≤ p/2`.
+`λ₁(z) = z^{1/s}` and `λ₂(z) = (1 - z)^{1/s}`, and
+`ψ_n(z; x, y) = (1 - λ₂^{n+1} - λ₁ (x - λ₂^{n+1} y))^{-s}`, on `|z - p| ≤ p/2`.
+The internal names `ca`, `cb` and comment notation `a`, `b` denote `λ₁`, `λ₂`.
+The internal names `alphaP`, `betaP` represent the separate bounds
+`λ_{1,max}`, `λ_{2,max}` in the paper.
 
 * `ca`, `cb`, `kernelBase`, `kernelN`, `alphaP`, `betaP`: the objects, with `ca_ofReal`,
   `cb_ofReal` and `kernelN_ofReal` identifying them at real parameters.
-* `norm_ca_le`, `norm_cb_le`, `five_alphaP_le`: `|a| ≤ α = (3p/2)^{1/s}`,
-  `|b| ≤ β = (1 - p/2)^{1/s}`, and `eq:alpha-beta`, `5α ≤ (1 - β)/2`.
+* `norm_ca_le`, `norm_cb_le`, `five_alphaP_le`: `|a| ≤ λ_{1,max} = (3p/2)^{1/s}`,
+  `|b| ≤ λ_{2,max} = (1 - p/2)^{1/s}`, and `eq:contraction-modulus-bounds`, `5λ_{1,max} ≤ (1 - λ_{2,max})/2`.
 * `re_kernelBase_ge`, `kernelBase_mem_slitPlane`, `norm_kernelN_le`: the base has real
-  part at least `(1 - β^{n+1})/2`, which bounds the kernel, `eq:phi-bounds`.
+  part at least `(1 - λ_{2,max}^{n+1})/2`, which bounds the kernel, `eq:kernel-bounds`.
 * `norm_kernelN_sub_le`: the Lipschitz bound on the bidisc of radius `5/2`.
 * `differentiableOn_cpointSeq`, `differentiableOn_weightSeq`, `differentiableOn_levelSum`:
   holomorphy of the level sums of the kernel on the disc.
@@ -25,23 +28,23 @@ noncomputable section
 
 /-! ### The objects -/
 
-/-- `a(z) = z^{1/s}`, with the principal branch. -/
+/-- `λ₁(z) = z^{1/s}`, with the principal branch. -/
 def ca (s : ℝ) (z : ℂ) : ℂ := z ^ ((s⁻¹ : ℝ) : ℂ)
 
-/-- `b(z) = (1 - z)^{1/s}`, with the principal branch. -/
+/-- `λ₂(z) = (1 - z)^{1/s}`, with the principal branch. -/
 def cb (s : ℝ) (z : ℂ) : ℂ := (1 - z) ^ ((s⁻¹ : ℝ) : ℂ)
 
-/-- `α = (3p/2)^{1/s}`, the bound on `|a|` on the disc. -/
+/-- `λ_{1,max} = (3p/2)^{1/s}`, the bound on `|a|` on the disc. -/
 def alphaP (s p : ℝ) : ℝ := (3 * p / 2) ^ s⁻¹
 
-/-- `β = (1 - p/2)^{1/s}`, the bound on `|b|` on the disc. -/
+/-- `λ_{2,max} = (1 - p/2)^{1/s}`, the bound on `|b|` on the disc. -/
 def betaP (s p : ℝ) : ℝ := (1 - p / 2) ^ s⁻¹
 
 /-- The base `1 - b^{n+1} - a (x - b^{n+1} y)` of the kernel. -/
 def kernelBase (s : ℝ) (n : ℕ) (z x y : ℂ) : ℂ :=
   1 - cb s z ^ (n + 1) - ca s z * (x - cb s z ^ (n + 1) * y)
 
-/-- `φ_n(z; x, y) = (1 - b^{n+1} - a (x - b^{n+1} y))^{-s}`. -/
+/-- `ψ_n(z; x, y) = (1 - b^{n+1} - a (x - b^{n+1} y))^{-s}`. -/
 def kernelN (s : ℝ) (n : ℕ) (z x y : ℂ) : ℂ := kernelBase s n z x y ^ (-(s : ℂ))
 
 /-- The disc `|z - p| ≤ p/2`. -/
@@ -139,7 +142,7 @@ theorem betaP_nonneg {s p : ℝ} (hp1 : p < 1) : 0 ≤ betaP s p :=
 theorem betaP_lt_one {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) : betaP s p < 1 :=
   Real.rpow_lt_one (by linarith) (by linarith) (inv_pos.2 hs)
 
-/-- `β ≤ e^{-p/(2s)}`. -/
+/-- `λ_{2,max} ≤ e^{-p/(2s)}`. -/
 theorem betaP_le_exp {s p : ℝ} (hs : 0 < s) (hp1 : p < 1) :
     betaP s p ≤ Real.exp (-(p / (2 * s))) := by
   unfold betaP
@@ -150,7 +153,7 @@ theorem betaP_le_exp {s p : ℝ} (hs : 0 < s) (hp1 : p < 1) :
     _ = Real.exp (-(p / (2 * s))) := by
         rw [← Real.exp_mul]; congr 1; field_simp
 
-/-- `α ≤ (3p/2)²` for `s ≤ 1/2` and `3p/2 ≤ 1`. -/
+/-- `λ_{1,max} ≤ (3p/2)²` for `s ≤ 1/2` and `3p/2 ≤ 1`. -/
 theorem alphaP_le_sq {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50) :
     alphaP s p ≤ (3 * p / 2) ^ 2 := by
   unfold alphaP
@@ -170,7 +173,7 @@ theorem one_sub_exp_neg_ge {x : ℝ} (hx : 0 ≤ x) : x / (1 + x) ≤ 1 - Real.e
   have e : x / (1 + x) = 1 - 1 / (1 + x) := by field_simp; ring
   linarith
 
-/-- `eq:alpha-beta`: `5α ≤ (1 - β)/2` for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`. -/
+/-- `eq:contraction-modulus-bounds`: `5λ_{1,max} ≤ (1 - λ_{2,max})/2` for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`. -/
 theorem five_alphaP_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50) :
     5 * alphaP s p ≤ (1 - betaP s p) / 2 := by
   have hα := alphaP_le_sq hs hs1 hp0 hp
@@ -181,7 +184,7 @@ theorem five_alphaP_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) 
     have := one_sub_exp_neg_ge hx0
     linarith
   rcases le_or_gt x 1 with hx1 | hx1
-  · -- `x/(1+x) ≥ x/2`, and `5 α ≤ 45 p²/4 ≤ p/(8s)`
+  · -- `x/(1+x) ≥ x/2`, and `5 λ_{1,max} ≤ 45 p²/4 ≤ p/(8s)`
     have h2 : x / 2 ≤ x / (1 + x) := by
       apply div_le_div_of_nonneg_left hx0 (by linarith) (by linarith)
     have h3 : 5 * alphaP s p ≤ x / 4 := by
@@ -193,7 +196,7 @@ theorem five_alphaP_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) 
         nlinarith [mul_le_mul_of_nonneg_left h5 (show (0:ℝ) ≤ 4 * p by positivity)]
       nlinarith
     linarith
-  · -- `x/(1+x) ≥ 1/2`, and `5α ≤ 45 p²/4 ≤ 1/4`
+  · -- `x/(1+x) ≥ 1/2`, and `5λ_{1,max} ≤ 45 p²/4 ≤ 1/4`
     have h2 : 1 / 2 ≤ x / (1 + x) := by
       rw [div_le_div_iff₀ (by norm_num) (by linarith)]; linarith
     have h3 : 5 * alphaP s p ≤ 1 / 4 := by
@@ -216,7 +219,7 @@ theorem one_sub_betaP_pow_pos {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 
   have := betaP_lt_one hs hp0 hp1
   linarith
 
-/-- The base has real part at least `(1 - β^{n+1})/2` on the bidisc of radius `5/2`. -/
+/-- The base has real part at least `(1 - λ_{2,max}^{n+1})/2` on the bidisc of radius `5/2`. -/
 theorem re_kernelBase_ge {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (n : ℕ) {z x y : ℂ} (hz : z ∈ discP p) (hx : ‖x‖ ≤ 5/2) (hy : ‖y‖ ≤ 5/2) :
     (1 - betaP s p ^ (n + 1)) / 2 ≤ (kernelBase s n z x y).re := by
@@ -274,7 +277,7 @@ theorem norm_cpow_neg_real_sub_one (w : ℂ) (s : ℝ) :
     ‖w ^ (-(s : ℂ) - 1)‖ = ‖w‖ ^ (-s - 1) := by
   rw [show -(s : ℂ) - 1 = ((-s - 1 : ℝ) : ℂ) by push_cast; ring, Complex.norm_cpow_real]
 
-/-- `eq:phi-bounds`, the bound on the kernel. -/
+/-- `eq:kernel-bounds`, the bound on the kernel. -/
 theorem norm_kernelN_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (n : ℕ) {z x y : ℂ} (hz : z ∈ discP p) (hx : ‖x‖ ≤ 5/2) (hy : ‖y‖ ≤ 5/2) :
     ‖kernelN s n z x y‖ ≤ ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s) := by
@@ -283,7 +286,7 @@ theorem norm_kernelN_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
   have hpos := one_sub_betaP_pow_pos hs hp0 (by linarith) n
   exact rpow_neg_antitone (by linarith) (norm_kernelBase_ge hs hs1 hp0 hp n hz hx hy) hs.le
 
-/-- The Lipschitz constant `L_n = s α ((1 - β^{n+1})/2)^{-s-1}` of `eq:phi-bounds`. -/
+/-- The Lipschitz constant `L_n = s λ_{1,max} ((1 - λ_{2,max}^{n+1})/2)^{-s-1}` of `eq:kernel-bounds`. -/
 def kernelLip (s p : ℝ) (n : ℕ) : ℝ :=
   s * alphaP s p * ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s - 1)
 
@@ -358,7 +361,7 @@ theorem hasDerivAt_kernelN_y {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0
           mul_le_mul (mul_le_mul_of_nonneg_left h1 hs.le) h2 (norm_nonneg _) (by positivity)
       _ = s * alphaP s p * ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s - 1) := by ring
 
-/-- The Lipschitz bound of `eq:phi-bounds` on the bidisc of radius `5/2`. -/
+/-- The Lipschitz bound of `eq:kernel-bounds` on the bidisc of radius `5/2`. -/
 theorem norm_kernelN_sub_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
     (n : ℕ) {z : ℂ} (hz : z ∈ discP p) (x y x' y' : ℂ) (hx : ‖x‖ ≤ 5/2) (hy : ‖y‖ ≤ 5/2)
     (hx' : ‖x'‖ ≤ 5/2) (hy' : ‖y'‖ ≤ 5/2) :

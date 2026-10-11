@@ -21,7 +21,7 @@ The declarations keep their upstream namespace `AbsorptionCutoff.Renewal`, so no
 here is confusable with a declaration of this project.
 
 The headline `tendsto_tsum_integral_comp_sub_of_driNorm`, as stated upstream, does not
-apply to the renewal measure `ϑ = ∑ p_i δ_{a_i}` of a self-similar system:
+apply to the renewal measure `ϑ = ∑ p_i δ_{α_i}` of a self-similar system:
 `RenewalBridge.not_nonlattice_renewalLaw` proves that a two-atom law always charges an
 affine lattice.  Under `FellerNonlattice`, which `ϑ` satisfies exactly under
 `eq:non-lattice` (`System.nonArithmetic_iff_charFun_ne_one`), the theorem applies, and

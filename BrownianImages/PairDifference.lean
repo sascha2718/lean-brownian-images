@@ -1,7 +1,7 @@
 /-
 `sec:renewal`: the difference mass `pairDiff μ T = (μ × μ){(x,y) : x - y ∈ T}` of a
 measure on the line, the form in which `thm:homogeneous-nonconstancy` reads the
-pair-distance distribution.  The exact computations of `HomogeneousNonconstancy` need
+correlation integral.  The exact computations of `HomogeneousNonconstancy` need
 one-sided masses such as `P(X - Y ≥ δ)` as well as the symmetric `Φ(δ) = P(|X - Y| ≤ δ)`,
 so the object is the mass of an arbitrary Borel set of differences, with `Φ` the
 special case of a symmetric interval.
@@ -12,7 +12,8 @@ special case of a symmetric interval.
 * `mk_preimage_diffSet`, `measurable_section`, `pairDiff_eq_lintegral`: the Fubini
   form `pairDiff μ T = ∫ μ{y : x - y ∈ T} dμ(x)`.
 * `pairDiff_neg`: symmetry of the difference law, from `Measure.prod_swap`.
-* `prod_compl_square`: the product measure is carried by the unit square.
+* `prod_compl_square`, `ae_prod_mem_Icc`: the product measure is carried by the unit
+  square, as a null set and as an almost-everywhere statement.
 -/
 import BrownianImages.Recursion
 
@@ -88,5 +89,15 @@ theorem prod_compl_square [IsProbabilityMeasure μ] (hsupp : μ (Set.Icc (0:ℝ)
       (by simp [Measure.prod_prod, hsupp])
 
 end PairDifference
+
+/-- A measure on `[0,1]` makes its square carry the unit square. -/
+theorem ae_prod_mem_Icc {μ : Measure ℝ} [IsProbabilityMeasure μ]
+    (h : μ (Set.Icc (0:ℝ) 1)ᶜ = 0) :
+    ∀ᵐ p ∂(μ.prod μ), p.1 ∈ Set.Icc (0:ℝ) 1 ∧ p.2 ∈ Set.Icc (0:ℝ) 1 := by
+  have hx : ∀ᵐ x ∂μ, x ∈ Set.Icc (0:ℝ) 1 := by
+    rw [ae_iff]
+    exact h
+  exact (Measure.quasiMeasurePreserving_fst.ae hx).and
+    (Measure.quasiMeasurePreserving_snd.ae hx)
 
 end BrownianImages

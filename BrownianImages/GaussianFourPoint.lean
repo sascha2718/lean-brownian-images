@@ -358,7 +358,8 @@ theorem IsPlanarBrownian.indepFun_increments [IsProbabilityMeasure P]
   exact hcomp
 
 /-- `thm:gaussian-four-point`, first assertion: increments over intervals with disjoint
-interiors are independent.  The endpoints are unoriented, as in the paper. -/
+interiors are independent.  The four times carry no order, so the statement covers the
+paper's labelling `u < t` and `u' < t'`. -/
 theorem disjoint_increments_indep {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {t u t' u' : ℝ≥0}
     (hdisj : max t u ≤ min t' u' ∨ max t' u' ≤ min t u) :

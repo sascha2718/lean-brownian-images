@@ -90,8 +90,9 @@ theorem IsNatural.meanBrownianTubeProfile_periodic_limit
         (fun x hx => (hrenewal x hx).2)
   exact ⟨PK, hPKperiodic, hPKbounds, hPKuniform⟩
 
-/-- `thm:neighbourhood-renewal`, including both the non-arithmetic and arithmetic
-alternatives, with all Brownian moment and overlap inputs discharged. -/
+/-- Internal constant and periodic renewal alternatives used to prove the bounds
+and shift invariance in `thm:neighbourhood-renewal`. All Brownian moment and overlap
+inputs are discharged. -/
 theorem IsNatural.tubeRenewal
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
@@ -127,6 +128,33 @@ theorem IsNatural.tubeRenewal
   · intro h hh harith
     exact hmu.meanBrownianTubeProfile_periodic_limit
       hW S hs0 hs1 hsosc hdim hh harith
+
+/-- `thm:neighbourhood-renewal` and `eq:neighbourhood-renewal-shift`: positive
+uniform bounds and asymptotic invariance under each Brownian scaling shift. -/
+theorem IsNatural.tubeRenewal_bounds_shift
+    {P : Measure Omega} [IsProbabilityMeasure P]
+    {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
+    (S : System iota) {K : Set Real} {s : Real}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
+    {mu : Measure Real} (hmu : S.IsNatural K s mu) :
+    (∀ t : Real, 0 ≤ t →
+      Integrable (brownianTubeProfile W hmu.compactAttractor s t) P) ∧
+    (∃ c C : Real, 0 < c ∧ ∀ t : Real, 0 ≤ t →
+      c ≤ meanBrownianTubeProfile W P hmu.compactAttractor s t ∧
+      meanBrownianTubeProfile W P hmu.compactAttractor s t ≤ C) ∧
+    (∀ i : iota, Tendsto (fun t : Real =>
+      meanBrownianTubeProfile W P hmu.compactAttractor s (t - S.halfLogRatio i) -
+        meanBrownianTubeProfile W P hmu.compactAttractor s t) atTop (nhds 0)) := by
+  obtain ⟨hint, hbounds, hnonarith, harith⟩ :=
+    hmu.tubeRenewal hW S hs0 hs1 hsosc hdim
+  refine ⟨hint, hbounds, fun i => ?_⟩
+  rcases S.tubeNonArithmetic_or_exists_tubeArithmetic_pos with hna | ⟨h, hh, ha⟩
+  · obtain ⟨L, _hL, hlimit⟩ := hnonarith hna
+    exact tendsto_sub_shift_sub_of_tendsto_atTop _ hlimit
+  · obtain ⟨PK, hperiodic, _hPKbounds, huniform⟩ := harith h hh ha
+    exact tendsto_sub_period_sub_of_uniform_lattice hh hperiodic
+      (S.halfLogRatio_mem_zmultiples_of_tubeArithmetic ha i) huniform
 
 /-- Unconditional pathwise recovery of the natural measure from the compact
 Brownian image for an arbitrary finite system satisfying the strong open set

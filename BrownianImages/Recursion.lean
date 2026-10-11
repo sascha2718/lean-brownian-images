@@ -1,7 +1,7 @@
 /-
-`thm:renewal-recursion` of `sec:renewal`: the self-similar recursion of the pair-distance
-profile, `eq:phi-recursion` and `eq:g-recursion`, with the cross term `Φ_×` of pairs
-with different first-level addresses.
+`thm:renewal-recursion` of `sec:renewal`: the self-similar recursion of the correlation
+integral and its normalised profile, `eq:correlation-recursion` and `eq:g-recursion`,
+with the cross term `Φ_×` of pairs with different first-level addresses.
 
 The computation runs on the Fubini form `Φ(δ) = (∫⁻ x, μ(B̄(x,δ)) ∂μ).toReal` of
 `phi_prod_eq`, never on `μ × μ` directly: Mathlib's `Measure.prod_sum` is stated for
@@ -16,7 +16,7 @@ rescale to `Φ(δ/r_i)`, and the off-diagonal blocks are `Φ_×`.
 * `System.crossPhi`: `Φ_×(δ) = ∑_{i ≠ j} p_i p_j (μ_i × μ_j){|x - y| ≤ δ}`.
 * `System.IsNatural.prod_eq_double_sum`, `.prod_map_diag`: the double-sum decomposition
   of `μ × μ` and the rescaling of a diagonal block.
-* `phi_recursion_cross`, `g_recursion_cross`: `eq:phi-recursion` and `eq:g-recursion`
+* `phi_recursion_cross`, `g_recursion_cross`: `eq:correlation-recursion` and `eq:g-recursion`
   at every scale, with the cross term.
 * `crossPhi_nonneg`, `crossPhi_eq_zero_of_stronglySeparated`: the cross term is
   non-negative, and vanishes below the gap of a strongly separated system.
@@ -32,7 +32,7 @@ open MeasureTheory ProbabilityTheory Filter Asymptotics
 open scoped ENNReal NNReal Topology
 
 /-- The ball-mass function is measurable: it is the section function of the
-pair-distance set. -/
+set of close pairs. -/
 theorem measurable_measure_closedBall (μ : Measure ℝ) [SFinite μ] (δ : ℝ) :
     Measurable fun x : ℝ => μ (Metric.closedBall x δ) := by
   have h : Measurable fun x : ℝ => μ (Prod.mk x ⁻¹' {p : ℝ × ℝ | |p.1 - p.2| ≤ δ}) :=
@@ -146,7 +146,7 @@ theorem System.IsNatural.prod_map_diag (S : System ι) {K : Set ℝ} {s : ℝ} {
     S.preimage_closedBall_map_self]
 
 /-- Hutchinson's identity in both coordinates: `μ × μ = ∑_{i,j} p_i p_j (μ_i × μ_j)`,
-read on the pair-distance set. -/
+read on the set of close pairs. -/
 theorem System.IsNatural.prod_eq_double_sum (S : System ι) {K : Set ℝ} {s : ℝ}
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (δ : ℝ) :
     (μ.prod μ) {p : ℝ × ℝ | |p.1 - p.2| ≤ δ}
@@ -170,7 +170,7 @@ theorem System.IsNatural.prod_eq_double_sum (S : System ι) {K : Set ℝ} {s : �
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [lintegral_const_mul _ (hmeas j), hμ.prod_map_apply_eq S i j δ, mul_assoc]
 
-/-- **`thm:renewal-recursion`, `eq:phi-recursion`.**  At every scale,
+/-- **`thm:renewal-recursion`, `eq:correlation-recursion`.**  At every scale,
 `Φ(δ) = ∑ r_i^{2s} Φ(δ/r_i) + Φ_×(δ)`: the diagonal blocks of the self-similar
 decomposition rescale, and the other blocks form the cross term. -/
 theorem phi_recursion_cross {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {s : ℝ}
@@ -204,7 +204,7 @@ theorem phi_recursion_cross {ι : Type*} [Fintype ι] (S : System ι) {K : Set �
   rfl
 
 /-- **`thm:renewal-recursion`, `eq:g-recursion`.**  At every `w`,
-`G(w) = ∑ p_i G(w - a_i) + e^{sw} Φ_×(e^{-w})`. -/
+`G(w) = ∑ p_i G(w - α_i) + e^{sw} Φ_×(e^{-w})`. -/
 theorem g_recursion_cross {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ} {s : ℝ}
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (w : ℝ) :
     G s μ w = ∑ i, S.ratio i ^ s * G s μ (w - S.logRatio i)
@@ -248,8 +248,8 @@ theorem crossPhi_eq_zero_of_stronglySeparated {ι : Type*} [Fintype ι] (S : Sys
     rw [lintegral_congr_ae hae, lintegral_zero]
   rw [hzero, ENNReal.toReal_zero, mul_zero]
 
-/-- `thm:renewal-recursion`, `eq:phi-recursion`.  Below the separation gap the
-pair-distance distribution satisfies the self-similar recursion. -/
+/-- `thm:renewal-recursion`, `eq:correlation-recursion`.  Below the separation gap the
+correlation integral satisfies the self-similar recursion. -/
 theorem phi_recursion {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
     {ρ s : ℝ} (hsep : S.StronglySeparated K ρ) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
     {δ : ℝ} (hδ0 : 0 < δ) (hδ : δ < ρ) :

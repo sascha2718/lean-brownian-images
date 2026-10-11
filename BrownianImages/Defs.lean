@@ -3,11 +3,12 @@
 paper is phrased in, collected so that every later module speaks the same language.
 
 * `Plane`: the plane `ℝ²`, carrying the Euclidean metric.
-* `corr`: the correlation functional `C_r(ν)` of `eq:correlation-functional`.
+* `corr`: the correlation integral `C_r(ν)` of `eq:correlation-integral`.
 * `IsFrostman`: the Frostman condition `eq:frostman`.
-* `Phi`, `pairLaw`: the pair-distance distribution `Φ` of `eq:phi-definition` and the
-  law `dΦ` it is the distribution function of.
-* `G`: the normalised pair-distance profile of `eq:g-definition`.
+* `Phi`, `pairLaw`: the time correlation integral `C_δ(μ)` of `sec:setup` and its
+  Stieltjes measure `dC_δ(μ)`. The internal name `Phi` uses closed distance balls;
+  atomlessness makes this equal to the paper's open-ball correlation integral.
+* `G`: the normalised correlation profile of `sec:setup`.
 * `kern`, `logKern`: the smoothing kernel `φ` of `eq:h-definition` and the function
   `x ↦ e^x φ(e^x)` used after passing to logarithmic coordinates.
 * `H`: the expected profile `H_μ^s` of `eq:expected-profile`, in the integral form
@@ -21,15 +22,16 @@ paper is phrased in, collected so that every later module speaks the same langua
 * `fourierCoeffP`: the Fourier coefficient of a periodic function, normalised as in
   `sec:smoothing`.
 * `overlap`, `jointReturn`, `expCorr`: the overlap length, the joint return
-  probability of `sec:variance`, and `S_μ(r) = 𝔼 C_r(ν)`.
-* `Yprofile`: the empirical profile `Y_ν` of `sec:concentration`.
+  probability of `sec:variance`, and the expectation `𝔼 C_r(ν)`.
+* `Yprofile`: the normalised correlation integral, giving `Y_μ` of
+  `sec:concentration` at the occupation measure `W_*μ`.
 * `varScale`: the variance scale `V_s` of `eq:variance-scale`.
 * `System`, with `IsAttractor`, `StronglySeparated`, `IsDimension`, `IsNatural`,
   `logRatio`, `NonArithmetic`: self-similar iterated function systems (IFSs) on `[0,1]`,
   with orientation-preserving and orientation-reversing similarities, and their natural measures, the objects of
   `sec:renewal`; the theory lives in `SelfSimilar.lean`.
 * `homogeneousSystem`, `homogeneousDim`, `pairSystem`, `pairRatio`: the two systems of
-  `thm:cantor-application` and the ratio `c` of `eq:c-definition`.
+  `thm:cantor-application` and the ratio `c` from the introductory two-contraction example.
 
 `Challenge.lean` uses independent Mathlib-only copies of the definitions needed for
 the headline statements. Comparator requires the copied declarations and their
@@ -49,12 +51,12 @@ namespace BrownianImages
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology
 
-/-! ### The plane and the correlation functional -/
+/-! ### The plane and the correlation integral -/
 
 /-- The plane `ℝ²`, carrying the Euclidean metric. -/
 abbrev Plane : Type := EuclideanSpace ℝ (Fin 2)
 
-/-- `eq:correlation-functional`: the correlation functional
+/-- `eq:correlation-integral`: the correlation integral
 `C_r(ν) = (ν × ν){(x,y) : |x - y| < r}`. -/
 noncomputable def corr (ν : Measure Plane) (r : ℝ) : ℝ≥0∞ :=
   (ν.prod ν) {p : Plane × Plane | dist p.1 p.2 < r}
@@ -64,7 +66,7 @@ theorem measurableSet_corrSet (r : ℝ) :
     MeasurableSet {p : Plane × Plane | dist p.1 p.2 < r} :=
   (isOpen_lt (by fun_prop) continuous_const).measurableSet
 
-/-! ### Frostman measures and the pair-distance distribution -/
+/-! ### Frostman measures and the correlation integral -/
 
 /-- `eq:frostman`: `μ` is `s`-Frostman with constant `A`, that is a measure on `[0,1]`
 with `μ(B(x,ρ)) ≤ A ρ^s` for every `x` and every `0 < ρ ≤ 1`.  The paper states the
@@ -82,7 +84,7 @@ structure IsFrostman (s A : ℝ) (μ : Measure ℝ) : Prop where
 
 /-- `eq:frostman` in the shape the paper writes it: open balls, centres in `[0,1]`.
 `IsFrostman` uses closed balls and arbitrary centres, which is what the Fubini step of
-`eq:phi-frostman` consumes; `isFrostman_of_open` and `isFrostmanOpen` compare the two,
+`eq:correlation-frostman` consumes; `isFrostman_of_open` and `isFrostmanOpen` compare the two,
 at the cost of a change of the constant the paper also allows itself. -/
 structure IsFrostmanOpen (s A : ℝ) (μ : Measure ℝ) : Prop where
   /-- The constant is at least one. -/
@@ -108,8 +110,9 @@ def IsAhlforsClosed (s A : ℝ) (μ : Measure ℝ) : Prop :=
     ENNReal.ofReal (A⁻¹ * r ^ s) ≤ μ (Metric.closedBall x r) ∧
       μ (Metric.closedBall x r) ≤ ENNReal.ofReal (A * r ^ s)
 
-/-- `eq:phi-definition`: the pair-distance distribution `Φ(δ) = P(|X - Y| ≤ δ)` for
-independent `X, Y` with law `μ`. -/
+/-- `sec:setup`: the time correlation integral `C_δ(μ) = P(|X - Y| ≤ δ)` for
+independent `X, Y` with law `μ`. This internal definition uses the closed inequality;
+`pairLaw_measure_singleton` shows that the boundary has zero mass for Frostman measures. -/
 noncomputable def Phi (μ : Measure ℝ) (δ : ℝ) : ℝ :=
   ((μ.prod μ) {p : ℝ × ℝ | |p.1 - p.2| ≤ δ}).toReal
 
@@ -118,13 +121,12 @@ theorem measurableSet_phiSet (δ : ℝ) :
     MeasurableSet {p : ℝ × ℝ | |p.1 - p.2| ≤ δ} :=
   (isClosed_le (by fun_prop) continuous_const).measurableSet
 
-/-- The pair-distance law: the law of `|X - Y|` for independent `X, Y ∼ μ`.  It is the
-Stieltjes measure `dΦ` of `eq:gaussian-reduction`, and `Φ` of `eq:phi-definition` is its
-distribution function. -/
+/-- The Stieltjes measure `dC_δ(μ)` of `eq:gaussian-reduction`: the law of `|X - Y|`
+for independent `X, Y ∼ μ`, with distribution function `Phi μ`. -/
 noncomputable def pairLaw (μ : Measure ℝ) : Measure ℝ :=
   (μ.prod μ).map (fun p : ℝ × ℝ => |p.1 - p.2|)
 
-/-- `eq:g-definition`: the normalised pair-distance profile `G(w) = e^{sw} Φ(e^{-w})`. -/
+/-- `sec:setup`: the normalised correlation profile `G(w) = e^{sw} C_{e^{-w}}(μ)`. -/
 noncomputable def G (s : ℝ) (μ : Measure ℝ) (w : ℝ) : ℝ :=
   Real.exp (s * w) * Phi μ (Real.exp (-w))
 
@@ -210,13 +212,14 @@ noncomputable def jointReturn (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (r
     ℝ≥0∞ :=
   P {ω | dist (W u ω) (W t ω) < r ∧ dist (W u' ω) (W t' ω) < r}
 
-/-- `S_μ(r) = 𝔼 C_r(W_*μ)`, the expected correlation integral of `sec:setup`. -/
+/-- `𝔼 C_r(W_*μ)`, the expected correlation integral of `sec:setup`. -/
 noncomputable def expCorr (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (μ : Measure ℝ) (r : ℝ) : ℝ :=
   ∫ ω, (corr (occupation W μ ω) r).toReal ∂P
 
 /-! ### The empirical profile and the variance scale -/
 
-/-- `sec:concentration`: the empirical profile `Y_ν(t) = e^{2st} C_{e^{-t}}(ν)`. -/
+/-- `sec:concentration`: the normalised correlation integral `e^{2st} C_{e^{-t}}(ν)`.
+At `ν = W_*μ`, this is the paper's empirical profile `Y_μ(t)`. -/
 noncomputable def Yprofile (s : ℝ) (ν : Measure Plane) (t : ℝ) : ℝ :=
   Real.exp (2 * s * t) * (corr ν (Real.exp (-t))).toReal
 
@@ -293,7 +296,7 @@ structure IsNatural (K : Set ℝ) (s : ℝ) (μ : Measure ℝ) : Prop where
   /-- Hutchinson's identity with weights `p_i = r_i^s`. -/
   selfSimilar : μ = ∑ i, ENNReal.ofReal (S.ratio i ^ s) • μ.map (S.map i)
 
-/-- The log-ratios `a_i = log(1/r_i)`, the atoms of the renewal measure `ϑ`. -/
+/-- The log-ratios `α_i = log(1/r_i)`, the atoms of the renewal measure `ϑ`. -/
 noncomputable def logRatio (i : ι) : ℝ := Real.log (S.ratio i)⁻¹
 
 /-- The system is non-arithmetic: the additive group generated by the log-ratios is
@@ -367,7 +370,7 @@ noncomputable def pairSystem (c : ℝ) (hc0 : 0 < c) (hc : c < 1/2) : System (Fi
     obtain ⟨h0, h1⟩ := hx
     fin_cases i <;> constructor <;> simp <;> nlinarith
 
-/-- The contraction ratio `c` of `eq:c-definition`: the solution of `c^s = 1 - 2^{-s}`. -/
+/-- The contraction ratio `c` in the introduction: the solution of `c^s = 1 - 2^{-s}`. -/
 noncomputable def pairRatio (s : ℝ) : ℝ := (1 - (2:ℝ) ^ (-s)) ^ s⁻¹
 
 end BrownianImages

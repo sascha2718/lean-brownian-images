@@ -1,13 +1,14 @@
 /-
-`sec:concentration`: the empirical profile `Y_ν` of `sec:concentration` and the
+`sec:concentration`: the normalised correlation integral `Yprofile` and the
 monotonicity that fills the grid in the proof of `thm:uniform-concentration`.
+At the occupation measure `W_*μ`, `Yprofile` is the paper's empirical profile `Y_μ`.
 
-`r ↦ C_r(ν)` is non-decreasing, so `Y_ν` cannot move faster than the exponential
+`r ↦ C_r(ν)` is non-decreasing, so `Yprofile` cannot move faster than the exponential
 prefactor allows.  That is `eq:monotone-fill`, and it is what turns convergence along a
 grid into uniform convergence on tails.
 
 * `corr_mono`: `C_r(ν)` is non-decreasing in `r`.
-* `Yprofile_le_of_le`: `Y_ν(u) ≤ e^{2s(u-t)} Y_ν(t)` for `t ≤ u`.
+* `Yprofile_le_of_le`: `Yprofile s ν u ≤ e^{2s(u-t)} Yprofile s ν t` for `t ≤ u`.
 * `monotone_fill`: `eq:monotone-fill`, the two-sided grid bound.
 -/
 import BrownianImages.Defs
@@ -19,23 +20,23 @@ open scoped ENNReal
 
 variable {s : ℝ} (ν : Measure Plane)
 
-/-- The correlation functional is non-decreasing in the radius. -/
+/-- The correlation integral is non-decreasing in the radius. -/
 theorem corr_mono {r r' : ℝ} (h : r ≤ r') : corr ν r ≤ corr ν r' :=
   measure_mono fun _ hp => lt_of_lt_of_le hp h
 
-/-- The empirical profile `Y_ν` of `sec:concentration` is non-negative. -/
+/-- The normalised correlation integral used in `sec:concentration` is non-negative. -/
 theorem Yprofile_nonneg (s : ℝ) (v : ℝ) : 0 ≤ Yprofile s ν v := by
   unfold Yprofile
   positivity
 
 variable [IsProbabilityMeasure ν]
 
-/-- The correlation functional `eq:correlation-functional` of a probability measure is
+/-- The correlation integral `eq:correlation-integral` of a probability measure is
 finite. -/
 theorem corr_ne_top (r : ℝ) : corr ν r ≠ ⊤ := measure_ne_top _ _
 
 /-- The empirical profile grows at most like the exponential prefactor: this is the
-monotonicity of `r ↦ C_r` in the coordinate of `Y_ν`. -/
+monotonicity of `r ↦ C_r` in the coordinate of `Yprofile`. -/
 theorem Yprofile_le_of_le {v w : ℝ} (hvw : v ≤ w) :
     Yprofile s ν w ≤ Real.exp (2 * s * (w - v)) * Yprofile s ν v := by
   have hmono : corr ν (Real.exp (-w)) ≤ corr ν (Real.exp (-v)) :=
@@ -74,7 +75,7 @@ theorem monotone_fill (hs : 0 ≤ s) {a b v : ℝ} (hav : a ≤ v) (hvb : v ≤ 
 
 /-! ### The oscillation functional is Borel -/
 
-/-- The correlation functional is a measurable function of the measure. -/
+/-- The correlation integral is a measurable function of the measure. -/
 theorem measurable_corr (r : ℝ) :
     Measurable (fun ν : ProbabilityMeasure Plane => corr ν.toMeasure r) := by
   have hdiag : Measurable

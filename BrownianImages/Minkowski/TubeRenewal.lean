@@ -30,7 +30,7 @@ theorem shift_nonneg (i : ι) : 0 ≤ S.shift i := by
   simpa using h.1
 
 /-- The renewal convolution for Brownian tube profiles, with half-logarithmic
-steps `beta_i` and natural weights `p_i`. -/
+steps `α_i/2` and natural weights `p_i`. -/
 noncomputable def tubeRenewalConv (s : ℝ) (g : ℝ → ℝ) (v : ℝ) : ℝ :=
   ∑ i, S.tubeWeight s i * g (v - S.halfLogRatio i)
 
@@ -71,7 +71,7 @@ theorem tubeRadiusReal_sub_halfLogRatio
   rw [Real.exp_sub, hsqrt]
 
 /-- The planar Brownian Jacobian and logarithmic normalisation combine to the
-natural cylinder weight: `r_i exp(alpha beta_i) = r_i^s`. -/
+natural cylinder weight: `r_i exp((1-s) α_i) = r_i^s`. -/
 theorem exp_tubeExponent_mul_ratio
     {ι : Type*} [Fintype ι] (S : System ι) (s v : ℝ) (i : ι) :
     Real.exp (tubeExponent s * v) * S.ratio i =
@@ -297,7 +297,7 @@ theorem System.IsNatural.meanBrownianTubeDefectProfile_nonneg
 full profiles and of the raw first-level defect implies integrability at the
 current scale and gives the exact equation
 
-`m(t) = sum_i p_i m(t - beta_i) - d(t)`.
+`Q(t) = sum_i p_i Q(t - α_i/2) - d(t)`.
 
 Thus the remaining analytic input is precisely an integrable exponentially
 decaying defect (plus the renewal-theorem passage), rather than any further

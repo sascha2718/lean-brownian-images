@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this formalisation, please cite the paper and this repository."
-title: "Lean formalisation of: Pair-distance profiles and Minkowski reconstruction of planar Brownian images"
+title: "Lean formalisation of: Correlation integrals and Minkowski reconstruction of planar Brownian images"
 authors:
   - family-names: Troscheit
     given-names: Sascha
@@ -10,7 +10,7 @@ license: Apache-2.0
 date-released: "2026-09-06"
 preferred-citation:
   type: article
-  title: "Pair-distance profiles and Minkowski reconstruction of planar Brownian images"
+  title: "Correlation integrals and Minkowski reconstruction of planar Brownian images"
   authors:
     - family-names: Troscheit
       given-names: Sascha

@@ -76,7 +76,7 @@ theorem continuous_normalizedTubeMass (s t : ℝ) :
     Continuous (normalizedTubeMass s t) := by
   exact continuous_const.mul (continuous_tubeMass (tubeRadiusReal_pos t))
 
-/-- The random normalised neighbourhood profile `X(t)` of a compact Brownian image. -/
+/-- The random normalised neighbourhood mass `e^{(2-2s)t} M_{e^{-t}}(E)`. -/
 noncomputable def brownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (K : NonemptyCompacts ℝ) (s t : ℝ)
     (omega : Omega) : ℝ :=
@@ -91,19 +91,20 @@ theorem IsPlanarBrownian.aemeasurable_brownianTubeProfile
   (continuous_normalizedTubeMass s t).measurable.comp_aemeasurable
     (hW.aemeasurable_brownianImage K)
 
-/-- The mean neighbourhood profile `m(t) = 𝔼 X(t)`. -/
+/-- The mean neighbourhood profile `Q(t) = e^{(2-2s)t} 𝔼 M_{e^{-t}}(E)`. -/
 noncomputable def meanBrownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (P : Measure Omega)
     (K : NonemptyCompacts ℝ) (s t : ℝ) : ℝ :=
   ∫ omega, brownianTubeProfile W K s t omega ∂P
 
-/-- The centred random profile used in the `L²` concentration lemma. -/
+/-- The centred random profile used internally for the variance bound and grid convergence
+in `thm:neighbourhood-concentration`. -/
 noncomputable def centeredBrownianTubeProfile {Omega : Type*} [MeasurableSpace Omega]
     (W : ℝ≥0 → Omega → Plane) (P : Measure Omega)
     (K : NonemptyCompacts ℝ) (s t : ℝ) (omega : Omega) : ℝ :=
   brownianTubeProfile W K s t omega - meanBrownianTubeProfile W P K s t
 
-/-- Non-arithmeticity for the half-logarithmic tube-renewal steps `β_i`. -/
+/-- Non-arithmeticity for the half-logarithmic tube-renewal steps `α_i/2`. -/
 def System.TubeNonArithmetic {iota : Type*} [Fintype iota]
     (S : System iota) : Prop :=
   Dense ((AddSubgroup.closure (Set.range S.halfLogRatio) : AddSubgroup ℝ) : Set ℝ)

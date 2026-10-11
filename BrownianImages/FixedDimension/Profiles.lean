@@ -2,21 +2,29 @@
 `thm:fixed-dimension-profiles`, the mean and the non-lattice limit: for the natural measure
 `μ_p` of the system `x ↦ ax`, `x ↦ bx + 1 - b` with `a = p^{1/s}`, `b = q^{1/s}`, the Cesàro
 means of the expected profile `H_{μ_p}^s` converge to `eq:fixed-dimension-mean`,
-`H̄_s(p) = 2^{1-s} Γ(1-s) pq M_p(s)/E(p)`, and in the non-lattice case the profile itself
-converges.  The proof is that of `thm:two-contraction-formula`: the renewal mean is
-`m = E(p)/s`, the cross term is `Φ_× = 2pq ℙ(Z_p ≤ δ)`, and the forcing transform at
-`ξ = 0` is `2pq M_p(s)/s`.
+`H̄_s(p) = 2^{-s} Γ(1-s) (∫₀¹ δ^{-s} dC^×_δ(μ_p))/h(p)`, and in the non-lattice case the
+profile itself converges. The integral is `2pq · fixedMoment s p`; the internal moment
+notation `M_p(s)` denotes the paper's local `J(p)` in `sec:small-dimension`.
+The renewal mean is `m = h(p)/s`, and `fixedSystem_crossPhi` identifies the cross term with
+`2pq ℙ(S₂(Y) - S₁(X) ≤ δ)`, internally written `Φ_× = 2pq ℙ(Z_p ≤ δ)`.
+The forcing integral is `(1/s) ∫₀¹ δ^{-s} dC^×_δ(μ_p)`, and the Cesàro mean of `Cesaro` and
+`∫ φ = 2^{-s} Γ(1-s)` assemble the formula. The paper uses the same mean computation
+in both cases: the renewal limits and lattice periodisation give the Cesàro mean of
+`G`, and averaging the smoothing formula multiplies this by `∫ φ`.
 
 * `fixedSystem_stronglySeparated`, `fixedSystem_openSetCondition`: the geometry.
 * `fixedSystem_crossPhi`: `Φ_× = 2pq ℙ(Z_p ≤ δ)`.
-* `fixedSystem_renewalMean`: `m = E(p)/s`.
+* `fixedSystem_renewalMean`: `m = h(p)/s`.
 * `fixedSystem_integral_renewalDefect`: `∫ z = 2pq M_p(s)/s`.
 * `fixedSystem_tendsto_avg_H`: `eq:fixed-dimension-mean`.
 * `fixedSystem_tendsto_H_nonLattice`: the non-lattice limit.
 -/
 import BrownianImages.FixedDimension.Natural
 import BrownianImages.FixedDimension.RealLevelSums
-import BrownianImages.TwoContraction.Formula
+import BrownianImages.Cesaro
+import BrownianImages.Multiplier
+import BrownianImages.Asymptotics
+import BrownianImages.PairDifference
 
 namespace BrownianImages
 
@@ -113,7 +121,7 @@ theorem fixedSystem_crossPhi {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p
   rw [fixedSystem_ratio_zero, fixedSystem_ratio_one, fixedA_rpow hs hp0, fixedB_rpow hs hp1]
   ring
 
-/-- **The renewal mean is `m = E(p)/s`**: `p log(1/a) + q log(1/b)` with `a = p^{1/s}`,
+/-- **The renewal mean is `m = h(p)/s`**: `p log(1/a) + q log(1/b)` with `a = p^{1/s}`,
 `b = q^{1/s}`. -/
 theorem fixedSystem_renewalMean {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) :
     (fixedSystem s p hs hp0 hp1).renewalMean s = entropy p / s := by
@@ -241,7 +249,7 @@ theorem fixedSystem_integral_renewalDefect {s p : ℝ} (hs : 0 < s) (hs1 : s < 1
 /-! ### `eq:fixed-dimension-mean` and the non-lattice limit -/
 
 /-- **`eq:fixed-dimension-mean`.**  For the natural measure of the fixed-dimension system,
-the Cesàro means of `H_{μ_p}^s` converge to `H̄_s(p) = 2^{1-s} Γ(1-s) pq M_p(s)/E(p)`, in the
+the Cesàro means of `H_{μ_p}^s` converge to `H̄_s(p) = 2^{1-s} Γ(1-s) pq M_p(s)/h(p)`, in the
 lattice and the non-lattice case alike. -/
 theorem fixedSystem_tendsto_avg_H {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p)
     (hp1 : p < 1) {K : Set ℝ} {μ : Measure ℝ}

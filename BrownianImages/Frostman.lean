@@ -1,11 +1,11 @@
 /-
-`sec:setup`: the pair-distance distribution of a Frostman measure.
+`sec:setup`: the correlation integral of a Frostman measure.
 
-The Frostman bound `eq:frostman` passes to `Φ` by Fubini, which is `eq:phi-frostman`
+The Frostman bound `eq:frostman` passes to `Φ` by Fubini, which is `eq:correlation-frostman`
 and the only place the Frostman constant is used before `sec:variance`.
 
-* `phi_prod_eq`: the pair-distance mass as an integral of ball masses.
-* `phi_le`: `eq:phi-frostman`, `Φ(δ) ≤ Aδ^s` for `0 < δ ≤ 1`.
+* `phi_prod_eq`: the correlation integral as an integral of ball masses.
+* `phi_le`: `eq:correlation-frostman`, `Φ(δ) ≤ Aδ^s` for `0 < δ ≤ 1`.
 * `phi_nonneg`, `phi_mono`: the elementary properties used throughout.
 -/
 import BrownianImages.Defs
@@ -18,24 +18,24 @@ open scoped ENNReal Topology
 
 variable {μ : Measure ℝ}
 
-/-- `eq:phi-definition`: `Φ` is non-negative. -/
+/-- `sec:setup`: `Φ` is non-negative. -/
 theorem phi_nonneg (δ : ℝ) : 0 ≤ Phi μ δ := ENNReal.toReal_nonneg
 
-/-- `eq:phi-definition`: `Φ` is monotone in `δ`. -/
+/-- `sec:setup`: `Φ` is monotone in `δ`. -/
 theorem phi_mono [SFinite μ] {δ δ' : ℝ} (h : δ ≤ δ') [IsFiniteMeasure μ] :
     Phi μ δ ≤ Phi μ δ' := by
   refine ENNReal.toReal_mono (measure_ne_top _ _) (measure_mono ?_)
   exact fun p hp => le_trans hp h
 
-/-- The section of the pair-distance set at `x` is the closed ball of radius `δ`. -/
+/-- The section of the set of close pairs at `x` is the closed ball of radius `δ`. -/
 theorem mk_preimage_phiSet (x δ : ℝ) :
     Prod.mk x ⁻¹' {p : ℝ × ℝ | |p.1 - p.2| ≤ δ} = Metric.closedBall x δ := by
   ext y
   simp only [Set.mem_preimage, Set.mem_ofPred_eq, Metric.mem_closedBall, Real.dist_eq,
     abs_sub_comm x y]
 
-/-- The pair-distance mass is the average ball mass: the Fubini step of
-`eq:phi-frostman`. -/
+/-- The correlation integral is the average ball mass: the Fubini step of
+`eq:correlation-frostman`. -/
 theorem phi_prod_eq [SFinite μ] (δ : ℝ) :
     (μ.prod μ) {p : ℝ × ℝ | |p.1 - p.2| ≤ δ}
       = ∫⁻ x, μ (Metric.closedBall x δ) ∂μ := by
@@ -70,14 +70,14 @@ theorem IsFrostman.measure_singleton {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ}
     simpa using ENNReal.tendsto_ofReal h3
   exact le_antisymm (ge_of_tendsto hlim (Eventually.of_forall key)) (by simp)
 
-/-- `Φ` is the distribution function of the pair-distance law: this is the
+/-- `Φ` is the distribution function of the Stieltjes measure: this is the
 identification of `dΦ` in `eq:gaussian-reduction`. -/
 theorem phi_eq_pairLaw [SFinite μ] (δ : ℝ) :
     Phi μ δ = (pairLaw μ (Set.Iic δ)).toReal := by
   rw [Phi, pairLaw, Measure.map_apply (by fun_prop) measurableSet_Iic]
   rfl
 
-/-- `eq:phi-frostman`: the Frostman bound passes to the pair-distance distribution. -/
+/-- `eq:correlation-frostman`: the Frostman bound passes to the correlation integral. -/
 theorem phi_le [IsProbabilityMeasure μ] {s A : ℝ} (hμ : IsFrostman s A μ)
     {δ : ℝ} (hδ0 : 0 < δ) (hδ1 : δ ≤ 1) :
     Phi μ δ ≤ A * δ ^ s := by
@@ -179,7 +179,7 @@ theorem IsAhlforsClosed.isAhlfors {s A : ℝ} (hs : 0 ≤ s) (h : IsAhlforsClose
       _ = 2 ^ s * A * r ^ s := by ring
 
 
-/-! ### The pair-distance law has no atoms -/
+/-! ### The Stieltjes measure has no atoms -/
 
 /-- The section of `{|x - y| = δ}` at `x` is contained in the pair `{x - δ, x + δ}`. -/
 theorem mk_preimage_diffSet (x δ : ℝ) :
@@ -192,7 +192,7 @@ theorem mk_preimage_diffSet (x δ : ℝ) :
   · left; linarith
   · right; linarith
 
-/-- `sec:setup`: the pair-distance law has no atoms.  This is Fubini's theorem applied
+/-- `sec:setup`: the Stieltjes measure has no atoms.  This is Fubini's theorem applied
 to the section above, together with the atomlessness of `μ`; it is what makes `Φ`
 continuous. -/
 theorem pairLaw_measure_singleton [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
@@ -234,7 +234,7 @@ theorem continuous_cdf_toReal {ν : Measure ℝ} [IsProbabilityMeasure ν]
       (continuousWithinAt_Ioi_iff_Ici.mpr ((ProbabilityTheory.cdf ν).right_continuous x))
   exact hmono.continuousAt_iff_leftLim_eq_rightLim.mpr (hleft.trans hright.symm)
 
-/-- `sec:setup`: `Φ` is continuous, since the pair-distance law has no atoms. -/
+/-- `sec:setup`: `Φ` is continuous, since the Stieltjes measure has no atoms. -/
 theorem continuous_phi [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (h : IsFrostman s A μ) : Continuous (Phi μ) := by
   have hprob : IsProbabilityMeasure (pairLaw μ) := by
@@ -245,7 +245,7 @@ theorem continuous_phi [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
   rw [this]
   exact hcont
 
-/-- `eq:g-definition`: the normalised profile is continuous.  This is what the key
+/-- `sec:setup`: the normalised profile is continuous.  This is what the key
 renewal theorem asks of the kernel `z = G - F*G`. -/
 theorem continuous_G [IsProbabilityMeasure μ] {s A : ℝ} (hs : 0 < s)
     (h : IsFrostman s A μ) : Continuous (G s μ) :=

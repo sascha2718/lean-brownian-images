@@ -1,10 +1,10 @@
-# Pair-distance profiles and Minkowski reconstruction of planar Brownian images: the Lean formalisation
+# Correlation integrals and Minkowski reconstruction of planar Brownian images: the Lean formalisation
 
 [![Comparator audit](https://github.com/sascha2718/lean-brownian-images/actions/workflows/comparator.yml/badge.svg)](https://github.com/sascha2718/lean-brownian-images/actions/workflows/comparator.yml)
 
 A Lean 4 formalisation, over Mathlib, of the paper
 
-> Sascha Troscheit, *Pair-distance profiles and Minkowski reconstruction of planar
+> Sascha Troscheit, *Correlation integrals and Minkowski reconstruction of planar
 > Brownian images*, 2026. arXiv:XXXX.XXXXX (identifier to be filled in).
 
 Every numbered result of the paper is stated formally and proved, together with the
@@ -18,24 +18,22 @@ used.
 
 ## What is proved
 
-The separation theorem, its self-similar corollary with the two claims in its final
-sentence, and the monotonicity of the mean profile along the two-contraction family are
-the Comparator-audited endpoints:
+The separation theorem and its self-similar corollary with the two claims in its final
+sentence are the Comparator-audited endpoints:
 
 | Paper | Endpoint |
 | --- | --- |
 | `thm:main`: separated expected correlation profiles give mutually singular occupation-measure laws | `audit_main` |
 | `thm:cantor-application`: the homogeneous measure separates from every non-lattice natural measure of the same dimension under the open set condition, including the paired example | `audit_cantor_application`, `audit_cantor_application_pair` |
 | `thm:cantor-application`, final sentence: the exceptional parameter set is countable | `audit_exceptional_parameters_countable` |
-| `thm:two-contraction-distinction`: along `x ↦ x/2`, `x ↦ cx + 1 - c`, the mean of the expected profile at the dimension `s(c)` is strictly increasing in `c`, and distinct parameters give separated profiles | `audit_two_contraction_distinction`, `audit_two_contraction_separation` |
 
-Beside them, `Solution.lean` states 131 endpoints in all, named `audit_<slug>` in document
+Beside them, `Solution.lean` states 127 endpoints in all, named `audit_<slug>` in document
 order, from the Gaussian reduction of the correlation integral through the renewal
-analysis, the smoothing operator and its Fourier multipliers, the four-point estimate and
-the concentration argument, to the Minkowski reconstruction of the occupation measure
-from the compact Brownian image, the transfer of singularity to compact-set laws, the
-base-five missing-digit comparison, the homometric counterexample, the explicit
-limiting profiles of the two-contraction family, and the fixed-dimension family: its
+analysis with the non-constancy of the lattice profile, the smoothing operator and its
+Fourier multipliers, the four-point estimate and the concentration argument, to the
+Minkowski reconstruction of the occupation measure from the compact Brownian image, the
+transfer of singularity to compact-set laws, the base-five missing-digit comparison, the
+homometric counterexample, and the fixed-dimension family: its
 limiting profiles, the analyticity and the range of the mean profile, the separation of
 parameters with distinct means, and the strict monotonicity of the mean for small
 dimension. The table of every result against its endpoint is in
@@ -43,14 +41,14 @@ dimension. The table of every result against its endpoint is in
 
 ## Layout
 
-- `BrownianImages/`: the library, 142 modules organised along the sections of the paper.
+- `BrownianImages/`: the library, 137 modules organised along the sections of the paper.
   The root module `BrownianImages.lean` is the index: it lists every module with the part
   of the paper it certifies. `BrownianImages/FixedDimension/` carries the fixed-dimension
   family, `BrownianImages/Minkowski/` carries the reconstruction
   section, and `BrownianImages/Renewal/` is vendored third-party code, see below.
 - `Solution.lean`: the formal statement of the paper, every endpoint proved by a library
   declaration.
-- `Challenge.lean`: the six headline endpoints restated with `sorry`, on Mathlib-only
+- `Challenge.lean`: the four headline endpoints restated with `sorry`, on Mathlib-only
   definitions of the expected correlation profile and self-similar measures. It contains
   no helper proofs or bundled constructors for the named systems. It imports only Mathlib, so the audit
   trusts this file and Mathlib alone. Its statement text is character-for-character
@@ -64,6 +62,12 @@ dimension. The table of every result against its endpoint is in
 Every module opens with a comment naming the section of the paper it mirrors and the
 declarations that matter, and every declaration carries a doc comment naming the label of
 the paper it certifies.
+
+The concise companion for §9.3 is
+[`Section9Estimates.lean`](BrownianImages/FixedDimension/Section9Estimates.lean). It states
+the entropy and derivative bounds and the small-parameter comparison, all proved from
+the library. The accompanying `Section9Computations.nb` in the paper directory contains
+the detailed scalar calculations as executable Mathematica cells with saved outputs.
 
 ## Building
 

@@ -1,9 +1,10 @@
 /-
-`sec:variance` of `BrownianImagesComplete.tex`: the dyadic summation of
+`sec:variance` of `BrownianImagesComplete.tex`: a dyadic proof of
 `thm:four-point-integral` and the variance bound `thm:variance` that follows from it.
 
-The four dyadic sums in the proof of `thm:four-point-integral` are the content here.  They factor: the master sum is a product of
-two one-dimensional sums, because
+The paper integrates the distribution bound for the overlap and outer-gap lengths.
+This module uses dyadic blocks for the same estimate. The master sum factors as a product
+of two one-dimensional sums, because
 `min {1, λ/(β+η), λ²/(βη)} ≤ min {1, λ/β} · min {1, λ/η}`, and each one-dimensional sum
 is a geometric series split at the dyadic scale nearest `λ`.
 
@@ -15,7 +16,7 @@ is a geometric series split at the dyadic scale nearest `λ`.
 * `measurePreserving_perm4`: `μ⁴` is invariant under permuting the four times, which is
   what lets the mass bound of `thm:endpoint-block-mass`, stated for ordered quadruples,
   be applied to every labelled arrangement.
-* `four_point_integral_of_block`: `thm:four-point-integral`, `eq:four-point-integral`,
+* `four_point_integral_of_block`: `thm:four-point-integral`,
   on the dyadic block bound of `thm:endpoint-block-mass`.
 * `variance_of_block`, `thm_variance_of_block`: `thm:variance`, on that
   bound and on the expansion of the variance over `μ⁴`.
@@ -331,7 +332,7 @@ theorem sq_rpow {r : ℝ} (hr : 0 < r) (c : ℝ) : (r ^ 2) ^ c = r ^ (2 * c) := 
   rw [← Real.rpow_natCast r 2, ← Real.rpow_mul hr.le]
   norm_num
 
-/-- The double dyadic sum of `thm:four-point-integral`, bounded
+/-- The double dyadic sum used to prove `thm:four-point-integral`, bounded
 by the variance scale `eq:variance-scale`.  The three regimes of `V_s` are the three
 regimes of the `η`-sum: `2s < 1`, `2s = 1` and `2s > 1`. -/
 theorem tsum_master_le {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
@@ -922,11 +923,11 @@ theorem jointReturn_swap_pairs {P : Measure Ω} (W : ℝ≥0 → Ω → Plane) (
 end FourPointIntegral
 
 open FourPointIntegral in
-/-- `thm:four-point-integral`, `eq:four-point-integral`: the joint return probability
+/-- `thm:four-point-integral`: the joint return probability
 integrates over the overlap set to `O(V_s(r))`.  The hypothesis is the conclusion of
 `thm:endpoint-block-mass` at the dyadic values, `audit_endpoint_block_mass_dyadic`; the
-proof is the covering of the overlap set by the permuted dyadic blocks and the four
-dyadic sums of `thm:four-point-integral`. -/
+proof covers the overlap set by the permuted dyadic blocks and factors the resulting
+sum. The paper instead integrates the distribution bound over continuous cutoffs. -/
 theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω}
     [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (_hW : IsPlanarBrownian W P) {s A : ℝ}
     (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
@@ -1074,7 +1075,7 @@ theorem four_point_integral_of_block {Ω : Type*} [MeasurableSpace Ω] {P : Meas
 
 /-- `thm:variance`: the four-point variance bound.  Two inputs.  The first
 is the dyadic block bound of `thm:endpoint-block-mass`, which `four_point_integral_of_block`
-turns into `eq:four-point-integral`.  The second, `hcov`, is the opening sentence of the
+turns into `thm:four-point-integral`.  The second, `hcov`, is the opening sentence of the
 proof of `thm:variance`: expanding the variance and applying Fubini writes it as the
 `μ⁴`-integral of the covariance of the two return events, that covariance vanishes off the
 overlap set because disjoint increments are independent (`disjoint_increments_indep`), and

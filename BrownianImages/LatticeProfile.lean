@@ -1,9 +1,10 @@
 /-
-The general lattice branch of `thm:profile-asymptotics`.
+The general lattice branch of `thm:profile-asymptotics`: the periodic limit of `G`.
 The finite-delay renewal theorem already used for tube profiles applies to
 `A + 1 - G(2v)`, whose renewal defect has the same sign as the tube defect.
-Its uniform periodic limit gives a periodic limit for `G`; Gaussian smoothing
-then gives the asserted limit for `H_μ^s`.
+Its uniform periodic limit gives a periodic limit for `G`, and Gaussian smoothing
+carries a vanishing error through `T`; `LatticeNonconstancy` assembles the branch
+with the non-constancy of the limit.
 -/
 import BrownianImages.NonLattice
 import BrownianImages.Schief
@@ -47,7 +48,7 @@ theorem tubeArithmetic_of_log_lattice {h : ℝ}
       linarith
     simpa using S.half_mul_mem_halfLogRatio_closure_of_mem_logRatio_closure hx2
 
-/-- The classical lower regularity estimate bounds the critical pair-distance
+/-- The classical lower regularity estimate bounds the normalised correlation
 profile away from zero on the positive half-line. -/
 theorem IsNatural.lower_bound_G {K : Set ℝ} {s : ℝ} (hs : 0 ≤ s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) {w : ℝ} (hw : 0 ≤ w) :
@@ -192,23 +193,6 @@ theorem smooth_profile_error_tendsto {s A p : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
   rw [show H s μ t = smoothOp s (G s μ) t from rfl,
     ← smoothOp_sub hs0 hs1 hGc hg hGbound hbound]
   rfl
-
-/-- `thm:profile-asymptotics`, the general lattice branch at its critical
-dimension, with period half the span of the logarithmic contraction ratios. -/
-theorem lattice_profile_asymptotics {ι : Type*} [Fintype ι] [Nonempty ι]
-    (S : System ι) {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
-    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P (h / 2) ∧
-      (∀ t, 0 < P t) ∧ Tendsto (fun t ↦ H s μ t - P t) atTop (𝓝 0) := by
-  have := hμ.isProbabilityMeasure
-  obtain ⟨A, hA⟩ := hosc.exists_isFrostman S hs0.le hμ
-  obtain ⟨g, hgc, hgp, hgpos, hglim⟩ := S.lattice_G_limit hs0 hs1 hosc hdim hh hlat hμ
-  obtain ⟨B, _, hB⟩ := exists_nonneg_bound_of_periodic hh.ne' hgc hgp
-  exact ⟨smoothOp s g, continuous_smoothOp hs0 hs1 hgc hB,
-    smoothOp_periodic hgp, smoothOp_pos hs0 hs1 hgc hgpos hB,
-    smooth_profile_error_tendsto hs0 hs1 hA hgc hh hgp hglim⟩
 
 end
 

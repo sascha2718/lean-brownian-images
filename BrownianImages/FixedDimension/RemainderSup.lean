@@ -1,10 +1,10 @@
 /-
-The sup bound `|Δ| ≤ 1296 s α p^{-1-s}` of the proof of `thm:remainder-derivative` on the
-disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s α p^{-2-s}`.
+The sup bound `|Δ| ≤ 1296 s λ_{1,max} p^{-1-s}` of the proof of `thm:remainder-derivative` on the
+disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`.
 
 * `tsum_rpow_succ_le`: `∑_{n≥0} (n+1)^{-s-1} ≤ 1 + 1/s`, by the antitone Riemann bound.
-* `one_sub_betaP_pow_rpow_le`: `(1 - β^{n+1})^{-s-1} ≤ 2^{s+1} (1 + (2s/((n+1)p))^{s+1})`.
-* `tsum_disc_le`: `∑ (3p/2)(1 - p/2)ⁿ (1 - β^{n+1})^{-s-1} ≤ 27 p^{-s}`.
+* `one_sub_betaP_pow_rpow_le`: `(1 - λ_{2,max}^{n+1})^{-s-1} ≤ 2^{s+1} (1 + (2s/((n+1)p))^{s+1})`.
+* `tsum_disc_le`: `∑ (3p/2)(1 - p/2)ⁿ (1 - λ_{2,max}^{n+1})^{-s-1} ≤ 27 p^{-s}`.
 * `norm_complexDelta_le`, `norm_deriv_complexDelta_le`: the sup bound and Cauchy's estimate.
 -/
 import BrownianImages.FixedDimension.RemainderBound
@@ -37,13 +37,13 @@ theorem tsum_rpow_succ_le {s : ℝ} (hs : 0 < s) :
   rw [e, Real.one_rpow] at h
   linarith
 
-/-- `(1 - β^{n+1})^{-s-1} ≤ 2^{s+1} (1 + ((n+1)p/(2s))^{-s-1})`. -/
+/-- `(1 - λ_{2,max}^{n+1})^{-s-1} ≤ 2^{s+1} (1 + ((n+1)p/(2s))^{-s-1})`. -/
 theorem one_sub_betaP_pow_rpow_le {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) (n : ℕ) :
     (1 - betaP s p ^ (n + 1)) ^ (-s - 1)
       ≤ 2 ^ (s + 1) * (1 + (((n:ℝ) + 1) * p / (2 * s)) ^ (-(s + 1))) := by
   set x := ((n:ℝ) + 1) * p / (2 * s) with hx
   have hx0 : 0 < x := by positivity
-  -- `β^{n+1} ≤ e^{-x}`
+  -- `λ_{2,max}^{n+1} ≤ e^{-x}`
   have hβ : betaP s p ^ (n + 1) ≤ Real.exp (-x) := by
     calc betaP s p ^ (n + 1) ≤ Real.exp (-(p / (2 * s))) ^ (n + 1) :=
           pow_le_pow_left₀ (betaP_nonneg hp1) (betaP_le_exp hs hp1) _
@@ -99,7 +99,7 @@ theorem four_rpow_succ_le {s : ℝ} (hs1 : s ≤ 1/2) : (4:ℝ) ^ (s + 1) ≤ 8 
     norm_num
   linarith
 
-/-- `∑_{n≥0} (3p/2)(1 - p/2)ⁿ (1 - β^{n+1})^{-s-1} ≤ 27 p^{-s}`. -/
+/-- `∑_{n≥0} (3p/2)(1 - p/2)ⁿ (1 - λ_{2,max}^{n+1})^{-s-1} ≤ 27 p^{-s}`. -/
 theorem tsum_disc_le {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp1 : p < 1) :
     ∑' n : ℕ, 3 * p / 2 * (1 - p / 2) ^ n * (1 - betaP s p ^ (n + 1)) ^ (-s - 1)
       ≤ 27 * p ^ (-s) := by
@@ -208,7 +208,7 @@ section Sup
 variable {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p) (hp : p ≤ 1/50)
 include hs hs1 hp0 hp
 
-/-- `C_n/(1 - r) ≤ 12 s α (1 - β^{n+1})^{-s-1} · (4/p)`. -/
+/-- `C_n/(1 - r) ≤ 12 s λ_{1,max} (1 - λ_{2,max}^{n+1})^{-s-1} · (4/p)`. -/
 theorem incC_div_le (n : ℕ) :
     incC s p n / (1 - discR s p)
       ≤ 48 * s * alphaP s p / p * (1 - betaP s p ^ (n + 1)) ^ (-s - 1) := by
@@ -223,7 +223,7 @@ theorem incC_div_le (n : ℕ) :
   have hα := alphaP_nonneg (s := s) hp0
   have hpos := one_sub_betaP_pow_pos hs hp0 hp1 n
   have hr : 0 ≤ ((1 - betaP s p ^ (n + 1)) / 2) ^ (-s - 1) := by positivity
-  -- `L_n = s α 2^{s+1} (1 - β^{n+1})^{-s-1}`
+  -- `L_n = s λ_{1,max} 2^{s+1} (1 - λ_{2,max}^{n+1})^{-s-1}`
   have hL : kernelLip s p n = s * alphaP s p * 2 ^ (s + 1) * (1 - betaP s p ^ (n + 1)) ^ (-s - 1) := by
     unfold kernelLip
     rw [Real.div_rpow hpos.le (by norm_num), show (-s - 1) = -(s + 1) by ring,
@@ -247,7 +247,7 @@ theorem incC_div_le (n : ℕ) :
         apply div_le_div_of_nonneg_right _ hp0.le
         nlinarith [mul_nonneg (mul_nonneg hs.le hα) hr']
 
-/-- `|Δ(z)| ≤ 1296 s α p^{-1-s}` on the disc. -/
+/-- `|Δ(z)| ≤ 1296 s λ_{1,max} p^{-1-s}` on the disc. -/
 theorem norm_complexDelta_le {z : ℂ} (hz : z ∈ discP p) :
     ‖complexDelta s z‖ ≤ 1296 * s * alphaP s p * p ^ (-1 - s) := by
   have hp1 := hp1_of hp
@@ -299,7 +299,7 @@ theorem norm_complexDelta_le {z : ℂ} (hz : z ∈ discP p) :
         field_simp
         ring
 
-/-- **Cauchy's estimate** for `Δ` at `p`: `|Δ'(p)| ≤ 2592 s α p^{-2-s}`. -/
+/-- **Cauchy's estimate** for `Δ` at `p`: `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`. -/
 theorem norm_deriv_complexDelta_le :
     ‖deriv (complexDelta s) (p : ℂ)‖ ≤ 2592 * s * alphaP s p * p ^ (-2 - s) := by
   have hR : 0 < p / 2 := by positivity

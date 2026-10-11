@@ -100,7 +100,7 @@ theorem endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure P]
   endpoint_block_mass_dyadic_of_four_point hW hs hμ
     (fun hr hΔ => gaussian_four_point hW hr hΔ)
 
-/-- `thm:four-point-integral`, `eq:four-point-integral`.  The four dyadic sums, summed:
+/-- `thm:four-point-integral`.  The four dyadic sums, summed:
 the joint return probability integrates over the overlap set to `O(V_s(r))`. -/
 theorem four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)

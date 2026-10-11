@@ -5,8 +5,8 @@ first-level pieces used by Minkowski reconstruction.
 * `System.IsAttractor.toNonemptyCompacts`, `System.IsNatural.compactAttractor`,
   `System.IsNatural.compactPiece`: the attractor and its first-level pieces as points
   of the Hausdorff hyperspace.
-* `System.halfLogRatio`, `System.tubeWeight`, `tubeExponent`: the parameters
-  `β_i`, `p_i` and `α` of `sec:reconstruction`.
+* `System.halfLogRatio`, `System.tubeWeight`, `tubeExponent`: the quantities
+  `α_i/2`, `p_i` and `2 - 2s` of `sec:reconstruction`.
 -/
 import BrownianImages.SelfSimilar
 import Mathlib.Topology.MetricSpace.Closeds
@@ -65,7 +65,7 @@ theorem IsNatural.coe_compactPiece {K : Set ℝ} {s : ℝ} {mu : Measure ℝ}
     (hmu.compactPiece S i : Set ℝ) = S.map i '' K := by
   exact hmu.attractor.coe_compactPiece S i
 
-/-- The half-logarithmic step `β_i = (1/2) log(1/r_i)` of
+/-- The half-logarithmic step `α_i/2 = (1/2) log(1/r_i)` of
 `sec:reconstruction`. -/
 noncomputable def halfLogRatio (i : ι) : ℝ := (1 / 2 : ℝ) * S.logRatio i
 
@@ -92,7 +92,7 @@ theorem tubeWeight_lt_one {s : ℝ} (hs : 0 < s) (i : ι) : S.tubeWeight s i < 1
 
 end System
 
-/-- The normalising exponent `α = 2 - 2s` of `sec:reconstruction`. -/
+/-- The normalising exponent `2 - 2s`, written explicitly in `sec:reconstruction`. -/
 def tubeExponent (s : ℝ) : ℝ := 2 - 2 * s
 
 

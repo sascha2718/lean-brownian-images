@@ -4,9 +4,9 @@ positive on `(0,1)`, and `H̄_s(p) → 0` as `p ↓ 0`; consequently the family 
 uncountable subfamily with pairwise distinct means.
 
 Continuity is a consequence of `thm:fixed-dimension-analyticity`.  For the limit, the
-leading-ones decomposition `eq:leading-ones` gives `M_p ≤ 2^s Σ(p)` once `a ≤ (1-b)/2`, the
-main term is bounded through `Σ = (e^{sT} - 1) S(T)` and the Riemann-sum comparison, so `M_p`
-stays bounded as `p ↓ 0`, while `pq/E(p) ≤ 1/log(1/p) → 0`.
+leading-ones decomposition `eq:initial-symbol-decomposition` gives `M_p ≤ 2^s J₀(p)` once `a ≤ (1-b)/2`, the
+main term is bounded through `J₀(p) = (e^{sT(p)} - 1) S(T(p))` and the Riemann-sum comparison, so `M_p`
+stays bounded as `p ↓ 0`, while `pq/h(p) ≤ 1/log(1/p) → 0`.
 
 * `fixedMean_pos`, `continuousAt_fixedMean`: positivity and continuity.
 * `fixedMoment_le_of_small`: the uniform bound on the moment for small `p`.
@@ -159,7 +159,7 @@ theorem leadingTerm_le_of_small {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 
   rw [measureReal_def, measure_univ, ENNReal.toReal_one, mul_one, Real.norm_eq_abs] at h
   exact (le_abs_self _).trans h
 
-/-- `M_p ≤ 2^s Σ(p)` once `a ≤ (1 - b)/2`. -/
+/-- `M_p ≤ 2^s J₀(p)` once `a ≤ (1 - b)/2`. -/
 theorem fixedMoment_le_mainTerm {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
     (ha : fixedA s p ≤ (1 - fixedB s p) / 2) :
     fixedMoment s p ≤ 2 ^ s * mainTerm s p := by
@@ -183,7 +183,7 @@ theorem fixedMoment_le_mainTerm {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 
         mul_le_mul_of_nonneg_left (hL.trans e.le) hq
     _ = 2 ^ s * (p * (1 - p) ^ n * (1 - fixedB s p ^ (n + 1)) ^ (-s)) := by ring
 
-/-- `Σ(p) ≤ (s/q) (∫_T^∞ f + T f(T))`. -/
+/-- `J₀(p) ≤ (s/q) (∫_{T(p)}^∞ f + T(p) f(T(p)))`. -/
 theorem mainTerm_le {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1) :
     mainTerm s p ≤ (s / (1 - p)) *
       ((∫ x in Ioi (fixedT s p), mainF s x) + fixedT s p * mainF s (fixedT s p)) := by
@@ -303,7 +303,7 @@ theorem eventually_small {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
     nlinarith
   linarith
 
-/-- `E(p) ≥ p log(1/p)`. -/
+/-- `h(p) ≥ p log(1/p)`. -/
 theorem entropy_ge {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) : p * Real.log p⁻¹ ≤ entropy p := by
   unfold entropy
   have : Real.log (1 - p) ≤ 0 := Real.log_nonpos (by linarith) (by linarith)

@@ -3,11 +3,14 @@
     "solution_module": "Solution",
     "theorem_names": [
         "BrownianImages.audit_main",
-        "BrownianImages.audit_cantor_application",
-        "BrownianImages.audit_cantor_application_pair",
-        "BrownianImages.audit_exceptional_parameters_countable",
-        "BrownianImages.audit_two_contraction_distinction",
-        "BrownianImages.audit_two_contraction_separation"
+        "BrownianImages.audit_profile_asymptotics",
+        "BrownianImages.audit_lattice_nonlattice_measures",
+        "BrownianImages.audit_finite_exceptions",
+        "BrownianImages.audit_small_dimension",
+        "BrownianImages.audit_finite_critical_set",
+        "BrownianImages.audit_reconstruction",
+        "BrownianImages.audit_lattice_nonlattice_sets",
+        "BrownianImages.audit_two_contraction_sets"
     ],
     "definition_names": [],
     "permitted_axioms": [

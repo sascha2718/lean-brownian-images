@@ -82,8 +82,8 @@ theorem IsNatural.tubeOverlap
   have hmom := hmu.tubeMoments hW S hs0 hs1 (hsosc.openSetCondition S) hdim
   exact hmu.tubeOverlap_of_sosc_of_tubeMoments S hW hs0 hs1 hsosc hdim hmom.1
 
-/-- The non-arithmetic branch of `thm:neighbourhood-renewal`, with the unit Brownian
-radius moments discharged. -/
+/-- The internal non-arithmetic limit giving the shift relation in
+`thm:neighbourhood-renewal`, with the unit Brownian radius moments discharged. -/
 theorem IsNatural.meanBrownianTubeProfile_tendsto
     {P : Measure Omega} [IsProbabilityMeasure P]
     {W : NNReal → Omega → Plane} (hW : IsPlanarBrownian W P)
@@ -108,8 +108,8 @@ universe u v
 variable {OmegaC : Type u} {iotaC : Type v} [MeasurableSpace OmegaC]
 variable [Fintype iotaC] [Nonempty iotaC]
 
-/-- `thm:neighbourhood-concentration`, with the unit Brownian radius moments
-discharged. -/
+/-- Internal centred-norm form of `thm:neighbourhood-concentration`, with the unit
+Brownian radius moments discharged. The paper states its square as a variance bound. -/
 theorem IsNatural.tubeConcentration
     {P : Measure OmegaC} [IsProbabilityMeasure P]
     {W : NNReal → OmegaC → Plane} (hW : IsPlanarBrownian W P)
@@ -129,6 +129,55 @@ theorem IsNatural.tubeConcentration
   intro p hp
   exact BrownianImages.IsPlanarBrownian.integrable_one_add_standardBrownianRadius_rpow
     hW hp
+
+/-- `thm:neighbourhood-concentration`: exponential decay of the variance and
+almost-sure convergence along each fixed shifted integer grid. -/
+theorem IsNatural.tubeVarianceConcentration
+    {P : Measure OmegaC} [IsProbabilityMeasure P]
+    {W : NNReal → OmegaC → Plane} (hW : IsPlanarBrownian W P)
+    (S : System iotaC) {K : Set Real} {s : Real}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hsosc : S.StrongOpenSetCondition K) (hdim : S.IsDimension s)
+    {mu : Measure Real} (hmu : S.IsNatural K s mu) :
+    (∃ C : Real, 0 < C ∧ ∃ gamma : Real, 0 < gamma ∧
+      ∀ t : Real, 0 ≤ t →
+        MemLp (brownianTubeProfile W hmu.compactAttractor s t) 2 P ∧
+        variance (brownianTubeProfile W hmu.compactAttractor s t) P ≤
+          C * Real.exp (-gamma * t)) ∧
+    ∀ t : Real, ∀ᵐ omega ∂P, Tendsto
+      (fun n : Nat => centeredBrownianTubeProfile W P hmu.compactAttractor s
+        ((n : Real) + t) omega) atTop (nhds 0) := by
+  obtain ⟨⟨C, hC, gamma, hgamma, hbound⟩, hgrid⟩ :=
+    hmu.tubeConcentration hW S hs0 hs1 hsosc hdim
+  refine ⟨⟨C ^ 2, sq_pos_of_pos hC, 2 * gamma, by positivity, ?_⟩, hgrid⟩
+  intro t ht
+  obtain ⟨hmem, hnorm⟩ := hbound t ht
+  have hraw : MemLp (brownianTubeProfile W hmu.compactAttractor s t) 2 P := by
+    convert hmem.add
+      (memLp_const (meanBrownianTubeProfile W P hmu.compactAttractor s t)) using 1
+    ext omega
+    simp [centeredBrownianTubeProfile]
+  refine ⟨hraw, ?_⟩
+  have hreal : lpNorm (centeredBrownianTubeProfile W P hmu.compactAttractor s t) 2 P ≤
+      C * Real.exp (-gamma * t) := by
+    have h := ENNReal.toReal_mono ENNReal.ofReal_ne_top hnorm
+    simpa only [toReal_eLpNorm, ENNReal.toReal_ofReal
+      (mul_nonneg hC.le (Real.exp_pos _).le)] using h
+  have hcenter : MinkowskiL2Recurrence.centeredL2Norm
+      (brownianTubeProfile W hmu.compactAttractor s t) P ≤
+        C * Real.exp (-gamma * t) := hreal
+  calc
+    variance (brownianTubeProfile W hmu.compactAttractor s t) P =
+        MinkowskiL2Recurrence.centeredL2Norm
+          (brownianTubeProfile W hmu.compactAttractor s t) P ^ 2 :=
+      (MinkowskiL2Recurrence.centeredL2Norm_sq hraw).symm
+    _ ≤ (C * Real.exp (-gamma * t)) ^ 2 :=
+      (sq_le_sq₀ (MinkowskiL2Recurrence.centeredL2Norm_nonneg _ _)
+        (mul_nonneg hC.le (Real.exp_pos _).le)).mpr hcenter
+    _ = C ^ 2 * Real.exp (-(2 * gamma) * t) := by
+      rw [mul_pow, pow_two (Real.exp _), ← Real.exp_add]
+      congr 2
+      ring
 
 end Concentration
 

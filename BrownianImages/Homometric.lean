@@ -1,6 +1,6 @@
 /-
 `thm:homometric-example` of `sec:obstruction`: two distinct strongly separated
-self-similar measures with identical pair-distance distributions.
+self-similar measures with identical correlation integrals.
 
 The finite content of the example is proved here: the two systems are strongly
 separated, and the common dimension `t = log 6 / log 30` lies in `(1/2, 1)` and solves

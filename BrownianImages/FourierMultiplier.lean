@@ -1,5 +1,6 @@
 /-
-`eq:fourier-multiplier` of `sec:smoothing`: the Fourier identity `T̂g(k) = M_k ĝ(k)`.
+`eq:fourier-multiplier` of `sec:smoothing`: the Fourier identity
+`T̂g(k) = (∫₀^∞ φ(η) η^{-2πik/p} dη) ĝ(k)`.
 
 The coefficient of `Tg` is taken at its own period `p/2` and that of `g` at `p`.  The
 proof is the paper's: shift the argument of `g` inside the period integral, which costs
@@ -176,7 +177,7 @@ theorem integrable_uncurry_fker {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
 /-! ### The Fourier identity -/
 
 /-- `eq:fourier-multiplier`: the Fourier coefficients of `Tg` at period `p/2` are those
-of `g` at period `p` scaled by the multiplier `M_k`. -/
+of `g` at period `p` multiplied by `∫₀^∞ φ(η) η^{-2πik/p} dη`. -/
 theorem fourierCoeffP_smoothOp {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     {g : ℝ → ℝ} (hg : Continuous g) (hbdd : ∃ M, ∀ x, |g x| ≤ M)
     (hper : Function.Periodic g p) (k : ℤ) :

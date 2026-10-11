@@ -22,7 +22,7 @@ is not a random variable and no variance bound carries information.
 * `Concentration.H_nonneg`, `Concentration.H_le`: the expected profile is bounded, the
   constant `M` of the proof of `thm:uniform-concentration`.
 * `uniform_concentration_of_grid_convergence`: `thm:uniform-concentration`,
-  `eq:uniform-concentration`, from `eq:grid-convergence`, the grid monotonicity
+  from `eq:grid-convergence`, the grid monotonicity
   `eq:monotone-fill` and `thm:profile-uniform-continuity`.
 * `Concentration.tailSet`: the separating Borel set of the proof of `thm:main`, with
   its measurability and the disjointness `eq:profile-separation` forces.
@@ -136,7 +136,7 @@ theorem aemeasurable_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
   rw [hω]
 
 /-- The empirical profile is bounded by its own exponential prefactor, so it lies in
-`L²(P)`: the correlation functional of a probability measure is at most one. -/
+`L²(P)`: the correlation integral of a probability measure is at most one. -/
 theorem memLp_Yprofile {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hmeas : AEMeasurable (occupationProb W μ) P) (v : ℝ) :
@@ -282,7 +282,7 @@ theorem H_nonneg {s : ℝ} {μ : Measure ℝ} (v : ℝ) : 0 ≤ H s μ v :=
     mul_nonneg (kern_pos hη).le (G_nonneg _)
 
 /-- `H_μ^s ≤ A ‖k‖₁` on the whole line: this is the supremum `M` of the proof of
-`thm:uniform-concentration`, and `eq:phi-frostman` is what bounds `G`. -/
+`thm:uniform-concentration`, and `eq:correlation-frostman` is what bounds `G`. -/
 theorem H_le {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : IsFrostman s A μ) (v : ℝ) : H s μ v ≤ A * ∫ x : ℝ, logKern s x := by
   have hkint : Integrable (logKern s) := logKern_integrable hs0 hs1
@@ -302,11 +302,11 @@ end Concentration
 
 /-! ### `thm:uniform-concentration` -/
 
-/-- `thm:uniform-concentration`, `eq:uniform-concentration`.  Almost surely the
+/-- `thm:uniform-concentration`.  Almost surely the
 empirical profile converges to the expected profile, uniformly on tails.  The
 hypothesis `hgrid` is the conclusion of `audit_grid_convergence`, one grid for every
 `m`; the grid is filled by `eq:monotone-fill`, the expected profile is moved along it
-by `thm:profile-uniform-continuity`, and `eq:phi-frostman` bounds it. -/
+by `thm:profile-uniform-continuity`, and `eq:correlation-frostman` bounds it. -/
 theorem uniform_concentration_of_grid_convergence {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ)
@@ -469,15 +469,15 @@ namespace Concentration
 
 /-- The set of the proof of `thm:main`: the probability measures on the plane whose
 empirical profile agrees with `H_μ^s` in the limit along the non-negative rationals.  The
-paper writes it as `lim_n sup_{q ∈ ℚ, q ≥ n} |Y_ν(q) - H_μ^s(q)| = 0`; here it is written
-out with a countable intersection over the tolerance, which avoids the junk value a
-supremum takes on an unbounded family. -/
+paper writes it as `lim_n sup_{q ∈ ℚ, q ≥ n} |e^{2sq} C_{e^{-q}}(ν) - H_μ^s(q)| = 0`;
+here it is written out with a countable intersection over the tolerance, which avoids
+the junk value a supremum takes on an unbounded family. -/
 def tailSet (s : ℝ) (μ : Measure ℝ) : Set (ProbabilityMeasure Plane) :=
   ⋂ k : ℕ, ⋃ n : ℕ, ⋂ q : {q : ℚ // (n : ℚ) ≤ q},
     {ν | |Yprofile s ν.toMeasure ((q : ℚ) : ℝ) - H s μ ((q : ℚ) : ℝ)| ≤ 1/((k:ℝ)+1)}
 
 /-- The set is Borel: it is built from countable unions and countable intersections of
-the Borel maps `ν ↦ Y_ν(q)` of `sec:concentration`. -/
+the Borel maps `ν ↦ e^{2sq} C_{e^{-q}}(ν)` of `sec:concentration`. -/
 theorem measurableSet_tailSet (s : ℝ) (μ : Measure ℝ) : MeasurableSet (tailSet s μ) :=
   MeasurableSet.iInter fun _ => MeasurableSet.iUnion fun _ => MeasurableSet.iInter fun q =>
     measurableSet_le (continuous_abs.measurable.comp ((measurable_Yprofile s ((q : ℚ) : ℝ)).sub

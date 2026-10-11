@@ -1,10 +1,11 @@
 /-
 `eq:fixed-dimension-periodic` of `thm:fixed-dimension-profiles`: in the lattice case the
 expected profile of the fixed-dimension family is asymptotic to the absolutely convergent
-Fourier series with coefficients `(2spq/E(p)) 2^{-ζ_k} Γ(1-ζ_k) M_p(ζ_k)/ζ_k`,
-`ζ_k = s - 2πik/h`.  The proof is that of `eq:two-contraction-periodic`: the forcing
-transform `eq:fixed-dimension-forcing`, the Fourier coefficients of the lattice limit read
-off the renewal equation, and the `O(k⁻²)` decay from `|Γ(1-ζ)| ≤ Γ(2-s)/|1-ζ|`.
+Fourier series with coefficients `(2spq/h(p)) 2^{-ζ_k} Γ(1-ζ_k) M_p(ζ_k)/ζ_k`,
+`ζ_k = s - 2πik/h`.  The ingredients are the forcing transform
+`eq:fixed-dimension-forcing`, the Fourier coefficients of the lattice limit read off the
+renewal equation in `LatticeFourier`, and the `O(k⁻²)` decay from
+`|Γ(1-ζ)| ≤ Γ(2-s)/|1-ζ|`.
 
 * `fixedMomentC`: `M_p(α)` at complex `α`.
 * `fixedSystem_integral_renewalDefect_char`: `eq:fixed-dimension-forcing`.
@@ -12,7 +13,7 @@ off the renewal equation, and the `O(k⁻²)` decay from `|Γ(1-ζ)| ≤ Γ(2-s)
 * `fixedSystem_periodic`: `eq:fixed-dimension-periodic`.
 -/
 import BrownianImages.FixedDimension.Profiles
-import BrownianImages.TwoContraction.Periodic
+import BrownianImages.LatticeFourier
 
 namespace BrownianImages
 
@@ -129,12 +130,12 @@ theorem fixedSystem_integral_renewalDefect_char {s p : ℝ} (hs : 0 < s) (hs1 : 
 
 /-! ### `eq:fixed-dimension-periodic` -/
 
-/-- The `k`-th coefficient `(2spq/E(p)) 2^{-ζ_k} Γ(1-ζ_k) M_p(ζ_k)/ζ_k` of
+/-- The `k`-th coefficient `(2spq/h(p)) 2^{-ζ_k} Γ(1-ζ_k) M_p(ζ_k)/ζ_k` of
 `eq:fixed-dimension-periodic`, with `ζ_k = s - 2πik/h`. -/
 def fixedDimCoeff (s p : ℝ) (μ : Measure ℝ) (h : ℝ) (k : ℤ) : ℂ :=
   ((2 * s * p * (1 - p) / entropy p : ℝ) : ℂ) *
-    ((2:ℂ) ^ (-twoContractionZeta s h k) * Complex.Gamma (1 - twoContractionZeta s h k) /
-      twoContractionZeta s h k * fixedMomentC s p μ (twoContractionZeta s h k))
+    ((2:ℂ) ^ (-latticeZeta s h k) * Complex.Gamma (1 - latticeZeta s h k) /
+      latticeZeta s h k * fixedMomentC s p μ (latticeZeta s h k))
 
 /-- **The coefficients are `O(k⁻²)`**: `|2^{-ζ}| = 2^{-s}`, `|M_p(ζ)| ≤ (1-a-b)^{-s}` and
 `|Γ(1-ζ)| ≤ Γ(2-s)/|1-ζ|`, while `|ζ|` and `|1 - ζ|` are at least `2π|k|/h`. -/
@@ -153,10 +154,10 @@ theorem summable_norm_fixedDimCoeff {s p h : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp
     ((Real.summable_abs_int_rpow (by norm_num : (1:ℝ) < 2)).mul_left C) ?_
   filter_upwards [eventually_cofinite_ne 0] with k hk
   rw [norm_norm]
-  set ζ := twoContractionZeta s h k with hζ
+  set ζ := latticeZeta s h k with hζ
   have hkpos : 0 < |(k:ℝ)| := abs_pos.2 (by exact_mod_cast hk)
   have himabs : |ζ.im| = 2 * Real.pi * |(k:ℝ)| / h := by
-    rw [hζ, twoContractionZeta_im, abs_neg, abs_div, abs_mul, abs_of_pos hpi,
+    rw [hζ, latticeZeta_im, abs_neg, abs_div, abs_mul, abs_of_pos hpi,
       abs_of_pos hh]
   have hζn : 2 * Real.pi * |(k:ℝ)| / h ≤ ‖ζ‖ := himabs ▸ Complex.abs_im_le_norm ζ
   have h1ζn : 2 * Real.pi * |(k:ℝ)| / h ≤ ‖1 - ζ‖ := by
@@ -168,12 +169,12 @@ theorem summable_norm_fixedDimCoeff {s p h : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp
   have h1ζ0 : 1 - ζ ≠ 0 := fun h0 => by rw [h0, norm_zero] at h1ζn; linarith
   have h2 : ‖(2:ℂ) ^ (-ζ)‖ = (2:ℝ) ^ (-s) := by
     rw [show (2:ℂ) = ((2:ℝ) : ℂ) by norm_num, Complex.norm_cpow_eq_rpow_re_of_pos (by norm_num),
-      Complex.neg_re, hζ, twoContractionZeta_re]
+      Complex.neg_re, hζ, latticeZeta_re]
   have hΓ : ‖Complex.Gamma (1 - ζ)‖ ≤ Real.Gamma (2 - s) / ‖1 - ζ‖ := by
     have hadd := Complex.Gamma_add_one (1 - ζ) h1ζ0
     rw [show 1 - ζ + 1 = 2 - ζ by ring] at hadd
     have hre : (2 - ζ).re = 2 - s := by
-      rw [Complex.sub_re, hζ, twoContractionZeta_re]; norm_num
+      rw [Complex.sub_re, hζ, latticeZeta_re]; norm_num
     have hle := norm_Gamma_le (z := 2 - ζ) (by rw [hre]; linarith)
     rw [hre, hadd, norm_mul] at hle
     rw [le_div_iff₀ (norm_pos_iff.2 h1ζ0), mul_comm]
@@ -184,7 +185,7 @@ theorem summable_norm_fixedDimCoeff {s p h : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp
       (C := crossGap s p ^ (-s)) (hbox.mono fun q hq => by
         have hZ := fixedCross_mem hs hp0 hp1 hq.1 hq.2
         have hZp : 0 < fixedCross s p q.1 q.2 := lt_of_lt_of_le hbpos hZ.1
-        rw [Complex.norm_cpow_eq_rpow_re_of_pos hZp, Complex.neg_re, hζ, twoContractionZeta_re]
+        rw [Complex.norm_cpow_eq_rpow_re_of_pos hZp, Complex.neg_re, hζ, latticeZeta_re]
         exact Real.rpow_le_rpow_of_nonpos hbpos hZ.1 (by linarith))
     rwa [probReal_univ, mul_one] at this
   have hΓpos : 0 < Real.Gamma (2 - s) := Real.Gamma_pos_of_pos (by linarith)
@@ -227,12 +228,12 @@ theorem fixedSystem_fourierCoeffP_smoothOp {s p : ℝ} (hs : 0 < s) (hs1 : s < 1
       hgc hgp hglim k,
     fixedSystem_integral_renewalDefect_char hs hs1 hp0 hp1 hμ, fixedSystem_renewalMean hs hp0 hp1,
     gammaMult, fixedDimCoeff]
-  have hz : ((s : ℂ) - I * ((2 * Real.pi * k / h : ℝ) : ℂ)) = twoContractionZeta s h k := by
-    rw [twoContractionZeta]; push_cast; ring
-  have he1 : -(s : ℂ) + freq h k = -twoContractionZeta s h k := by
-    rw [twoContractionZeta, freq]; ring
-  have he2 : 1 - (s : ℂ) + freq h k = 1 - twoContractionZeta s h k := by
-    rw [twoContractionZeta, freq]; ring
+  have hz : ((s : ℂ) - I * ((2 * Real.pi * k / h : ℝ) : ℂ)) = latticeZeta s h k := by
+    rw [latticeZeta]; push_cast; ring
+  have he1 : -(s : ℂ) + freq h k = -latticeZeta s h k := by
+    rw [latticeZeta, freq]; ring
+  have he2 : 1 - (s : ℂ) + freq h k = 1 - latticeZeta s h k := by
+    rw [latticeZeta, freq]; ring
   rw [hz, he1, he2, Complex.real_smul]
   have hEc : (entropy p : ℂ) ≠ 0 := by exact_mod_cast hE.ne'
   have hsc : (s : ℂ) ≠ 0 := by exact_mod_cast hs.ne'

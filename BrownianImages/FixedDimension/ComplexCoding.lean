@@ -1,8 +1,12 @@
 /-
-Complex coded points for the proofs of `thm:remainder-derivative` and
-`thm:second-derivative-small-s`: the maps `x ↦ ax`, `x ↦ bx + 1 - b` with complex
-contractions `a`, `b`, the coded point of the first `m` letters of a word, the weights
-`P_u(z) = z^{N₀(u)} (1-z)^{N₁(u)}` of a finite word, and the sums over words of length `m`.
+Complex coded points for `thm:level-sums` and its applications in
+`thm:fixed-dimension-analyticity`, `thm:remainder-derivative` and
+`thm:second-derivative-small-s`: the maps `x ↦ λ₁x`, `x ↦ λ₂x + 1 - λ₂` with complex
+contractions `λ₁`, `λ₂` (internal variables `a`, `b`), the coded point of the first `m`
+letters of a word, the weights
+`P_u(z) = z^{N₁(u)} (1-z)^{N₂(u)}` of a finite word, and the sums over words of length `m`.
+The paper's symbols `1`, `2` and maps `S₁`, `S₂` correspond to the internal
+`Fin 2` symbols `0`, `1` and the corresponding branches of `cmap`.
 
 * `cmap`, `cpointSeq`, `cratioSeq`, `weightSeq`: the coding along a word, letter by letter.
 * `cpointSeq_succ_eq`: appending a letter moves the coded point by `r_u S_i(0)`.

@@ -6,9 +6,8 @@ endpoints and proved by the library declarations.  It is not every display:
 `docs/correspondence.md` says which are covered by a neighbouring endpoint instead,
 and which displays are not formalised.
 
-`Challenge.lean` restates the headline theorems, `thm:main`,
-`thm:cantor-application` and `thm:two-contraction-distinction`, on Mathlib-only copies
-of the definitions;
+`Challenge.lean` restates the headline theorems, `thm:main` and
+`thm:cantor-application`, on Mathlib-only copies of the definitions;
 `comparator-config.json` lists those endpoint names.  Comparator checks each listed
 statement against `Challenge.lean`, audits the axioms of the proofs, and replays
 them through the kernel.  For the listed endpoints the statement text must stay
@@ -39,7 +38,7 @@ noncomputable def expectedProfile (W : ℝ≥0 → Ω → Plane) (P : Measure Ω
 /-- The similarity dimension `log 2 / log (1/λ)` of the homogeneous system. -/
 noncomputable def homogeneousDimension (lam : ℝ) : ℝ := Real.log 2 / Real.log lam⁻¹
 
-/-- The contraction ratio `c` of `eq:c-definition`: the solution of `c^s = 1 - 2^{-s}`. -/
+/-- The contraction ratio `c` in the introduction: the solution of `c^s = 1 - 2^{-s}`. -/
 noncomputable def pairedRatio (s : ℝ) : ℝ := (1 - (2:ℝ) ^ (-s)) ^ s⁻¹
 
 /-- `sec:introduction`: the homogeneous equal-weight probability measure `μ_A`
@@ -63,18 +62,6 @@ structure IsPairMeasure (s : ℝ) (μ : Measure ℝ) : Prop where
   /-- The invariance equation with the similarity weights. -/
   selfSimilar : μ = ENNReal.ofReal ((1/2 : ℝ) ^ s) • μ.map (fun x => 1/2 * x) +
     ENNReal.ofReal (pairedRatio s ^ s) • μ.map (fun x => pairedRatio s * x + (1 - pairedRatio s))
-
-/-- `sec:introduction`: the natural probability measure `μ_c` on `[0,1]` of the IFS
-`x ↦ x/2`, `x ↦ cx + 1 - c`, with weights `2^{-s}` and `c^s`.  At the dimension `s(c)`,
-where `2^{-s(c)} + c^{s(c)} = 1`, these are the `s`th powers of the contraction ratios. -/
-structure IsTwoContractionMeasure (c s : ℝ) (μ : Measure ℝ) : Prop where
-  /-- The measure is a probability measure. -/
-  isProbability : IsProbabilityMeasure μ
-  /-- The measure is carried by the unit interval. -/
-  support : μ (Set.Icc (0 : ℝ) 1)ᶜ = 0
-  /-- The invariance equation with the similarity weights. -/
-  selfSimilar : μ = ENNReal.ofReal ((1/2 : ℝ) ^ s) • μ.map (fun x => 1/2 * x) +
-    ENNReal.ofReal (c ^ s) • μ.map (fun x => c * x + (1 - c))
 
 /-- `eq:smoothing` identifies the expected profile in `thm:main` with the
 deterministic smoothing formula used by the library. -/
@@ -149,78 +136,6 @@ private theorem isPairMeasure_iff_exists_isNatural {s : ℝ}
       (hself.mpr hμ.selfSimilar) hμ.support
   · rintro ⟨K, hμ⟩
     exact ⟨hμ.isProbability, hμ.support_Icc, hself.mp hμ.selfSimilar⟩
-
-/-- The direct definition of `μ_c` in `sec:introduction` is equivalent to the natural
-measure of the two-map system at its dimension. -/
-private theorem isTwoContractionMeasure_iff_exists_isNatural {c s : ℝ} (hc0 : 0 < c)
-    (hc : c < 1/2) (hs : (2:ℝ) ^ (-s) + c ^ s = 1) {μ : Measure ℝ} :
-    IsTwoContractionMeasure c s μ ↔ ∃ K, (pairSystem c hc0 hc).IsNatural K s μ := by
-  have hhalf : (1/2 : ℝ) ^ s = (2:ℝ) ^ (-s) := by
-    rw [Real.rpow_neg (by norm_num), one_div, Real.inv_rpow (by norm_num)]
-  have hdim : (pairSystem c hc0 hc).IsDimension s := by
-    simp only [System.IsDimension, Fin.sum_univ_two, pairSystem_ratio_zero,
-      pairSystem_ratio_one, hhalf]
-    exact hs
-  have hself : (μ = ∑ i, ENNReal.ofReal ((pairSystem c hc0 hc).ratio i ^ s) •
-        μ.map ((pairSystem c hc0 hc).map i)) ↔
-      μ = ENNReal.ofReal ((1/2 : ℝ) ^ s) • μ.map (fun x => 1/2 * x) +
-        ENNReal.ofReal (c ^ s) • μ.map (fun x => c * x + (1 - c)) := by
-    simp only [Fin.sum_univ_two]
-    rw [funext (pairSystem_map_zero hc0 hc), funext (pairSystem_map_one hc0 hc)]
-    rfl
-  constructor
-  · intro hμ
-    let := hμ.isProbability
-    exact exists_isNatural_of_selfSimilar _ hdim (hself.mpr hμ.selfSimilar) hμ.support
-  · rintro ⟨K, hμ⟩
-    exact ⟨hμ.isProbability, hμ.support_Icc, hself.mp hμ.selfSimilar⟩
-
-/-- The dimension equation `2^{-s} + c^s = 1` is the similarity dimension of the two-map
-system. -/
-private theorem pairSystem_isDimension_of {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2)
-    (hs : (2:ℝ) ^ (-s) + c ^ s = 1) : (pairSystem c hc0 hc).IsDimension s := by
-  have hhalf : (1/2 : ℝ) ^ s = (2:ℝ) ^ (-s) := by
-    rw [Real.rpow_neg (by norm_num), one_div, Real.inv_rpow (by norm_num)]
-  simp only [System.IsDimension, Fin.sum_univ_two, pairSystem_ratio_zero,
-    pairSystem_ratio_one, hhalf]
-  exact hs
-
-/-- Along the family, the Cesàro means of the expected profile converge to the closed form
-of `eq:two-contraction-mean`. -/
-private theorem tendsto_avg_expectedProfile_of_isNatural {P : Measure Ω}
-    [IsProbabilityMeasure P] {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (hs0 : 0 < s) (hs1 : s < 1)
-    (hdim : (pairSystem c hc0 hc).IsDimension s) {K : Set ℝ} {μ : Measure ℝ}
-    (hμ : (pairSystem c hc0 hc).IsNatural K s μ) :
-    Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s μ t) atTop
-      (𝓝 (twoContractionMean c s μ)) := by
-  have := hμ.isProbabilityMeasure
-  obtain ⟨A, hA⟩ :=
-    (pairSystem_openSetCondition hc0 hc hμ.attractor).exists_isFrostman _ hs0.le hμ
-  simp only [expectedProfile_eq_H hW hs0 hs1 hA]
-  exact pairSystem_tendsto_avg_H hc0 hc hs0 hs1 hdim hμ
-
-/-- Along the family the means are strictly increasing in the contraction. -/
-private theorem twoContractionMean_lt_of_lt {c₁ c₂ s₁ s₂ : ℝ} (hc₁ : 0 < c₁) (hc : c₁ < c₂)
-    (hc₂ : c₂ < 1/2) (hs₁ : (2:ℝ) ^ (-s₁) + c₁ ^ s₁ = 1)
-    (hs₂ : (2:ℝ) ^ (-s₂) + c₂ ^ s₂ = 1) {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
-    (hK₁ : (pairSystem c₁ hc₁ (hc.trans hc₂)).IsNatural K₁ s₁ μ₁)
-    (hK₂ : (pairSystem c₂ (hc₁.trans hc) hc₂).IsNatural K₂ s₂ μ₂) :
-    twoContractionMean c₁ s₁ μ₁ < twoContractionMean c₂ s₂ μ₂ := by
-  obtain ⟨hs₁0, hs₁1, hc₁eq⟩ := dimension_facts hc₁ (hc.trans hc₂) hs₁
-  obtain ⟨hs₂0, hs₂1, hc₂eq⟩ := dimension_facts (hc₁.trans hc) hc₂ hs₂
-  have hs12 : s₁ < s₂ := by
-    by_contra hle
-    push Not at hle
-    rcases eq_or_lt_of_le hle with heq | hlt
-    · rw [hc₁eq, hc₂eq, heq] at hc
-      exact lt_irrefl _ hc
-    · have := pairRatio_lt_pairRatio hs₂0 hlt
-      rw [← hc₁eq, ← hc₂eq] at this
-      linarith
-  subst hc₁eq
-  subst hc₂eq
-  exact twoContractionMean_lt hs₁0 hs12 hs₂1 hK₁ hK₂
 
 /-! ### `sec:reconstruction`: reconstruction from the compact image -/
 
@@ -314,13 +229,13 @@ pointwise maximum of the component cut-offs, and smoothed tube mass has the pape
 affine planar scaling. -/
 theorem audit_tube_union_scaling {ι : Type*} [Fintype ι] [Nonempty ι]
     {r q : ℝ} (hr : 0 < r) (hq : 0 < q) (F : ι → CompactPlane)
-    (x a : Plane) (G : CompactPlane) :
+    (x y : Plane) (G : CompactPlane) :
     tubeCutoff r (compactUnion F) x =
         Finset.univ.sup' Finset.univ_nonempty
           (fun i ↦ tubeCutoff r (F i) x) ∧
-      tubeMass r (translateCompact a (dilateCompact q G)) =
+      tubeMass r (translateCompact y (dilateCompact q G)) =
         q ^ 2 * tubeMass (r / q) G :=
-  ⟨tubeCutoff_compactUnion hr F x, tubeMass_translate_dilate hr hq a G⟩
+  ⟨tubeCutoff_compactUnion hr F x, tubeMass_translate_dilate hr hq y G⟩
 
 /-- `eq:neighbourhood-defect-elementary`.  The smoothed multiple-counting defect is
 nonnegative and is bounded by the unordered sum of raw pairwise tube-intersection
@@ -359,7 +274,7 @@ theorem audit_tube_moments {P : Measure Ω} [IsProbabilityMeasure P]
 
 /-- `thm:neighbourhood-overlap`, including integrability of the overlap and defect random
 variables.  One constant and one exponent `η > 0` control every distinct first-level
-pair and the resulting multiple-counting defect, with the bound `C r^{α+2η}`; `η` is
+pair and the resulting multiple-counting defect, with the bound `C r^{2-2s+2η}`; `η` is
 the exponent of `thm:cross-piece-mass`, which the statement of the lemma inherits. -/
 theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
@@ -383,35 +298,28 @@ theorem audit_tube_overlap {P : Measure Ω} [IsProbabilityMeasure P]
         ≤ C * r ^ (tubeExponent s + 2 * η) :=
   hμ.tubeOverlap hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
-/-- `thm:neighbourhood-renewal`.  The real integrals defining the mean profile are required
-to be integrable.  Uniform convergence in the lattice case is written directly
-with its `ε`--`N` quantifiers on one period. -/
+/-- `thm:neighbourhood-renewal`: positive uniform bounds and the real-time shift
+relation `eq:neighbourhood-renewal-shift`. Integrability makes the defining means
+non-vacuous. -/
 theorem audit_tube_renewal {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    (∀ v : ℝ, 0 ≤ v →
-      Integrable (brownianTubeProfile W hμ.compactAttractor s v) P) ∧
-    (∃ c C : ℝ, 0 < c ∧ ∀ v : ℝ, 0 ≤ v →
-      c ≤ meanBrownianTubeProfile W P hμ.compactAttractor s v ∧
-      meanBrownianTubeProfile W P hμ.compactAttractor s v ≤ C) ∧
-    (S.TubeNonArithmetic →
-      ∃ CK : ℝ, 0 < CK ∧ Tendsto
-        (meanBrownianTubeProfile W P hμ.compactAttractor s) atTop (nhds CK)) ∧
-    (∀ h : ℝ, 0 < h → S.TubeArithmetic h →
-      ∃ PK : ℝ → ℝ, Function.Periodic PK h ∧
-        (∃ c C : ℝ, 0 < c ∧ ∀ t : ℝ, c ≤ PK t ∧ PK t ≤ C) ∧
-        ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
-          ∀ t ∈ Set.Icc (0 : ℝ) h,
-            |meanBrownianTubeProfile W P hμ.compactAttractor s
-                (t + (n : ℝ) * h) - PK t| ≤ ε) :=
-  hμ.tubeRenewal hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
+    (∀ t : ℝ, 0 ≤ t →
+      Integrable (brownianTubeProfile W hμ.compactAttractor s t) P) ∧
+    (∃ c C : ℝ, 0 < c ∧ ∀ t : ℝ, 0 ≤ t →
+      c ≤ meanBrownianTubeProfile W P hμ.compactAttractor s t ∧
+      meanBrownianTubeProfile W P hμ.compactAttractor s t ≤ C) ∧
+    (∀ i : ι, Tendsto (fun t : ℝ =>
+      meanBrownianTubeProfile W P hμ.compactAttractor s (t - S.halfLogRatio i) -
+        meanBrownianTubeProfile W P hμ.compactAttractor s t) atTop (nhds 0)) :=
+  hμ.tubeRenewal_bounds_shift hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
-/-- `thm:neighbourhood-concentration`.  Membership in `L²` is included explicitly before
-the `eLpNorm` bound, and the final assertion has the paper's quantifier order: each
-fixed phase has its own almost-sure event. -/
+/-- `thm:neighbourhood-concentration`: the variance bound, with square integrability
+explicit, and the paper's quantifier order for grid convergence: each fixed phase
+has its own almost-sure event. -/
 theorem audit_tube_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
@@ -419,13 +327,13 @@ theorem audit_tube_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
     (∃ C : ℝ, 0 < C ∧ ∃ γ : ℝ, 0 < γ ∧ ∀ v : ℝ, 0 ≤ v →
-      MemLp (centeredBrownianTubeProfile W P hμ.compactAttractor s v) 2 P ∧
-      eLpNorm (centeredBrownianTubeProfile W P hμ.compactAttractor s v) 2 P ≤
-        ENNReal.ofReal (C * Real.exp (-γ * v))) ∧
+      MemLp (brownianTubeProfile W hμ.compactAttractor s v) 2 P ∧
+      variance (brownianTubeProfile W hμ.compactAttractor s v) P ≤
+        C * Real.exp (-γ * v)) ∧
     ∀ t : ℝ, ∀ᵐ ω ∂P, Tendsto
       (fun n : ℕ ↦ centeredBrownianTubeProfile W P hμ.compactAttractor s
         ((n : ℝ) + t) ω) atTop (nhds 0) :=
-  hμ.tubeConcentration hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
+  hμ.tubeVarianceConcentration hW S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim
 
 /-! ### `sec:setup`: the Gaussian reduction -/
 
@@ -453,19 +361,19 @@ theorem audit_frostman_conventions {s A : ℝ} (hs : 0 ≤ s) {μ : Measure ℝ}
       (IsFrostmanOpen s A μ → IsFrostman s (3 ^ s * A) μ) :=
   ⟨fun h => h.isFrostmanOpen, fun h => h.isFrostman hs⟩
 
-/-- `sec:setup`: the pair-distance law has no atoms.  This is the Fubini step before
+/-- `sec:setup`: the Stieltjes measure has no atoms.  This is the Fubini step before
 "Thus `Φ` is continuous". -/
 theorem audit_pairLaw_noAtoms {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) (δ : ℝ) : pairLaw μ {δ} = 0 :=
   pairLaw_measure_singleton hs hμ δ
 
-/-- `sec:setup`: the pair-distance distribution has no atoms, hence `Φ` is
+/-- `sec:setup`: the Stieltjes measure has no atoms, hence the correlation integral `Φ` is
 continuous. -/
 theorem audit_phi_continuous {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ}
     [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) : Continuous (Phi μ) :=
   continuous_phi hs hμ
 
-/-- `eq:phi-frostman`.  The Frostman bound passes to the pair-distance distribution. -/
+/-- `eq:correlation-frostman`.  The Frostman bound passes to the correlation integral. -/
 theorem audit_phi_le {s A : ℝ} (hs : 0 < s) {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (hμ : IsFrostman s A μ) {δ : ℝ} (hδ0 : 0 < δ) (hδ1 : δ ≤ 1) :
     Phi μ δ ≤ A * δ ^ s :=
@@ -485,7 +393,7 @@ theorem audit_kern_integrable {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) :
     IntegrableOn (kern s) (Set.Ioi 0) ∧ 0 < ∫ η in Set.Ioi (0:ℝ), kern s η :=
   ⟨kern_integrableOn hs0 hs1, integral_kern_pos hs0 hs1⟩
 
-/-! ### `sec:renewal`: the pair-distance renewal profiles -/
+/-! ### `sec:renewal`: the correlation renewal profiles -/
 
 /-- `thm:non-lattice-limit`: the two inputs the key renewal theorem consumes from the
 system.  `ϑ` is a probability measure, and its first moment is the renewal mean `m`. -/
@@ -502,7 +410,7 @@ theorem audit_exists_expTransform_lt_one {ι : Type*} [Fintype ι] [Nonempty ι]
     ∃ θ : ℝ, 0 < θ ∧ AbsorptionCutoff.Renewal.expTransform θ (S.renewalLaw s) < 1 :=
   S.exists_expTransform_lt_one hdim
 
-/-- `eq:c-definition`: the ratio `c` exists, lies in `(0, 1/2)`, and solves
+/-- The introductory definition of `c`: the ratio exists, lies in `(0, 1/2)`, and solves
 `c^s = 1 - 2^{-s}` at the middle-thirds exponent. -/
 theorem audit_pairRatio {lam : ℝ} (hlam0 : 0 < lam) (hlam : lam < 1/2) :
     ∃ c : ℝ, 0 < c ∧ c < 1/2 ∧
@@ -635,8 +543,8 @@ theorem audit_lattice_gap {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
         ∀ v, smoothOp s g b ≤ smoothOp s g v ∧ smoothOp s g v ≤ smoothOp s g a :=
   smoothOp_gap hs0 hs1 hp hg hper hne
 
-/-- `thm:renewal-recursion`, `eq:phi-recursion`.  At every scale the pair-distance
-distribution satisfies the self-similar recursion with the cross term `Φ_×` of pairs
+/-- `thm:renewal-recursion`, `eq:correlation-recursion`.  At every scale the correlation
+integral satisfies the self-similar recursion with the cross term `Φ_×` of pairs
 with different first-level addresses. -/
 theorem audit_renewal_recursion {ι : Type*} [Fintype ι] (S : System ι) {K : Set ℝ}
     {s : ℝ} {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (δ : ℝ) :
@@ -745,8 +653,8 @@ theorem audit_profile_uniform_continuity {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
   profile_uniformContinuous hs0 hs1 hμ
 
 /-- `eq:fourier-multiplier`, the Fourier identity: smoothing acts on the Fourier
-coefficients as multiplication by `M_k`.  The coefficient of `g` is taken at period `p`
-and that of `Tg` at period `p/2`, which is the period `Tg` has. -/
+coefficients as multiplication by the integral in that identity. The coefficient of `g`
+is taken at period `p` and that of `Tg` at period `p/2`, which is the period `Tg` has. -/
 theorem audit_fourier_multiplier {s p : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hp : 0 < p)
     {g : ℝ → ℝ} (hg : Continuous g) (hbdd : ∃ M, ∀ x, |g x| ≤ M)
     (hper : Function.Periodic g p) (k : ℤ) :
@@ -824,8 +732,8 @@ theorem audit_borel_eq_giry :
       = (inferInstance : MeasurableSpace (ProbabilityMeasure Plane)) :=
   borel_probabilityMeasure_eq_giry
 
-/-- `thm:gaussian-four-point`, first assertion: increments over intervals with disjoint
-interiors are independent.  The endpoints are unoriented, as in the paper. -/
+/-- Independence used in the proof of `thm:variance`: increments over intervals with
+disjoint interiors are independent. The four times carry no order. -/
 theorem audit_disjoint_increments_indep {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {t u t' u' : ℝ≥0}
     (hdisj : max t u ≤ min t' u' ∨ max t' u' ≤ min t u) :
@@ -881,7 +789,7 @@ theorem audit_ahlfors_named {KA : Set ℝ} {μA : Measure ℝ}
   exists_isAhlfors_homogeneous_pair hlam0 hlam hA hB
 
 /-- `thm:gaussian-reduction`, `eq:gaussian-reduction`.  The expected correlation
-integral is the Gaussian transform of the pair-distance law, in both the `μ × μ` form
+integral is the Gaussian transform of the Stieltjes measure, in both the `μ × μ` form
 and the Stieltjes form against `dΦ`.  The Frostman hypothesis is what makes `μ`
 atomless, so that the diagonal, where the exponent is undefined, is null. -/
 theorem audit_gaussian_reduction {P : Measure Ω} [IsProbabilityMeasure P]
@@ -964,8 +872,9 @@ theorem audit_lattice_correlation_oscillation {P : Measure Ω} [IsProbabilityMea
         b * r ^ (2 * homogeneousDim lam) ≤ expCorr W P μA r) :=
   homogeneous_lattice_correlation_oscillation hW hlam0 hlam hA
 
-/-- `thm:gaussian-four-point`, `eq:joint-return-bound`.  The joint return probability of
-two overlapping Brownian increments.  The times are non-negative by type. -/
+/-- The Gaussian return bound used in the proof of `thm:four-point-integral`, before
+bounding the covariance determinant by the product of the overlap and symmetric-difference
+lengths. The times are non-negative by type. -/
 theorem audit_gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {r : ℝ} {t u t' u' : ℝ≥0}
     (hr : 0 < r)
@@ -976,11 +885,11 @@ theorem audit_gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
             - overlap (t:ℝ) (u:ℝ) (t':ℝ) (u':ℝ) ^ 2)))) :=
   gaussian_four_point hW hr hΔ
 
-/-- `thm:gaussian-four-point`, `eq:joint-return-bound` as the paper states it: outside a
-`μ⁴`-null set the determinant is positive, and the bound holds whenever the two intervals
-overlap.  The positivity carries no overlap hypothesis, as in the paper: `Δ = 0` forces
-either a degenerate interval or the two unoriented intervals to agree, and both are null
-for a Frostman measure. -/
+/-- The internal almost everywhere Gaussian bound supporting `thm:four-point-integral`:
+outside a `μ⁴`-null set the determinant is positive, and the bound holds whenever the
+intervals overlap. The positivity carries no overlap hypothesis: `Δ = 0` forces either
+a degenerate interval or the two unoriented intervals to agree, both null for a Frostman
+measure. The paper needs positivity only on the overlap set. -/
 theorem audit_gaussian_four_point_ae {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {r : ℝ} (hr : 0 < r) :
@@ -995,8 +904,8 @@ theorem audit_gaussian_four_point_ae {P : Measure Ω} [IsProbabilityMeasure P]
                   - overlap q.1 q.2.1 q.2.2.1 q.2.2.2 ^ 2))))) :=
   gaussian_four_point_ae hW hs0 hs1 hμ hr
 
-/-- `thm:gaussian-four-point` as one statement: independence off the overlap, and the
-almost everywhere return bound on it. -/
+/-- Internal Gaussian facts for the proofs of `thm:four-point-integral` and `thm:variance`:
+independence off the overlap and the almost everywhere return bound on it. -/
 theorem audit_thm_gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) {r : ℝ} (hr : 0 < r) :
@@ -1013,7 +922,7 @@ theorem audit_thm_gaussian_four_point {P : Measure Ω} [IsProbabilityMeasure P]
                     - overlap q.1 q.2.1 q.2.2.1 q.2.2.2 ^ 2))))) :=
   gaussian_four_point_bundled hW hs0 hs1 hμ hr
 
-/-- `thm:endpoint-block-mass`, both halves.
+/-- The block estimates in the proof of `thm:four-point-integral`.
 The `μ⁴`-mass of a dyadic block of ordered quadruples, and the joint return probability
 on that block.  `μ` sits on `[0,1]`, so reading the times through `Real.toNNReal` is the
 identity `μ⁴`-almost everywhere. -/
@@ -1036,8 +945,8 @@ theorem audit_endpoint_block_mass {P : Measure Ω} [IsProbabilityMeasure P]
             ≤ C * min 1 (min (r ^ 2 / (β + η)) (r ^ 4 / (β * η))) :=
   endpoint_block_mass hW hs hμ
 
-/-- `thm:endpoint-block-mass` at the dyadic values `β, η ∈ 𝒟` the paper uses, with both
-halves of the lemma. -/
+/-- The mass and return estimates at the dyadic scales used in the library's proof of
+`thm:four-point-integral`. -/
 theorem audit_endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs : 0 < s)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
@@ -1060,8 +969,8 @@ theorem audit_endpoint_block_mass_dyadic {P : Measure Ω} [IsProbabilityMeasure 
                 (r ^ 4 / (((1:ℝ)/2) ^ j * ((1:ℝ)/2) ^ l))) :=
   endpoint_block_mass_dyadic hW hs hμ
 
-/-- `thm:four-point-integral`, `eq:four-point-integral`.  The four dyadic sums, summed:
-the joint return probability integrates over the overlap set to `O(V_s(r))`. -/
+/-- `thm:four-point-integral`: the joint return probability
+integrates over the overlap set to `O(V_s(r))`. -/
 theorem audit_four_point_integral {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     {μ : Measure ℝ} [IsProbabilityMeasure μ] (hμ : IsFrostman s A μ) :
@@ -1129,7 +1038,7 @@ theorem audit_grid_convergence {P : Measure Ω} [IsProbabilityMeasure P]
       atTop (𝓝 0) :=
   grid_convergence hW hs0 hs1 hμ hm
 
-/-- `thm:uniform-concentration`, `eq:uniform-concentration`.  Almost surely the
+/-- `thm:uniform-concentration`.  Almost surely the
 empirical profile converges to the expected profile, uniformly on tails. -/
 theorem audit_uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s A : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -1139,8 +1048,8 @@ theorem audit_uniform_concentration {P : Measure Ω} [IsProbabilityMeasure P]
   uniform_concentration hW hs0 hs1 hμ
 
 /-- `thm:base-five-profiles`.  For the natural measures of the two base-five systems with
-digit sets `{0,1,4}` and `{0,2,4}`, the pair-distance distributions take the values
-`eq:base-five-distances` at every scale `5⁻ⁿ`, and the expected profiles stay a fixed
+digit sets `{0,1,4}` and `{0,2,4}`, the correlation integrals take the values
+`eq:base-five-correlation` at every scale `5⁻ⁿ`, and the expected profiles stay a fixed
 distance apart along a sequence tending to infinity, the form of
 `limsup |H_{μ₁}^s - H_{μ₂}^s| > 0` that `thm:main` consumes. -/
 theorem audit_base_five_profiles {K₁ K₂ : Set ℝ} {μ₁ μ₂ : Measure ℝ}
@@ -1173,8 +1082,8 @@ theorem audit_base_five_image_laws {P : Measure Ω} [IsProbabilityMeasure P]
 
 /-- `thm:homometric-example`.  Two distinct strongly separated self-similar measures,
 Ahlfors regular of the same dimension `t = log 6 / log 30 ∈ (1/2,1)`, whose attractors are
-not isometric, with equal signed convolutions `σ * σ̃`, hence identical pair-distance
-distributions and identical expected profiles. -/
+not isometric, with equal signed convolutions `σ * σ̃`, hence identical correlation
+integrals and identical expected profiles. -/
 theorem audit_homometric_example :
     ∃ (KA KB : Set ℝ) (σA σB : Measure ℝ) (A : ℝ),
       (homSystem digitFunA digitFunA_nonneg digitFunA_le).IsNatural KA tHom σA ∧
@@ -1229,7 +1138,7 @@ theorem audit_exceptional_parameters_countable :
 
 /-- `thm:non-lattice-limit`, `eq:g-non-lattice-limit`.  In the non-lattice case the
 normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive, where
-`m = ∑ p_i a_i` is the renewal mean and `z = G - F * G` the renewal defect. -/
+`m = ∑ p_i α_i` is the renewal mean and `z = G - F * G` the renewal defect. -/
 theorem audit_non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hosc : S.OpenSetCondition)
     (hdim : S.IsDimension s) (hna : S.NonArithmetic)
@@ -1250,9 +1159,21 @@ theorem audit_gb_limit {KB : Set ℝ} {μB : Measure ℝ}
     ∃ C : ℝ, 0 < C ∧ Tendsto (G (homogeneousDim lam) μB) atTop (𝓝 C) :=
   homogeneous_gb_limit hlam0 hlam hB hnl
 
+/-- `thm:lattice-nonconvergence`: for a lattice system under the open set condition, the
+normalised correlation profile `G` has no limit at `+∞`. -/
+theorem audit_lattice_nonconvergence
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
+    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    ¬ ∃ C : ℝ, Tendsto (G s μ) atTop (𝓝 C) := fun ⟨C, hC⟩ =>
+  hμ.not_tendsto_G_of_lattice S hs0 hs1 hosc hdim (S.exists_nat_mul_of_lattice hh hlat) C hC
+
 /-- `thm:profile-asymptotics`: the natural measure at the similarity dimension
-has an asymptotically periodic profile in the lattice case and a positive constant
-limit in the non-lattice case. The lattice span is for the full log-ratios. -/
+has an asymptotically periodic profile in the lattice case, with a continuous, strictly
+positive, non-constant periodic limit, and a positive constant limit in the non-lattice
+case. The lattice span is for the full log-ratios. -/
 theorem audit_thm_profile_asymptotics
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
@@ -1261,12 +1182,13 @@ theorem audit_thm_profile_asymptotics
     (∀ h : ℝ, 0 < h →
       AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h →
       ∃ Q : ℝ → ℝ, Continuous Q ∧ Function.Periodic Q (h / 2) ∧
-        (∀ t, 0 < Q t) ∧ Tendsto (fun t ↦ H s μ t - Q t) atTop (𝓝 0)) ∧
+        (∀ t, 0 < Q t) ∧ (∃ v w, Q v ≠ Q w) ∧
+        Tendsto (fun t ↦ H s μ t - Q t) atTop (𝓝 0)) ∧
     (S.NonArithmetic → ∃ C : ℝ, 0 < C ∧ Tendsto (H s μ) atTop (𝓝 C)) := by
   have := hμ.isProbabilityMeasure
   constructor
   · intro h hh hlat
-    exact lattice_profile_asymptotics S hs0 hs1 hosc hdim hh hlat hμ
+    exact lattice_profile_asymptotics_nonconstant S hs0 hs1 hosc hdim hh hlat hμ
   · intro hnl
     obtain ⟨A, hA⟩ := hosc.exists_isFrostman S hs0.le hμ
     obtain ⟨hCpos, hC⟩ := non_lattice_limit S hs0 hs1
@@ -1325,255 +1247,6 @@ theorem audit_non_lattice_separation {P : Measure Ω} [IsProbabilityMeasure P]
     (hosc₂.strongOpenSetCondition S₂ hμ₂.attractor) hdim₁ hdim₂ hna₁ hna₂ hμ₁ hμ₂ hne
 
 
-/-! ### `sec:two-contraction-formula`: the two-contraction family -/
-
-/-- `thm:two-contraction-distinction`.  Along the family `x ↦ x/2`, `x ↦ cx + 1 - c`,
-`0 < c < 1/2`, normalise the natural measure `μ_c` at its own dimension `s(c)`, where
-`2^{-s(c)} + c^{s(c)} = 1`.  The mean `H̄(c) = lim_{T→∞} T⁻¹ ∫₀ᵀ H_{μ_c}^{s(c)}(t) dt`
-exists and is strictly increasing in `c`. -/
-theorem audit_two_contraction_distinction {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c₁ c₂ s₁ s₂ : ℝ} (hc₁ : 0 < c₁) (hc : c₁ < c₂) (hc₂ : c₂ < 1/2)
-    (hs₁ : (2:ℝ) ^ (-s₁) + c₁ ^ s₁ = 1) (hs₂ : (2:ℝ) ^ (-s₂) + c₂ ^ s₂ = 1)
-    {μ₁ μ₂ : Measure ℝ} (h₁ : IsTwoContractionMeasure c₁ s₁ μ₁)
-    (h₂ : IsTwoContractionMeasure c₂ s₂ μ₂) :
-    ∃ H₁ H₂ : ℝ, H₁ < H₂ ∧
-      Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s₁ μ₁ t)
-        atTop (𝓝 H₁) ∧
-      Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s₂ μ₂ t)
-        atTop (𝓝 H₂) := by
-  obtain ⟨hs₁0, hs₁1, -⟩ := dimension_facts hc₁ (hc.trans hc₂) hs₁
-  obtain ⟨hs₂0, hs₂1, -⟩ := dimension_facts (hc₁.trans hc) hc₂ hs₂
-  obtain ⟨K₁, hK₁⟩ :=
-    (isTwoContractionMeasure_iff_exists_isNatural hc₁ (hc.trans hc₂) hs₁).1 h₁
-  obtain ⟨K₂, hK₂⟩ :=
-    (isTwoContractionMeasure_iff_exists_isNatural (hc₁.trans hc) hc₂ hs₂).1 h₂
-  exact ⟨_, _, twoContractionMean_lt_of_lt hc₁ hc hc₂ hs₁ hs₂ hK₁ hK₂,
-    tendsto_avg_expectedProfile_of_isNatural hW hc₁ (hc.trans hc₂) hs₁0 hs₁1
-      (pairSystem_isDimension_of _ _ hs₁) hK₁,
-    tendsto_avg_expectedProfile_of_isNatural hW (hc₁.trans hc) hc₂ hs₂0 hs₂1
-      (pairSystem_isDimension_of _ _ hs₂) hK₂⟩
-
-/-- The family of `sec:introduction`: for every `0 < c < 1/2` the dimension `s(c)`, with
-`2^{-s(c)} + c^{s(c)} = 1`, exists and is unique, and so does the natural measure `μ_c` at
-that dimension.  The statements about the family quantify over these, and are therefore
-not vacuous. -/
-theorem audit_two_contraction_family {c : ℝ} (hc0 : 0 < c) (hc : c < 1/2) :
-    ∃! s : ℝ, (2:ℝ) ^ (-s) + c ^ s = 1 ∧
-      ∃! μ : Measure ℝ, IsTwoContractionMeasure c s μ := by
-  obtain ⟨s, hs, huniq⟩ := exists_unique_twoContractionDim hc0 hc
-  refine ⟨s, ⟨hs, ?_⟩, fun s' hs' => huniq s' hs'.1⟩
-  have hdim := pairSystem_isDimension_of hc0 hc hs
-  obtain ⟨⟨K, ν⟩, hν, -⟩ := (pairSystem c hc0 hc).exists_unique_isNatural hdim
-  refine ⟨ν, (isTwoContractionMeasure_iff_exists_isNatural hc0 hc hs).2 ⟨K, hν⟩,
-    fun μ hμ => ?_⟩
-  obtain ⟨K', hK'⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc0 hc hs).1 hμ
-  have := hK'.isProbabilityMeasure
-  have := hν.isProbabilityMeasure
-  exact Hutchinson.eq_of_selfSimilar _ hdim hK'.selfSimilar hν.selfSimilar hK'.support_Icc
-    hν.support_Icc
-
-/-- The final assertion of `thm:two-contraction-distinction`: for distinct parameters,
-`limsup_{t→∞} |H_{μ_{c₁}}^{s(c₁)}(t) - H_{μ_{c₂}}^{s(c₂)}(t)| > 0`, written out as in
-`eq:profile-separation`. -/
-theorem audit_two_contraction_separation {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c₁ c₂ s₁ s₂ : ℝ} (hc₁ : 0 < c₁) (hc₁' : c₁ < 1/2) (hc₂ : 0 < c₂) (hc₂' : c₂ < 1/2)
-    (hne : c₁ ≠ c₂)
-    (hs₁ : (2:ℝ) ^ (-s₁) + c₁ ^ s₁ = 1) (hs₂ : (2:ℝ) ^ (-s₂) + c₂ ^ s₂ = 1)
-    {μ₁ μ₂ : Measure ℝ} (h₁ : IsTwoContractionMeasure c₁ s₁ μ₁)
-    (h₂ : IsTwoContractionMeasure c₂ s₂ μ₂) :
-    ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V,
-      ε ≤ |expectedProfile W P s₁ μ₁ t - expectedProfile W P s₂ μ₂ t| := by
-  obtain ⟨hs₁0, hs₁1, -⟩ := dimension_facts hc₁ hc₁' hs₁
-  obtain ⟨hs₂0, hs₂1, -⟩ := dimension_facts hc₂ hc₂' hs₂
-  obtain ⟨K₁, hK₁⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc₁ hc₁' hs₁).1 h₁
-  obtain ⟨K₂, hK₂⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc₂ hc₂' hs₂).1 h₂
-  have := hK₁.isProbabilityMeasure
-  have := hK₂.isProbabilityMeasure
-  obtain ⟨A₁, hA₁⟩ :=
-    (pairSystem_openSetCondition hc₁ hc₁' hK₁.attractor).exists_isFrostman _ hs₁0.le hK₁
-  obtain ⟨A₂, hA₂⟩ :=
-    (pairSystem_openSetCondition hc₂ hc₂' hK₂.attractor).exists_isFrostman _ hs₂0.le hK₂
-  have hcont₁ : Continuous (expectedProfile W P s₁ μ₁) := by
-    rw [funext (expectedProfile_eq_H hW hs₁0 hs₁1 hA₁)]
-    exact (profile_uniformContinuous hs₁0 hs₁1 hA₁).continuous
-  have hcont₂ : Continuous (expectedProfile W P s₂ μ₂) := by
-    rw [funext (expectedProfile_eq_H hW hs₂0 hs₂1 hA₂)]
-    exact (profile_uniformContinuous hs₂0 hs₂1 hA₂).continuous
-  have hmeanne : twoContractionMean c₁ s₁ μ₁ ≠ twoContractionMean c₂ s₂ μ₂ := by
-    rcases lt_or_gt_of_ne hne with hlt | hgt
-    · exact (twoContractionMean_lt_of_lt hc₁ hlt hc₂' hs₁ hs₂ hK₁ hK₂).ne
-    · exact (twoContractionMean_lt_of_lt hc₂ hgt hc₁' hs₂ hs₁ hK₂ hK₁).ne'
-  exact exists_ge_abs_sub_of_tendsto_avg hcont₁ hcont₂ hmeanne
-    (tendsto_avg_expectedProfile_of_isNatural hW hc₁ hc₁' hs₁0 hs₁1
-      (pairSystem_isDimension_of _ _ hs₁) hK₁)
-    (tendsto_avg_expectedProfile_of_isNatural hW hc₂ hc₂' hs₂0 hs₂1
-      (pairSystem_isDimension_of _ _ hs₂) hK₂)
-
-/-- The display before `thm:two-contraction-distinction`, with `eq:two-contraction-mean`:
-for every `0 < c < 1/2` the mean `H̄(c) = lim_{T→∞} T⁻¹ ∫₀ᵀ H_{μ_c}^{s(c)}` exists, and it
-equals `2pq 2^{-s} Γ(1-s) M_c(s)/(sm)` with `p = 2^{-s}`, `q = c^s`,
-`m = p log 2 + q log(1/c)` and `M_c(s) = 𝔼 Z_c^{-s}`, `Z_c = 1 - c + cY - X/2`, in the
-lattice and the non-lattice case alike. -/
-theorem audit_two_contraction_mean {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (hs : (2:ℝ) ^ (-s) + c ^ s = 1)
-    {μ : Measure ℝ} (hμ : IsTwoContractionMeasure c s μ) :
-    Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s μ t) atTop
-      (𝓝 (2 * (2:ℝ) ^ (-s) * c ^ s * (2:ℝ) ^ (-s) * Real.Gamma (1 - s) * crossMoment c μ s /
-        (s * ((2:ℝ) ^ (-s) * Real.log 2 + c ^ s * Real.log c⁻¹)))) := by
-  obtain ⟨hs0, hs1, -⟩ := dimension_facts hc0 hc hs
-  obtain ⟨K, hK⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc0 hc hs).1 hμ
-  have hhalf : (1/2 : ℝ) ^ s = (2:ℝ) ^ (-s) := by
-    rw [Real.rpow_neg (by norm_num), one_div, Real.inv_rpow (by norm_num)]
-  have h := tendsto_avg_expectedProfile_of_isNatural hW hc0 hc hs0 hs1
-    (pairSystem_isDimension_of _ _ hs) hK
-  rw [twoContractionMean, hhalf] at h
-  convert h using 2
-  ring
-
-/-- `eq:two-contraction-constant`: if `log(1/c)/log 2` is irrational, the expected profile
-itself converges to `2pq 2^{-s} Γ(1-s) M_c(s)/(sm)`. -/
-theorem audit_two_contraction_constant {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (hs : (2:ℝ) ^ (-s) + c ^ s = 1)
-    {μ : Measure ℝ} (hμ : IsTwoContractionMeasure c s μ)
-    (hirr : Irrational (Real.log c⁻¹ / Real.log 2)) :
-    Tendsto (expectedProfile W P s μ) atTop
-      (𝓝 (2 * (2:ℝ) ^ (-s) * c ^ s * (2:ℝ) ^ (-s) * Real.Gamma (1 - s) * crossMoment c μ s /
-        (s * ((2:ℝ) ^ (-s) * Real.log 2 + c ^ s * Real.log c⁻¹)))) := by
-  obtain ⟨hs0, hs1, hceq⟩ := dimension_facts hc0 hc hs
-  obtain ⟨K, hK⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc0 hc hs).1 hμ
-  have := hK.isProbabilityMeasure
-  obtain ⟨A, hA⟩ :=
-    (pairSystem_openSetCondition hc0 hc hK.attractor).exists_isFrostman _ hs0.le hK
-  have hhalf : (1/2 : ℝ) ^ s = (2:ℝ) ^ (-s) := by
-    rw [Real.rpow_neg (by norm_num), one_div, Real.inv_rpow (by norm_num)]
-  have hna : (pairSystem c hc0 hc).NonArithmetic := by
-    subst hceq
-    exact (pairSystem_nonArithmetic_iff hs0 hs1).2 hirr
-  have h := pairSystem_tendsto_H_nonLattice hc0 hc hs0 hs1
-    (pairSystem_isDimension_of _ _ hs) hK hna
-  rw [twoContractionMean, hhalf] at h
-  rw [funext (expectedProfile_eq_H hW hs0 hs1 hA)]
-  convert h using 2
-  ring
-
-
-/-- `thm:renewal-average`.  For the natural measure of a system under the open set
-condition, and every frequency `ξ` with `e^{iξ a_i} = 1` for all log-ratios, the averages
-of `G(w) e^{-iξw}` over `[0, T]` converge to `m⁻¹ ∫ z(w) e^{-iξw} dw`
-(`eq:renewal-average`), and the averages of `H_μ^s` converge to `(∫₀^∞ φ) m⁻¹ ∫ z`
-(`eq:mean-profile`), with no case split between lattice and non-lattice systems. -/
-theorem audit_renewal_average {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
-    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (hosc : S.OpenSetCondition)
-    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    (∀ ξ : ℝ, (∀ i, Complex.exp (Complex.I * ξ * S.logRatio i) = 1) →
-      Tendsto (fun T : ℝ => T⁻¹ • ∫ u in (0:ℝ)..T,
-          (G s μ u : ℂ) * Complex.exp (-(Complex.I * ξ * u))) atTop
-        (𝓝 ((S.renewalMean s)⁻¹ • ∫ w, (S.renewalDefect s μ w : ℂ) *
-          Complex.exp (-(Complex.I * ξ * w))))) ∧
-    Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, H s μ t) atTop
-      (𝓝 ((∫ η in Set.Ioi (0:ℝ), kern s η) *
-        ((S.renewalMean s)⁻¹ * ∫ w, S.renewalDefect s μ w))) :=
-  ⟨fun _ hξ => hμ.tendsto_avg_G_char S hs0 hs1 hosc hdim hξ,
-    hμ.tendsto_avg_H S hs0 hs1 hosc hdim⟩
-
-/-- The coding of `sec:two-contraction-formula`: at the natural parameters
-`b = c(s)`, `v = q(s) = 1 - 2^{-s}`, the moment `M_{c(s)}(s)` of the natural measure is
-`J(s, c(s), q(s))`, the mean of `Z^{-s}` over two independent Bernoulli codings. -/
-theorem audit_moment_coding {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) {K : Set ℝ}
-    {μ : Measure ℝ} (hμ : (pairSystem (pairRatio s) (pairRatio_pos hs0)
-      (pairRatio_lt_half hs0 hs1)).IsNatural K s μ) :
-    crossMoment (pairRatio s) μ s = crossJ s (pairRatio s) (1 - (2:ℝ) ^ (-s)) :=
-  crossMoment_eq_momentM hs0 hs1 hμ
-
-/-- `thm:parameter-steps`: the three one-sided bounds on `J(α, b, v) = 𝔼 Z^{-α}`, in the
-exponent (`eq:exponent-step`), in the contraction where `v(3 - 2b) ≤ 1`
-(`eq:contraction-step`), and in the weight (`eq:weight-step`). -/
-theorem audit_parameter_steps :
-    (∀ {α α' b v : ℝ}, 0 ≤ α → α ≤ α' → 0 < b → b < 1/2 → 0 ≤ v → v ≤ 1 →
-      crossJ α b v ≤ crossJ α' b v) ∧
-    (∀ {α b b' v : ℝ}, 0 ≤ α → 0 < b → b ≤ b' → b' < 1/2 → 0 ≤ v → v ≤ 1 →
-      v * (3 - 2 * b) ≤ 1 → crossJ α b v ≤ crossJ α b' v) ∧
-    (∀ {α b v v' : ℝ}, 0 ≤ α → 0 < b → b < 1/2 → 0 ≤ v → v ≤ v' → v' ≤ 1 → v < 1 →
-      crossJ α b v * (1 - (v' - v) * (2 * α * b * (1 - b) / ((1/2 - b) * (1 - v))))
-        ≤ crossJ α b v') :=
-  ⟨crossJ_mono_exponent, crossJ_mono_contraction, crossJ_weight_ge⟩
-
-/-- `thm:local-monotonicity`: a function that, at every point of an interval, is larger
-slightly to the right and smaller slightly to the left is strictly increasing on the
-interval.  No continuity is assumed. -/
-theorem audit_local_monotonicity {f : ℝ → ℝ} {I : Set ℝ} (hI : I.OrdConnected)
-    (hloc : ∀ x ∈ I, (∀ᶠ y in 𝓝[>] x, f x < f y) ∧ (∀ᶠ y in 𝓝[<] x, f y < f x)) :
-    StrictMonoOn f I :=
-  strictMonoOn_of_local hI hloc
-
-/-- `eq:two-contraction-periodic`: in the lattice case, with `h > 0` the span of the group
-generated by `log 2` and `log(1/c)` and `ζ_k = s - 2πik/h`, the coefficients
-`c_k = (2pq/m) 2^{-ζ_k} Γ(1-ζ_k) M_c(ζ_k)/ζ_k` of `twoContractionCoeff` are absolutely
-summable, and `H_{μ_c}^s(t) - ∑_k c_k e^{4πikt/h} → 0`. -/
-theorem audit_two_contraction_periodic {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (hs : (2:ℝ) ^ (-s) + c ^ s = 1)
-    {μ : Measure ℝ} (hμ : IsTwoContractionMeasure c s μ) {h : ℝ} (hh : 0 < h)
-    (hspan : AddSubgroup.closure ({Real.log 2, Real.log c⁻¹} : Set ℝ)
-      = AddSubgroup.zmultiples h) :
-    Summable (fun k : ℤ => ‖twoContractionCoeff c s μ h k‖) ∧
-      Tendsto (fun t : ℝ => (expectedProfile W P s μ t : ℂ) - ∑' k : ℤ,
-        twoContractionCoeff c s μ h k * Complex.exp (4 * Real.pi * Complex.I * k * t / h))
-        atTop (𝓝 0) := by
-  obtain ⟨hs0, hs1, -⟩ := dimension_facts hc0 hc hs
-  obtain ⟨K, hK⟩ := (isTwoContractionMeasure_iff_exists_isNatural hc0 hc hs).1 hμ
-  have := hK.isProbabilityMeasure
-  obtain ⟨A, hA⟩ :=
-    (pairSystem_openSetCondition hc0 hc hK.attractor).exists_isFrostman _ hs0.le hK
-  have hlat : AddSubgroup.closure (Set.range (pairSystem c hc0 hc).logRatio)
-      = AddSubgroup.zmultiples h := by
-    rw [pairSystem_range_logRatio, Set.pair_comm]; exact hspan
-  rw [funext (expectedProfile_eq_H hW hs0 hs1 hA)]
-  exact pairSystem_periodic hc0 hc hs0 hs1 (pairSystem_isDimension_of _ _ hs) hh hlat hK
-
-/-- `thm:two-contraction-formula`, bundled.  With `p = 2^{-s}`, `q = c^s`,
-`m = p log 2 + q log(1/c)` and `M_c(s) = 𝔼 Z_c^{-s}`: if `log(1/c)/log 2` is irrational,
-`H_{μ_c}^s` converges to `2pq 2^{-s} Γ(1-s) M_c(s)/(sm)` (`eq:two-contraction-constant`);
-if it is rational, the group generated by `log 2` and `log(1/c)` has a span `h > 0`, the
-coefficients of `eq:two-contraction-periodic` are absolutely summable and `H_{μ_c}^s` is
-asymptotic to their Fourier series; in both cases the mean is
-`2pq 2^{-s} Γ(1-s) M_c(s)/(sm)` (`eq:two-contraction-mean`). -/
-theorem audit_thm_two_contraction_formula {P : Measure Ω} [IsProbabilityMeasure P]
-    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
-    {c s : ℝ} (hc0 : 0 < c) (hc : c < 1/2) (hs : (2:ℝ) ^ (-s) + c ^ s = 1)
-    {μ : Measure ℝ} (hμ : IsTwoContractionMeasure c s μ) :
-    (Irrational (Real.log c⁻¹ / Real.log 2) →
-      Tendsto (expectedProfile W P s μ) atTop
-        (𝓝 (2 * (2:ℝ) ^ (-s) * c ^ s * (2:ℝ) ^ (-s) * Real.Gamma (1 - s) *
-          crossMoment c μ s / (s * ((2:ℝ) ^ (-s) * Real.log 2 + c ^ s * Real.log c⁻¹))))) ∧
-    (¬ Irrational (Real.log c⁻¹ / Real.log 2) →
-      ∃ h : ℝ, 0 < h ∧ AddSubgroup.closure ({Real.log 2, Real.log c⁻¹} : Set ℝ)
-          = AddSubgroup.zmultiples h ∧
-        Summable (fun k : ℤ => ‖twoContractionCoeff c s μ h k‖) ∧
-        Tendsto (fun t : ℝ => (expectedProfile W P s μ t : ℂ) - ∑' k : ℤ,
-          twoContractionCoeff c s μ h k * Complex.exp (4 * Real.pi * Complex.I * k * t / h))
-          atTop (𝓝 0)) ∧
-    Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s μ t) atTop
-      (𝓝 (2 * (2:ℝ) ^ (-s) * c ^ s * (2:ℝ) ^ (-s) * Real.Gamma (1 - s) * crossMoment c μ s /
-        (s * ((2:ℝ) ^ (-s) * Real.log 2 + c ^ s * Real.log c⁻¹)))) := by
-  refine ⟨audit_two_contraction_constant hW hc0 hc hs hμ, fun hrat => ?_,
-    audit_two_contraction_mean hW hc0 hc hs hμ⟩
-  obtain ⟨hs0, hs1, hceq⟩ := dimension_facts hc0 hc hs
-  have hna : ¬ (pairSystem c hc0 hc).NonArithmetic := by
-    subst hceq
-    rw [pairSystem_nonArithmetic_iff hs0 hs1]
-    exact hrat
-  rcases (pairSystem c hc0 hc).nonArithmetic_or_exists_lattice with hd | ⟨h, hh, hlat⟩
-  · exact absurd hd hna
-  · have hspan : AddSubgroup.closure ({Real.log 2, Real.log c⁻¹} : Set ℝ)
-        = AddSubgroup.zmultiples h := by
-      rw [Set.pair_comm, ← pairSystem_range_logRatio hc0 hc]; exact hlat
-    exact ⟨h, hh, hspan, audit_two_contraction_periodic hW hc0 hc hs hμ hh hspan⟩
-
 /-! ### `sec:small-dimension`: monotonicity for small dimension
 
 The family of `sec:fixed-dimension-family` with `a = p^{1/s}`, `b = q^{1/s}`, `q = 1 - p`:
@@ -1614,7 +1287,7 @@ theorem audit_log_derivative_mean {s p D : ℝ} (hp0 : 0 < p) (hp1 : p < 1)
         (kappa p * fixedMoment s p + D)) p :=
   ⟨hasDerivAt_entropyFactor hp0 hp1, hasDerivAt_fixedMean hp0 hp1 hM⟩
 
-/-- `thm:entropy-factor`: `κ > 0` on `(0, 1/2)`, `κ(p) ≥ 0.88/(p log(e/p))` for
+/-- `thm:entropy-factor`: `κ > 0` on `(0, 1/2)`, `κ(p) ≥ 0.88/(p (1 - log p))` for
 `p ≤ 1/50`, and `κ(p) ≥ c (1/2 - p)` on `[p₁, 1/2)` for some `c > 0`. -/
 theorem audit_entropy_factor :
     (∀ p ∈ Set.Ioo (0:ℝ) (1/2), 0 < kappa p) ∧
@@ -1624,28 +1297,41 @@ theorem audit_entropy_factor :
   ⟨fun p hp => kappa_pos hp.1 hp.2, fun p hp => kappa_ge_of_le hp.1 hp.2,
     fun p₁ hp₁ => kappa_ge_of_ge hp₁.1 hp₁.2⟩
 
-/-- `eq:leading-ones`: `M_p = ∑_{n ≥ 0} p qⁿ 𝔼[(1 - b^{n+1} - a(X - b^{n+1} Y''))^{-s}]`,
+/-- `eq:initial-symbol-decomposition`: `M_p = ∑_{n ≥ 0} p qⁿ 𝔼[(1 - b^{n+1} - a(X - b^{n+1} Y''))^{-s}]`,
 with `X`, `Y''` independent of law `μ_p`. -/
 theorem audit_leading_ones {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p)
     (hp1 : p < 1) :
     HasSum (fun n : ℕ => p * (1 - p) ^ n * leadingTerm s p n) (fixedMoment s p) :=
   hasSum_leadingTerm hs hs1 hp0 hp1
 
-/-- `eq:main-term`: `Σ(p) = (e^{sT} - 1) ∑_{m ≥ 1} (e^{mT} - 1)^{-s}` with
-`T = log(1/b) = log(1/q)/s`. -/
+/-- `eq:main-term`: `J₀(p) = (e^{sT(p)} - 1) ∑_{m ≥ 1} (e^{mT(p)} - 1)^{-s}` with
+`T(p) = log(1/b) = log(1/q)/s`. -/
 theorem audit_main_term {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) :
     mainTerm s p = (Real.exp (s * fixedT s p) - 1) *
       ∑' m : ℕ, (Real.exp (((m:ℝ) + 1) * fixedT s p) - 1) ^ (-s) :=
   mainTerm_eq hs hp0 hp1
 
-/-- `thm:main-term-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, `Σ` is
-differentiable at `p` with `|Σ'(p)| ≤ 6 p^{-s}`. -/
+/-- Internal combination of `thm:main-term-derivative` and `thm:remainder-derivative`,
+together with `thm:second-derivative-small-s`, including existence of the derivatives. -/
+theorem audit_fixed_dimension_derivative_bounds :
+    (∀ s ∈ Set.Ioc (0 : ℝ) (1/2), ∀ p ∈ Set.Ioc (0 : ℝ) (1/50),
+      HasDerivAt (fixedMoment s) (deriv (fixedMoment s) p) p ∧
+      |deriv (fixedMoment s) p| ≤
+        6 * p ^ (-s) + 3000 * s * (3 * p / 2) ^ s⁻¹ * p ^ (-2 - s)) ∧
+    (∀ s ∈ Set.Ioc (0 : ℝ) (2 / 100000), ∀ p ∈ Set.Icc (1 / 10000 : ℝ) (1/2),
+      HasDerivAt (deriv (fixedMoment s)) (deriv (deriv (fixedMoment s)) p) p ∧
+      |deriv (deriv (fixedMoment s)) p| ≤
+        10 ^ 11 * s * (1 - 5 / 100000) ^ s⁻¹) :=
+  Section9Estimates.derivative_bounds
+
+/-- `thm:main-term-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, `J₀` is
+differentiable at `p` with `|J₀'(p)| ≤ 6 p^{-s}`. -/
 theorem audit_main_term_derivative {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
     (hp : p ≤ 1/50) : ∃ D, HasDerivAt (mainTerm s) D p ∧ |D| ≤ 6 * p ^ (-s) :=
   exists_hasDerivAt_mainTerm hs hs1 hp0 hp
 
-/-- `thm:remainder-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, `M_p` and `Σ` are
-differentiable at `p` with `|M_p' - Σ'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`. -/
+/-- `thm:remainder-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, `J` and `J₀` are
+differentiable at `p` with `|J'(p) - J₀'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`. -/
 theorem audit_remainder_derivative {s p : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) (hp0 : 0 < p)
     (hp : p ≤ 1/50) :
     ∃ D D', HasDerivAt (fixedMoment s) D p ∧ HasDerivAt (mainTerm s) D' p ∧
@@ -1689,7 +1375,7 @@ The objects are those of `sec:small-dimension` above; `criticalSet s` is the cri
 `D_s` of `H̄_s` in `(0, 1/2)` and `levelSet s p₁` the level set of `H̄_s` through `p₁` in
 `(0, 1/2]`. -/
 
-/-- The display before `thm:fixed-dimension-analyticity`: `M_p = M_{1-p}` and
+/-- The display in `sec:fixed-dimension-family`: `M_p = M_{1-p}` and
 `H̄_s(p) = H̄_s(1-p)` on `(0,1)`. -/
 theorem audit_fixed_dimension_symmetry {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p)
     (hp1 : p < 1) :
@@ -1723,26 +1409,21 @@ theorem audit_fixed_dimension_laws {P : Measure Ω} [IsProbabilityMeasure P]
     MinkowskiReconstruction.fixedSystem_brownianImageLaw_mutuallySingular hW hs hs1 hp₁0 hp₁1
       hp₂0 hp₂1 hμ₁ hμ₂ hne⟩
 
-/-- `thm:fixed-dimension-range`: `p ↦ H̄_s(p)` is continuous and strictly positive on
-`(0, 1/2]`, `H̄_s(p) → 0` as `p ↓ 0`, and there is an uncountable `S ⊆ (0, 1/2)` on which the
-mean is injective, so that by `audit_fixed_dimension_laws` the parameters of `S` have pairwise
-mutually singular image-measure and compact-image laws. -/
+/-- `thm:fixed-dimension-range`: for fixed `s`, `H̄_s` is continuous and strictly positive on
+`(0, 1/2]` and tends to `0` as `p ↓ 0`. -/
 theorem audit_fixed_dimension_range {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
     ContinuousOn (fixedMean s) (Set.Ioc 0 (1/2)) ∧
     (∀ p ∈ Set.Ioc (0:ℝ) (1/2), 0 < fixedMean s p) ∧
-    Tendsto (fixedMean s) (𝓝[>] 0) (𝓝 0) ∧
-    ∃ S : Set ℝ, S ⊆ Set.Ioo 0 (1/2) ∧ ¬ S.Countable ∧ S.InjOn (fixedMean s) :=
+    Tendsto (fixedMean s) (𝓝[>] 0) (𝓝 0) :=
   ⟨(continuousOn_fixedMean hs hs1).mono fun p hp => ⟨hp.1, by linarith [hp.2]⟩,
     fun p hp => fixedMean_pos hs hs1 hp.1 (by linarith [hp.2]),
-    tendsto_fixedMean_zero hs hs1, exists_uncountable_injOn_fixedMean hs hs1⟩
+    tendsto_fixedMean_zero hs hs1⟩
 
-/-- `thm:fixed-dimension-range`, bundled with its consequence: the uncountable subfamily
-has pairwise mutually singular image-measure and compact-image laws. -/
-theorem audit_thm_fixed_dimension_range {P : Measure Ω} [IsProbabilityMeasure P]
+/-- An internal consequence of `thm:fixed-dimension-separation`: an
+uncountable set of parameters in `(0, 1/2)` on which the mean is injective, so that any two
+of them have mutually singular image-measure and compact-image laws. -/
+theorem audit_fixed_dimension_subfamily {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
-    ContinuousOn (fixedMean s) (Set.Ioc 0 (1/2)) ∧
-    (∀ p ∈ Set.Ioc (0:ℝ) (1/2), 0 < fixedMean s p) ∧
-    Tendsto (fixedMean s) (𝓝[>] 0) (𝓝 0) ∧
     ∃ S : Set ℝ, S ⊆ Set.Ioo 0 (1/2) ∧ ¬ S.Countable ∧
       ∀ p₁ ∈ S, ∀ p₂ ∈ S, p₁ ≠ p₂ →
         ∀ (hp₁0 : 0 < p₁) (hp₁1 : p₁ < 1) (hp₂0 : 0 < p₂) (hp₂1 : p₂ < 1)
@@ -1752,29 +1433,37 @@ theorem audit_thm_fixed_dimension_range {P : Measure Ω} [IsProbabilityMeasure P
           (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) ∧
             (brownianImageLaw W P hμ₁.compactAttractor).MutuallySingular
               (brownianImageLaw W P hμ₂.compactAttractor) := by
-  obtain ⟨hc, hpos, hlim, S, hS, hSc, hinj⟩ := audit_fixed_dimension_range hs hs1
-  refine ⟨hc, hpos, hlim, S, hS, hSc, fun p₁ hp₁ p₂ hp₂ hne hp₁0 hp₁1 hp₂0 hp₂1 K₁ K₂ μ₁ μ₂
-    hμ₁ hμ₂ => ?_⟩
-  exact audit_fixed_dimension_laws hW hs hs1 hp₁0 hp₁1 hp₂0 hp₂1 hμ₁ hμ₂ (hinj.ne hp₁ hp₂ hne)
+  obtain ⟨S, hS, hSc, hinj⟩ := exists_uncountable_injOn_fixedMean hs hs1
+  exact ⟨S, hS, hSc, fun p₁ hp₁ p₂ hp₂ hne hp₁0 hp₁1 hp₂0 hp₂1 K₁ K₂ μ₁ μ₂ hμ₁ hμ₂ =>
+    audit_fixed_dimension_laws hW hs hs1 hp₁0 hp₁1 hp₂0 hp₂1 hμ₁ hμ₂ (hinj.ne hp₁ hp₂ hne)⟩
 
 /-- `thm:fixed-dimension-separation`, the analytic assertions: `D_s` has no accumulation
 point in `(0, 1/2]`; on every interval of `(0, 1/2)` free of critical points the mean is
-strictly monotone; some `(1/2 - ε_s, 1/2)` is such an interval; and for every `p₁ ∈ (0, 1/2]`
-the level set through `p₁` has no accumulation point in `(0, 1/2]` and is countable. -/
+strictly monotone; and for every `p₁ ∈ (0, 1/2]` the level set through `p₁` has no
+accumulation point in `(0, 1/2]`. -/
 theorem audit_fixed_dimension_separation {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
     (∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (criticalSet s))) ∧
     (∀ α β : ℝ, Set.Ioo α β ⊆ Set.Ioo 0 (1/2) →
       (∀ q ∈ Set.Ioo α β, deriv (fixedMean s) q ≠ 0) →
       StrictMonoOn (fixedMean s) (Set.Ioo α β) ∨ StrictAntiOn (fixedMean s) (Set.Ioo α β)) ∧
-    (∃ ε ∈ Set.Ioo (0:ℝ) (1/2), (∀ q ∈ Set.Ioo (1/2 - ε) (1/2), deriv (fixedMean s) q ≠ 0) ∧
-      (StrictMonoOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2)) ∨
-        StrictAntiOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2)))) ∧
-    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
-      (∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (levelSet s p₁))) ∧ (levelSet s p₁).Countable) :=
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (levelSet s p₁))) :=
   ⟨fun p hp => not_accPt_criticalSet hs hs1 hp,
     fun _ _ hsub hne => strictMono_or_anti_of_ne_zero hs hs1 hsub hne,
-    exists_eps_strictMono hs hs1,
-    fun p₁ _ => ⟨fun p hp => not_accPt_levelSet hs hs1 p₁ hp, levelSet_countable hs hs1 p₁⟩⟩
+    fun p₁ _ p hp => not_accPt_levelSet hs hs1 p₁ hp⟩
+
+/-- The paragraph after `thm:fixed-dimension-separation`, the interval `(1/2 - ε_s, 1/2)`:
+some such interval is free of critical points, and the mean is strictly monotone on it. -/
+theorem audit_fixed_dimension_eps {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
+    ∃ ε ∈ Set.Ioo (0:ℝ) (1/2), (∀ q ∈ Set.Ioo (1/2 - ε) (1/2), deriv (fixedMean s) q ≠ 0) ∧
+      (StrictMonoOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2)) ∨
+        StrictAntiOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2))) :=
+  exists_eps_strictMono hs hs1
+
+/-- The paragraph after `thm:fixed-dimension-separation`, countable level sets: every level
+set of the mean through a point of `(0, 1/2]` is countable. -/
+theorem audit_fixed_dimension_level_countable {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
+    ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), (levelSet s p₁).Countable :=
+  fun p₁ _ => levelSet_countable hs hs1 p₁
 
 /-- `thm:fixed-dimension-separation`, bundled: the analytic assertions together with the
 mutual singularity of the laws for all `p₁, p₂ ∈ (0, 1/2]` with distinct means. -/
@@ -1784,11 +1473,7 @@ theorem audit_thm_fixed_dimension_separation {P : Measure Ω} [IsProbabilityMeas
     (∀ α β : ℝ, Set.Ioo α β ⊆ Set.Ioo 0 (1/2) →
       (∀ q ∈ Set.Ioo α β, deriv (fixedMean s) q ≠ 0) →
       StrictMonoOn (fixedMean s) (Set.Ioo α β) ∨ StrictAntiOn (fixedMean s) (Set.Ioo α β)) ∧
-    (∃ ε ∈ Set.Ioo (0:ℝ) (1/2), (∀ q ∈ Set.Ioo (1/2 - ε) (1/2), deriv (fixedMean s) q ≠ 0) ∧
-      (StrictMonoOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2)) ∨
-        StrictAntiOn (fixedMean s) (Set.Ioo (1/2 - ε) (1/2)))) ∧
-    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
-      (∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (levelSet s p₁))) ∧ (levelSet s p₁).Countable) ∧
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (levelSet s p₁))) ∧
     (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2),
       fixedMean s p₁ ≠ fixedMean s p₂ →
       ∀ (hp₁0 : 0 < p₁) (hp₁1 : p₁ < 1) (hp₂0 : 0 < p₂) (hp₂1 : p₂ < 1)
@@ -1798,8 +1483,8 @@ theorem audit_thm_fixed_dimension_separation {P : Measure Ω} [IsProbabilityMeas
         (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) ∧
           (brownianImageLaw W P hμ₁.compactAttractor).MutuallySingular
             (brownianImageLaw W P hμ₂.compactAttractor)) := by
-  obtain ⟨h1, h2, h3, h4⟩ := audit_fixed_dimension_separation hs hs1
-  exact ⟨h1, h2, h3, h4, fun p₁ _ p₂ _ hne hp₁0 hp₁1 hp₂0 hp₂1 K₁ K₂ μ₁ μ₂ hμ₁ hμ₂ =>
+  obtain ⟨h1, h2, h4⟩ := audit_fixed_dimension_separation hs hs1
+  exact ⟨h1, h2, h4, fun p₁ _ p₂ _ hne hp₁0 hp₁1 hp₂0 hp₂1 K₁ K₂ μ₁ μ₂ hμ₁ hμ₂ =>
     audit_fixed_dimension_laws hW hs hs1 hp₁0 hp₁1 hp₂0 hp₂1 hμ₁ hμ₂ hne⟩
 
 /-- `thm:small-dimension-monotone`, bundled with its second sentence: for `s ≤ s₀` the mean
@@ -1822,6 +1507,17 @@ theorem audit_thm_small_dimension_monotone {P : Measure Ω} [IsProbabilityMeasur
     hμ₁ hμ₂ => ?_⟩⟩
   exact audit_fixed_dimension_laws hW hs.1 (by linarith [hs.2, hs₀.2]) hp₁0 hp₁1 hp₂0 hp₂1 hμ₁ hμ₂
     ((hmono s hs).injOn.ne hp₁ hp₂ hne)
+
+/-- The remark after `thm:small-dimension-monotone`: for `s ≤ s₀` the mean is strictly
+increasing on `(0, 1/2]`, and by the symmetry `H̄_s(p) = H̄_s(1-p)` it attains its maximum
+over `(0, 1)` at the homogeneous parameter `p = 1/2` alone. -/
+theorem audit_small_dimension_maximum :
+    ∃ s₀ ∈ Set.Ioo (0:ℝ) 1, ∀ s ∈ Set.Ioc (0:ℝ) s₀,
+      StrictMonoOn (fixedMean s) (Set.Ioc 0 (1/2)) ∧
+      ∀ p ∈ Set.Ioo (0:ℝ) 1, p ≠ 1/2 → fixedMean s p < fixedMean s (1/2) := by
+  obtain ⟨s₀, hs₀, hmono⟩ := exists_strictMonoOn_fixedMean
+  exact ⟨s₀, hs₀, fun s hs => ⟨hmono s hs, fun p hp hne =>
+    fixedMean_lt_half_of_strictMonoOn hs.1 (by linarith [hs.2, hs₀.2]) (hmono s hs) hp hne⟩⟩
 
 /-- `thm:critical-set-finite`, bundled: the strict increase on some `(0, p₀]` and the
 finiteness of `D_s`, for every `s ∈ (0, 1/2]`. -/
@@ -1862,7 +1558,8 @@ theorem audit_fixed_dimension_non_lattice {P : Measure Ω} [IsProbabilityMeasure
   exact fixedSystem_tendsto_H_nonLattice hs hs1 hp0 hp1 hμ
     ((fixedSystem_nonArithmetic_iff hs hp0 hp1).2 hirr)
 
-/-- `eq:fixed-dimension-periodic`: in the lattice case, with `h > 0` the span of the group
+/-- Internal, beyond the statement of `thm:fixed-dimension-profiles`, the lattice Fourier
+expansion of the expected profile: in the lattice case, with `h > 0` the span of the group
 generated by `log(1/a)` and `log(1/b)` and `ζ_k = s - 2πik/h`, the coefficients
 `c_k = (2spq/E(p)) 2^{-ζ_k} Γ(1-ζ_k) M_p(ζ_k)/ζ_k` of `fixedDimCoeff` are absolutely summable
 and `H_{μ_p}^s(t) - ∑_k c_k e^{4πikt/h} → 0`. -/
@@ -1886,11 +1583,12 @@ theorem audit_fixed_dimension_periodic {P : Measure Ω} [IsProbabilityMeasure P]
   rw [funext (expectedProfile_eq_H hW hs hs1 hA)]
   exact fixedSystem_periodic hs hs1 hp0 hp1 hh hlat hμ
 
-/-- `eq:fixed-dimension-correlation`: for every `r > 0`,
+/-- Internal, beyond the statement of `thm:fixed-dimension-profiles`:
+`eq:fixed-dimension-correlation` together with its remainder bound.  For every `r > 0`,
 `S_{μ_p}(r) = 2pq ∑_{j,k≥0} C(j+k, j) p^{2j} q^{2k} 𝔼[1 - exp(-r²/(2 a^j b^k Z_p))]`, with
-`X`, `Y` independent of law `μ_p` in `Z_p`, and the series converges uniformly in `r`: the
-remainder after the terms with `j + k < m` is at most `(p² + q²)^m`. -/
-theorem audit_fixed_dimension_correlation {P : Measure Ω} [IsProbabilityMeasure P]
+`X`, `Y` independent of law `μ_p` in `Z_p`, and the remainder after the terms with
+`j + k < m` is at most `(p² + q²)^m`, uniformly in `r`. -/
+theorem audit_fixed_dimension_correlation_remainder {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
     {K : Set ℝ} {μ : Measure ℝ} (hμ : (fixedSystem s p hs hp0 hp1).IsNatural K s μ)
@@ -1918,13 +1616,28 @@ theorem audit_fixed_dimension_correlation {P : Measure Ω} [IsProbabilityMeasure
   rw [hS]
   exact fixedSystem_correlation hs hs1 hp0 hp1 hμ r
 
-/-- `thm:fixed-dimension-profiles`, bundled: `eq:fixed-dimension-correlation` with its
-uniform convergence; the mean profile exists and equals `eq:fixed-dimension-mean`; if
+/-- `eq:fixed-dimension-correlation`: for every `r > 0`,
+`S_{μ_p}(r) = 2pq ∑_{j,k≥0} C(j+k, j) p^{2j} q^{2k} 𝔼[1 - exp(-r²/(2 a^j b^k Z_p))]`, with
+`X`, `Y` independent of law `μ_p` in `Z_p`. -/
+theorem audit_fixed_dimension_correlation {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
+    {K : Set ℝ} {μ : Measure ℝ} (hμ : (fixedSystem s p hs hp0 hp1).IsNatural K s μ)
+    {r : ℝ} (hr : 0 < r) :
+    HasSum (fun jk : ℕ × ℕ => 2 * (p * (1 - p)) *
+        (((jk.1 + jk.2).choose jk.1 : ℝ) * p ^ (2 * jk.1) * (1 - p) ^ (2 * jk.2)) *
+        ∫ q : ℝ × ℝ, (1 - Real.exp (-(r ^ 2 /
+          (2 * (fixedA s p ^ jk.1 * fixedB s p ^ jk.2 * fixedCross s p q.1 q.2))))) ∂(μ.prod μ))
+      (expCorr W P μ r) :=
+  (audit_fixed_dimension_correlation_remainder hW hs hs1 hp0 hp1 hμ hr).1
+
+/-- Internal bundle beyond `thm:fixed-dimension-profiles`: `eq:fixed-dimension-correlation`
+with its remainder bound; the mean profile exists and equals `eq:fixed-dimension-mean`; if
 `log a / log b` is irrational the profile converges to it; if it is rational the group
-generated by `log(1/a)` and `log(1/b)` has a span `h > 0`, the coefficients of
-`eq:fixed-dimension-periodic` are absolutely summable and the profile is asymptotic to
+generated by `log(1/a)` and `log(1/b)` has a span `h > 0`, the coefficients of the lattice
+Fourier expansion of the profile are absolutely summable and the profile is asymptotic to
 their Fourier series. -/
-theorem audit_thm_fixed_dimension_profiles {P : Measure Ω} [IsProbabilityMeasure P]
+theorem audit_thm_fixed_dimension_profiles_lattice {P : Measure Ω} [IsProbabilityMeasure P]
     {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
     {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
     {K : Set ℝ} {μ : Measure ℝ} (hμ : (fixedSystem s p hs hp0 hp1).IsNatural K s μ) :
@@ -1955,7 +1668,7 @@ theorem audit_thm_fixed_dimension_profiles {P : Measure Ω} [IsProbabilityMeasur
         Tendsto (fun t : ℝ => (expectedProfile W P s μ t : ℂ) - ∑' k : ℤ,
           fixedDimCoeff s p μ h k * Complex.exp (4 * Real.pi * Complex.I * k * t / h))
           atTop (𝓝 0)) := by
-  refine ⟨fun r hr => audit_fixed_dimension_correlation hW hs hs1 hp0 hp1 hμ hr,
+  refine ⟨fun r hr => audit_fixed_dimension_correlation_remainder hW hs hs1 hp0 hp1 hμ hr,
     audit_fixed_dimension_mean hW hs hs1 hp0 hp1 hμ,
     audit_fixed_dimension_non_lattice hW hs hs1 hp0 hp1 hμ, fun hrat => ?_⟩
   have hna : ¬ (fixedSystem s p hs hp0 hp1).NonArithmetic := by
@@ -1967,4 +1680,420 @@ theorem audit_thm_fixed_dimension_profiles {P : Measure Ω} [IsProbabilityMeasur
       rw [← fixedSystem_range_logRatio hs hp0 hp1]; exact hlat
     exact ⟨h, hh, hspan, audit_fixed_dimension_periodic hW hs hs1 hp0 hp1 hμ hh hspan⟩
 
+/-- `thm:fixed-dimension-profiles`, bundled: `eq:fixed-dimension-correlation` for every
+`r > 0`; the mean profile exists and equals `eq:fixed-dimension-mean`; and if
+`log a / log b` is irrational the profile converges to it. -/
+theorem audit_thm_fixed_dimension_profiles {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1)
+    {K : Set ℝ} {μ : Measure ℝ} (hμ : (fixedSystem s p hs hp0 hp1).IsNatural K s μ) :
+    (∀ r : ℝ, 0 < r →
+      HasSum (fun jk : ℕ × ℕ => 2 * (p * (1 - p)) *
+          (((jk.1 + jk.2).choose jk.1 : ℝ) * p ^ (2 * jk.1) * (1 - p) ^ (2 * jk.2)) *
+          ∫ q : ℝ × ℝ, (1 - Real.exp (-(r ^ 2 /
+            (2 * (fixedA s p ^ jk.1 * fixedB s p ^ jk.2 * fixedCross s p q.1 q.2)))))
+            ∂(μ.prod μ))
+        (expCorr W P μ r)) ∧
+    Tendsto (fun T : ℝ => T⁻¹ * ∫ t in (0:ℝ)..T, expectedProfile W P s μ t) atTop
+      (𝓝 (fixedMean s p)) ∧
+    (Irrational (Real.log (fixedA s p) / Real.log (fixedB s p)) →
+      Tendsto (expectedProfile W P s μ) atTop (𝓝 (fixedMean s p))) :=
+  ⟨fun r hr => audit_fixed_dimension_correlation hW hs hs1 hp0 hp1 hμ hr,
+    audit_fixed_dimension_mean hW hs hs1 hp0 hp1 hμ,
+    audit_fixed_dimension_non_lattice hW hs hs1 hp0 hp1 hμ⟩
+
+end BrownianImages
+
+namespace BrownianImages
+open MeasureTheory ProbabilityTheory Filter TopologicalSpace Set
+open scoped ENNReal NNReal Topology
+variable {Ω : Type*} [MeasurableSpace Ω]
+
+/-- The natural measure and attractor of the two-contraction family in Section 1. -/
+structure IsTwoContractionNatural (s p : ℝ) (K : NonemptyCompacts ℝ)
+    (μ : Measure ℝ) : Prop where
+  isProbability : IsProbabilityMeasure μ
+  unitInterval : (K : Set ℝ) ⊆ Set.Icc 0 1
+  invariant : (K : Set ℝ) =
+    (fun x => p ^ s⁻¹ * x) '' (K : Set ℝ) ∪
+    (fun x => (1 - p) ^ s⁻¹ * x + (1 - (1 - p) ^ s⁻¹)) '' (K : Set ℝ)
+  support : μ (K : Set ℝ)ᶜ = 0
+  selfSimilar : μ = ENNReal.ofReal p • μ.map (fun x => p ^ s⁻¹ * x) +
+    ENNReal.ofReal (1 - p) •
+      μ.map (fun x => (1 - p) ^ s⁻¹ * x + (1 - (1 - p) ^ s⁻¹))
+
+/-- The pair `(K_p, μ_p)` specified by its invariance equations. -/
+noncomputable def twoContractionData (s p : ℝ) : NonemptyCompacts ℝ × Measure ℝ :=
+  Classical.epsilon fun a => IsTwoContractionNatural s p a.1 a.2
+
+/-- The Cesàro mean of the expected Brownian correlation profile. Its existence
+on the parameter range is part of `audit_finite_exceptions`. -/
+noncomputable def meanProfile (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (s p : ℝ) : ℝ :=
+  limUnder atTop (fun R : ℝ => R⁻¹ * ∫ t in (0:ℝ)..R,
+    expectedProfile W P s (twoContractionData s p).2 t)
+
+/-- The critical parameters in `(0,1/2)`. -/
+noncomputable def meanCriticalSet (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) (s : ℝ) : Set ℝ :=
+  {p | p ∈ Set.Ioo 0 (1/2) ∧ deriv (meanProfile W P s) p = 0}
+
+private theorem twoContraction_iff {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1)
+    {K : NonemptyCompacts ℝ} {μ : Measure ℝ} :
+    IsTwoContractionNatural s p K μ ↔
+      (fixedSystem s p hs hp0 hp1).IsNatural (K : Set ℝ) s μ := by
+  have hm0 := funext (fixedSystem_map_zero hs hp0 hp1)
+  have hm1 := funext (fixedSystem_map_one hs hp0 hp1)
+  have hu : (⋃ i, (fixedSystem s p hs hp0 hp1).map i '' (K : Set ℝ)) =
+      (fixedSystem s p hs hp0 hp1).map 0 '' (K : Set ℝ) ∪
+      (fixedSystem s p hs hp0 hp1).map 1 '' (K : Set ℝ) := by
+    ext x
+    simp only [mem_iUnion, Fin.exists_fin_two, mem_union]
+  have hi : (fixedSystem s p hs hp0 hp1).IsAttractor (K : Set ℝ) ↔
+      (K : Set ℝ) ⊆ Icc 0 1 ∧ (K : Set ℝ) =
+        (fun x => p ^ s⁻¹ * x) '' (K : Set ℝ) ∪
+        (fun x => (1-p) ^ s⁻¹ * x + (1-(1-p) ^ s⁻¹)) '' (K : Set ℝ) := by
+    simp only [System.IsAttractor, K.isCompact, K.nonempty, true_and,
+      hu, hm0, hm1, fixedA, fixedB]
+  have hm : (μ = ∑ i, ENNReal.ofReal ((fixedSystem s p hs hp0 hp1).ratio i ^ s) •
+      μ.map ((fixedSystem s p hs hp0 hp1).map i)) ↔
+      μ = ENNReal.ofReal p • μ.map (fun x => p ^ s⁻¹ * x) +
+        ENNReal.ofReal (1-p) • μ.map (fun x => (1-p) ^ s⁻¹ * x + (1-(1-p) ^ s⁻¹)) := by
+    simp only [Fin.sum_univ_two, fixedSystem_ratio_zero, fixedSystem_ratio_one,
+      fixedA_rpow hs hp0, fixedB_rpow hs hp1, hm0, hm1]
+    rfl
+  exact ⟨fun h => ⟨h.isProbability, hi.mpr ⟨h.unitInterval, h.invariant⟩, h.support,
+      hm.mpr h.selfSimilar⟩,
+    fun h => ⟨h.isProbability, (hi.mp h.attractor).1, (hi.mp h.attractor).2,
+      h.support, hm.mp h.selfSimilar⟩⟩
+
+private theorem twoContraction_natural {s p : ℝ} (hs : 0 < s) (hp0 : 0 < p) (hp1 : p < 1) :
+    (fixedSystem s p hs hp0 hp1).IsNatural ((twoContractionData s p).1 : Set ℝ) s
+      (twoContractionData s p).2 := by
+  apply (twoContraction_iff hs hp0 hp1).mp
+  apply Classical.epsilon_spec (p := fun a : NonemptyCompacts ℝ × Measure ℝ =>
+    IsTwoContractionNatural s p a.1 a.2)
+  obtain ⟨⟨K, μ⟩, hμ, -⟩ :=
+    (fixedSystem s p hs hp0 hp1).exists_unique_isNatural (fixedSystem_isDimension hs hp0 hp1)
+  exact ⟨⟨hμ.compactAttractor, μ⟩, (twoContraction_iff hs hp0 hp1).mpr hμ⟩
+
+private theorem meanProfile_eq {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s p : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp0 : 0 < p) (hp1 : p < 1) :
+    meanProfile W P s p = fixedMean s p :=
+  (audit_fixed_dimension_mean hW hs hs1 hp0 hp1 (twoContraction_natural hs hp0 hp1)).limUnder_eq
+
+private theorem meanCriticalSet_eq {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s : ℝ} (hs : 0 < s) (hs1 : s < 1) : meanCriticalSet W P s = criticalSet s := by
+  have hd : ∀ p ∈ Ioo (0:ℝ) 1, deriv (meanProfile W P s) p = deriv (fixedMean s) p := by
+    intro p hp
+    apply Filter.EventuallyEq.deriv_eq
+    filter_upwards [isOpen_Ioo.mem_nhds hp] with q hq
+    exact meanProfile_eq hW hs hs1 hq.1 hq.2
+  ext p
+  simp only [meanCriticalSet, criticalSet, mem_ofPred_eq]
+  by_cases hp : p ∈ Ioo (0:ℝ) (1/2)
+  · rw [hd p ⟨hp.1, by linarith [hp.2]⟩]
+  · simp only [hp, false_and]
+
+/-- The finite-level-set assertion of Theorem 1.4. -/
+theorem levelSet_finite {s p₁ : ℝ} (hs : 0 < s) (hs1 : s < 1)
+    (hp₁ : p₁ ∈ Ioc (0:ℝ) (1/2)) : (levelSet s p₁).Finite := by
+  have hpos := fixedMean_pos hs hs1 hp₁.1 (by linarith [hp₁.2])
+  have hev := (tendsto_fixedMean_zero hs hs1).eventually (gt_mem_nhds hpos)
+  obtain ⟨δ, hδ, hbound⟩ := mem_nhdsGT_iff_exists_Ioo_subset.mp hev
+  have hsub : levelSet s p₁ ⊆ Icc δ (1/2) := by
+    intro p hp
+    refine ⟨?_, hp.1.2⟩
+    by_contra h
+    have := hbound ⟨hp.1.1, lt_of_not_ge h⟩
+    exact (ne_of_lt this) hp.2
+  by_contra hinf
+  obtain ⟨x, hx, hacc⟩ := Set.Infinite.exists_accPt_of_subset_isCompact hinf isCompact_Icc hsub
+  exact not_accPt_levelSet hs hs1 p₁ ⟨hδ.trans_le hx.1, hx.2⟩ hacc
+
+/-- The cut-off probability `ν_{F,r}` in Section 1, with an irrelevant fallback
+when the normalised density is not a probability measure. -/
+noncomputable def cutoffProbability (r : ℝ) (F : CompactPlane) : ProbabilityMeasure Plane :=
+  open scoped Classical in
+  let μ := volume.withDensity (fun x : Plane =>
+    ENNReal.ofReal (max (1 - Metric.infDist x F / r) 0))
+  let ν := (μ Set.univ)⁻¹ • μ
+  if h : IsProbabilityMeasure ν then ⟨ν, h⟩ else ⟨Measure.dirac 0, inferInstance⟩
+
+private theorem cutoffProbability_eq {r : ℝ} (hr : 0 < r) (F : CompactPlane) :
+    cutoffProbability r F = tubeProbability r hr F := by
+  classical
+  have heq : (tubeProbability r hr F : Measure Plane) =
+      (tubeMeasure r F Set.univ)⁻¹ • tubeMeasure r F := by
+    rw [tubeProbability, (tubeFiniteMeasure r hr F).toMeasure_normalize_eq_of_nonzero
+      (tubeFiniteMeasure_ne_zero hr F)]
+    rw [← Measure.coe_nnreal_smul, ENNReal.coe_inv, FiniteMeasure.ennreal_mass]
+    · rfl
+    · exact (tubeFiniteMeasure r hr F).mass_nonzero_iff.mpr (tubeFiniteMeasure_ne_zero hr F)
+  have hprob : IsProbabilityMeasure ((tubeMeasure r F Set.univ)⁻¹ • tubeMeasure r F) :=
+    heq ▸ (tubeProbability r hr F).prop
+  have hcut : cutoffProbability r F =
+      (⟨(tubeMeasure r F Set.univ)⁻¹ • tubeMeasure r F, hprob⟩ : ProbabilityMeasure Plane) :=
+    dite_eq_left hprob
+  exact hcut.trans (Subtype.ext heq.symm)
+
+/-- Theorem 1.2 (`thm:profile-asymptotics`). -/
+theorem audit_profile_asymptotics {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    (∀ h : ℝ, 0 < h →
+      AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h →
+      ∃ Q : ℝ → ℝ, Continuous Q ∧ Function.Periodic Q (h / 2) ∧
+        (∀ t, 0 < Q t) ∧ (∃ v w, Q v ≠ Q w) ∧
+        Tendsto (fun t => expectedProfile W P s μ t - Q t) atTop (𝓝 0)) ∧
+    (S.NonArithmetic → ∃ C : ℝ, 0 < C ∧
+      Tendsto (expectedProfile W P s μ) atTop (𝓝 C)) := by
+  let := hμ.isProbability
+  obtain ⟨A, hA⟩ := hosc.exists_isFrostman S hs0.le hμ
+  simp only [funext (expectedProfile_eq_H hW hs0 hs1 hA)]
+  exact audit_thm_profile_asymptotics S hs0 hs1 hosc hdim hμ
+
+private theorem separation_of_periodic_limit {f g Q : ℝ → ℝ} {h C : ℝ}
+    (hh : 0 < h) (hper : Function.Periodic Q h) (hne : ∃ v w, Q v ≠ Q w)
+    (hf : Tendsto (fun t => f t - Q t) atTop (𝓝 0))
+    (hg : Tendsto g atTop (𝓝 C)) :
+    ∃ ε > 0, ∀ V : ℝ, ∃ t ≥ V, ε ≤ |f t - g t| := by
+  obtain ⟨a, b, hab⟩ := hne
+  have hex : ∃ a b, 0 < Q a - Q b := by
+    rcases lt_or_gt_of_ne hab with hab | hab
+    · exact ⟨b, a, sub_pos.mpr hab⟩
+    · exact ⟨a, b, sub_pos.mpr hab⟩
+  obtain ⟨a, b, hd⟩ := hex
+  apply CantorApplication.exists_separation_of_oscillation (d := (Q a - Q b)/2)
+    (by linarith) ?_ hg
+  have hev := hf (Metric.ball_mem_nhds (0:ℝ) (by linarith : 0 < (Q a-Q b)/4))
+  obtain ⟨N, hN⟩ := eventually_atTop.mp hev
+  intro V
+  obtain ⟨n, hn⟩ := Rescaling.exists_far (v₀ := a) hh (max V N)
+  obtain ⟨m, hm⟩ := Rescaling.exists_far (v₀ := b) hh (max V N)
+  refine ⟨a + n*h, (le_max_left _ _).trans hn,
+    b + m*h, (le_max_left _ _).trans hm, ?_⟩
+  have h1 := hN _ ((le_max_right _ _).trans hn)
+  have h2 := hN _ ((le_max_right _ _).trans hm)
+  simp only [Metric.mem_ball, Real.dist_eq, sub_zero] at h1 h2
+  rw [hper.nat_mul n a] at h1
+  rw [hper.nat_mul m b] at h2
+  have h1' := abs_lt.mp h1
+  have h2' := abs_lt.mp h2
+  linarith
+
+/-- Corollary 1.3 (`thm:cantor-application`), for arbitrary lattice and non-lattice IFSs. -/
+theorem audit_lattice_nonlattice_measures {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : Set ℝ} {s : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
+    (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
+    (hlat : ∃ h > 0, AddSubgroup.closure (Set.range S₁.logRatio) = AddSubgroup.zmultiples h)
+    (hnl : S₂.NonArithmetic) {μ₁ μ₂ : Measure ℝ}
+    (hμ₁ : S₁.IsNatural K₁ s μ₁) (hμ₂ : S₂.IsNatural K₂ s μ₂) :
+    (occupationLaw W P μ₁).MutuallySingular (occupationLaw W P μ₂) := by
+  let := hμ₁.isProbability
+  let := hμ₂.isProbability
+  obtain ⟨h, hh, hlat⟩ := hlat
+  obtain ⟨Q, -, hper, -, hne, hlim⟩ :=
+    (audit_profile_asymptotics hW S₁ hs0 hs1 hosc₁ hdim₁ hμ₁).1 h hh hlat
+  obtain ⟨C, -, hC⟩ := (audit_profile_asymptotics hW S₂ hs0 hs1 hosc₂ hdim₂ hμ₂).2 hnl
+  obtain ⟨A₁, hA₁⟩ := hosc₁.exists_isFrostman S₁ hs0.le hμ₁
+  obtain ⟨A₂, hA₂⟩ := hosc₂.exists_isFrostman S₂ hs0.le hμ₂
+  exact audit_main hW hs0 hs1 hA₁ hA₂
+    (separation_of_periodic_limit (by linarith) hper hne hlim hC)
+
+/-- Theorem 1.7 (`thm:minkowski-reconstruction`). Convergence in the probability-measure
+space is weak convergence. -/
+theorem audit_reconstruction {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : NonemptyCompacts ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural (K : Set ℝ) s μ) :
+    (∀ᵐ ω ∂P, Tendsto
+      (fun n : ℕ => cutoffProbability (Real.exp (-(n:ℝ))) (brownianImage W K ω))
+      atTop (𝓝 (occupationProb W μ ω))) ∧
+    ∃ reconstruct : CompactPlane → ProbabilityMeasure Plane,
+      Measurable reconstruct ∧
+      (fun ω => reconstruct (brownianImage W K ω)) =ᵐ[P] occupationProb W μ := by
+  have hK : hμ.compactAttractor = K := NonemptyCompacts.ext rfl
+  have hr := audit_minkowski_reconstruction hW S hs0 hs1 hosc hdim hμ
+  rw [hK] at hr
+  simpa only [MinkowskiReconstruction.TubeReconstructsOccupation, cutoffProbability_eq
+    (Real.exp_pos _), tubeProbabilitySeq, tubeRadius] using hr
+
+/-- Corollary 1.8 (`thm:cantor-set-application`). -/
+theorem audit_lattice_nonlattice_sets {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
+    (S₁ : System ι₁) (S₂ : System ι₂) {K₁ K₂ : NonemptyCompacts ℝ} {s : ℝ}
+    (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc₁ : S₁.OpenSetCondition) (hosc₂ : S₂.OpenSetCondition)
+    (hdim₁ : S₁.IsDimension s) (hdim₂ : S₂.IsDimension s)
+    (hlat : ∃ h > 0, AddSubgroup.closure (Set.range S₁.logRatio) = AddSubgroup.zmultiples h)
+    (hnl : S₂.NonArithmetic) (hK₁ : S₁.IsAttractor (K₁ : Set ℝ))
+    (hK₂ : S₂.IsAttractor (K₂ : Set ℝ)) :
+    (brownianImageLaw W P K₁).MutuallySingular (brownianImageLaw W P K₂) := by
+  obtain ⟨⟨L₁, μ₁⟩, hμ₁, -⟩ := S₁.exists_unique_isNatural hdim₁
+  obtain ⟨⟨L₂, μ₂⟩, hμ₂, -⟩ := S₂.exists_unique_isNatural hdim₂
+  have he₁ := (Hutchinson.eq_attractorSet S₁ hμ₁.attractor).trans
+    (Hutchinson.eq_attractorSet S₁ hK₁).symm
+  have he₂ := (Hutchinson.eq_attractorSet S₂ hμ₂.attractor).trans
+    (Hutchinson.eq_attractorSet S₂ hK₂).symm
+  rw [he₁] at hμ₁
+  rw [he₂] at hμ₂
+  let := hμ₁.isProbability
+  let := hμ₂.isProbability
+  have hc₁ : hμ₁.compactAttractor = K₁ := NonemptyCompacts.ext rfl
+  have hc₂ : hμ₂.compactAttractor = K₂ := NonemptyCompacts.ext rfl
+  have hr₁ := (audit_minkowski_reconstruction hW S₁ hs0 hs1 hosc₁ hdim₁ hμ₁).1
+  have hr₂ := (audit_minkowski_reconstruction hW S₂ hs0 hs1 hosc₂ hdim₂ hμ₂).1
+  rw [hc₁] at hr₁
+  rw [hc₂] at hr₂
+  exact audit_brownianImageLaw_mutuallySingular_of_pathwise hW hr₁ hr₂
+    (audit_lattice_nonlattice_measures hW S₁ S₂ hs0 hs1 hosc₁ hosc₂ hdim₁ hdim₂ hlat hnl hμ₁ hμ₂)
+
+private theorem twoContraction_laws {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s p₁ p₂ : ℝ} (hs : 0 < s) (hs1 : s < 1)
+    (hp₁ : p₁ ∈ Ioc (0:ℝ) (1/2)) (hp₂ : p₂ ∈ Ioc (0:ℝ) (1/2))
+    (hne : meanProfile W P s p₁ ≠ meanProfile W P s p₂) :
+    (occupationLaw W P (twoContractionData s p₁).2).MutuallySingular
+      (occupationLaw W P (twoContractionData s p₂).2) ∧
+    (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+      (brownianImageLaw W P (twoContractionData s p₂).1) := by
+  have hp₁1 : p₁ < 1 := by linarith [hp₁.2]
+  have hp₂1 : p₂ < 1 := by linarith [hp₂.2]
+  have hμ₁ := twoContraction_natural hs hp₁.1 hp₁1
+  have hμ₂ := twoContraction_natural hs hp₂.1 hp₂1
+  have hc₁ : hμ₁.compactAttractor = (twoContractionData s p₁).1 := NonemptyCompacts.ext rfl
+  have hc₂ : hμ₂.compactAttractor = (twoContractionData s p₂).1 := NonemptyCompacts.ext rfl
+  rw [meanProfile_eq hW hs hs1 hp₁.1 hp₁1, meanProfile_eq hW hs hs1 hp₂.1 hp₂1] at hne
+  simpa only [hc₁, hc₂] using audit_fixed_dimension_laws hW hs hs1 hp₁.1 hp₁1 hp₂.1 hp₂1 hμ₁ hμ₂ hne
+
+private theorem meanProfile_level_finite {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s p₁ : ℝ} (hs : 0 < s) (hs1 : s < 1) (hp₁ : p₁ ∈ Ioc (0:ℝ) (1/2)) :
+    {p₂ | p₂ ∈ Ioc (0:ℝ) (1/2) ∧ meanProfile W P s p₂ = meanProfile W P s p₁}.Finite := by
+  have he : {p₂ | p₂ ∈ Ioc (0:ℝ) (1/2) ∧ meanProfile W P s p₂ = meanProfile W P s p₁} =
+      levelSet s p₁ := by
+    ext p₂
+    simp only [mem_ofPred_eq, levelSet]
+    by_cases hp₂ : p₂ ∈ Ioc (0:ℝ) (1/2)
+    · rw [meanProfile_eq hW hs hs1 hp₁.1 (by linarith [hp₁.2]),
+        meanProfile_eq hW hs hs1 hp₂.1 (by linarith [hp₂.2])]
+    · simp only [hp₂, false_and]
+  rw [he]
+  exact levelSet_finite hs hs1 hp₁
+
+/-- Theorem 1.4 (`thm:fixed-dimension-separation`), including the existence of
+its mean as defined in the preceding paragraph. -/
+theorem audit_finite_exceptions {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
+    (∀ p ∈ Set.Ioo (0:ℝ) 1, Tendsto
+      (fun R : ℝ => R⁻¹ * ∫ t in (0:ℝ)..R,
+        expectedProfile W P s (twoContractionData s p).2 t)
+      atTop (𝓝 (meanProfile W P s p))) ∧
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      {p₂ | p₂ ∈ Set.Ioc (0:ℝ) (1/2) ∧
+        meanProfile W P s p₂ = meanProfile W P s p₁}.Finite) ∧
+    (∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2),
+      meanProfile W P s p₁ ≠ meanProfile W P s p₂ →
+      (occupationLaw W P (twoContractionData s p₁).2).MutuallySingular
+        (occupationLaw W P (twoContractionData s p₂).2)) ∧
+    (∀ p ∈ Set.Ioc (0:ℝ) (1/2), ¬ AccPt p (𝓟 (meanCriticalSet W P s))) ∧
+    (∀ α β : ℝ, Set.Ioo α β ⊆ Set.Ioo 0 (1/2) →
+      (∀ q ∈ Set.Ioo α β, deriv (meanProfile W P s) q ≠ 0) →
+      StrictMonoOn (meanProfile W P s) (Set.Ioo α β) ∨
+        StrictAntiOn (meanProfile W P s) (Set.Ioo α β)) := by
+  refine ⟨?_, fun _ hp => meanProfile_level_finite hW hs hs1 hp,
+    fun _ hp₁ _ hp₂ hne => (twoContraction_laws hW hs hs1 hp₁ hp₂ hne).1, ?_, ?_⟩
+  · intro p hp
+    rw [meanProfile_eq hW hs hs1 hp.1 hp.2]
+    exact audit_fixed_dimension_mean hW hs hs1 hp.1 hp.2 (twoContraction_natural hs hp.1 hp.2)
+  · rw [meanCriticalSet_eq hW hs hs1]
+    exact fun p hp => not_accPt_criticalSet hs hs1 hp
+  · intro α β hsub hne
+    have he : Set.EqOn (fixedMean s) (meanProfile W P s) (Ioo α β) :=
+      fun p hp => (meanProfile_eq hW hs hs1 (hsub hp).1 (by linarith [(hsub hp).2])).symm
+    have hd : ∀ q ∈ Ioo α β, deriv (fixedMean s) q ≠ 0 := by
+      intro q hq
+      have heq : meanProfile W P s =ᶠ[𝓝 q] fixedMean s := by
+        filter_upwards [isOpen_Ioo.mem_nhds (show q ∈ Ioo (0:ℝ) 1 from
+          ⟨(hsub hq).1, by linarith [(hsub hq).2]⟩)] with p hp
+        exact meanProfile_eq hW hs hs1 hp.1 hp.2
+      rw [← heq.deriv_eq]
+      exact hne q hq
+    exact (strictMono_or_anti_of_ne_zero hs hs1 hsub hd).imp
+      (fun h => h.congr he) (fun h => h.congr he)
+
+/-- Theorem 1.5 (`thm:small-dimension-monotone`). -/
+theorem audit_small_dimension {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) :
+    ∃ s₀ ∈ Set.Ioo (0:ℝ) 1, ∀ s ∈ Set.Ioc (0:ℝ) s₀,
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 (1/2)) ∧
+      ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), p₁ ≠ p₂ →
+        (occupationLaw W P (twoContractionData s p₁).2).MutuallySingular
+          (occupationLaw W P (twoContractionData s p₂).2) := by
+  obtain ⟨s₀, hs₀, hm⟩ := exists_strictMonoOn_fixedMean
+  refine ⟨s₀, hs₀, fun s hs => ?_⟩
+  have hs1 : s < 1 := hs.2.trans_lt hs₀.2
+  have hm' : StrictMonoOn (meanProfile W P s) (Ioc 0 (1/2)) :=
+    (hm s hs).congr fun p hp => (meanProfile_eq hW hs.1 hs1 hp.1 (by linarith [hp.2])).symm
+  exact ⟨hm', fun _ hp₁ _ hp₂ hne =>
+    (twoContraction_laws hW hs.1 hs1 hp₁ hp₂ (hm'.injOn.ne hp₁ hp₂ hne)).1⟩
+
+/-- Corollary 1.6 (`thm:critical-set-finite`). -/
+theorem audit_finite_critical_set {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P)
+    {s : ℝ} (hs : 0 < s) (hs1 : s ≤ 1/2) :
+    (∃ p₀ ∈ Set.Ioo (0:ℝ) (1/2),
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 p₀)) ∧
+    (meanCriticalSet W P s).Finite := by
+  obtain ⟨p₀, hp₀, hm⟩ := exists_strictMonoOn_fixedMean_small hs hs1
+  have hs1' : s < 1 := by linarith
+  refine ⟨⟨p₀, hp₀, hm.congr fun p hp =>
+    (meanProfile_eq hW hs hs1' hp.1 (by linarith [hp.2, hp₀.2])).symm⟩, ?_⟩
+  rw [meanCriticalSet_eq hW hs hs1']
+  exact criticalSet_finite hs hs1
+
+/-- Corollary 1.9 (`thm:fixed-dimension-set-application`). The final clause supplies
+one threshold for both the strict increase of Theorem 1.5 and compact-image separation. -/
+theorem audit_two_contraction_sets {P : Measure Ω} [IsProbabilityMeasure P]
+    {W : ℝ≥0 → Ω → Plane} (hW : IsPlanarBrownian W P) :
+    (∀ s ∈ Set.Ioo (0:ℝ) 1, ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), meanProfile W P s p₁ ≠ meanProfile W P s p₂ →
+        (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1)) ∧
+    (∀ s ∈ Set.Ioo (0:ℝ) 1, ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2),
+      {p₂ | p₂ ∈ Set.Ioc (0:ℝ) (1/2) ∧
+        ¬ (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1)}.Finite) ∧
+    ∃ s₀ ∈ Set.Ioo (0:ℝ) 1, ∀ s ∈ Set.Ioc (0:ℝ) s₀,
+      StrictMonoOn (meanProfile W P s) (Set.Ioc 0 (1/2)) ∧
+      ∀ p₁ ∈ Set.Ioc (0:ℝ) (1/2), ∀ p₂ ∈ Set.Ioc (0:ℝ) (1/2), p₁ ≠ p₂ →
+        (brownianImageLaw W P (twoContractionData s p₁).1).MutuallySingular
+          (brownianImageLaw W P (twoContractionData s p₂).1) := by
+  refine ⟨fun s hs _ hp₁ _ hp₂ hne => (twoContraction_laws hW hs.1 hs.2 hp₁ hp₂ hne).2,
+    ?_, ?_⟩
+  · intro s hs p₁ hp₁
+    apply (meanProfile_level_finite hW hs.1 hs.2 hp₁).subset
+    intro p₂ hp₂
+    refine ⟨hp₂.1, ?_⟩
+    by_contra hne
+    exact hp₂.2 (twoContraction_laws hW hs.1 hs.2 hp₁ hp₂.1 (Ne.symm hne)).2
+  · obtain ⟨s₀, hs₀, hm⟩ := exists_strictMonoOn_fixedMean
+    refine ⟨s₀, hs₀, fun s hs => ?_⟩
+    have hs1 : s < 1 := hs.2.trans_lt hs₀.2
+    have hm' : StrictMonoOn (meanProfile W P s) (Ioc 0 (1/2)) :=
+      (hm s hs).congr fun p hp => (meanProfile_eq hW hs.1 hs1 hp.1 (by linarith [hp.2])).symm
+    exact ⟨hm', fun _ hp₁ _ hp₂ hne =>
+      (twoContraction_laws hW hs.1 hs1 hp₁ hp₂ (hm'.injOn.ne hp₁ hp₂ hne)).2⟩
 end BrownianImages

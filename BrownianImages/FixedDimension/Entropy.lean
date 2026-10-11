@@ -1,16 +1,16 @@
 /-
 `thm:entropy-factor` of `sec:small-dimension`: the logarithmic derivative `κ` of the
-entropy factor `pq/E(p)`, its positivity on `(0, 1/2)`, the bound `κ ≥ 0.88/(p log(e/p))`
+entropy factor `pq/h(p)`, its positivity on `(0, 1/2)`, the bound `κ ≥ 0.88/(p (1 - log p))`
 on `(0, 1/50]`, and the bound `κ ≥ c (1/2 - p)` near `1/2`, together with the derivative
 identity `eq:log-derivative-mean` for the entropy factor.
 
-* `entropy_pos`, `hasDerivAt_entropy`, `entropy_le_log_two`: `E > 0`, `E' = log(q/p)`,
-  `E ≤ log 2`.
+* `entropy_pos`, `hasDerivAt_entropy`, `entropy_le_log_two`: `h > 0`, `h' = log(q/p)`,
+  `h ≤ log 2`.
 * `kappaNum`, `hasDerivAt_kappaNum`, `strictConcaveOn_kappaNum`: `Φ = q² log(1/q) - p² log(1/p)`, with
-  `Φ' = 1 - 2E`, is strictly concave on `[0, 1/2]` and vanishes at both ends.
+  `Φ' = 1 - 2h`, is strictly concave on `[0, 1/2]` and vanishes at both ends.
 * `kappa_pos`, `kappa_ge_of_le`, `kappa_ge_of_ge`: the three claims of
   `thm:entropy-factor`.
-* `hasDerivAt_entropyFactor`: `(pq/E)' = (pq/E) κ`, which is `eq:log-derivative-mean`.
+* `hasDerivAt_entropyFactor`: `(pq/h)' = (pq/h) κ`, which is `eq:log-derivative-mean`.
 -/
 import BrownianImages.FixedDimension.System
 import Mathlib.Analysis.Complex.ExponentialBounds
@@ -47,7 +47,7 @@ theorem hasDerivAt_entropy {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) :
   have h := h1.neg.sub (hasDerivAt_one_sub_mul_log hp1)
   exact h.congr_deriv (by field_simp; ring)
 
-/-- `E ≤ log 2`, by `log x ≤ x - 1` at `x = 1/(2p)` and `x = 1/(2q)`. -/
+/-- `h ≤ log 2`, by `log x ≤ x - 1` at `x = 1/(2p)` and `x = 1/(2q)`. -/
 theorem entropy_le_log_two {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) : entropy p ≤ Real.log 2 := by
   have hq0 : 0 < 1 - p := by linarith
   have h1 : Real.log (2 * p)⁻¹ ≤ (2 * p)⁻¹ - 1 :=
@@ -118,7 +118,7 @@ theorem hasDerivAt_kappaNum {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) :
 theorem deriv_kappaNum {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) : deriv kappaNum p = 1 - 2 * entropy p :=
   (hasDerivAt_kappaNum hp0 hp1).deriv
 
-/-- `Φ` is strictly concave on `[0, 1/2]`, since `Φ'' = -2E' < 0` there. -/
+/-- `Φ` is strictly concave on `[0, 1/2]`, since `Φ'' = -2h' < 0` there. -/
 theorem strictConcaveOn_kappaNum : StrictConcaveOn ℝ (Icc (0:ℝ) (1/2)) kappaNum := by
   refine strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuous_kappaNum.continuousOn
     fun x hx => ?_
@@ -171,7 +171,7 @@ theorem one_sub_mul_log_le {p : ℝ} (hp1 : p < 1) :
   calc (1 - p) * Real.log (1 - p)⁻¹ ≤ (1 - p) * ((1 - p)⁻¹ - 1) := h2
     _ = p := by field_simp; ring
 
-/-- `E(p) ≤ p log(e/p) = p (1 - log p)`. -/
+/-- `h(p) ≤ p (1 - log p)`. -/
 theorem entropy_le {p : ℝ} (hp1 : p < 1) :
     entropy p ≤ p * (1 - Real.log p) := by
   have h := one_sub_mul_log_le hp1
@@ -211,7 +211,7 @@ theorem mul_log_inv_le {p : ℝ} (hp0 : 0 < p) (hp : p ≤ 1/50) : p * Real.log 
   have h3 : p * Real.log 50 ≤ p * 3.94 := mul_le_mul_of_nonneg_left h50 hp0.le
   nlinarith
 
-/-- `thm:entropy-factor`, second claim: `κ(p) ≥ 0.88/(p log(e/p))` for `0 < p ≤ 1/50`. -/
+/-- `thm:entropy-factor`, second claim: `κ(p) ≥ 0.88/(p (1 - log p))` for `0 < p ≤ 1/50`. -/
 theorem kappa_ge_of_le {p : ℝ} (hp0 : 0 < p) (hp : p ≤ 1/50) :
     0.88 / (p * (1 - Real.log p)) ≤ kappa p := by
   have hp1 : p < 1 := by linarith
@@ -290,7 +290,7 @@ theorem kappa_ge_of_ge {p₁ : ℝ} (hp₁0 : 0 < p₁) (hp₁ : p₁ < 1/2) :
 
 /-! ### `eq:log-derivative-mean` -/
 
-/-- `eq:log-derivative-mean`: the entropy factor `F(p) = pq/E(p)` satisfies `F' = F κ`. -/
+/-- `eq:log-derivative-mean`: the entropy factor `F(p) = pq/h(p)` satisfies `F' = F κ`. -/
 theorem hasDerivAt_entropyFactor {p : ℝ} (hp0 : 0 < p) (hp1 : p < 1) :
     HasDerivAt (fun x => x * (1 - x) / entropy x) (p * (1 - p) / entropy p * kappa p) p := by
   have hE := entropy_pos hp0 hp1

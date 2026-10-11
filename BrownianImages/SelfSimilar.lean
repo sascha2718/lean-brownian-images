@@ -22,12 +22,12 @@ proofs need beyond the definitions:
 * `homogeneousSystem_isDimension`, `homogeneousSystem_stronglySeparated`,
   `pairSystem_isDimension`, `pairSystem_stronglySeparated`: the similarity dimensions
   and separation gaps of the two systems of the application.
-* `pairRatio_rpow`, `pairRatio_pos`, `pairRatio_lt_half`: the ratio `c` of
-  `eq:c-definition` solves `c^s = 1 - 2^{-s}` and lies in `(0, 1/2)`.
+* `pairRatio_rpow`, `pairRatio_pos`, `pairRatio_lt_half`: the ratio `c` from
+  the introductory two-contraction example solves `c^s = 1 - 2^{-s}` and lies in `(0, 1/2)`.
 * `pairSystem_nonArithmetic_iff`: `eq:non-lattice` is exactly non-arithmeticity of
   the paired system.
 * `renewalConv`, `renewalDefect`, `renewalMean`: the renewal data `ϑ * G`, `z = G - ϑ * G`
-  and `m = ∑ p_i a_i` of `thm:non-lattice-limit`.
+  and `m = ∑ p_i α_i` of `thm:non-lattice-limit`.
 -/
 import BrownianImages.Periodic
 import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
@@ -361,13 +361,13 @@ theorem IsNatural.support_Icc {K : Set ℝ} {s : ℝ} {μ : Measure ℝ}
     (h : S.IsNatural K s μ) : μ (Set.Icc (0:ℝ) 1)ᶜ = 0 :=
   measure_mono_null (Set.compl_subset_compl.mpr h.attractor.2.2.1) h.support
 
-/-- The log-ratios `a_i = log(1/r_i)` are positive. -/
+/-- The log-ratios `α_i = log(1/r_i)` are positive. -/
 theorem logRatio_pos (i : ι) : 0 < S.logRatio i := by
   rw [logRatio, Real.log_inv, neg_pos]
   exact Real.log_neg (S.ratio_pos i) (S.ratio_lt_one i)
 
 /-- The renewal convolution `ϑ * g` of `thm:non-lattice-limit`, where
-`ϑ = ∑ p_i δ_{a_i}`: `(ϑ * g)(w) = ∑ p_i g(w - a_i)`. -/
+`ϑ = ∑ p_i δ_{α_i}`: `(ϑ * g)(w) = ∑ p_i g(w - α_i)`. -/
 noncomputable def renewalConv (s : ℝ) (g : ℝ → ℝ) (w : ℝ) : ℝ :=
   ∑ i, S.ratio i ^ s * g (w - S.logRatio i)
 
@@ -376,7 +376,7 @@ the limit constant `eq:g-non-lattice-limit`. -/
 noncomputable def renewalDefect (s : ℝ) (μ : Measure ℝ) (w : ℝ) : ℝ :=
   G s μ w - S.renewalConv s (G s μ) w
 
-/-- The renewal measure `ϑ = ∑ p_i δ_{a_i}` of `thm:non-lattice-limit`, whose atoms are
+/-- The renewal measure `ϑ = ∑ p_i δ_{α_i}` of `thm:non-lattice-limit`, whose atoms are
 the log-ratios and whose weights are `p_i = r_i^s`.  This is the measure the key renewal
 theorem is applied to. -/
 noncomputable def renewalLaw (s : ℝ) : Measure ℝ :=
@@ -405,7 +405,7 @@ theorem isProbabilityMeasure_renewalLaw {s : ℝ} (hdim : S.IsDimension s) :
     Pi.one_apply, mul_one]
   exact S.sum_ofReal_ratio_rpow hdim
 
-/-- The renewal mean `m = ∑ p_i a_i` of `thm:non-lattice-limit`. -/
+/-- The renewal mean `m = ∑ p_i α_i` of `thm:non-lattice-limit`. -/
 noncomputable def renewalMean (s : ℝ) : ℝ := ∑ i, S.ratio i ^ s * S.logRatio i
 
 /-- The renewal mean is the first moment of `ϑ`: this is the `∫ x ∂μ` the key renewal
@@ -423,7 +423,7 @@ theorem integral_id_renewalLaw (s : ℝ) :
   rw [integral_smul_measure, integral_dirac, smul_eq_mul,
     ENNReal.toReal_ofReal (Real.rpow_pos_of_pos (S.ratio_pos i) s).le]
 
-/-- The renewal mean `m = ∑ p_i a_i` is positive. -/
+/-- The renewal mean `m = ∑ p_i α_i` is positive. -/
 theorem renewalMean_pos (s : ℝ) [Nonempty ι] :
     0 < S.renewalMean s := by
   refine Finset.sum_pos' (fun i _ => ?_) ?_
@@ -523,11 +523,11 @@ theorem one_sub_two_rpow_pos {s : ℝ} (hs : 0 < s) : 0 < 1 - (2:ℝ) ^ (-s) := 
     (Real.rpow_lt_rpow_left_iff (by norm_num)).mpr (by linarith)
   simpa using h
 
-/-- `eq:c-definition`: the ratio `c` is positive. -/
+/-- The ratio `c` in the introductory two-contraction example is positive. -/
 theorem pairRatio_pos {s : ℝ} (hs : 0 < s) : 0 < pairRatio s :=
   Real.rpow_pos_of_pos (one_sub_two_rpow_pos hs) _
 
-/-- `eq:c-definition`: `c^s = 1 - 2^{-s}`. -/
+/-- The introductory definition of `c`: `c^s = 1 - 2^{-s}`. -/
 theorem pairRatio_rpow {s : ℝ} (hs : 0 < s) : (pairRatio s) ^ s = 1 - (2:ℝ) ^ (-s) := by
   rw [pairRatio, ← Real.rpow_mul (one_sub_two_rpow_pos hs).le, inv_mul_cancel₀ hs.ne',
     Real.rpow_one]

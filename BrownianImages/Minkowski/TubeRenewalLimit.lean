@@ -1,9 +1,10 @@
 /-
-`thm:neighbourhood-renewal`: the non-arithmetic renewal-limit mechanism for the mean
-Brownian tube profile.
+`thm:neighbourhood-renewal`: the internal non-arithmetic renewal limit that gives
+asymptotic shift invariance of the mean Brownian tube profile. The paper places the
+shared renewal theorem and cutoff argument in `sec:renewal-equation`.
 
 The expectation identity in `Minkowski.TubeRenewal` has half-logarithmic steps
-`beta_i = log(1 / r_i) / 2`.  Doubling logarithmic scale turns it into the renewal
+`α_i/2 = log(1 / r_i) / 2`.  Doubling logarithmic scale turns it into the renewal
 law already treated in `KeyRenewalFourier`.  A cutoff is essential: the normalised
 tube profile need not vanish at `-infinity`, whereas the key renewal theorem needs
 that boundary condition.  The cutoff is zero on the negative half-line and one
