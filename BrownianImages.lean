@@ -85,10 +85,18 @@ The objects, and `sec:setup`:
 * `Asymptotics`: the smoothing limit and the homogeneous bound `eq:ha-asymptotic`.
 * `LatticeProfile`: the general lattice branch of `thm:profile-asymptotics`, via
   finite-delay renewal and smoothing of the vanishing error.
-* `LatticeNonconstancy`: `thm:lattice-nonconvergence`, the periodised source
-  `eq:lattice-periodisation` and the Lipschitz bound `eq:cross-lipschitz`, and with them
-  the non-constancy of the periodic limit in the lattice branch of
-  `thm:profile-asymptotics`.
+* `LatticeNonconstancy`: `thm:lattice-nonconvergence` in the form that `G` has no limit
+  for a lattice system, through the telescoped partial sums of
+  `eq:lattice-periodisation` and the Lipschitz bound `eq:cross-lipschitz`.
+* `LatticePeriodisation`: the explicit periodisation `eq:lattice-periodisation`,
+  identified with the periodic limit of `G`; with it the lattice branch of
+  `thm:renewal-limits`, `thm:lattice-nonconvergence` as stated, the smoothed limit
+  `H̃_μ^s = T G̃` of `sec:smoothing`, and the lattice branch of `thm:profile-asymptotics`.
+* `RenewalTheorem`: the key renewal theorem quoted in `sec:renewal-equation`, for the laws
+  `ϑ = ∑ p_i δ_{α_i}` of a system and a signed exponentially decaying defect: the renewal
+  series and the limit `m⁻¹ ∫ z` in the non-lattice case, uniform convergence on one
+  period to the periodisation in the lattice case, and the half-line shift consequence
+  `eq:renewal-shift`.
 * `ProfileAsymptotics`: `thm:profile-asymptotics` in the non-lattice case read at `μ_B`,
   internally `eq:hb-asymptotic`, with its constant named.
 
@@ -389,6 +397,8 @@ public import BrownianImages.Minkowski.CantorSetApplication
 public import BrownianImages.Minkowski.BaseFiveApplication
 public import BrownianImages.LatticeProfile
 public import BrownianImages.LatticeNonconstancy
+public import BrownianImages.LatticePeriodisation
+public import BrownianImages.RenewalTheorem
 public import BrownianImages.Cesaro
 public import BrownianImages.LatticeFourier
 public import BrownianImages.BernoulliCoding

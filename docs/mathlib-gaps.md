@@ -44,7 +44,10 @@ Each item is a piece of the paper that the library builds itself. Labels such as
   `thm:non-lattice-limit` goes through it: `KeyRenewalFourier` verifies Feller's
   non-lattice condition from `eq:non-lattice` and the exponential tail of the renewal
   defect `z`, which under the open set condition is the cross-term bound of
-  `sec:renewal-equation`.
+  `sec:renewal-equation`. `RenewalTheorem.lean` states the key renewal theorem of
+  `sec:renewal-equation` for the laws of a system with a signed exponentially decaying
+  defect, the lattice case through the finite-delay renewal theorem of
+  `Minkowski/TubeDiscreteRenewal.lean`, and the shift consequence `eq:renewal-shift`.
 - **Time reversal of Brownian motion.** Mathlib's `IsPreBrownianReal` has the shift,
   scaling, negation and time-inversion invariances but no time reversal.
   `reverseReal B b` is `t ↦ B(b - t) - B(b)` up to time `b`, continued past `b` by the

@@ -1,8 +1,9 @@
 module
 
 /-
-`thm:lattice-nonconvergence` of `sec:renewal`, and with it the non-constancy of the
-periodic limit in the lattice branch of `thm:profile-asymptotics`.
+`thm:lattice-nonconvergence` of `sec:renewal`, in the form that the correlation profile `G`
+of a lattice system has no limit; with the identification of its periodic limit in
+`LatticePeriodisation`, this is the non-constancy of `eq:lattice-periodisation`.
 
 Suppose the log-ratios lie in `hℤ`, say `α_i = n_i h`, and `G(w) → C` as `w → ∞`.  The
 renewal equation `eq:g-recursion` telescopes over the lattice `x + hℤ` to the periodised
@@ -18,17 +19,20 @@ more application of self-similarity inside the cross term turns the Lipschitz bo
 * `System.crossPhi_mono`: the cross term is monotone in the scale.
 * `System.exists_nat_mul_of_lattice`: a lattice span writes every log-ratio as `n_i h`.
 * `sum_range_shift_sub`: the telescoping identity behind `eq:lattice-periodisation`.
-* `System.IsNatural.tendsto_sum_renewalDefect`: `eq:lattice-periodisation`, as the limit of
-  the symmetric partial sums.
+* `System.tendsto_sum_defect_of_periodic`: `eq:lattice-periodisation` as the limit of the
+  symmetric partial sums, for any solution of the renewal equation vanishing at `-∞` and
+  any periodic limit; `System.IsNatural.tendsto_sum_renewalDefect_of_periodic` reads it at
+  `G`, and `System.IsNatural.tendsto_sum_renewalDefect` is the constant case.
 * `System.IsNatural.crossPhi_sub_le_of_tendsto_G`: `eq:cross-lipschitz`.
 * `System.IsFeasible.map_comp_ne`, `System.abs_abs_map_comp_sub_le`: the commutator of two
   first-level maps is a non-zero translation, and the distance estimate it gives.
 * `System.IsNatural.smul_map_comp_le`: `μ_j ≥ p_i (S_j S_i)_* μ`.
 * `System.IsNatural.sq_mul_phi_le_crossPhi_sub`: the transfer
   `(p_i p_j)² Φ(δ) ≤ Φ_×(x₀ + ρδ) - Φ_×(x₀ - 2ρδ)`.
-* `System.IsNatural.not_tendsto_G_of_lattice`: `thm:lattice-nonconvergence`.
-* `lattice_profile_asymptotics_nonconstant`: the lattice branch of
-  `thm:profile-asymptotics`, with the non-constancy of the periodic limit.
+* `System.IsNatural.not_tendsto_G_of_lattice`: `G` has no limit in the lattice case, the
+  form of `thm:lattice-nonconvergence` this argument gives; `LatticePeriodisation` turns it
+  into the non-constancy of `eq:lattice-periodisation` and assembles the lattice branch of
+  `thm:profile-asymptotics`.
 -/
 public import BrownianImages.LatticeProfile
 public import BrownianImages.FourierMultiplier
@@ -276,35 +280,36 @@ theorem IsNatural.sq_mul_phi_le_crossPhi_sub {K : Set ℝ} {s : ℝ} {μ : Measu
         mul_le_mul_of_nonneg_left hlow' (mul_pos hpi hpj).le
     _ ≤ _ := hstep
 
-/-- **`eq:lattice-periodisation`.**  If `G(w) → C` and every log-ratio is `n_i h`, the
-symmetric partial sums `∑_{|k|≤N} z(x + kh)` of the renewal defect converge to
-`C ∑ p_i n_i`, for every phase `x`: the renewal equation `eq:g-recursion` writes `z` as
-`∑ p_i (G(w) - G(w - n_i h))`, and each difference telescopes over the lattice. -/
-theorem IsNatural.tendsto_sum_renewalDefect {K : Set ℝ} {s h C : ℝ} (hs : 0 < s)
-    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
-    (n : ι → ℕ) (hn : ∀ i, S.logRatio i = n i * h)
-    (hC : Tendsto (G s μ) atTop (𝓝 C)) (x : ℝ) :
+/-- **`eq:lattice-periodisation`**, as the limit of symmetric partial sums.  If every
+log-ratio is `n_i h`, `f` vanishes at `-∞`, and `f - g → 0` at `+∞` for an `h`-periodic
+`g`, the symmetric partial sums `∑_{|k|≤N} z(x + kh)` of the defect `z = f - ϑ * f`
+converge to `g(x) ∑ p_i n_i`, for every phase `x`: the renewal equation writes `z` as
+`∑ p_i (f(w) - f(w - n_i h))`, and each difference telescopes over the lattice. -/
+theorem tendsto_sum_defect_of_periodic {s h : ℝ} (hdim : S.IsDimension s) {f : ℝ → ℝ}
+    (hbot : Tendsto f atBot (𝓝 0)) (n : ι → ℕ) (hn : ∀ i, S.logRatio i = n i * h)
+    {g : ℝ → ℝ} (hgp : Function.Periodic g h)
+    (hg : Tendsto (fun w => f w - g w) atTop (𝓝 0)) (x : ℝ) :
     Tendsto (fun N : ℕ => ∑ k ∈ Finset.range (2 * N + 1),
-        S.renewalDefect s μ (x + ((k : ℝ) - N) * h)) atTop
-      (𝓝 (C * ∑ i, S.ratio i ^ s * n i)) := by
-  have := hμ.isProbabilityMeasure
+        (f (x + ((k : ℝ) - N) * h) - S.renewalConv s f (x + ((k : ℝ) - N) * h))) atTop
+      (𝓝 (g x * ∑ i, S.ratio i ^ s * n i)) := by
   have hdim' : ∑ i, S.ratio i ^ s = 1 := hdim
-  have hz : ∀ w, S.renewalDefect s μ w
-      = ∑ i, S.ratio i ^ s * (G s μ w - G s μ (w - n i * h)) := by
+  have hz : ∀ w, f w - S.renewalConv s f w
+      = ∑ i, S.ratio i ^ s * (f w - f (w - n i * h)) := by
     intro w
-    rw [renewalDefect, renewalConv]
+    rw [renewalConv]
     simp only [mul_sub, Finset.sum_sub_distrib, ← Finset.sum_mul, hdim', one_mul, hn]
-  have hsum : ∀ N : ℕ, ∑ k ∈ Finset.range (2 * N + 1), S.renewalDefect s μ (x + ((k : ℝ) - N) * h)
+  have hsum : ∀ N : ℕ, ∑ k ∈ Finset.range (2 * N + 1),
+        (f (x + ((k : ℝ) - N) * h) - S.renewalConv s f (x + ((k : ℝ) - N) * h))
       = ∑ i, S.ratio i ^ s * ∑ j ∈ Finset.range (n i),
-          (G s μ (x + (((2 * N + 1 + j : ℕ) : ℝ) - N - n i) * h)
-            - G s μ (x + ((j : ℝ) - N - n i) * h)) := by
+          (f (x + (((2 * N + 1 + j : ℕ) : ℝ) - N - n i) * h)
+            - f (x + ((j : ℝ) - N - n i) * h)) := by
     intro N
     simp only [hz]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun i _ => ?_
     rw [← Finset.mul_sum]
     congr 1
-    have key := sum_range_shift_sub (fun k : ℕ => G s μ (x + ((k : ℝ) - N - n i) * h)) (n i)
+    have key := sum_range_shift_sub (fun k : ℕ => f (x + ((k : ℝ) - N - n i) * h)) (n i)
       (2 * N + 1)
     refine (Finset.sum_congr rfl fun k _ => ?_).trans
       (key.trans (Finset.sum_congr rfl fun j _ => ?_))
@@ -313,32 +318,62 @@ theorem IsNatural.tendsto_sum_renewalDefect {K : Set ℝ} {s h C : ℝ} (hs : 0 
   refine Tendsto.congr (fun N => (hsum N).symm) ?_
   rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ => ?_
-  have hsumC : ∑ _j ∈ Finset.range (n i), (C - 0) = n i * C := by
+  have hh : 0 < h := by
+    have := S.logRatio_pos i
+    rw [hn i] at this
+    rcases (Nat.eq_zero_or_pos (n i)) with h0 | h0
+    · simp [h0] at this
+    · exact pos_of_mul_pos_right this (by positivity)
+  have hsumg : ∑ _j ∈ Finset.range (n i), (g x - 0) = n i * g x := by
     rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul, sub_zero]
-  rw [show C * (S.ratio i ^ s * n i) = S.ratio i ^ s * (n i * C) by ring, ← hsumC]
+  rw [show g x * (S.ratio i ^ s * n i) = S.ratio i ^ s * (n i * g x) by ring, ← hsumg]
   refine Tendsto.const_mul _ (tendsto_finsetSum _ fun j _ => Tendsto.sub ?_ ?_)
   · have ht : Tendsto (fun N : ℕ => (N : ℝ) * h + (x + (1 + j - n i) * h)) atTop atTop :=
-      tendsto_atTop_add_const_right _ _ (tendsto_natCast_atTop_atTop.atTop_mul_const
-        (by
-          have := S.logRatio_pos i
-          rw [hn i] at this
-          rcases (Nat.eq_zero_or_pos (n i)) with h0 | h0
-          · simp [h0] at this
-          · exact pos_of_mul_pos_right this (by positivity)))
-    refine hC.comp (ht.congr fun N => ?_)
-    push_cast
+      tendsto_atTop_add_const_right _ _ (tendsto_natCast_atTop_atTop.atTop_mul_const hh)
+    have ht' : Tendsto (fun N : ℕ => x + (((2 * N + 1 + j : ℕ) : ℝ) - N - n i) * h)
+        atTop atTop := ht.congr fun N => by push_cast; ring
+    have hper : ∀ N : ℕ, g (x + (((2 * N + 1 + j : ℕ) : ℝ) - N - n i) * h) = g x := by
+      intro N
+      have := hgp.int_mul ((N : ℤ) + 1 + j - n i) x
+      convert this using 2
+      push_cast
+      ring
+    have hlim := (hg.comp ht').add_const (g x)
+    rw [zero_add] at hlim
+    refine hlim.congr fun N => ?_
+    simp only [Function.comp_apply, hper]
     ring
-  · have hh : 0 < h := by
-      have := S.logRatio_pos i
-      rw [hn i] at this
-      rcases (Nat.eq_zero_or_pos (n i)) with h0 | h0
-      · simp [h0] at this
-      · exact pos_of_mul_pos_right this (by positivity)
-    have ht : Tendsto (fun N : ℕ => -((N : ℝ) * h) + (x + (j - n i) * h)) atTop atBot :=
+  · have ht : Tendsto (fun N : ℕ => -((N : ℝ) * h) + (x + (j - n i) * h)) atTop atBot :=
       tendsto_atBot_add_const_right _ _
         (tendsto_neg_atTop_atBot.comp (tendsto_natCast_atTop_atTop.atTop_mul_const hh))
-    refine (HomogeneousNonconstancy.tendsto_G_atBot_zero hs).comp (ht.congr fun N => ?_)
+    refine hbot.comp (ht.congr fun N => ?_)
     ring
+
+/-- `eq:lattice-periodisation` for the correlation profile `G` and its renewal defect
+`z = G - ϑ * G`, which vanishes at `-∞`. -/
+theorem IsNatural.tendsto_sum_renewalDefect_of_periodic {K : Set ℝ} {s h : ℝ} (hs : 0 < s)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    (n : ι → ℕ) (hn : ∀ i, S.logRatio i = n i * h) {g : ℝ → ℝ}
+    (hgp : Function.Periodic g h) (hg : Tendsto (fun w => G s μ w - g w) atTop (𝓝 0))
+    (x : ℝ) :
+    Tendsto (fun N : ℕ => ∑ k ∈ Finset.range (2 * N + 1),
+        S.renewalDefect s μ (x + ((k : ℝ) - N) * h)) atTop
+      (𝓝 (g x * ∑ i, S.ratio i ^ s * n i)) := by
+  have := hμ.isProbabilityMeasure
+  exact S.tendsto_sum_defect_of_periodic hdim
+    (HomogeneousNonconstancy.tendsto_G_atBot_zero hs) n hn hgp hg x
+
+/-- `eq:lattice-periodisation` under a constant limit `G(w) → C`: the symmetric partial
+sums of the renewal defect converge to `C ∑ p_i n_i`. -/
+theorem IsNatural.tendsto_sum_renewalDefect {K : Set ℝ} {s h C : ℝ} (hs : 0 < s)
+    (hdim : S.IsDimension s) {μ : Measure ℝ} (hμ : S.IsNatural K s μ)
+    (n : ι → ℕ) (hn : ∀ i, S.logRatio i = n i * h)
+    (hC : Tendsto (G s μ) atTop (𝓝 C)) (x : ℝ) :
+    Tendsto (fun N : ℕ => ∑ k ∈ Finset.range (2 * N + 1),
+        S.renewalDefect s μ (x + ((k : ℝ) - N) * h)) atTop
+      (𝓝 (C * ∑ i, S.ratio i ^ s * n i)) :=
+  hμ.tendsto_sum_renewalDefect_of_periodic S hs hdim n hn (g := fun _ => C) (fun _ => rfl)
+    (by simpa using hC.sub_const C) x
 
 /-- **`eq:cross-lipschitz`.**  Under `G(w) → C` and the lattice hypothesis, for `a ≤ b`,
 `e^{sa}(Φ_×(e^{-a}) - Φ_×(e^{-b})) ≤ C'(1 - e^{-s(b-a)})` with `C' = C ∑ p_i n_i`: the
@@ -528,35 +563,5 @@ theorem IsNatural.not_tendsto_G_of_lattice {K : Set ℝ} {s h : ℝ} (hs0 : 0 < 
   exact hCpos.ne' hC0
 
 end System
-
-/-- `thm:profile-asymptotics`, the lattice branch, with the non-constancy of the periodic
-limit: the limit `P = T G̃` is continuous, `h/2`-periodic, strictly positive and
-non-constant, and `H_μ^s - P → 0`.  Non-constancy: a constant `G̃` would make `G` converge,
-against `thm:lattice-nonconvergence`, and `thm:smoothing-injective` carries non-constancy
-through `T`. -/
-theorem lattice_profile_asymptotics_nonconstant {ι : Type*} [Fintype ι] [Nonempty ι]
-    (S : System ι) {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
-    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
-    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
-    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P (h / 2) ∧
-      (∀ t, 0 < P t) ∧ (∃ v w, P v ≠ P w) ∧ Tendsto (fun t ↦ H s μ t - P t) atTop (𝓝 0) := by
-  have := hμ.isProbabilityMeasure
-  obtain ⟨A, hA⟩ := hosc.exists_isFrostman S hs0.le hμ
-  obtain ⟨g, hgc, hgp, hgpos, hglim⟩ := S.lattice_G_limit hs0 hs1 hosc hdim hh hlat hμ
-  obtain ⟨B, _, hB⟩ := exists_nonneg_bound_of_periodic hh.ne' hgc hgp
-  have hlat' : ∀ i, ∃ n : ℕ, S.logRatio i = n * h := S.exists_nat_mul_of_lattice hh hlat
-  have hgne : ∃ v w, g v ≠ g w := by
-    by_contra hcon
-    push Not at hcon
-    have hconst : Tendsto (G s μ) atTop (𝓝 (g 0)) := by
-      refine (hglim.add_const (g 0)).congr' (Eventually.of_forall fun w => ?_) |>.mono_right ?_
-      · rw [hcon w 0]
-        ring
-      · simp
-    exact hμ.not_tendsto_G_of_lattice S hs0 hs1 hosc hdim hlat' (g 0) hconst
-  exact ⟨smoothOp s g, continuous_smoothOp hs0 hs1 hgc hB, smoothOp_periodic hgp,
-    smoothOp_pos hs0 hs1 hgc hgpos hB, smoothOp_nonconstant hs0 hs1 hh hgc hgp hgne,
-    smooth_profile_error_tendsto hs0 hs1 hA hgc hh hgp hglim⟩
 
 end BrownianImages

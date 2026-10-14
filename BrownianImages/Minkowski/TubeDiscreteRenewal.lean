@@ -809,6 +809,34 @@ theorem exists_periodic_limit_of_tubeArithmetic
     F.abs_intRenewalMass_le_one F.tendsto_intRenewalMass_shift
     (fun _ ↦ S.exists_eventual_profile_eq_latticeSection hdim hh harith hm)
 
+/-- **Arithmetic renewal theorem for a signed defect, with no discrete hypotheses.**
+A continuous profile bounded on the half-line that solves the tube renewal equation
+beyond the largest step, up to a defect that is exponentially small there, converges
+uniformly on one period to a continuous periodic limit.  The integer delay law, its
+bounded renewal masses, their shifted limit, and the exact lattice-series identity are
+all supplied internally. -/
+theorem exists_uniform_periodic_limit_of_tubeArithmetic
+    [Nonempty iota] {s h : ℝ} (hh : 0 < h) (harith : S.TubeArithmetic h)
+    (hdim : S.IsDimension s) {m d : ℝ → ℝ}
+    {A D γ : ℝ} (hm : Continuous m)
+    (hA : ∀ v : ℝ, 0 ≤ v → |m v| ≤ A)
+    (hD : 0 ≤ D) (hγ : 0 < γ)
+    (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      m v = S.tubeRenewalConv s m v - d v)
+    (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      |d v| ≤ D * Real.exp (-γ * v)) :
+    ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P h ∧
+      ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
+        ∀ t ∈ Set.Icc (0 : ℝ) h,
+          |m (t + (n : ℝ) * h) - P t| ≤ ε := by
+  let F := S.tubeDelayLaw hdim hh harith
+  exact S.exists_uniform_periodic_limit_of_tubeArithmetic_of_discrete_renewal
+    hh harith hdim (m := m) (d := d) hm hA hD hγ hrenew hdefect
+    (u := F.intRenewalMass) (B := 1)
+    (ℓ := limsup F.renewalMass atTop) (by norm_num)
+    F.abs_intRenewalMass_le_one F.tendsto_intRenewalMass_shift
+    (fun _ ↦ S.exists_eventual_profile_eq_latticeSection hdim hh harith hm)
+
 end System
 
 /-- **Unconditional arithmetic-periodic convergence for the mean Brownian tube

@@ -4,8 +4,11 @@
 # Wider proof details and qualifications remain in docs/correspondence.md.
 version: 3
 source_version: "BrownianImagesComplete.tex"
+arxiv_version: "2610.16339v1"
+arxiv_snapshot_revision: "93b440fb68e1ebc74b8df1b4998923eb0f11857e"
+arxiv_snapshot_sha256: "20c525cde125829d2a755ba4a615463017023ef8b23706039a997aab3fda5a77"
 manuscript_files: ["BrownianImagesComplete.tex"]
-manuscript_sha256: {"BrownianImagesComplete.tex": "cdce80ffa5e89080dce2a36811401a3c8d9cc37cbb4e6cd1cfb9c62d7932118c"}
+manuscript_sha256: {"BrownianImagesComplete.tex": "e03cfac627117060cfd636d77c68d50ac8b0cce626ac44c0a9c52b0d4994fee9"}
 entries:
   - source: "Separation by expected profiles"
     label: "thm:main"
@@ -115,24 +118,48 @@ entries:
     relation: "split"
     headline: false
     note: "The library proves the individual cross-piece bounds and sums them. The positive-time exponential defect bound is System.exists_abs_renewalDefect_le_exp."
+  - source: "Key renewal theorem quoted in Renewal and asymptotics"
+    kind: "prose"
+    file: "BrownianImagesComplete.tex"
+    start: "We use the following form of the key renewal theorem, see"
+    end: "In particular, $f(t)-\\widetilde f(t)\\to0$ as $t\\to\\infty$."
+    sha256: "49af3e44172e7f44b86a844ef63667bcafc3ab6de31bd1200d7ab3925851e062"
+    status: "partially_formalized"
+    lean: ["BrownianImages.audit_key_renewal_theorem", "BrownianImages.audit_renewal_theorem_nonlattice", "BrownianImages.audit_renewal_theorem_lattice", "BrownianImages.audit_renewal_series"]
+    relation: "weaker"
+    headline: false
+    reason: "Proved for the laws of self-similar systems at their similarity dimension, the generality in which the paper applies the theorem, not for an arbitrary finitely supported law on the positive half-line, and with a possibly signed exponentially decaying defect. The non-lattice limit, the lattice uniform convergence on one period to the explicit periodisation, and the renewal series in the non-lattice case are proved. The renewal series in the lattice case and the uniform continuity of the solution are not formalised; Lean obtains the uniform lattice convergence from Tannery's theorem instead."
+    note: "Literature background from Falconer (1997) and Feller (1971), not a numbered statement of the paper. The lattice case applies the signed arithmetic renewal theorem to the cut-off solution and identifies its limit with the periodisation by telescoping the renewal equation along the lattice."
+  - source: "Renewal shift limit"
+    kind: "prose"
+    file: "BrownianImagesComplete.tex"
+    start: "We shall also use the following consequence for a bounded continuous function"
+    end: "gives the same conclusion since $u\\in \\ell\\bbZ$."
+    sha256: "0c7546520b08e95b45f71c9bc45f1c34fe3b72fc3832b2038d2c11c0d6814520"
+    status: "partially_formalized"
+    lean: ["BrownianImages.audit_renewal_shift"]
+    relation: "weaker"
+    headline: false
+    reason: "The paper's shift consequence inherits the arbitrary finitely supported positive interarrival law of the preceding renewal theorem. Lean proves it for System.renewalLaw at the similarity dimension, whose weights and shifts satisfy p_i = exp(-s * alpha_i), rather than for independent choices of atom locations and probabilities. This covers the self-similar applications but not the full quoted generality."
+    note: "For the laws of self-similar systems at their similarity dimension, with the atoms of the law as the shifts. Lean follows the paper's cut-off argument and applies the two cases of the key renewal theorem."
   - source: "Lattice and non-lattice renewal limits"
     label: "thm:renewal-limits"
     kind: "proposition"
     sha256: "3de01f32bf7fde2984901060837b912df15cef5de6be08fd92040e657f70d177"
     status: "formalized"
-    lean: ["BrownianImages.audit_non_lattice_limit", "BrownianImages.System.lattice_G_limit"]
-    relation: "split"
+    lean: ["BrownianImages.audit_thm_renewal_limits", "BrownianImages.audit_non_lattice_limit", "BrownianImages.audit_lattice_periodisation_limit", "BrownianImages.audit_lattice_periodisation_hasSum"]
+    relation: "exact"
     headline: false
-    note: "Both limits in the numbered proposition are proved. The explicit lattice periodisation formula discussed in the proof is not separately formalised."
+    note: "The non-lattice limit with its integral formula, and in the lattice case continuity, strict positivity, periodicity and the asymptotic approximation for the explicit periodisation (ell/m) times the sum of z(t+k*ell) over integers k, represented by System.latticePeriodisation with its series proved convergent. Lean obtains the periodic limit from the finite-delay renewal theorem (System.lattice_G_limit) and identifies it with this sum by telescoping the renewal equation along the lattice."
   - source: "Non-convergence of the lattice correlation profile"
     label: "thm:lattice-nonconvergence"
     kind: "lemma"
     sha256: "d2521ac372fe11695845d1fde8015a7e4d2d5ad616c3e57c590c7fce77f6f5d3"
     status: "formalized"
     lean: ["BrownianImages.audit_lattice_nonconvergence"]
-    relation: "representation"
+    relation: "exact"
     headline: false
-    note: "The paper compares two phases directly. Lean argues by contradiction: convergence gives constant periodisation and a cross-term Lipschitz bound, contradicting Ahlfors regularity for s<1."
+    note: "Non-constancy of the explicit periodisation System.latticePeriodisation. The paper compares two phases directly. Lean argues by contradiction: a constant periodisation makes G converge, convergence gives a cross-term Lipschitz bound through the telescoped partial sums, and that bound contradicts Ahlfors regularity for s<1 (System.IsNatural.not_tendsto_G_of_lattice)."
   - source: "Injectivity of Gaussian smoothing"
     label: "thm:smoothing-injective"
     kind: "lemma"

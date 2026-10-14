@@ -45,7 +45,8 @@ DECL_RE = re.compile(
     r"([^\s\(\{\[:]+)"
 )
 AUDIT_DECL_RE = re.compile(r"(?m)^\s*(?:public\s+)?theorem\s+(audit_[A-Za-z0-9_']+)\b")
-ALLOWED_STATUSES = {"formalized", "planned", "intentionally_unformalized"}
+MAPPED_STATUSES = {"formalized", "partially_formalized"}
+ALLOWED_STATUSES = MAPPED_STATUSES | {"planned", "intentionally_unformalized"}
 
 
 class ManifestError(ValueError):
@@ -248,12 +249,12 @@ def validate_manifest(data: dict[str, Any], path: Path) -> tuple[list[str], list
             entry["lean"] = lean
         if not isinstance(lean, list) or not all(isinstance(name, str) and name for name in lean):
             raise ManifestError(f"{where}: lean must be a list of nonempty declaration names")
-        if status == "formalized" and not lean:
-            raise ManifestError(f"{where}: a formalized entry needs at least one Lean declaration")
-        if status != "formalized" and lean:
-            raise ManifestError(f"{where}: only a formalized entry may list Lean declarations")
-        if status == "intentionally_unformalized" and not entry.get("reason"):
-            raise ManifestError(f"{where}: an intentionally unformalized entry needs a reason")
+        if status in MAPPED_STATUSES and not lean:
+            raise ManifestError(f"{where}: a mapped entry needs at least one Lean declaration")
+        if status not in MAPPED_STATUSES and lean:
+            raise ManifestError(f"{where}: only a fully or partially formalized entry may list Lean declarations")
+        if status in {"intentionally_unformalized", "partially_formalized"} and not entry.get("reason"):
+            raise ManifestError(f"{where}: an unformalized or partially formalized entry needs a reason")
         if "headline" in entry and not isinstance(entry["headline"], bool):
             raise ManifestError(f"{where}: headline must be true or false")
     return manuscript_files, entries

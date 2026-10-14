@@ -7,22 +7,23 @@ project:
   license: "Apache-2.0"
   responsible_maintainers: ["Sascha Troscheit"]
 classification:
-  arxiv: ["math.PR", "math.MG"]
+  arxiv: ["math.PR", "math.DS"]
   msc2020: ["60J65", "28A80"]
 sources:
   - title: "Distinguishing sets and measures from their planar Brownian images"
     authors: ["Sascha Troscheit"]
+    id: "https://arxiv.org/abs/2610.16339"
     type: "paper"
     location: "BrownianImagesComplete.tex, Section 1 and supporting Sections 2–9"
     relationship: "formalizes"
     author_endorsement: "participated"
-    note: "The manuscript is in the parent research directory. paper-correspondence.yaml records statement mappings and source fingerprints. No arXiv identifier has been supplied."
+    note: "arXiv:2610.16339v1 is the parent research repository's saved/arxiv-v1 snapshot at 93b440fb68e1ebc74b8df1b4998923eb0f11857e. Its 32 numbered statements and 30 proof environments are identical to the current local manuscript. paper-correspondence.yaml records statement mappings, source fingerprints and the snapshot revision."
 related_formalizations:
   - id: "https://github.com/BennyAvelin/AbsorptionCutoff"
     relationship: "adapts"
     note: "Six renewal-theory modules are vendored from commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5. The non-lattice hypothesis is weakened to the Feller condition used by the proofs; see NOTICE and docs/renewal-library.md."
 status:
-  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 136 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. The general level-sum lemma is proved for arbitrary holomorphic kernels, with uniform convergence, its exact bound and the natural-measure expectation identity. The explicit lattice periodisation formula in the renewal proof is not separately formalised. The introductory discussion of correlation dimension and local densities, and the comparisons with dynamical reconstruction and hitting-time statistics, are background outside the formalisation. Counts exclude the nine intentional Challenge theorem holes."
+  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 145 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. All 32 numbered statements are covered by endpoints or library derivations; the lattice limit of Proposition 3.3 and Lemma 3.4 is the explicit periodisation defined before Proposition 3.3, with its series proved convergent. The key renewal theorem and half-line shift consequence quoted in Section 3.3 are proved for the laws of self-similar systems at their similarity dimension with a signed exponentially decaying defect, the generality in which the paper applies them; the statement for an arbitrary finitely supported law, the lattice renewal series and the uniform continuity of the solution are not formalised. The general level-sum lemma is proved for arbitrary holomorphic kernels. Literature background and the local manuscript's later additions on correlation dimension, local densities and hitting-time statistics are outside the formalisation. Counts exclude the nine intentional Challenge theorem holes."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -100,7 +101,7 @@ fidelity:
 review:
   status: "agent-reviewed"
   reviewers: ["Codex (OpenAI, GPT-6 agent)"]
-  notes: "The nine Section 1 statements were compared with the manuscript. On 2026-10-14, manuscript changes from 93b440f to 3b40222 were reviewed: all 32 numbered statements and the proofs were unchanged, while new introductory background is explicitly excluded in paper-correspondence.yaml. The wider mapping incorporates the existing correspondence notes and their qualifications. This records agent review, not independent human review or Palomar acceptance. Mechanical verification of an uploaded commit is a separate Palomar run."
+  notes: "On 2026-10-14, the saved/arxiv-v1 snapshot at 93b440f was compared with the current manuscript: all 32 numbered statements and 30 proof environments are identical. Statement review checked that the periodic limit in Proposition 3.3 and Lemma 3.4 is the explicit periodisation defined before Proposition 3.3; both are marked formalized in paper-correspondence.yaml. The nine headline statements have complete correspondence. lake build BrownianImages Challenge Solution passed, and Lean reported only propext, Classical.choice and Quot.sound for all 145 Solution audit declarations. This records agent review, not independent human review or Palomar acceptance. Mechanical verification of an uploaded commit is a separate Palomar run."
 alignment:
   namespace: "BrownianImages"
   statements:

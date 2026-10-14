@@ -11,13 +11,41 @@ it is argued. [`../paper-correspondence.yaml`](../paper-correspondence.yaml) is 
 structured statement mapping used alongside the Palomar metadata. Its source hashes
 detect drift and do not establish mathematical equivalence.
 
-The current snapshot includes manuscript changes through commit `3b40222`, reviewed on
-14 October 2026 against the previous snapshot `93b440f`. All 32 numbered statements and
-their proofs are unchanged. The revised introduction adds background on correlation
+The paper is [arXiv:2610.16339](https://arxiv.org/abs/2610.16339). Its uploaded v1 source is
+the parent research repository's `saved/arxiv-v1` branch at
+`93b440fb68e1ebc74b8df1b4998923eb0f11857e`. On 14 October 2026, all 32 numbered statements
+and all 30 proof environments were compared with the current manuscript through commit
+`9decb5f` and found textually identical. The revised introduction adds background on correlation
 dimension and local density ratios, and comparisons with dynamical reconstruction and
 hitting-time statistics. These passages are outside the formalisation and have explicit
 prose entries in the manifest. The attribution, acknowledgements, AI disclosure and
 bibliography changes do not alter the nine headline claims.
+
+All nine headline results have complete proofs with the paper's hypotheses and conclusions,
+and all 32 numbered statements are formalised, Proposition 3.3 and Lemma 3.4 for the
+explicit periodisation `G̃(t) = (ℓ/m) ∑_{k∈ℤ} z(t+kℓ)` defined before Proposition 3.3,
+represented by `System.latticePeriodisation`. The remaining differences are proof routes
+and the generality of the quoted renewal theorem; see
+[Omissions and proof differences](#omissions-and-proof-differences) below.
+
+The build `lake build BrownianImages Challenge Solution` passed on 14 October 2026.
+Lean's `#print axioms` reported exactly `propext`, `Classical.choice` and `Quot.sound`
+for each of the 145 `Solution` audit declarations. The nine `sorry` declarations in
+`Challenge` are intentional problem statements; none occurs in the library or `Solution`.
+These checks verify Lean proofs and dependencies, not the interpretation of the paper.
+
+A separate statement review on 14 October 2026 compared all 32 numbered statements
+in `saved/arxiv-v1` with the current Lean declarations and the definitions they use.
+It checked the hypotheses and quantifiers, parameter ranges, normalisations, constants,
+and conversions between the paper's objects and their Lean representations. No further
+weakening of a numbered result was found. In particular, the new periodisation has
+the paper's factor `ℓ/m`, integer translates of its defect, and a proved convergent
+series; its positivity, non-constancy and limiting properties are proved for that function.
+The general renewal theorem and its shift consequence are both classified as partially
+formalised: the shift consequence inherits the paper's arbitrary finite interarrival
+law, whereas its Lean statement restricts the weights to `p_i = exp(-s * α_i)`.
+This review is an agent assessment of mathematical correspondence, not a machine proof
+that the LaTeX and Lean have the same meaning.
 
 The paper uses `C_δ(μ)` for the correlation integral of the time measure as well as
 `C_r(ν)` for a planar measure. The library retains the internal names `Phi μ δ` and
@@ -164,23 +192,33 @@ The library proves the self-similar correlation recursion, its rescaled form and
 cross-term bounds. The paper records these directly in prose. The subsection
 *Renewal and asymptotics* states the
 shared signed-forcing renewal theorem from Falconer (1997), Proposition 7.1 and
-Theorem 7.2. Uniform continuity of the solution upgrades lattice convergence to uniform
-convergence on one period. The cutoff argument for bounded half-line solutions is also
-stated there, with its shift consequence *Renewal shift limit*. The constant and periodic
-cases of that consequence are `tendsto_sub_shift_sub_of_tendsto_atTop` and
-`tendsto_sub_period_sub_of_uniform_lattice` in `GenerationRatio.lean`. The renewal
-applications are proved by the vendored non-arithmetic theorem and the discrete lattice
-argument in `TubeDiscreteRenewal.lean`; the library retains this direct proof of uniform
-lattice convergence. The general literature statement and its arbitrary finite-law
-half-line consequence are not separate bundled endpoints. The lattice application uses
-the span-one statement after rescaling, so its prefactor is `ℓ/m`. Feller is cited in
-prose for another account of the renewal theorem.
+Theorem 7.2, for an arbitrary finitely supported law, and derives the shift consequence
+*Renewal shift limit* for bounded half-line solutions by a cutoff argument.
+`RenewalTheorem.lean` proves both for the laws `ϑ = ∑ p_i δ_{α_i}` of a system at its
+similarity dimension, which is the generality in which the paper applies them, with a
+signed defect `|z(t)| ≤ C e^{-c|t|}`. The non-lattice limit and the renewal series come
+from the vendored theorem. The lattice uniform convergence on one period comes from the
+discrete renewal theorem and Tannery's theorem (`TubeArithmeticRenewal.lean`,
+`TubeDiscreteRenewal.lean`) applied to the cutoff `min{t,1} f(t)`, where the paper uses
+uniform continuity of the solution, and the limit is identified with the periodisation
+by `eq_periodisation_of_periodic_limit`. The shift consequence follows the paper's cutoff
+argument, with `tendsto_sub_shift_sub_of_tendsto_atTop` and
+`tendsto_sub_period_sub_of_uniform_lattice` in `GenerationRatio.lean` for its two cases.
+The renewal series in the lattice case and the uniform continuity of the solution are
+not formalised. The lattice application uses the span-one statement after rescaling, so
+its prefactor is `ℓ/m`. Feller is cited in prose for another account of the renewal
+theorem.
 
 The paper groups the constant and periodic limits in *Lattice and non-lattice renewal limits*, in the
 subsection *Renewal and asymptotics*. The non-lattice result named separately in the
 library is its non-lattice conclusion; the Lean declaration names are unchanged.
-The lattice conclusion is `System.lattice_G_limit`, with the
-qualification about its explicit periodisation formula recorded below.
+The lattice conclusion is stated for the paper's periodisation
+`G̃(t) = (ℓ/m) ∑_{k∈ℤ} z(t+kℓ)`, `System.latticePeriodisation`, with `renewalMean` for `m`
+and `renewalDefect` for `z`. The existence form `System.lattice_G_limit` comes from the
+finite-delay renewal theorem, and `LatticePeriodisation.lean` identifies its limit with
+`G̃`: along a lattice `t + ℓℤ` the renewal equation telescopes, so the symmetric partial
+sums of `z(t+kℓ)` converge to `g(t) m/ℓ` for every periodic limit `g` of `G`, and the
+exponential tails of `z` make the series summable.
 The preliminary lemma *Left-tail bounds for the renewal defect* collects continuity from the finite-sum
 definition of `renewalDefect`, non-negativity from `renewalDefect_nonneg`, and the exact
 negative-time calculation in the proof of `renewalDefect_pos_of_nonpos`, using
@@ -201,7 +239,7 @@ same bound and the same three regimes of `V_s`.
 
 ## The statement layer
 
-`Solution.lean` is the formal statement of the paper: 136 endpoints named
+`Solution.lean` is the formal statement of the paper: 145 endpoints named
 `audit_<slug>`, in document order, proved from the library declarations. Adding a
 result to the paper means adding its statement there first; the
 design work is in the statement.
@@ -284,7 +322,7 @@ unconditional determinant positivity as recorded below.
 ## State
 
 Results and displayed claims of `BrownianImagesComplete.tex`, in document order, against
-the `Solution.lean` endpoint and what stands behind it. All 136 endpoints are proved.
+the `Solution.lean` endpoint and what stands behind it. All 145 endpoints are proved.
 `Challenge.lean` retains `sorry` only as the independent statement file for the nine
 headline endpoints; no library or solution declaration uses `sorry`.
 
@@ -331,7 +369,15 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | Schief's theorem, cited in *Introduction* | `audit_schief` | `System.openSetCondition_iff_strongOpenSetCondition`: the open set condition is equivalent to the existence of a feasible open set meeting the attractor, by the maximal neighbour count of `Schief.lean` |
 | *Non-lattice renewal limit*, the renewal inputs | `audit_renewalLaw` | `isProbabilityMeasure_renewalLaw`, `integral_id_renewalLaw` |
 | *Non-lattice renewal limit*, exponential moment | `audit_exists_expTransform_lt_one` | `exists_expTransform_lt_one` |
+| The key renewal theorem quoted in *Renewal and asymptotics*, the renewal series | `audit_renewal_series` | `System.nonlattice_renewal_series`: `f = ∑ ϑ^{*n} * z` for a bounded continuous solution vanishing at `-∞` with a signed defect `|z(t)| ≤ C e^{-c|t|}`, in the non-lattice case, from `KeyRenewalFourier.eq_tsum_integral_comp_sub_of_bounded` |
+| The key renewal theorem quoted in *Renewal and asymptotics*, non-lattice case | `audit_renewal_theorem_nonlattice` | `System.nonlattice_renewal_limit`: `f(t) → m⁻¹ ∫ z`, through `System.tendsto_of_renewalEquation` and the vendored theorem |
+| The key renewal theorem quoted in *Renewal and asymptotics*, lattice case | `audit_renewal_theorem_lattice` | `System.lattice_renewal_limit`: `sup_{t∈[0,ℓ]} |f(t+nℓ) - f̃(t)| → 0` for the continuous `ℓ`-periodic periodisation `f̃ = System.periodisation`, by the signed arithmetic renewal theorem `System.exists_uniform_periodic_limit_of_tubeArithmetic` at `f(2v)` and the identification `System.eq_periodisation_of_periodic_limit` |
+| The key renewal theorem quoted in *Renewal and asymptotics*, bundled | `audit_key_renewal_theorem` | `System.key_renewal_theorem` |
+| *Renewal shift limit* | `audit_renewal_shift` | `System.renewal_shift`: the paper's cutoff argument, with the two cases of the key renewal theorem |
 | *Non-lattice renewal limit* | `audit_non_lattice_limit` | `non_lattice_limit`, under the open set condition; the exponential tail of the renewal defect `z` is the cross-term bound in *Renewal and asymptotics* |
+| The displayed periodisation `G̃(t) = (ℓ/m) ∑_{k∈ℤ} z(t+kℓ)` before *Lattice and non-lattice renewal limits*, as a convergent series | `audit_lattice_periodisation_hasSum` | `System.IsNatural.hasSum_latticePeriodisation`: `∑_{k∈ℤ} z(t+kℓ)` converges to `(m/ℓ) G̃(t)`, by the exponential tails of `z`; this is what makes the `tsum` in `System.latticePeriodisation` the paper's sum |
+| *Lattice and non-lattice renewal limits*, lattice case | `audit_lattice_periodisation_limit` | `System.IsNatural.lattice_periodisation_limit`: `G̃` is continuous, strictly positive and `ℓ`-periodic, and `G - G̃ → 0`. The periodic limit of `System.lattice_G_limit` is identified with `G̃` by `System.IsNatural.eq_latticePeriodisation_of_periodic_limit`, which telescopes the renewal equation along the lattice (`tendsto_sum_renewalDefect_of_periodic`) |
+| *Lattice and non-lattice renewal limits*, bundled | `audit_thm_renewal_limits` | `non_lattice_limit` and `System.IsNatural.lattice_periodisation_limit` |
 | The unnumbered definition `c^s = 1 - 2^{-s}` in the introductory paragraph “A two-contraction example” | `audit_pairRatio` | `pairRatio_rpow`, `pairRatio_lt_half` |
 | *Renewal of correlation profiles*, the homogeneous system | `audit_homogeneousSystem_facts` | `homogeneousSystem_isDimension`, `homogeneousSystem_stronglySeparated` |
 | *Renewal of correlation profiles*, the paired system | `audit_pairSystem_facts` | `pairSystem_isDimension`, `pairSystem_stronglySeparated` |
@@ -341,7 +387,8 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | Internal homogeneous periodic extension | `audit_exists_periodic_extension` | `exists_periodic_extension_of_shift` |
 | Internal homogeneous profile `G̃_A` | `audit_exists_periodic_profile` | `homogeneous_periodic_profile` |
 | *Renewal of correlation profiles*, non-constancy of the homogeneous periodic profile as a consequence of *Non-convergence of the lattice correlation profile* | `audit_cantor_nonconstant` | `HomogeneousNonconstancy.homogeneous_G_nonconstant_on_tail`, an independent density proof retained in the library |
-| *Non-convergence of the lattice correlation profile*, non-constancy of `G̃` | `audit_lattice_nonconvergence` | `System.IsNatural.not_tendsto_G_of_lattice`, together with `System.lattice_G_limit`: existence of a continuous periodic limit makes its non-constancy equivalent to the absence of a limit for `G`. The paper compares two phases directly, using the translated word maps `S_{ij}` and `S_{ji}` and the Ahlfors lower bound. The library retains the equivalent contradiction argument: a limit of `G` gives constant periodisation (`tendsto_sum_renewalDefect`) and a Lipschitz bound on `Φ_×` (`crossPhi_sub_le_of_tendsto_G`); `IsFeasible.map_comp_ne` and `sq_mul_phi_le_crossPhi_sub` then give `Φ(δ) = O(δ)`, contradicting Ahlfors regularity for `s < 1` |
+| *Non-convergence of the lattice correlation profile* | `audit_lattice_nonconvergence` | `System.IsNatural.latticePeriodisation_nonconstant`: the periodisation `G̃` is non-constant. The paper compares two phases directly, using the translated word maps `S_{ij}` and `S_{ji}` and the Ahlfors lower bound. The library argues by contradiction: a constant `G̃` makes `G` converge, since `G - G̃ → 0`; a limit of `G` gives constant symmetric partial sums of `z` (`tendsto_sum_renewalDefect`) and a Lipschitz bound on `Φ_×` (`crossPhi_sub_le_of_tendsto_G`); `IsFeasible.map_comp_ne` and `sq_mul_phi_le_crossPhi_sub` then give `Φ(δ) = O(δ)`, contradicting Ahlfors regularity for `s < 1` (`System.IsNatural.not_tendsto_G_of_lattice`) |
+| *Gaussian smoothing and distributional separation*, the lattice limit `H̃_μ^s = T G̃` | `audit_smoothed_lattice_periodisation` | `System.IsNatural.smoothed_latticePeriodisation`: `T G̃` is continuous, `ℓ/2`-periodic, strictly positive, non-constant by *Non-convergence of the lattice correlation profile* and *Injectivity of Gaussian smoothing*, and `H_μ^s - T G̃ → 0` |
 | The periodic smoothing operator in *Gaussian smoothing and distributional separation*, `Tg` is `ℓ/2`-periodic | `audit_smoothOp_periodic` | `smoothOp_periodic` |
 | The periodic smoothing operator in *Gaussian smoothing and distributional separation*, `Tg` continuous and `ℓ/2`-periodic | `audit_smoothOp_continuous_periodic` | `continuous_smoothOp` |
 | *Gaussian smoothing and distributional separation*, the coefficient is Mathlib's | `audit_fourierCoeffP_eq_fourierCoeffOn` | `fourierCoeffP_eq_fourierCoeffOn` |
@@ -361,7 +408,7 @@ headline endpoints; no library or solution declaration uses `sorry`.
 | Internal homogeneous exponential-error bound | `audit_profile_asymptotics_lattice` | `exists_lattice_bound` |
 | Internal homogeneous exponential error in big-`O` shape | `audit_profile_asymptotics_lattice_bigO` | `exists_lattice_bound` |
 | *Lattice/non-lattice occupation-law separation*, homogeneous correlation oscillation | `audit_lattice_correlation_oscillation` | `homogeneous_lattice_correlation_oscillation`; the paper obtains this directly from *Lattice and non-lattice profile asymptotics* |
-| *Lattice and non-lattice profile asymptotics*, general dichotomy | `audit_thm_profile_asymptotics` | `lattice_profile_asymptotics_nonconstant`, `non_lattice_limit`, `profile_asymptotics_nonLattice`: the lattice limit is `T G̃` for the periodic limit `G̃` of `G` from the finite-delay renewal theorem, non-constant because a constant `G̃` would make `G` converge, against *Non-convergence of the lattice correlation profile*, and *Injectivity of Gaussian smoothing* carries non-constancy through `T` |
+| *Lattice and non-lattice profile asymptotics*, general dichotomy | `audit_thm_profile_asymptotics` | `lattice_profile_asymptotics_nonconstant`, `non_lattice_limit`, `profile_asymptotics_nonLattice`: the lattice limit is `T G̃` for the periodisation `G̃` of `audit_lattice_periodisation_limit`, non-constant by *Non-convergence of the lattice correlation profile*, with *Injectivity of Gaussian smoothing* carrying non-constancy through `T` |
 | Internal homogeneous refinement and *Lattice and non-lattice profile asymptotics* for the non-lattice two-map system of `μ_B`, bundled two-map consequences | `audit_homogeneous_profile_asymptotics` | `homogeneous_thm_profile_asymptotics` |
 | *Separation by expected profiles* for two non-lattice measures whose limits in *Lattice and non-lattice profile asymptotics* differ, the step taken in the proof of *Finite exceptions in the two-contraction family* | `audit_non_lattice_separation` | `non_lattice_separation`, both systems under the open set condition |
 | Independence in the proof of *Variance bound and its little-o consequence* | `audit_disjoint_increments_indep` | `disjoint_increments_indep` |
@@ -434,7 +481,7 @@ determinants (`crossing_det`, `nested_det`).
 ## Fidelity boundary
 
 What a formal statement can quietly get wrong here is the ambient setting, not the
-inequality.  Six traps, and how each is closed.
+inequality.  Seven traps, and how each is closed.
 
 - **The open set condition enters through Schief's theorem.**  The paper assumes the
   open set condition and, citing Schief, chooses a feasible open set meeting the
@@ -487,6 +534,12 @@ inequality.  Six traps, and how each is closed.
 
 Five further points where the Lean text reads differently from the tex, deliberately.
 
+- **The periodisation is a convergent series.**  Lean's `tsum` of a non-summable
+  function is `0`, so a statement about `∑' k : ℤ, z(t + kℓ)` is vacuous without
+  summability.  `audit_lattice_periodisation_hasSum` proves that the series in
+  `System.latticePeriodisation` converges, with sum `(m/ℓ) G̃(t)`, from the exponential
+  tails of the renewal defect, and `audit_lattice_periodisation_limit` states the lattice
+  conclusion of *Lattice and non-lattice renewal limits* for that sum.
 - **`𝒫(ℝ²)`: the two σ-algebras agree.** Mathlib's
   `ProbabilityMeasure Plane` is measurable through the evaluations `ν ↦ ν s`, while the
   paper uses the Borel σ-algebra of the weak topology. `borel_probabilityMeasure_eq_giry`
@@ -506,7 +559,8 @@ Five further points where the Lean text reads differently from the tex, delibera
   into `audit_lattice_correlation_oscillation`.
 - **The lattice limit is asymptotic, and non-constant by *Non-convergence of the lattice correlation profile*.**
   `audit_thm_profile_asymptotics` uses the subgroup generated by the full log-ratios,
-  with span `ℓ`, and gives a continuous, positive, non-constant limit of period `ℓ / 2`.
+  with span `ℓ`, and gives a continuous, positive, non-constant limit of period `ℓ / 2`,
+  namely `T G̃` for the periodisation `G̃` of `audit_lattice_periodisation_limit`.
   `LatticeProfile.lean` applies the finite-delay renewal theorem to `A + 1 - G(2v)`,
   converts uniform phase convergence to convergence on the half-line, and smooths
   the vanishing error; the lower regularity bound ensures positivity.
@@ -641,37 +695,82 @@ the coefficient in the two-contraction lattice Fourier expansion written out; `a
 and the endpoints of *Correlation profiles in the two-contraction family* are what connect them with the natural
 measure and the expected profile.
 
-## Not formalised
+## Omissions and proof differences
 
-The discussion after *Homometric non-isometric attractors* and the introduction's account of the
-literature carry no statement and no endpoint. The coded-point bounds are
-`cpointSeq_succ_eq` with `norm_cratioSeq_le` and `norm_cpointSeq_le`. The small-parameter
-derivative margin is assembled inside the
-proofs of *Small-dimension monotonicity* and *Finiteness of the critical set* and has no endpoint
-of its own.
-The Fourier transform of the inhomogeneous term in the proof of
-*Correlation profiles in the two-contraction family*, which the tex states at frequency zero only, is proved as
-`fixedSystem_integral_renewalDefect_char` without an endpoint of its own, as are the displays inside the proofs of *Monotonicity for small dimension*:
-*Contraction modulus bounds* (`five_alphaP_le`), *Contraction gap on the parameter disc* (`discR_le`, `one_sub_discR_ge`),
-*Holomorphic kernel bounds* (`norm_kernelN_le`, `norm_kernelN_sub_le`) and *Holomorphic kernel-limit bound*
-(`norm_kernelLimit_sub_le`). The periodic-limit existence and uniform asymptotics in
-*Lattice and non-lattice renewal limits* are proved by `System.lattice_G_limit`; the explicit
-periodisation formula is not separately formalised. The library's proof of
-*Non-convergence of the lattice correlation profile* retains the constant-periodisation identity
-(`System.IsNatural.tendsto_sum_renewalDefect`) and the cross-term Lipschitz bound
-(`System.IsNatural.crossPhi_sub_le_of_tendsto_G`), without endpoints of their own. The paper's direct
-phase comparison and the library's contradiction argument prove the same non-constancy
-statement. The elementary integral calculations in *Four-point integral bound* have no separate
-endpoints; the same bound is proved by dyadic summation in the library. The separate crossing
-and nested determinant calculations are proved
-in `FourPoint.lean` without endpoints of their own; they imply the common lower bound
-used in the paper.
-All nine Section 1 statements have complete independent Challenge endpoints. The
-structured correspondence also records the supporting numbered results, including
-the full general-kernel level-sum lemma. There is no
-claim that every display or every general literature result is formalised.
-The non-lattice condition, the irrationality of `log(1/c)/log 2`, is an open lattice
-assertion in the paper. It appears in two forms: as `System.NonArithmetic` in the
-statements about a general system, and literally, as `Irrational (log (1/c) / log 2)`,
-in the endpoints about `μ_B`. `audit_pairSystem_nonArithmetic_iff` is the equivalence
-between them.
+The following distinctions concern the arXiv v1 snapshot as well as the current manuscript,
+except where a later introductory addition is explicitly mentioned.
+
+| Paper statement | Lean coverage |
+| --- | --- |
+| Theorem/Corollary 1.1–1.9 | All nine headline conclusions, under the paper's assumptions. |
+| Lemma 2.1 and Lemmas 3.1–3.2 | Gaussian reduction and renewal-defect estimates. Lemma 3.1 is distributed across library calculations rather than a single bundled endpoint. |
+| Proposition 3.3 | The non-lattice limit and its integral formula; continuity, strict positivity, periodicity and the asymptotic approximation for the explicit periodisation, whose series is proved convergent. |
+| Lemma 3.4 | Non-constancy of the explicit periodisation, by contradiction from the non-convergence of `G`. |
+| Lemma 4.1, Proposition 5.1, Theorems 5.2 and 6.1 | Smoothing injectivity, the four-point bound, variance and almost-sure concentration. |
+| Lemmas 7.1–7.4 and Propositions 8.1–8.2 | Neighbourhood estimates, renewal shifts, concentration, and both examples. |
+| Proposition/Lemma 9.1–9.8 | Correlation series, mean and non-lattice limit, general holomorphic level sums, analyticity, range, and all three derivative bounds with their stated constants. |
+
+**The lattice formula.** Immediately before Proposition 3.3, the paper defines
+
+\[
+  \widetilde G(t)=\frac{\ell}{m}\sum_{k\in\mathbb Z}z(t+k\ell).
+\]
+
+`System.latticePeriodisation` is this sum, with `renewalMean` for `m` and `renewalDefect`
+for `z`. `System.lattice_G_limit` proves that there exists a continuous, positive,
+`ℓ`-periodic function `g` with `G(t) - g(t) → 0`, by the finite-delay renewal theorem,
+which does not name its limit. `LatticePeriodisation.lean` identifies `g` with the sum:
+the renewal equation telescopes along `t + ℓℤ`, so the symmetric partial sums of
+`z(t+kℓ)` converge to `g(t) ∑ p_i n_i = g(t) m/ℓ` (`tendsto_sum_renewalDefect_of_periodic`),
+and the exponential tails of `z` make the series summable, so the same partial sums
+converge to its sum. The paper reads the lattice limit off the renewal theorem in its
+lattice form; Lean reaches the same function by existence plus identification.
+Lemma 3.4 is then the non-constancy of this sum, from `audit_lattice_nonconvergence`.
+
+**General renewal statements.** Section 3.3 quotes a renewal theorem for arbitrary finite
+positive interarrival laws and possibly signed exponentially decaying defects, and derives
+a shift limit for bounded half-line solutions. `RenewalTheorem.lean` proves the quoted
+theorem and the shift limit for the laws `ϑ = ∑ p_i δ_{α_i}` of a system at its similarity
+dimension, the generality in which the paper applies them, with the signed defect: the
+non-lattice limit and renewal series, the lattice uniform convergence on one period to the
+explicit periodisation, and *Renewal shift limit* by the paper's cutoff argument. Not
+formalised are the statement for an arbitrary finitely supported law, the renewal series
+in the lattice case, and the uniform continuity of the solution, which the paper uses to
+upgrade pointwise lattice convergence; Lean obtains the uniform convergence from Tannery's
+theorem instead. These are literature inputs, not headline hypotheses.
+The restriction on the interarrival law also applies to the shift consequence, so both
+prose entries are marked `partially_formalized` in the manifest. The weights and atom
+locations of `System.renewalLaw` are linked by `p_i = exp(-s * α_i)`; the paper's general
+statement allows them to be chosen independently.
+
+**Background and speculation.** The introduction's cited results on generalised dimensions,
+Salem sets and dynamical reconstruction, and the discussion following the homometric
+example, are outside the formalisation. The current local manuscript adds explicit
+correlation-dimension and local-density displays and hitting-time comparisons after v1;
+the manifest excludes these additions too. Numerical suggestions of monotonicity for
+every `s ∈ (0,1)` and of an empty critical set are not proved in either the paper or Lean.
+
+**Different proofs with the same stated conclusions.** Lean uses dyadic sums for the
+four-point estimate, third-moment interpolation for neighbourhood concentration, a
+contradiction argument for the non-constancy of the lattice periodisation, and first-digit recursions for the
+base-five example. The paper uses elementary integrals, first/fourth-moment interpolation,
+phase comparisons and cylinder counting, respectively. In the small-parameter proof,
+Lean establishes the sufficient numerical margin `0.754 < 0.88` rather than the paper's
+`0.62 < 0.88`. The constants `6`, `3000` and `10¹¹` in the three numbered derivative
+lemmas are retained, as are the parameter ranges and headline conclusions.
+
+**Equivalent or stronger formulations.** Closed-ball Frostman bounds and the closed
+time-correlation inequality are connected to the paper's conventions by proved conversion
+and atomlessness results. `fixedMoment` is the normalised cross-term integral `J`; the
+paper's integral is `2p(1-p) J`, and the mean is identified with the Brownian Cesàro mean.
+Lemma 9.2 is stronger in Lean because boundedness of its open convex domain is unnecessary.
+The homogeneous exponential-error estimate and the two-contraction lattice Fourier
+expansion are additional formal results. None of these changes is a missing paper result.
+
+**Proved without separate audit endpoints.** Coded-point bounds, contraction and kernel
+bounds, the Fourier transform of the renewal defect, and the crossing/nested determinant
+calculations already have library proofs. Their lack of an `audit_` wrapper is not a proof
+gap. The small-parameter derivative margin is assembled inside the monotonicity proofs.
+Likewise, the irrationality/non-lattice equivalence is proved by
+`audit_pairSystem_nonArithmetic_iff`; non-lattice type remains a hypothesis precisely where
+the paper assumes it.

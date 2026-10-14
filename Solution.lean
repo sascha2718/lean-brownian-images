@@ -1147,6 +1147,82 @@ theorem audit_exceptional_parameters_countable :
       ¬ Irrational (Real.log (pairedRatio (homogeneousDimension lam))⁻¹ / Real.log 2)}.Countable :=
   exceptionalParameters_countable
 
+/-- The key renewal theorem quoted in `sec:renewal-equation`, the renewal series: for the
+law `ϑ = ∑ p_i δ_{α_i}` of a non-lattice system at its similarity dimension, a bounded
+continuous solution `f = ϑ * f + z` vanishing at `-∞`, with a continuous, possibly signed
+defect `|z(t)| ≤ C e^{-c|t|}`, is `∑_{n≥0} ϑ^{*n} * z`. -/
+theorem audit_renewal_series {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {s : ℝ} (hdim : S.IsDimension s) (hna : S.NonArithmetic)
+    {f z : ℝ → ℝ} {A C c : ℝ} (hf : Continuous f) (hA : ∀ t, |f t| ≤ A)
+    (hbot : Tendsto f atBot (𝓝 0)) (hc : 0 < c)
+    (hzb : ∀ t, |z t| ≤ C * Real.exp (-c * |t|))
+    (hren : ∀ t, f t = S.renewalConv s f t + z t) (y : ℝ) :
+    f y = ∑' n, ∫ x, z (y - x) ∂(AbsorptionCutoff.Renewal.convPow (S.renewalLaw s) n) :=
+  S.nonlattice_renewal_series hdim hna hf hA hbot hc hzb hren y
+
+/-- The key renewal theorem quoted in `sec:renewal-equation`, non-lattice case: for the
+law `ϑ = ∑ p_i δ_{α_i}` of a non-lattice system at its similarity dimension, a bounded
+continuous solution `f = ϑ * f + z` vanishing at `-∞`, with a possibly signed defect
+`|z(t)| ≤ C e^{-c|t|}`, satisfies `f(t) → m⁻¹ ∫ z`. -/
+theorem audit_renewal_theorem_nonlattice {ι : Type*} [Fintype ι] [Nonempty ι]
+    (S : System ι) {s : ℝ} (hdim : S.IsDimension s) (hna : S.NonArithmetic)
+    {f z : ℝ → ℝ} {A C c : ℝ} (hf : Continuous f) (hA : ∀ t, |f t| ≤ A)
+    (hbot : Tendsto f atBot (𝓝 0)) (hc : 0 < c)
+    (hzb : ∀ t, |z t| ≤ C * Real.exp (-c * |t|))
+    (hren : ∀ t, f t = S.renewalConv s f t + z t) :
+    Tendsto f atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x, z x)) :=
+  S.nonlattice_renewal_limit hdim hna hf hA hbot hc hzb hren
+
+/-- The key renewal theorem quoted in `sec:renewal-equation`, lattice case: for the law
+`ϑ = ∑ p_i δ_{α_i}` of a lattice system with span `ℓ` at its similarity dimension, a
+bounded continuous solution `f = ϑ * f + z` vanishing at `-∞`, with a possibly signed
+defect `|z(t)| ≤ C e^{-c|t|}`, satisfies `sup_{t∈[0,ℓ]} |f(t + nℓ) - f̃(t)| → 0` for the
+continuous `ℓ`-periodic periodisation `f̃(t) = (ℓ/m) ∑_{k∈ℤ} z(t + kℓ)`, and in
+particular `f(t) - f̃(t) → 0`. -/
+theorem audit_renewal_theorem_lattice {ι : Type*} [Fintype ι] [Nonempty ι]
+    (S : System ι) {s h : ℝ} (hdim : S.IsDimension s) (hh : 0 < h)
+    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
+    {f z : ℝ → ℝ} {A C c : ℝ} (hf : Continuous f) (hA : ∀ t, |f t| ≤ A)
+    (hbot : Tendsto f atBot (𝓝 0)) (hc : 0 < c)
+    (hzb : ∀ t, |z t| ≤ C * Real.exp (-c * |t|))
+    (hren : ∀ t, f t = S.renewalConv s f t + z t) :
+    Continuous (S.periodisation s h z) ∧ Function.Periodic (S.periodisation s h z) h ∧
+      (∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) h,
+        |f (t + (n : ℝ) * h) - S.periodisation s h z t| ≤ ε) ∧
+      Tendsto (fun t => f t - S.periodisation s h z t) atTop (𝓝 0) :=
+  S.lattice_renewal_limit hdim hh hlat hf hA hbot hc hzb hren
+
+/-- The key renewal theorem quoted in `sec:renewal-equation`, bundled: the non-lattice
+limit `m⁻¹ ∫ z` and the lattice uniform periodic approximation by `f̃`, for a bounded
+continuous solution `f = ϑ * f + z` vanishing at `-∞` with a possibly signed defect
+`|z(t)| ≤ C e^{-c|t|}`. -/
+theorem audit_key_renewal_theorem {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {s : ℝ} (hdim : S.IsDimension s)
+    {f z : ℝ → ℝ} {A C c : ℝ} (hf : Continuous f) (hA : ∀ t, |f t| ≤ A)
+    (hbot : Tendsto f atBot (𝓝 0)) (hc : 0 < c)
+    (hzb : ∀ t, |z t| ≤ C * Real.exp (-c * |t|))
+    (hren : ∀ t, f t = S.renewalConv s f t + z t) :
+    (S.NonArithmetic → Tendsto f atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x, z x))) ∧
+    (∀ h : ℝ, 0 < h →
+      AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h →
+      Continuous (S.periodisation s h z) ∧ Function.Periodic (S.periodisation s h z) h ∧
+        (∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n → ∀ t ∈ Set.Icc (0 : ℝ) h,
+          |f (t + (n : ℝ) * h) - S.periodisation s h z t| ≤ ε) ∧
+        Tendsto (fun t => f t - S.periodisation s h z t) atTop (𝓝 0)) :=
+  S.key_renewal_theorem hdim hf hA hbot hc hzb hren
+
+/-- `eq:renewal-shift`: for the law `ϑ = ∑ p_i δ_{α_i}` of a system at its similarity
+dimension and a bounded continuous `f : [0, ∞) → ℝ` with `|f(t) - (ϑ * f)(t)| ≤ C e^{-ct}`
+for all sufficiently large `t`, `f(t - α_i) - f(t) → 0` as `t → ∞` for every atom `α_i`
+of `ϑ`. -/
+theorem audit_renewal_shift {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {s : ℝ} (hdim : S.IsDimension s)
+    {f : ℝ → ℝ} {A C c T : ℝ} (hf : ContinuousOn f (Set.Ici 0))
+    (hA : ∀ t, 0 ≤ t → |f t| ≤ A) (hc : 0 < c)
+    (hdef : ∀ t, T ≤ t → |f t - S.renewalConv s f t| ≤ C * Real.exp (-c * t)) (i : ι) :
+    Tendsto (fun t => f (t - S.logRatio i) - f t) atTop (𝓝 0) :=
+  S.renewal_shift hdim hf hA hc hdef i
+
 /-- `thm:non-lattice-limit`, `eq:g-non-lattice-limit`.  In the non-lattice case the
 normalised profile converges to `m⁻¹ ∫ z`, which is finite and strictly positive, where
 `m = ∑ p_i α_i` is the renewal mean and `z = G - F * G` the renewal defect. -/
@@ -1157,6 +1233,53 @@ theorem audit_non_lattice_limit {ι : Type*} [Fintype ι] [Nonempty ι] (S : Sys
     0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
       Tendsto (G s μ) atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x)) :=
   non_lattice_limit S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor) hdim hna hμ
+
+/-- `eq:lattice-periodisation`: the series defining `G̃` converges at every phase, by the
+exponential tails of the renewal defect, and its sum is `(m/ℓ) G̃(t)`.  Lean's `tsum`
+of a non-summable series is `0`, so this is what makes `latticePeriodisation` the
+paper's sum rather than a default value. -/
+theorem audit_lattice_periodisation_hasSum {ι : Type*} [Fintype ι] [Nonempty ι]
+    (S : System ι) {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) (t : ℝ) :
+    HasSum (fun k : ℤ => S.renewalDefect s μ (t + k * h))
+      (S.renewalMean s / h * S.latticePeriodisation s μ h t) :=
+  hμ.hasSum_latticePeriodisation S hs0 hs1 hosc hdim hh t
+
+/-- `thm:renewal-limits`, the lattice case: for a lattice system with span `ℓ`, the
+periodisation `G̃(t) = (ℓ/m) ∑_{k∈ℤ} z(t + kℓ)` of `eq:lattice-periodisation` is
+continuous, strictly positive and `ℓ`-periodic, and `G(t) - G̃(t) → 0` as `t → ∞`. -/
+theorem audit_lattice_periodisation_limit {ι : Type*} [Fintype ι] [Nonempty ι]
+    (S : System ι) {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
+    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    Continuous (S.latticePeriodisation s μ h) ∧
+      Function.Periodic (S.latticePeriodisation s μ h) h ∧
+      (∀ t, 0 < S.latticePeriodisation s μ h t) ∧
+      Tendsto (fun t => G s μ t - S.latticePeriodisation s μ h t) atTop (𝓝 0) :=
+  hμ.lattice_periodisation_limit S hs0 hs1 hosc hdim hh hlat
+
+/-- `thm:renewal-limits`, bundled: in the non-lattice case `G(t) → m⁻¹ ∫ z ∈ (0, ∞)`,
+and in the lattice case with span `ℓ` the periodisation `G̃` of
+`eq:lattice-periodisation` is continuous, strictly positive and `ℓ`-periodic with
+`G - G̃ → 0`. -/
+theorem audit_thm_renewal_limits {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    (S.NonArithmetic →
+      0 < (S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x ∧
+        Tendsto (G s μ) atTop (𝓝 ((S.renewalMean s)⁻¹ * ∫ x : ℝ, S.renewalDefect s μ x))) ∧
+    (∀ h : ℝ, 0 < h →
+      AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h →
+      Continuous (S.latticePeriodisation s μ h) ∧
+        Function.Periodic (S.latticePeriodisation s μ h) h ∧
+        (∀ t, 0 < S.latticePeriodisation s μ h t) ∧
+        Tendsto (fun t => G s μ t - S.latticePeriodisation s μ h t) atTop (𝓝 0)) :=
+  ⟨fun hna => non_lattice_limit S hs0 hs1 (hosc.strongOpenSetCondition S hμ.attractor)
+      hdim hna hμ,
+    fun h hh hlat => hμ.lattice_periodisation_limit S hs0 hs1 hosc hdim hh hlat⟩
 
 /-- `eq:gb-limit`: under `eq:non-lattice` the normalised profile of `μ_B` converges to a
 finite positive constant. -/
@@ -1171,15 +1294,33 @@ theorem audit_gb_limit {KB : Set ℝ} {μB : Measure ℝ}
   homogeneous_gb_limit hlam0 hlam hB hnl
 
 /-- `thm:lattice-nonconvergence`: for a lattice system under the open set condition, the
-normalised correlation profile `G` has no limit at `+∞`. -/
+periodic profile `G̃` of `eq:lattice-periodisation` is non-constant. -/
 theorem audit_lattice_nonconvergence
     {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
     {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
     (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
     (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
     {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
-    ¬ ∃ C : ℝ, Tendsto (G s μ) atTop (𝓝 C) := fun ⟨C, hC⟩ =>
-  hμ.not_tendsto_G_of_lattice S hs0 hs1 hosc hdim (S.exists_nat_mul_of_lattice hh hlat) C hC
+    ∃ v w, S.latticePeriodisation s μ h v ≠ S.latticePeriodisation s μ h w :=
+  hμ.latticePeriodisation_nonconstant S hs0 hs1 hosc hdim hh hlat
+
+/-- `sec:smoothing`, the lattice case: `H̃_μ^s = T G̃`, for the periodic limit `G̃` of
+`thm:renewal-limits`, is continuous, `ℓ/2`-periodic, strictly positive and non-constant
+by `thm:lattice-nonconvergence` and `thm:smoothing-injective`, and
+`H_μ^s(t) - H̃_μ^s(t) → 0` as `t → ∞`. -/
+theorem audit_smoothed_lattice_periodisation
+    {ι : Type*} [Fintype ι] [Nonempty ι] (S : System ι)
+    {K : Set ℝ} {s h : ℝ} (hs0 : 0 < s) (hs1 : s < 1)
+    (hosc : S.OpenSetCondition) (hdim : S.IsDimension s) (hh : 0 < h)
+    (hlat : AddSubgroup.closure (Set.range S.logRatio) = AddSubgroup.zmultiples h)
+    {μ : Measure ℝ} (hμ : S.IsNatural K s μ) :
+    Continuous (smoothOp s (S.latticePeriodisation s μ h)) ∧
+      Function.Periodic (smoothOp s (S.latticePeriodisation s μ h)) (h / 2) ∧
+      (∀ t, 0 < smoothOp s (S.latticePeriodisation s μ h) t) ∧
+      (∃ v w, smoothOp s (S.latticePeriodisation s μ h) v
+        ≠ smoothOp s (S.latticePeriodisation s μ h) w) ∧
+      Tendsto (fun t => H s μ t - smoothOp s (S.latticePeriodisation s μ h) t) atTop (𝓝 0) :=
+  hμ.smoothed_latticePeriodisation S hs0 hs1 hosc hdim hh hlat
 
 /-- `thm:profile-asymptotics`: the natural measure at the similarity dimension
 has an asymptotically periodic profile in the lattice case, with a continuous, strictly

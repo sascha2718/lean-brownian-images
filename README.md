@@ -1,6 +1,7 @@
 # Distinguishing sets and measures from their planar Brownian images
 
-Lean 4 formalisation of the manuscript of the same title by Sascha Troscheit (2026).
+Lean 4 formalisation of the paper of the same title by Sascha Troscheit (2026),
+[arXiv:2610.16339](https://arxiv.org/abs/2610.16339).
 
 ## Scope
 
@@ -32,14 +33,16 @@ with supporting results and examples. The library and Solution have no proof hol
 literature axioms. The Comparator configuration permits only `propext`, `Classical.choice`
 and `Quot.sound`.
 
-**Qualifications:** the explicit lattice periodisation formula in the renewal proof is
-not separately formalised. The introduction's correlation-dimension and local-density
-discussion, and its comparisons with dynamical reconstruction and hitting-time statistics,
-are background outside the formalisation. Some proof routes and numerical bounds differ.
-[paper-correspondence.yaml](paper-correspondence.yaml) maps all 32 numbered statements and
-records these exclusions; [docs/correspondence.md](docs/correspondence.md) explains the
-representations and proof differences. Authorship, sources, AI assistance and review are
-recorded in [formalization.yaml](formalization.yaml).
+**Coverage:** all nine headline statements are proved over Matlib.
+The key renewal theorem quoted in Section 3.3 and its half-line shift consequence are
+proved for the laws of self-similar systems at their similarity dimension, with a signed
+exponentially decaying defect; the statement for an arbitrary finitely supported law, the
+lattice renewal series and the uniform continuity of the solution are not formalised.
+Literature background, discussions, and comparisons given in prose are not part of the formalisation.
+[paper-correspondence.yaml](paper-correspondence.yaml) maps all
+32 numbered statements; [docs/correspondence.md](docs/correspondence.md) explains the
+representations, the remaining omissions and the proof differences. Authorship, sources,
+AI assistance and review are recorded in [formalization.yaml](formalization.yaml).
 
 ## Build and verification
 

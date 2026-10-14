@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 /-!
 # Distinguishing sets and measures from their planar Brownian images
 
-The nine results of Section 1 of Sascha Troscheit's manuscript. Expected correlation
+The nine results of Section 1 of arXiv:2610.16339. Expected correlation
 profiles distinguish Brownian occupation laws, and the compact image determines its
 occupation measure. The two-contraction family has finitely many possible exceptions
 to separation, with no exceptions for sufficiently small dimension.
@@ -37,19 +37,16 @@ noncomputable def corr (ν : Measure Plane) (r : ℝ) : ℝ≥0∞ :=
 /-- `eq:frostman`: `μ` is `s`-Frostman with constant `A`, that is a measure on `[0,1]`
 with `μ(B̄(x,ρ)) ≤ A ρ^s` for every `x` and every `0 < ρ ≤ 1`. -/
 structure IsFrostman (s A : ℝ) (μ : Measure ℝ) : Prop where
-  /-- The constant is at least one. -/
   one_le_const : 1 ≤ A
-  /-- The measure sits on the unit interval. -/
   support : μ (Set.Icc (0:ℝ) 1)ᶜ = 0
-  /-- The Frostman bound on closed balls of radius at most one. -/
   measure_closedBall_le :
     ∀ x : ℝ, ∀ ρ : ℝ, 0 < ρ → ρ ≤ 1 →
       μ (Metric.closedBall x ρ) ≤ ENNReal.ofReal (A * ρ ^ s)
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-/-- Planar Brownian motion: the two coordinate processes are independent real Brownian
-motions with almost surely continuous paths. -/
+/-- Planar Brownian motion: independent real Brownian
+motions in two dimensions with almost surely continuous paths. -/
 structure IsPlanarBrownian (W : ℝ≥0 → Ω → Plane) (P : Measure Ω) : Prop where
   /-- Each coordinate is a real Brownian motion, paths included. -/
   coord : ∀ i : Fin 2, IsBrownianReal (fun t ω => W t ω i) P

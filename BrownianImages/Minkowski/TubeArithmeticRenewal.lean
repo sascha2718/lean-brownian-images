@@ -249,15 +249,14 @@ theorem exists_summable_lattice_envelope
 
 /-- **Uniform arithmetic key-renewal assembly.**  The exact lattice renewal
 series, a bounded renewal-mass sequence, its shifted discrete renewal limit, and
-a summable cell envelope imply uniform convergence on one period.  The limit
-extends continuously and periodically, and any uniform positive lower and upper
-bounds on the original profile pass to that extension.
+a summable cell envelope imply uniform convergence on one period, to a limit that
+extends continuously and periodically.  No sign or positivity is assumed.
 
 This theorem deliberately exposes the two discrete statements not present in the
 vendored continuous renewal library: `hulim` is the discrete renewal theorem and
 `hseries` is the lattice form of the iterated renewal equation. -/
-theorem exists_periodic_limit_of_lattice_series
-    {h L B c C : ℝ} (hh : 0 < h)
+theorem exists_uniform_periodic_limit_of_lattice_series
+    {h L B : ℝ} (hh : 0 < h)
     {m z : ℝ → ℝ} (hz : Continuous z) {u a : ℤ → ℝ}
     (ha0 : ∀ k, 0 ≤ a k) (ha : Summable a)
     (hza : ∀ (k : ℤ) (t : Set.Icc (0 : ℝ) h),
@@ -267,11 +266,8 @@ theorem exists_periodic_limit_of_lattice_series
       Tendsto (fun n : ℕ ↦ u ((n : ℤ) - k)) atTop (nhds L))
     (hseries : ∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n →
       ∀ t : Set.Icc (0 : ℝ) h,
-        m ((t : ℝ) + (n : ℝ) * h) = latticeSection h z hz u n t)
-    (hc : 0 < c)
-    (hmc : ∀ v : ℝ, 0 ≤ v → c ≤ m v ∧ m v ≤ C) :
+        m ((t : ℝ) + (n : ℝ) * h) = latticeSection h z hz u n t) :
     ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P h ∧
-      (0 < c ∧ ∀ t : ℝ, c ≤ P t ∧ P t ≤ C) ∧
       ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
         ∀ t ∈ Set.Icc (0 : ℝ) h,
           |m (t + (n : ℝ) * h) - P t| ≤ ε := by
@@ -291,52 +287,76 @@ theorem exists_periodic_limit_of_lattice_series
       limitSection_zero_eq_end (L := L) hh.le hz ha0 ha hza
   obtain ⟨P, hPcont, hPper, hPeq⟩ :=
     exists_periodic_extension hh hfends hfcont
-  refine ⟨P, hPcont, hPper, ⟨hc, ?_⟩, ?_⟩
-  · intro w
-    obtain ⟨t, ht, hwt⟩ := hPper.exists_mem_Ico₀ hh w
-    have htIcc : t ∈ Set.Icc (0 : ℝ) h := ⟨ht.1, ht.2.le⟩
-    have hqtend : Tendsto (fun n : ℕ ↦ latticeSection h z hz u n ⟨t, htIcc⟩)
-        atTop (nhds (q ⟨t, htIcc⟩)) :=
-      tendsto_apply_of_tendsto_continuousMap hlim ⟨t, htIcc⟩
-    obtain ⟨N₀, hseries⟩ := hseries
-    have hcq : c ≤ q ⟨t, htIcc⟩ := by
-      apply ge_of_tendsto hqtend
-      filter_upwards [eventually_ge_atTop N₀] with n hn
-      rw [← hseries n hn ⟨t, htIcc⟩]
-      exact (hmc _ (add_nonneg htIcc.1 (mul_nonneg (Nat.cast_nonneg _) hh.le))).1
-    have hqC : q ⟨t, htIcc⟩ ≤ C := by
-      apply le_of_tendsto hqtend
-      filter_upwards [eventually_ge_atTop N₀] with n hn
-      rw [← hseries n hn ⟨t, htIcc⟩]
-      exact (hmc _ (add_nonneg htIcc.1 (mul_nonneg (Nat.cast_nonneg _) hh.le))).2
-    have hPt : P t = q ⟨t, htIcc⟩ := by
-      rw [hPeq t (by simpa only [zero_add] using htIcc)]
-      change ambientOfSection h q t = q ⟨t, htIcc⟩
-      exact ambientOfSection_eq q htIcc
-    rw [hwt, hPt]
-    exact ⟨hcq, hqC⟩
-  · intro ε hε
-    obtain ⟨N₀, hseries⟩ := hseries
-    rw [Metric.tendsto_nhds] at hlim
-    obtain ⟨N₁, hN₁⟩ := eventually_atTop.1 (hlim ε hε)
-    refine ⟨max N₀ N₁, fun n hn t ht ↦ ?_⟩
-    have hn₀ : N₀ ≤ n := (le_max_left N₀ N₁).trans hn
-    have hn₁ : N₁ ≤ n := (le_max_right N₀ N₁).trans hn
-    let ts : Set.Icc (0 : ℝ) h := ⟨t, ht⟩
-    have hnorm : ‖latticeSection h z hz u n - q‖ < ε := by
-      simpa only [dist_eq_norm] using hN₁ n hn₁
-    have hPq : P t = q ts := by
-      rw [hPeq t (by simpa only [zero_add] using ht)]
-      change ambientOfSection h q t = q ts
-      exact ambientOfSection_eq q ht
-    rw [hseries n hn₀ ts, hPq]
-    change |(latticeSection h z hz u n - q) ts| ≤ ε
-    calc
-      |(latticeSection h z hz u n - q) ts| =
-          ‖(latticeSection h z hz u n - q) ts‖ := (Real.norm_eq_abs _).symm
-      _ ≤ ‖latticeSection h z hz u n - q‖ :=
-        ContinuousMap.norm_coe_le_norm _ _
-      _ ≤ ε := hnorm.le
+  refine ⟨P, hPcont, hPper, fun ε hε ↦ ?_⟩
+  obtain ⟨N₀, hseries⟩ := hseries
+  rw [Metric.tendsto_nhds] at hlim
+  obtain ⟨N₁, hN₁⟩ := eventually_atTop.1 (hlim ε hε)
+  refine ⟨max N₀ N₁, fun n hn t ht ↦ ?_⟩
+  have hn₀ : N₀ ≤ n := (le_max_left N₀ N₁).trans hn
+  have hn₁ : N₁ ≤ n := (le_max_right N₀ N₁).trans hn
+  let ts : Set.Icc (0 : ℝ) h := ⟨t, ht⟩
+  have hnorm : ‖latticeSection h z hz u n - q‖ < ε := by
+    simpa only [dist_eq_norm] using hN₁ n hn₁
+  have hPq : P t = q ts := by
+    rw [hPeq t (by simpa only [zero_add] using ht)]
+    change ambientOfSection h q t = q ts
+    exact ambientOfSection_eq q ht
+  rw [hseries n hn₀ ts, hPq]
+  change |(latticeSection h z hz u n - q) ts| ≤ ε
+  calc
+    |(latticeSection h z hz u n - q) ts| =
+        ‖(latticeSection h z hz u n - q) ts‖ := (Real.norm_eq_abs _).symm
+    _ ≤ ‖latticeSection h z hz u n - q‖ :=
+      ContinuousMap.norm_coe_le_norm _ _
+    _ ≤ ε := hnorm.le
+
+/-- Uniform bounds on a function on the half-line pass to the periodic limit of its
+lattice translates. -/
+theorem bounds_of_uniform_periodic_limit {h c C : ℝ} (hh : 0 < h) {m P : ℝ → ℝ}
+    (hPper : Function.Periodic P h)
+    (hconv : ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
+      ∀ t ∈ Set.Icc (0 : ℝ) h, |m (t + (n : ℝ) * h) - P t| ≤ ε)
+    (hmc : ∀ v : ℝ, 0 ≤ v → c ≤ m v ∧ m v ≤ C) (w : ℝ) :
+    c ≤ P w ∧ P w ≤ C := by
+  obtain ⟨t, ht, hwt⟩ := hPper.exists_mem_Ico₀ hh w
+  have htIcc : t ∈ Set.Icc (0 : ℝ) h := ⟨ht.1, ht.2.le⟩
+  have hlim : Tendsto (fun n : ℕ ↦ m (t + (n : ℝ) * h)) atTop (nhds (P t)) := by
+    rw [Metric.tendsto_atTop]
+    intro ε hε
+    obtain ⟨N, hN⟩ := hconv (ε / 2) (by linarith)
+    exact ⟨N, fun n hn ↦ by
+      rw [Real.dist_eq]
+      exact (hN n hn t htIcc).trans_lt (by linarith)⟩
+  have hnn : ∀ n : ℕ, 0 ≤ t + (n : ℝ) * h := fun n ↦
+    add_nonneg htIcc.1 (mul_nonneg (Nat.cast_nonneg _) hh.le)
+  rw [hwt]
+  exact ⟨ge_of_tendsto' hlim fun n ↦ (hmc _ (hnn n)).1,
+    le_of_tendsto' hlim fun n ↦ (hmc _ (hnn n)).2⟩
+
+/-- The assembly with uniform positive lower and upper bounds on the original
+profile, which pass to the periodic limit. -/
+theorem exists_periodic_limit_of_lattice_series
+    {h L B c C : ℝ} (hh : 0 < h)
+    {m z : ℝ → ℝ} (hz : Continuous z) {u a : ℤ → ℝ}
+    (ha0 : ∀ k, 0 ≤ a k) (ha : Summable a)
+    (hza : ∀ (k : ℤ) (t : Set.Icc (0 : ℝ) h),
+      |z ((t : ℝ) + (k : ℝ) * h)| ≤ a k)
+    (hB : 0 ≤ B) (huB : ∀ j, |u j| ≤ B)
+    (hulim : ∀ k : ℤ,
+      Tendsto (fun n : ℕ ↦ u ((n : ℤ) - k)) atTop (nhds L))
+    (hseries : ∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n →
+      ∀ t : Set.Icc (0 : ℝ) h,
+        m ((t : ℝ) + (n : ℝ) * h) = latticeSection h z hz u n t)
+    (hc : 0 < c)
+    (hmc : ∀ v : ℝ, 0 ≤ v → c ≤ m v ∧ m v ≤ C) :
+    ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P h ∧
+      (0 < c ∧ ∀ t : ℝ, c ≤ P t ∧ P t ≤ C) ∧
+      ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
+        ∀ t ∈ Set.Icc (0 : ℝ) h,
+          |m (t + (n : ℝ) * h) - P t| ≤ ε := by
+  obtain ⟨P, hPc, hPp, hPconv⟩ :=
+    exists_uniform_periodic_limit_of_lattice_series hh hz ha0 ha hza hB huB hulim hseries
+  exact ⟨P, hPc, hPp, ⟨hc, bounds_of_uniform_periodic_limit hh hPp hPconv hmc⟩, hPconv⟩
 
 end ArithmeticRenewal
 
@@ -379,13 +399,13 @@ theorem abs_halfScaleCutoffTubeRenewalForcing_le
   exact S.abs_cutoffTubeRenewalForcing_le hdim hA (2 * v)
 
 /-- Past the cutoff boundary layer, the half-scale forcing is the negative tube
-defect and hence inherits its exponential bound without a change of exponent. -/
-theorem abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_tail
+defect, so a bound on `|d|` passes to it without a change of exponent. -/
+theorem abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_abs_tail
     [Nonempty iota] {s : ℝ} {m d : ℝ → ℝ} {C γ : ℝ}
     (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
       m v = S.tubeRenewalConv s m v - d v)
     (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
-      0 ≤ d v ∧ d v ≤ C * Real.exp (-γ * v))
+      |d v| ≤ C * Real.exp (-γ * v))
     {v : ℝ} (hv : S.tubeRenewalTailThreshold / 2 ≤ v) :
     |S.halfScaleCutoffTubeRenewalForcing s m v| ≤
       C * Real.exp (-γ * v) := by
@@ -398,20 +418,34 @@ theorem abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_tail
     linarith [hy i]
   rw [halfScaleCutoffTubeRenewalForcing,
     S.cutoffTubeRenewalForcing_eq_neg_of_tail hrenew hy,
-    show 2 * v / 2 = v by ring, abs_neg,
-    abs_of_nonneg (hdefect v hvsteps).1]
-  exact (hdefect v hvsteps).2
+    show 2 * v / 2 = v by ring, abs_neg]
+  exact hdefect v hvsteps
 
-/-- The cutoff forcing of the tube renewal equation has the uniform summable
-lattice-cell envelope required by the arithmetic Tannery argument. -/
-theorem exists_summable_envelope_halfScaleCutoffTubeRenewalForcing
+/-- Past the cutoff boundary layer, the half-scale forcing is the negative tube
+defect and hence inherits its exponential bound without a change of exponent. -/
+theorem abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_tail
+    [Nonempty iota] {s : ℝ} {m d : ℝ → ℝ} {C γ : ℝ}
+    (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      m v = S.tubeRenewalConv s m v - d v)
+    (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      0 ≤ d v ∧ d v ≤ C * Real.exp (-γ * v))
+    {v : ℝ} (hv : S.tubeRenewalTailThreshold / 2 ≤ v) :
+    |S.halfScaleCutoffTubeRenewalForcing s m v| ≤
+      C * Real.exp (-γ * v) :=
+  S.abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_abs_tail hrenew
+    (fun v hv ↦ by rw [abs_of_nonneg (hdefect v hv).1]; exact (hdefect v hv).2) hv
+
+/-- The cutoff forcing of the tube renewal equation with a signed exponentially small
+defect has the uniform summable lattice-cell envelope required by the arithmetic
+Tannery argument. -/
+theorem exists_summable_envelope_halfScaleCutoffTubeRenewalForcing_of_abs
     [Nonempty iota] {s h : ℝ} (hh : 0 < h) (hdim : S.IsDimension s)
     {m d : ℝ → ℝ} {A C γ : ℝ} (hC : 0 ≤ C) (hγ : 0 < γ)
     (hA : ∀ v : ℝ, 0 ≤ v → |m v| ≤ A)
     (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
       m v = S.tubeRenewalConv s m v - d v)
     (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
-      0 ≤ d v ∧ d v ≤ C * Real.exp (-γ * v)) :
+      |d v| ≤ C * Real.exp (-γ * v)) :
     ∃ a : ℤ → ℝ, (∀ k, 0 ≤ a k) ∧ Summable a ∧
       ∀ (k : ℤ) (t : Set.Icc (0 : ℝ) h),
         |S.halfScaleCutoffTubeRenewalForcing s m
@@ -428,13 +462,66 @@ theorem exists_summable_envelope_halfScaleCutoffTubeRenewalForcing
   · intro v
     exact S.abs_halfScaleCutoffTubeRenewalForcing_le hdim hA v
   · intro v hv
-    exact S.abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_tail
+    exact S.abs_halfScaleCutoffTubeRenewalForcing_le_exp_of_abs_tail
       hrenew hdefect hv
+
+/-- The cutoff forcing of the tube renewal equation has the uniform summable
+lattice-cell envelope required by the arithmetic Tannery argument. -/
+theorem exists_summable_envelope_halfScaleCutoffTubeRenewalForcing
+    [Nonempty iota] {s h : ℝ} (hh : 0 < h) (hdim : S.IsDimension s)
+    {m d : ℝ → ℝ} {A C γ : ℝ} (hC : 0 ≤ C) (hγ : 0 < γ)
+    (hA : ∀ v : ℝ, 0 ≤ v → |m v| ≤ A)
+    (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      m v = S.tubeRenewalConv s m v - d v)
+    (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      0 ≤ d v ∧ d v ≤ C * Real.exp (-γ * v)) :
+    ∃ a : ℤ → ℝ, (∀ k, 0 ≤ a k) ∧ Summable a ∧
+      ∀ (k : ℤ) (t : Set.Icc (0 : ℝ) h),
+        |S.halfScaleCutoffTubeRenewalForcing s m
+          ((t : ℝ) + (k : ℝ) * h)| ≤ a k :=
+  S.exists_summable_envelope_halfScaleCutoffTubeRenewalForcing_of_abs hh hdim hC hγ hA hrenew
+    (fun v hv ↦ by rw [abs_of_nonneg (hdefect v hv).1]; exact (hdefect v hv).2)
+
+/-- Paper-shaped arithmetic tube-renewal theorem for a signed defect.  All continuous
+analysis, including uniformity in the phase, follows from the exponentially small
+defect.  The hypotheses `hulim` and `hseries` are exactly the missing discrete
+renewal theorem and the lattice renewal-series identity, respectively. -/
+theorem exists_uniform_periodic_limit_of_tubeArithmetic_of_discrete_renewal
+    [Nonempty iota] {s h : ℝ} (hh : 0 < h) (harith : S.TubeArithmetic h)
+    (hdim : S.IsDimension s) {m d : ℝ → ℝ}
+    {A D γ B ℓ : ℝ} (hm : Continuous m)
+    (hA : ∀ v : ℝ, 0 ≤ v → |m v| ≤ A)
+    (hD : 0 ≤ D) (hγ : 0 < γ)
+    (hrenew : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      m v = S.tubeRenewalConv s m v - d v)
+    (hdefect : ∀ v : ℝ, (∀ i : iota, S.halfLogRatio i ≤ v) →
+      |d v| ≤ D * Real.exp (-γ * v))
+    {u : ℤ → ℝ} (hB : 0 ≤ B) (huB : ∀ j, |u j| ≤ B)
+    (hulim : ∀ k : ℤ,
+      Tendsto (fun n : ℕ ↦ u ((n : ℤ) - k)) atTop (nhds ℓ))
+    (hseries : S.TubeArithmetic h →
+      ∃ N₀ : ℕ, ∀ n : ℕ, N₀ ≤ n →
+        ∀ t : Set.Icc (0 : ℝ) h,
+          m ((t : ℝ) + (n : ℝ) * h) =
+            ArithmeticRenewal.latticeSection h
+              (S.halfScaleCutoffTubeRenewalForcing s m)
+              (S.continuous_halfScaleCutoffTubeRenewalForcing hm) u n t) :
+    ∃ P : ℝ → ℝ, Continuous P ∧ Function.Periodic P h ∧
+      ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
+        ∀ t ∈ Set.Icc (0 : ℝ) h,
+          |m (t + (n : ℝ) * h) - P t| ≤ ε := by
+  obtain ⟨a, ha0, ha, hza⟩ :=
+    S.exists_summable_envelope_halfScaleCutoffTubeRenewalForcing_of_abs
+      hh hdim hD hγ hA hrenew hdefect
+  exact ArithmeticRenewal.exists_uniform_periodic_limit_of_lattice_series
+    hh (S.continuous_halfScaleCutoffTubeRenewalForcing hm)
+    ha0 ha hza hB huB hulim (hseries harith)
 
 /-- Paper-shaped arithmetic tube-renewal theorem.  All continuous analysis,
 including uniformity in the phase, follows from the exponentially decaying tube
-defect.  The hypotheses `hulim` and `hseries` are exactly the missing discrete
-renewal theorem and the lattice renewal-series identity, respectively. -/
+defect, and positive uniform bounds on the profile pass to the limit.  The hypotheses
+`hulim` and `hseries` are exactly the missing discrete renewal theorem and the lattice
+renewal-series identity, respectively. -/
 theorem exists_periodic_limit_of_tubeArithmetic_of_discrete_renewal
     [Nonempty iota] {s h : ℝ} (hh : 0 < h) (harith : S.TubeArithmetic h)
     (hdim : S.IsDimension s) {m d : ℝ → ℝ}
@@ -461,14 +548,12 @@ theorem exists_periodic_limit_of_tubeArithmetic_of_discrete_renewal
       ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
         ∀ t ∈ Set.Icc (0 : ℝ) h,
           |m (t + (n : ℝ) * h) - P t| ≤ ε := by
-  obtain ⟨a, ha0, ha, hza⟩ :=
-    S.exists_summable_envelope_halfScaleCutoffTubeRenewalForcing
-      hh hdim hD hγ hA hrenew hdefect
-  obtain ⟨P, hPc, hPp, hPb, hPconv⟩ :=
-    ArithmeticRenewal.exists_periodic_limit_of_lattice_series
-      hh (S.continuous_halfScaleCutoffTubeRenewalForcing hm)
-      ha0 ha hza hB huB hulim (hseries harith) hc hmc
-  exact ⟨P, hPc, hPp, ⟨c, A, hPb⟩, hPconv⟩
+  obtain ⟨P, hPc, hPp, hPconv⟩ :=
+    S.exists_uniform_periodic_limit_of_tubeArithmetic_of_discrete_renewal hh harith hdim hm hA
+      hD hγ hrenew (fun v hv ↦ by rw [abs_of_nonneg (hdefect v hv).1]; exact (hdefect v hv).2)
+      hB huB hulim hseries
+  exact ⟨P, hPc, hPp, ⟨c, A, hc, ArithmeticRenewal.bounds_of_uniform_periodic_limit hh hPp
+    hPconv hmc⟩, hPconv⟩
 
 end System
 
