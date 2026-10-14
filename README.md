@@ -1,10 +1,9 @@
 # Distinguishing sets and measures from their planar Brownian images
 
-Lean 4 formalisation of the paper of the same title by Sascha Troscheit (2026),
-[arXiv:2610.16339](https://arxiv.org/abs/2610.16339).
+Lean 4 formalisation of the paper *Distinguishing sets and measures from their planar Brownian images*
+by Sascha Troscheit (2026), [arXiv:2610.16339](https://arxiv.org/abs/2610.16339).
 
 ## Scope
-
 Expected correlation profiles distinguish planar Brownian images of time measures with
 matching dimension. For natural self-similar measures under the open set condition, the
 library proves lattice and non-lattice profile asymptotics and separation of their image
@@ -29,20 +28,19 @@ intentional `sorry`, and their statement vocabulary over Mathlib:
 | 1.9 Two-contraction set separation | `audit_two_contraction_sets` |
 
 [Solution.lean](Solution.lean) proves these statements from [BrownianImages](BrownianImages.lean),
-with supporting results and examples. The library and Solution have no proof holes or
-literature axioms. The Comparator configuration permits only `propext`, `Classical.choice`
+with supporting results and examples. The library and Solution are `sorry'-free and rely only on Mathlib.
+The Comparator configuration permits only the standard axioms `propext`, `Classical.choice`
 and `Quot.sound`.
 
-**Coverage:** all nine headline statements are proved over Matlib.
-The key renewal theorem quoted in Section 3.3 and its half-line shift consequence are
-proved for the laws of self-similar systems at their similarity dimension, with a signed
-exponentially decaying defect; the statement for an arbitrary finitely supported law, the
-lattice renewal series and the uniform continuity of the solution are not formalised.
-Literature background, discussions, and comparisons given in prose are not part of the formalisation.
-[paper-correspondence.yaml](paper-correspondence.yaml) maps all
-32 numbered statements; [docs/correspondence.md](docs/correspondence.md) explains the
-representations, the remaining omissions and the proof differences. Authorship, sources,
-AI assistance and review are recorded in [formalization.yaml](formalization.yaml).
+**Coverage:** all 32 numbered statements are formalised, including the nine headline
+results and the explicit lattice periodisation. Supporting renewal results are proved
+for the self-similar laws used in the paper; only the minimal version necessary for proving this has
+been proved. In particularly, we do not prove the full Renewal theorem that we cite in the article.
+None of the background discussions have been formalised.
+
+[paper-correspondence.yaml](paper-correspondence.yaml) maps the numbered statements.
+[docs/correspondence.md](docs/correspondence.md) records scope and proof differences;
+[formalization.yaml](formalization.yaml) records authorship, sources, AI assistance and review.
 
 ## Build and verification
 

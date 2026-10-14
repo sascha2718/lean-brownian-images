@@ -633,7 +633,7 @@ def main() -> int:
     print(
         f"Scanned {len(labelled)} labelled and {len(unlabelled)} unlabelled paper statements and "
         f"{len(lean_declarations)} distinct Lean source declarations. Manifest status: "
-        + ", ".join(f"{count} {status}" for status, count in counts.items())
+        + ", ".join(f"{count} {status}" for status, count in counts.items() if count)
         + f"; {len(comparator_set)} audited endpoint(s)."
     )
     for warning in warnings:

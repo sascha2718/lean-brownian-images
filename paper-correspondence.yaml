@@ -1,8 +1,7 @@
-# Statement correspondence for the manuscript beside this Lean repository.
-# Source hashes detect drift; they do not prove mathematical equivalence.
-# Human-readable source names are independent of the internal label or text lookup.
-# Wider proof details and qualifications remain in docs/correspondence.md.
+# All numbered statements. Source hashes detect drift, not mathematical equivalence.
+# Literature scope and proof differences: docs/correspondence.md.
 version: 3
+scope: "All 32 numbered statements of the paper."
 source_version: "BrownianImagesComplete.tex"
 arxiv_version: "2610.16339v1"
 arxiv_snapshot_revision: "93b440fb68e1ebc74b8df1b4998923eb0f11857e"
@@ -18,7 +17,6 @@ entries:
     lean: ["BrownianImages.audit_main"]
     relation: "exact"
     headline: true
-    note: "Separated expected correlation profiles give singular occupation laws."
   - source: "Lattice and non-lattice profile asymptotics"
     label: "thm:profile-asymptotics"
     kind: "theorem"
@@ -27,7 +25,6 @@ entries:
     lean: ["BrownianImages.audit_profile_asymptotics"]
     relation: "representation"
     headline: true
-    note: "The expected Brownian profile has a positive nonconstant periodic limit in the lattice case and a positive constant limit in the non-lattice case."
   - source: "Lattice/non-lattice occupation-law separation"
     label: "thm:cantor-application"
     kind: "corollary"
@@ -36,7 +33,6 @@ entries:
     lean: ["BrownianImages.audit_lattice_nonlattice_measures"]
     relation: "representation"
     headline: true
-    note: "Arbitrary lattice and non-lattice natural measures of a common dimension under the open set condition have singular occupation laws."
   - source: "Finite exceptions in the two-contraction family"
     label: "thm:fixed-dimension-separation"
     kind: "theorem"
@@ -45,7 +41,6 @@ entries:
     lean: ["BrownianImages.audit_finite_exceptions"]
     relation: "representation"
     headline: true
-    note: "The mean is the limit of the expected-profile averages, whose convergence is proved. Its level sets on (0,1/2] are finite. Distinct means give singular occupation laws. The critical set has no accumulation in (0,1/2], and the mean is strictly monotone on every open interval without critical points, hence on every component of the complement."
   - source: "Small-dimension monotonicity"
     label: "thm:small-dimension-monotone"
     kind: "theorem"
@@ -54,7 +49,6 @@ entries:
     lean: ["BrownianImages.audit_small_dimension"]
     relation: "representation"
     headline: true
-    note: "For a sufficiently small positive dimension threshold, the mean is strictly increasing on (0,1/2] and every distinct pair gives singular occupation laws."
   - source: "Finiteness of the critical set"
     label: "thm:critical-set-finite"
     kind: "corollary"
@@ -63,7 +57,6 @@ entries:
     lean: ["BrownianImages.audit_finite_critical_set"]
     relation: "representation"
     headline: true
-    note: "For each 0<s<=1/2 the mean is strictly increasing near p=0 and the critical set is finite."
   - source: "Minkowski reconstruction"
     label: "thm:minkowski-reconstruction"
     kind: "theorem"
@@ -72,7 +65,6 @@ entries:
     lean: ["BrownianImages.audit_reconstruction"]
     relation: "representation"
     headline: true
-    note: "Normalised triangular cut-off measures at radii exp(-n) converge weakly almost surely to the occupation measure, which is a Borel function of the compact image."
   - source: "Lattice/non-lattice compact-image separation"
     label: "thm:cantor-set-application"
     kind: "corollary"
@@ -81,7 +73,6 @@ entries:
     lean: ["BrownianImages.audit_lattice_nonlattice_sets"]
     relation: "representation"
     headline: true
-    note: "Arbitrary lattice and non-lattice attractors of a common dimension under the open set condition have singular compact-image laws. Natural measures are constructed inside the proof."
   - source: "Two-contraction compact-image separation"
     match: "For every $s\\in(0,1)$ and all $p_1,p_2\\in(0,1/2]$ with"
     kind: "corollary"
@@ -90,7 +81,6 @@ entries:
     lean: ["BrownianImages.audit_two_contraction_sets"]
     relation: "representation"
     headline: true
-    note: "Distinct means give singular compact-image laws, with at most finitely many exceptions for each fixed parameter. A single small-dimension threshold gives both strict increase of the mean and separation of every distinct pair, so it also serves Theorem 1.5."
   - source: "Gaussian reduction of the expected correlation integral"
     label: "thm:gaussian-reduction"
     kind: "lemma"
@@ -99,7 +89,6 @@ entries:
     lean: ["BrownianImages.audit_gaussian_reduction"]
     relation: "exact"
     headline: false
-    note: "Frostman regularity removes the diagonal, where the formal integrand has a default value."
   - source: "Left-tail bounds for the renewal defect"
     label: "thm:renewal-defect-left-tail"
     kind: "lemma"
@@ -108,7 +97,7 @@ entries:
     lean: ["BrownianImages.renewalDefect_pos_of_nonpos", "BrownianImages.renewalDefect_eq", "BrownianImages.exists_abs_renewalDefect_le_exp"]
     relation: "split"
     headline: false
-    note: "The exact negative-time identity is a calculation within renewalDefect_pos_of_nonpos. Continuity follows from the finite-sum definition. These are library results rather than a separate bundled Solution endpoint."
+    note: "Identity, positivity and continuity are covered by library calculations."
   - source: "Cross-piece mass decay"
     label: "thm:cross-piece-mass"
     kind: "lemma"
@@ -117,31 +106,6 @@ entries:
     lean: ["BrownianImages.audit_crossPhi_bound", "BrownianImages.audit_cross_piece_mass"]
     relation: "split"
     headline: false
-    note: "The library proves the individual cross-piece bounds and sums them. The positive-time exponential defect bound is System.exists_abs_renewalDefect_le_exp."
-  - source: "Key renewal theorem quoted in Renewal and asymptotics"
-    kind: "prose"
-    file: "BrownianImagesComplete.tex"
-    start: "We use the following form of the key renewal theorem, see"
-    end: "In particular, $f(t)-\\widetilde f(t)\\to0$ as $t\\to\\infty$."
-    sha256: "49af3e44172e7f44b86a844ef63667bcafc3ab6de31bd1200d7ab3925851e062"
-    status: "partially_formalized"
-    lean: ["BrownianImages.audit_key_renewal_theorem", "BrownianImages.audit_renewal_theorem_nonlattice", "BrownianImages.audit_renewal_theorem_lattice", "BrownianImages.audit_renewal_series"]
-    relation: "weaker"
-    headline: false
-    reason: "Proved for the laws of self-similar systems at their similarity dimension, the generality in which the paper applies the theorem, not for an arbitrary finitely supported law on the positive half-line, and with a possibly signed exponentially decaying defect. The non-lattice limit, the lattice uniform convergence on one period to the explicit periodisation, and the renewal series in the non-lattice case are proved. The renewal series in the lattice case and the uniform continuity of the solution are not formalised; Lean obtains the uniform lattice convergence from Tannery's theorem instead."
-    note: "Literature background from Falconer (1997) and Feller (1971), not a numbered statement of the paper. The lattice case applies the signed arithmetic renewal theorem to the cut-off solution and identifies its limit with the periodisation by telescoping the renewal equation along the lattice."
-  - source: "Renewal shift limit"
-    kind: "prose"
-    file: "BrownianImagesComplete.tex"
-    start: "We shall also use the following consequence for a bounded continuous function"
-    end: "gives the same conclusion since $u\\in \\ell\\bbZ$."
-    sha256: "0c7546520b08e95b45f71c9bc45f1c34fe3b72fc3832b2038d2c11c0d6814520"
-    status: "partially_formalized"
-    lean: ["BrownianImages.audit_renewal_shift"]
-    relation: "weaker"
-    headline: false
-    reason: "The paper's shift consequence inherits the arbitrary finitely supported positive interarrival law of the preceding renewal theorem. Lean proves it for System.renewalLaw at the similarity dimension, whose weights and shifts satisfy p_i = exp(-s * alpha_i), rather than for independent choices of atom locations and probabilities. This covers the self-similar applications but not the full quoted generality."
-    note: "For the laws of self-similar systems at their similarity dimension, with the atoms of the law as the shifts. Lean follows the paper's cut-off argument and applies the two cases of the key renewal theorem."
   - source: "Lattice and non-lattice renewal limits"
     label: "thm:renewal-limits"
     kind: "proposition"
@@ -150,7 +114,7 @@ entries:
     lean: ["BrownianImages.audit_thm_renewal_limits", "BrownianImages.audit_non_lattice_limit", "BrownianImages.audit_lattice_periodisation_limit", "BrownianImages.audit_lattice_periodisation_hasSum"]
     relation: "exact"
     headline: false
-    note: "The non-lattice limit with its integral formula, and in the lattice case continuity, strict positivity, periodicity and the asymptotic approximation for the explicit periodisation (ell/m) times the sum of z(t+k*ell) over integers k, represented by System.latticePeriodisation with its series proved convergent. Lean obtains the periodic limit from the finite-delay renewal theorem (System.lattice_G_limit) and identifies it with this sum by telescoping the renewal equation along the lattice."
+    note: "The lattice limit is the explicit periodisation, with its series proved convergent."
   - source: "Non-convergence of the lattice correlation profile"
     label: "thm:lattice-nonconvergence"
     kind: "lemma"
@@ -159,7 +123,6 @@ entries:
     lean: ["BrownianImages.audit_lattice_nonconvergence"]
     relation: "exact"
     headline: false
-    note: "Non-constancy of the explicit periodisation System.latticePeriodisation. The paper compares two phases directly. Lean argues by contradiction: a constant periodisation makes G converge, convergence gives a cross-term Lipschitz bound through the telescoped partial sums, and that bound contradicts Ahlfors regularity for s<1 (System.IsNatural.not_tendsto_G_of_lattice)."
   - source: "Injectivity of Gaussian smoothing"
     label: "thm:smoothing-injective"
     kind: "lemma"
@@ -168,7 +131,6 @@ entries:
     lean: ["BrownianImages.audit_smoothing_injective", "BrownianImages.audit_smoothing_nonconstant"]
     relation: "split"
     headline: false
-    note: "Fourier multipliers and uniqueness prove injectivity and preservation of non-constancy."
   - source: "Four-point integral bound"
     label: "thm:four-point-integral"
     kind: "proposition"
@@ -177,7 +139,6 @@ entries:
     lean: ["BrownianImages.audit_four_point_integral"]
     relation: "exact"
     headline: false
-    note: "The constant is chosen before the measure and Brownian process and depends only on s and A. Lean obtains the same three regimes by dyadic summation instead of the paper's two elementary integrals."
   - source: "Variance bound and its little-o consequence"
     label: "thm:variance"
     kind: "theorem"
@@ -186,7 +147,6 @@ entries:
     lean: ["BrownianImages.audit_thm_variance"]
     relation: "exact"
     headline: false
-    note: "The bundled endpoint includes the displayed bound with one constant depending only on s and A, uniformly over measures and Brownian processes, and the little-o consequence."
   - source: "Uniform almost-sure concentration"
     label: "thm:uniform-concentration"
     kind: "theorem"
@@ -195,7 +155,6 @@ entries:
     lean: ["BrownianImages.audit_uniform_concentration"]
     relation: "exact"
     headline: false
-    note: "The eventual almost-sure uniform bound is proved from the variance estimate and Borel--Cantelli."
   - source: "Moments of Brownian neighbourhood area and mass"
     label: "thm:neighbourhood-moments"
     kind: "lemma"
@@ -204,7 +163,6 @@ entries:
     lean: ["BrownianImages.audit_tube_moments"]
     relation: "representation"
     headline: false
-    note: "The open set condition supplies Ahlfors regularity. Brownian radius moments and stopping covers give the moment bounds."
   - source: "Neighbourhood overlap and defect bounds"
     label: "thm:neighbourhood-overlap"
     kind: "lemma"
@@ -213,7 +171,6 @@ entries:
     lean: ["BrownianImages.audit_tube_overlap"]
     relation: "representation"
     headline: false
-    note: "The endpoint takes the cross-correlation bound with a prescribed exponent eta in (0,1-s), and retains that same exponent in the overlap and defect bounds, with integrability included."
   - source: "Renewal asymptotics for the mean neighbourhood profile"
     label: "thm:neighbourhood-renewal"
     kind: "lemma"
@@ -222,7 +179,6 @@ entries:
     lean: ["BrownianImages.audit_tube_renewal"]
     relation: "representation"
     headline: false
-    note: "The endpoint gives the bounds and shift invariance used by reconstruction. The non-lattice and lattice limits are proved internally."
   - source: "Concentration of the neighbourhood profile"
     label: "thm:neighbourhood-concentration"
     kind: "lemma"
@@ -231,7 +187,6 @@ entries:
     lean: ["BrownianImages.audit_tube_concentration"]
     relation: "representation"
     headline: false
-    note: "The formal variance statement follows by squaring a centred L2 bound. Lean uses third-moment interpolation where the paper uses first/fourth-moment interpolation; both give a positive exponential rate."
   - source: "Base-five correlation profiles"
     label: "thm:base-five-profiles"
     kind: "proposition"
@@ -240,7 +195,6 @@ entries:
     lean: ["BrownianImages.audit_base_five_profiles", "BrownianImages.audit_base_five_occupation_laws", "BrownianImages.audit_base_five_image_laws"]
     relation: "split"
     headline: false
-    note: "The profiles are computed by first-digit recursions, equivalent to the paper's cylinder counting. The occupation and compact-image singularities have separate endpoints."
   - source: "Homometric non-isometric attractors"
     label: "thm:homometric-example"
     kind: "proposition"
@@ -249,7 +203,6 @@ entries:
     lean: ["BrownianImages.audit_homometric_example"]
     relation: "exact"
     headline: false
-    note: "The result includes equality of correlations and non-isometry of the attractors."
   - source: "Correlation profiles in the two-contraction family"
     label: "thm:fixed-dimension-profiles"
     kind: "proposition"
@@ -258,7 +211,6 @@ entries:
     lean: ["BrownianImages.audit_thm_fixed_dimension_profiles"]
     relation: "representation"
     headline: false
-    note: "The expectation-based endpoint combines the correlation formula, Cesàro mean and non-lattice limit. The lattice Fourier expansion is an additional internal result."
   - source: "Holomorphic level sums and their expectation"
     label: "thm:level-sums"
     kind: "lemma"
@@ -267,7 +219,7 @@ entries:
     lean: ["BrownianImages.audit_level_sums"]
     relation: "stronger"
     headline: false
-    note: "The endpoint proves uniform convergence, holomorphy, the exact bound with B equal to the supremum on the disc, and the natural-measure expectation identity for every holomorphic kernel. Boundedness of the open convex domain D is unnecessary and omitted."
+    note: "The boundedness assumption on D is omitted."
   - source: "Analyticity in the two-contraction family"
     label: "thm:fixed-dimension-analyticity"
     kind: "lemma"
@@ -276,7 +228,7 @@ entries:
     lean: ["BrownianImages.audit_fixed_dimension_analyticity"]
     relation: "representation"
     headline: false
-    note: "The endpoint states analyticity of fixedMoment and fixedMean. The paper's unnormalised cross-term integral is 2p(1-p) times fixedMoment, so its analyticity follows by multiplication."
+    note: "The paper's cross-term integral is 2p(1-p) times fixedMoment."
   - source: "Range of the mean profile"
     label: "thm:fixed-dimension-range"
     kind: "proposition"
@@ -285,7 +237,6 @@ entries:
     lean: ["BrownianImages.audit_fixed_dimension_range"]
     relation: "exact"
     headline: false
-    note: "Continuity, positivity and the limit zero as p decreases to zero are proved."
   - source: "Entropy-factor inequalities"
     label: "thm:entropy-factor"
     kind: "lemma"
@@ -294,7 +245,6 @@ entries:
     lean: ["BrownianImages.audit_entropy_factor"]
     relation: "exact"
     headline: false
-    note: "The entropy-factor inequalities are proved by strict concavity and elementary logarithmic bounds."
   - source: "Derivative bound for the main term"
     label: "thm:main-term-derivative"
     kind: "lemma"
@@ -303,7 +253,6 @@ entries:
     lean: ["BrownianImages.audit_main_term_derivative"]
     relation: "exact"
     headline: false
-    note: "Termwise differentiation and a Riemann-sum comparison give the stated derivative bound."
   - source: "Derivative bound for the remainder"
     label: "thm:remainder-derivative"
     kind: "lemma"
@@ -312,7 +261,6 @@ entries:
     lean: ["BrownianImages.audit_remainder_derivative"]
     relation: "exact"
     headline: false
-    note: "A Cauchy estimate bounds the derivative of the remainder, including existence of that derivative."
   - source: "Second-derivative bound for small dimension"
     label: "thm:second-derivative-small-s"
     kind: "lemma"
@@ -321,26 +269,3 @@ entries:
     lean: ["BrownianImages.audit_second_derivative_small_s"]
     relation: "exact"
     headline: false
-    note: "The formal endpoint includes existence and the bound for the second derivative."
-
-  - source: "Correlation dimension and local density ratios"
-    kind: "prose"
-    file: "BrownianImagesComplete.tex"
-    start: "For an $s$-Ahlfors regular time measure, $2s$ is thus the exact correlation dimension"
-    end: "about the original measure, and allows us to differentiate between different ones."
-    sha256: "3d1da2ea3ca3954f8d6f54c35c8637682307b133186bcc1dbb19e0fa0619b89a"
-    status: "intentionally_unformalized"
-    lean: []
-    headline: false
-    reason: "Introductory background and interpretation, including the displayed correlation-dimension claim and density-ratio identity. These are not separately formalised or used as hypotheses of the nine headline endpoints."
-
-  - source: "Dynamical reconstruction and hitting-time comparisons"
-    kind: "prose"
-    file: "BrownianImagesComplete.tex"
-    start: "In dynamical systems there also exist related inverse problems."
-    end: "neighbourhoods with respect to itself."
-    sha256: "ba431b8b851e1816519604a8993a5fb4b07cf42cbfa4ac37295ab971a44a053a"
-    status: "intentionally_unformalized"
-    lean: []
-    headline: false
-    reason: "Related-literature comparisons with Takens embedding, prediction from time-delay measurements and hitting-time statistics. These dynamical results are not formalised or assumed by the Brownian-image theorems."
