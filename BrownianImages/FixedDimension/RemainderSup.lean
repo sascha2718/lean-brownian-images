@@ -1,3 +1,5 @@
+module
+
 /-
 The sup bound `|Δ| ≤ 1296 s λ_{1,max} p^{-1-s}` of the proof of `thm:remainder-derivative` on the
 disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`.
@@ -7,8 +9,10 @@ disc, and Cauchy's estimate `|Δ'(p)| ≤ 2592 s λ_{1,max} p^{-2-s}`.
 * `tsum_disc_le`: `∑ (3p/2)(1 - p/2)ⁿ (1 - λ_{2,max}^{n+1})^{-s-1} ≤ 27 p^{-s}`.
 * `norm_complexDelta_le`, `norm_deriv_complexDelta_le`: the sup bound and Cauchy's estimate.
 -/
-import BrownianImages.FixedDimension.RemainderBound
-import BrownianImages.FixedDimension.RiemannSum
+public import BrownianImages.FixedDimension.RemainderBound
+public import BrownianImages.FixedDimension.RiemannSum
+
+@[expose] public section
 
 namespace BrownianImages
 

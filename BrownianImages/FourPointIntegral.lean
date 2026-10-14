@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: a dyadic proof of
 `thm:four-point-integral`, used by the variance bound `thm:variance`.
@@ -19,9 +21,11 @@ is a geometric series split at the dyadic scale nearest `λ`.
 * `four_point_integral_of_block_uniform`: one constant for each `s` and dyadic block
   constant, independent of the Frostman measure and Brownian process.
 -/
-import BrownianImages.Frostman
-import BrownianImages.FourPoint
-import Mathlib.Probability.Moments.Variance
+public import BrownianImages.Frostman
+public import BrownianImages.FourPoint
+public import Mathlib.Probability.Moments.Variance
+
+@[expose] public section
 
 namespace BrownianImages
 

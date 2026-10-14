@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:entropy-factor` of `sec:small-dimension`: the logarithmic derivative `κ` of the
 entropy factor `pq/h(p)`, its positivity on `(0, 1/2)`, the bound `κ ≥ 0.88/(p (1 - log p))`
@@ -12,8 +14,10 @@ identity `eq:log-derivative-mean` for the entropy factor.
   `thm:entropy-factor`.
 * `hasDerivAt_entropyFactor`: `(pq/h)' = (pq/h) κ`, which is `eq:log-derivative-mean`.
 -/
-import BrownianImages.FixedDimension.System
-import Mathlib.Analysis.Complex.ExponentialBounds
+public import BrownianImages.FixedDimension.System
+public import Mathlib.Analysis.Complex.ExponentialBounds
+
+@[expose] public section
 
 namespace BrownianImages
 

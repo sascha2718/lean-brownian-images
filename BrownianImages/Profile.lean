@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup`: elementary bounds on the normalised correlation profile `G`.
 
@@ -9,7 +11,9 @@ from monotonicity alone, so `G` is measurable with no Frostman hypothesis.
 * `measurable_Phi`, `measurable_G`: measurability without regularity hypotheses.
 * `abs_G_le`: `|G| ≤ A` on the whole line.
 -/
-import BrownianImages.Frostman
+public import BrownianImages.Frostman
+
+@[expose] public section
 
 namespace BrownianImages
 

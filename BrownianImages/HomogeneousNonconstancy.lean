@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:homogeneous-nonconstancy` for every `0 < λ < 1/2`.
 
@@ -8,10 +10,12 @@ cross-law, and hence the signed difference law near zero, to have an `O(δ)` int
 bound.  Constancy also makes `Φ(δ)` live on the `δ^s` scale; since `s < 1`, the two bounds
 are incompatible.
 -/
-import BrownianImages.PairDifference
-import BrownianImages.AhlforsRegular
-import BrownianImages.Smoothing
-import BrownianImages.Profile
+public import BrownianImages.PairDifference
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.Smoothing
+public import BrownianImages.Profile
+
+@[expose] public section
 
 namespace BrownianImages
 

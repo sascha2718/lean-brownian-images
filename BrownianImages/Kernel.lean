@@ -1,3 +1,5 @@
+module
+
 /-
 The smoothing kernel of `eq:h-definition`, `φ(η) = ½ η^{s-2} exp(-1/(2η))`, and its
 logarithmic form `x ↦ e^x φ(e^x)`.  These are the estimates the proof of
@@ -16,8 +18,10 @@ logarithmic form `x ↦ e^x φ(e^x)`.  These are the estimates the proof of
   `logKern_le_of_nonneg` and `logKern_le_of_nonpos`, are the bounds `e^{-t} ≤ 1` and
   `e^{-t} ≤ 1/t`.
 -/
-import BrownianImages.Defs
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import BrownianImages.Defs
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
+@[expose] public section
 
 namespace BrownianImages
 

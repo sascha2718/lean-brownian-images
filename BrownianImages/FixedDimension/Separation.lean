@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:fixed-dimension-separation`, the analytic part: the critical set `D_s` of `H̄_s` in
 `(0, 1/2)` has no accumulation point in `(0, 1/2]`, the mean is strictly monotone on every
@@ -12,7 +14,9 @@ non-constancy of the mean from `thm:fixed-dimension-range`.  The finiteness of `
 * `strictMono_or_anti_of_ne_zero`, `exists_eps_strictMono`: strict monotonicity.
 * `criticalSet_finite`: `thm:critical-set-finite`.
 -/
-import BrownianImages.FixedDimension.Range
+public import BrownianImages.FixedDimension.Range
+
+@[expose] public section
 
 namespace BrownianImages
 

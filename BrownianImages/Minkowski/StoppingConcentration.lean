@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:neighbourhood-concentration` of `sec:reconstruction`, under the strong open set
 condition.
@@ -28,11 +30,13 @@ normalising powers outside its variance and moment estimates.
   `eq:stopping-neighbourhood-variance`.
 * `IsNatural.tubeConcentration_of_sosc`: `thm:neighbourhood-concentration`.
 -/
-import Mathlib.Algebra.Order.Chebyshev
-import BrownianImages.Minkowski.StoppingOverlap
-import BrownianImages.Minkowski.ProfileL2
-import BrownianImages.Minkowski.DefectL2
-import BrownianImages.Minkowski.AlmostSure
+public import Mathlib.Algebra.Order.Chebyshev
+public import BrownianImages.Minkowski.StoppingOverlap
+public import BrownianImages.Minkowski.ProfileL2
+public import BrownianImages.Minkowski.DefectL2
+public import BrownianImages.Minkowski.AlmostSure
+
+@[expose] public section
 
 namespace BrownianImages
 

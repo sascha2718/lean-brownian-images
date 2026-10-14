@@ -1,3 +1,5 @@
+module
+
 /-
 Expectation-level assembly of the elementary tube-defect estimate.
 
@@ -7,7 +9,9 @@ step needed in the probabilistic argument: pairwise integrability propagates
 through the finite sum, makes the defect integrable, and permits integration
 of the pointwise inequality.  No independence or Brownian input is used here.
 -/
-import BrownianImages.Minkowski.OverlapTranslation
+public import BrownianImages.Minkowski.OverlapTranslation
+
+@[expose] public section
 
 namespace BrownianImages
 

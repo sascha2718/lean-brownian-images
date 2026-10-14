@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:fixed-dimension-analyticity`: for every `s ∈ (0,1)`, the cross-term integral
 `p ↦ ∫₀¹ δ^{-s} dC^×_δ(μ_p)` and `p ↦ H̄_s(p)` are real analytic on `(0,1)`.
@@ -17,8 +19,10 @@ of a holomorphic function to the real line is real analytic.
 * `crossLimit_eq_fixedMoment_of_mem`: `M_x = M_x(s)` on the real diameter.
 * `analyticAt_fixedMoment`, `analyticAt_fixedMean`: `thm:fixed-dimension-analyticity`.
 -/
-import BrownianImages.FixedDimension.ParameterLipschitz
-import BrownianImages.FixedDimension.LevelSumsDomain
+public import BrownianImages.FixedDimension.ParameterLipschitz
+public import BrownianImages.FixedDimension.LevelSumsDomain
+
+@[expose] public section
 
 namespace BrownianImages
 

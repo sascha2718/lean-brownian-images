@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:concentration`: `thm:cantor-application`, the second headline result of the paper,
 reduced to the endpoints it rests on.  The natural measure of the homogeneous system
@@ -17,8 +19,10 @@ satisfying the strong open set condition, and in particular from the paired meas
 * `homogeneous_application_pair_of_endpoints`: the named instance of its last sentence,
   on the same two hypotheses.
 -/
-import BrownianImages.Endpoints
-import BrownianImages.StoppingGeometry
+public import BrownianImages.Endpoints
+public import BrownianImages.StoppingGeometry
+
+@[expose] public section
 
 namespace BrownianImages
 

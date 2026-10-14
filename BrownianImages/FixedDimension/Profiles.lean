@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:fixed-dimension-profiles`, the mean and the non-lattice limit: for the natural measure
 `μ_p` of the system `x ↦ ax`, `x ↦ bx + 1 - b` with `a = p^{1/s}`, `b = q^{1/s}`, the Cesàro
@@ -19,12 +21,14 @@ in both cases: the renewal limits and lattice periodisation give the Cesàro mea
 * `fixedSystem_tendsto_avg_H`: `eq:fixed-dimension-mean`.
 * `fixedSystem_tendsto_H_nonLattice`: the non-lattice limit.
 -/
-import BrownianImages.FixedDimension.Natural
-import BrownianImages.FixedDimension.RealLevelSums
-import BrownianImages.Cesaro
-import BrownianImages.Multiplier
-import BrownianImages.Asymptotics
-import BrownianImages.PairDifference
+public import BrownianImages.FixedDimension.Natural
+public import BrownianImages.FixedDimension.RealLevelSums
+public import BrownianImages.Cesaro
+public import BrownianImages.Multiplier
+public import BrownianImages.Asymptotics
+public import BrownianImages.PairDifference
+
+@[expose] public section
 
 namespace BrownianImages
 

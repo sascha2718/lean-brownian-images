@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:renewal`: the theory of strongly separated self-similar IFSs on `[0,1]` and
 their natural `s`-dimensional measures.
@@ -29,8 +31,10 @@ proofs need beyond the definitions:
 * `renewalConv`, `renewalDefect`, `renewalMean`: the renewal data `ϑ * G`, `z = G - ϑ * G`
   and `m = ∑ p_i α_i` of `thm:non-lattice-limit`.
 -/
-import BrownianImages.Periodic
-import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+public import BrownianImages.Periodic
+public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+
+@[expose] public section
 
 namespace BrownianImages
 

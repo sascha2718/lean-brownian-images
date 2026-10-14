@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: the deterministic finite-cylinder
 approximation behind the last step of `thm:minkowski-reconstruction`.
@@ -6,7 +8,9 @@ This file separates the weak-convergence argument from the stochastic renewal es
 It compares the tube probability of a finite union with the tube probabilities of its
 pieces and quantifies localization of each piece at a chosen anchor.
 -/
-import BrownianImages.Minkowski.Localization
+public import BrownianImages.Minkowski.Localization
+
+@[expose] public section
 
 namespace BrownianImages
 

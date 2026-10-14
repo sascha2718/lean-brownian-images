@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:stopping-overlap` of `sec:renewal`, the combinatorial half: a finite family of
 closed intervals in which every point lies in at most `M` members can be partitioned
@@ -13,12 +15,14 @@ they are at most `M` intervals and some class is free.
 * `exists_interval_coloring`: the colouring, for intervals `Icc (a i) (b i)` indexed by
   a finite type.
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Card
-import Mathlib.Basic.Real.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Tactic.Linarith
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Disjoint
+public import Mathlib.Tactic.Linarith
+
+@[expose] public section
 
 namespace BrownianImages
 

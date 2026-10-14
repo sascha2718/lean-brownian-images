@@ -1,3 +1,5 @@
+module
+
 /-
 Assembly of the stopping-tree cover and Brownian scaling reduction for the
 upper half of `thm:neighbourhood-moments`.
@@ -7,10 +9,12 @@ this file and its imports.  The only analytic input left explicit in the final
 theorem is integrability of every positive moment of the normalized Brownian
 radius on `[0,1]`.
 -/
-import BrownianImages.Minkowski.Stopping
-import BrownianImages.Minkowski.BrownianMaximalReduction
-import BrownianImages.Minkowski.TubeMeanLower
-import BrownianImages.AhlforsRegular
+public import BrownianImages.Minkowski.Stopping
+public import BrownianImages.Minkowski.BrownianMaximalReduction
+public import BrownianImages.Minkowski.TubeMeanLower
+public import BrownianImages.AhlforsRegular
+
+@[expose] public section
 
 namespace BrownianImages
 

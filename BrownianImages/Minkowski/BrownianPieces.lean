@@ -1,8 +1,14 @@
-import BrownianImages.CompactImage
-import BrownianImages.Minkowski.BrownianScaling
-import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import BrownianImages.CompactImage
+public import BrownianImages.Minkowski.BrownianScaling
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
+public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Independence
+public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Measure.Prod
+
+@[expose] public section
 
 namespace BrownianImages
 

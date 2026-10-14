@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup`: the correlation integral of a Frostman measure.
 
@@ -8,8 +10,10 @@ and the only place the Frostman constant is used before `sec:variance`.
 * `phi_le`: `eq:correlation-frostman`, `Φ(δ) ≤ Aδ^s` for `0 < δ ≤ 1`.
 * `phi_nonneg`, `phi_mono`: the elementary properties used throughout.
 -/
-import BrownianImages.Defs
-import Mathlib.Probability.CDF
+public import BrownianImages.Defs
+public import Mathlib.Probability.CDF
+
+@[expose] public section
 
 namespace BrownianImages
 

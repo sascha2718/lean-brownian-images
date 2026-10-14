@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:concentration`: the normalised correlation integral `Yprofile` and the
 monotonicity that fills the grid in the proof of `thm:uniform-concentration`.
@@ -11,7 +13,9 @@ grid into uniform convergence on tails.
 * `Yprofile_le_of_le`: `Yprofile s ν u ≤ e^{2s(u-t)} Yprofile s ν t` for `t ≤ u`.
 * `monotone_fill`: `eq:monotone-fill`, the two-sided grid bound.
 -/
-import BrownianImages.Defs
+public import BrownianImages.Defs
+
+@[expose] public section
 
 namespace BrownianImages
 

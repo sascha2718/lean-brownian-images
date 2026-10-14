@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: the deterministic smoothed-neighbourhood construction used to recover an
 occupation measure from a nonempty compact image.
@@ -9,13 +11,15 @@ measure.  The results in this file establish that the cut-off is jointly continu
 and has strictly positive finite mass.  They also record the exact density formula for the
 normalized probability measure.
 -/
-import BrownianImages.WeakBorel
-import BrownianImages.CompactImage
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Topology.MetricSpace.Closeds
-import Mathlib.Topology.MetricSpace.Thickening
+public import BrownianImages.WeakBorel
+public import BrownianImages.CompactImage
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Topology.MetricSpace.Closeds
+public import Mathlib.Topology.MetricSpace.Thickening
+
+@[expose] public section
 
 namespace BrownianImages
 

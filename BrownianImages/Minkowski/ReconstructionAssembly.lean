@@ -1,3 +1,5 @@
+module
+
 /-
 End-to-end assembly of Minkowski reconstruction from the unconditional Brownian
 tube estimates, renewal limits, and generation-cylinder quotient argument.
@@ -6,8 +8,10 @@ The non-arithmetic branch is unconditional.  The arithmetic wrapper consumes the
 uniform periodic conclusion of the arithmetic renewal theorem; the separate
 discrete-renewal module is responsible for constructing that conclusion.
 -/
-import BrownianImages.Minkowski.GenerationRatio
-import BrownianImages.Minkowski.TubeEndpointAssembly
+public import BrownianImages.Minkowski.GenerationRatio
+public import BrownianImages.Minkowski.TubeEndpointAssembly
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 Finite-support discrete renewal theory for the arithmetic Brownian tube equation.
 
@@ -5,9 +7,11 @@ This file starts from `System.TubeArithmetic h`, extracts positive integer
 lattice steps, and develops the renewal-mass sequence used by the uniform
 arithmetic theorem in `Minkowski.TubeArithmeticRenewal`.
 -/
-import BrownianImages.Minkowski.TubeArithmeticRenewal
-import Mathlib.NumberTheory.FrobeniusNumber
-import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
+public import BrownianImages.Minkowski.TubeArithmeticRenewal
+public import Mathlib.NumberTheory.FrobeniusNumber
+public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
+
+@[expose] public section
 
 namespace BrownianImages
 

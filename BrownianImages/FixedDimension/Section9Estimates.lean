@@ -1,3 +1,5 @@
+module
+
 /-
 The estimates used in §9.3 (`sec:small-dimension`).
 
@@ -11,7 +13,9 @@ proved from the existing Lean library; the notebook is not an assumption or an i
 Notation: `fixedMoment s p` is J(p), `mainTerm s p` is J₀(p), `entropy p` is h(p),
 and `1 - Real.log p` is the factor `1 - log p`. The dimension s is fixed when differentiating.
 -/
-import BrownianImages.FixedDimension.Monotone
+public import BrownianImages.FixedDimension.Monotone
+
+@[expose] public section
 
 namespace BrownianImages.Section9Estimates
 

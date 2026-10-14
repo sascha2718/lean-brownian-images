@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: the abstract final passage from finite cylinder estimates to weak
 convergence of normalized tube probabilities.
@@ -7,8 +9,10 @@ fixed-generation tube-mass ratios, shrinking weighted cylinder diameters, and we
 the corresponding weighted atomic approximations.  This file contains only the deterministic
 two-scale limit argument.
 -/
-import BrownianImages.Minkowski.Cylinder
-import Mathlib.MeasureTheory.Measure.Portmanteau
+public import BrownianImages.Minkowski.Cylinder
+public import Mathlib.MeasureTheory.Measure.Portmanteau
+
+@[expose] public section
 
 namespace BrownianImages
 

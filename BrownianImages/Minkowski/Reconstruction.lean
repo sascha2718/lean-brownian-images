@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: the formal bridge from the
 analytic smoothed-neighbourhood limit to singularity of compact Brownian image laws.
@@ -33,13 +35,15 @@ constructing the whole measurable limit map.
   occupation-law singularity to compact-image-law singularity from pathwise convergence
   alone, the endpoint `audit_brownianImageLaw_mutuallySingular_of_pathwise`.
 -/
-import BrownianImages.CompactImage
-import BrownianImages.Minkowski.Tube
-import BrownianImages.Minkowski.Limit
-import BrownianImages.Minkowski.LimitClassifier
-import BrownianImages.Minkowski.System
-import BrownianImages.Minkowski.TubeConvergence
-import BrownianImages.Minkowski.CylinderConvergence
+public import BrownianImages.CompactImage
+public import BrownianImages.Minkowski.Tube
+public import BrownianImages.Minkowski.Limit
+public import BrownianImages.Minkowski.LimitClassifier
+public import BrownianImages.Minkowski.System
+public import BrownianImages.Minkowski.TubeConvergence
+public import BrownianImages.Minkowski.CylinderConvergence
+
+@[expose] public section
 
 namespace BrownianImages
 

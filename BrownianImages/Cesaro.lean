@@ -1,3 +1,5 @@
+module
+
 /-
 The Cesàro mean of the expected profile: for the natural measure of any system under the
 open set condition, `T⁻¹ ∫₀ᵀ H_μ^s → (∫₀^∞ φ)(∫ z)/m`, in the lattice and in the
@@ -19,9 +21,11 @@ formula `eq:h-definition`.
   functions apart, the passage from distinct means to `eq:profile-separation` in
   `thm:fixed-dimension-range` and `thm:fixed-dimension-separation`.
 -/
-import BrownianImages.KeyRenewalFourier
-import BrownianImages.Schief
-import BrownianImages.Kernel
+public import BrownianImages.KeyRenewalFourier
+public import BrownianImages.Schief
+public import BrownianImages.Kernel
+
+@[expose] public section
 
 namespace BrownianImages
 

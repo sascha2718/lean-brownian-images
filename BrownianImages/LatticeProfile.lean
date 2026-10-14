@@ -1,3 +1,5 @@
+module
+
 /-
 The general lattice branch of `thm:profile-asymptotics`: the periodic limit of `G`.
 The finite-delay renewal theorem already used for tube profiles applies to
@@ -6,10 +8,12 @@ Its uniform periodic limit gives a periodic limit for `G`, and Gaussian smoothin
 carries a vanishing error through `T`; `LatticeNonconstancy` assembles the branch
 with the non-constancy of the limit.
 -/
-import BrownianImages.NonLattice
-import BrownianImages.Schief
-import BrownianImages.Minkowski.TubeDiscreteRenewal
-import BrownianImages.Minkowski.GenerationRatio
+public import BrownianImages.NonLattice
+public import BrownianImages.Schief
+public import BrownianImages.Minkowski.TubeDiscreteRenewal
+public import BrownianImages.Minkowski.GenerationRatio
+
+@[expose] public section
 
 namespace BrownianImages
 

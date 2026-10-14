@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: notation for the raw and
 smoothed Brownian neighbourhoods and their logarithmically normalised profiles.
@@ -6,11 +8,13 @@ This file is deliberately definitional.  It gives the analytic lemmas of the pap
 single, literal Lean vocabulary while keeping the deterministic Hausdorff-space
 construction in `Minkowski.Tube` separate from the probabilistic estimates.
 -/
-import BrownianImages.CompactImage
-import BrownianImages.Minkowski.System
-import BrownianImages.Minkowski.TubeAlgebra
-import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
-import Mathlib.MeasureTheory.Measure.Prod
+public import BrownianImages.CompactImage
+public import BrownianImages.Minkowski.System
+public import BrownianImages.Minkowski.TubeAlgebra
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Measure.Prod
+
+@[expose] public section
 
 namespace BrownianImages
 

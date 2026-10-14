@@ -1,3 +1,5 @@
+module
+
 /-
 The Fourier analysis of the lattice limit of `G`, shared by `eq:fixed-dimension-periodic`
 and the lattice branch of `thm:profile-asymptotics`.
@@ -17,11 +19,13 @@ comes from `|Γ(1 - ζ)| ≤ Γ(2 - s)/|1 - ζ|`.
 * `latticeZeta`: the frequencies `ζ_k = s - 2πik/h` of `eq:fixed-dimension-periodic`.
 * `System.nonArithmetic_or_exists_lattice`: every system is non-lattice or has a span.
 -/
-import BrownianImages.Cesaro
-import BrownianImages.LatticeProfile
-import BrownianImages.FourierMultiplier
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.PSeries
+public import BrownianImages.Cesaro
+public import BrownianImages.LatticeProfile
+public import BrownianImages.FourierMultiplier
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.PSeries
+
+@[expose] public section
 
 namespace BrownianImages
 

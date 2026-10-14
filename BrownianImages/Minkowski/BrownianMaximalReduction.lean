@@ -1,3 +1,5 @@
+module
+
 /-
 Brownian scaling reduction for the maximal-oscillation input in
 `thm:neighbourhood-moments`.
@@ -10,9 +12,11 @@ same radius law as the image on `[0,1]`.  Consequently, the local estimate in
 the stopping-cover proof follows from one unit-interval moment, with the exact
 Brownian square-root scaling and no independence assumption.
 -/
-import BrownianImages.Minkowski.BrownianPieces
-import BrownianImages.Minkowski.BrownianCompactPieces
-import BrownianImages.Minkowski.TubeUpper
+public import BrownianImages.Minkowski.BrownianPieces
+public import BrownianImages.Minkowski.BrownianCompactPieces
+public import BrownianImages.Minkowski.TubeUpper
+
+@[expose] public section
 
 namespace BrownianImages
 

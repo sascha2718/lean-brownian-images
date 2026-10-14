@@ -1,3 +1,5 @@
+module
+
 /-
 Unconditional endpoint assembly for the Brownian tube estimates.
 
@@ -9,8 +11,10 @@ statements without an additional maximal-moment hypothesis.
 `thm:cross-piece-mass` in the pairwise overlap and multiple-counting defect bounds
 of `thm:neighbourhood-overlap`.
 -/
-import BrownianImages.Minkowski.TubeRenewalAssembly
-import BrownianImages.Minkowski.StoppingConcentration
+public import BrownianImages.Minkowski.TubeRenewalAssembly
+public import BrownianImages.Minkowski.StoppingConcentration
+
+@[expose] public section
 
 namespace BrownianImages
 

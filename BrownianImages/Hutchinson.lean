@@ -1,3 +1,5 @@
+module
+
 /-
 Internal proof infrastructure for the self-similar systems of `sec:renewal`.
 
@@ -22,10 +24,12 @@ push-forward of the Bernoulli measure with weights `p_i = r_i^s`.
 * `exists_unique_isNatural_homogeneousSystem`, `exists_unique_isNatural_pairSystem`: the
   two systems of `sec:renewal`.
 -/
-import BrownianImages.SelfSimilar
-import Mathlib.Probability.ProductMeasure
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import BrownianImages.SelfSimilar
+public import Mathlib.Probability.ProductMeasure
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+
+@[expose] public section
 
 namespace BrownianImages
 

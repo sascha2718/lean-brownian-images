@@ -1,3 +1,5 @@
+module
+
 /-
 `eq:fixed-dimension-periodic` of `thm:fixed-dimension-profiles`: in the lattice case the
 expected profile of the fixed-dimension family is asymptotic to the absolutely convergent
@@ -12,8 +14,10 @@ renewal equation in `LatticeFourier`, and the `O(k⁻²)` decay from
 * `fixedDimCoeff`, `summable_norm_fixedDimCoeff`: the coefficients and their decay.
 * `fixedSystem_periodic`: `eq:fixed-dimension-periodic`.
 -/
-import BrownianImages.FixedDimension.Profiles
-import BrownianImages.LatticeFourier
+public import BrownianImages.FixedDimension.Profiles
+public import BrownianImages.LatticeFourier
+
+@[expose] public section
 
 namespace BrownianImages
 

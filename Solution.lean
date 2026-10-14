@@ -1,3 +1,5 @@
+module
+
 /-
 Comparator solution file, and the formal statement of the paper: every numbered
 result of `BrownianImagesComplete.tex`, together with the displayed claims that a
@@ -13,9 +15,11 @@ statement against `Challenge.lean`, audits the axioms of the proofs, and replays
 them through the kernel.  For the listed endpoints the statement text must stay
 character-for-character identical to `Challenge.lean`.
 -/
-import BrownianImages
-import BrownianImages.Minkowski.Profile
-import BrownianImages.Minkowski.Reconstruction
+public import BrownianImages
+public import BrownianImages.Minkowski.Profile
+public import BrownianImages.Minkowski.Reconstruction
+
+@[expose] public section
 
 -- the statement text is frozen against `Challenge.lean`, so unused binders stay
 set_option linter.unusedVariables false

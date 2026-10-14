@@ -1,3 +1,5 @@
+module
+
 /-
 The renewal section of `BrownianImagesComplete.tex`: the non-lattice profile limit
 and its renewal representation, by the Fourier argument.
@@ -48,11 +50,13 @@ throughout the renewal proof; `docs/renewal-library.md` describes this interface
   `non_lattice_limit_of_integral_pos` are the intermediate forms, which isolate what the
   conclusion rests on.
 -/
-import BrownianImages.RenewalBridge
-import BrownianImages.Recursion
-import BrownianImages.Profile
-import BrownianImages.AhlforsRegular
-import BrownianImages.CrossPiece
+public import BrownianImages.RenewalBridge
+public import BrownianImages.Recursion
+public import BrownianImages.Profile
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.CrossPiece
+
+@[expose] public section
 
 namespace BrownianImages
 

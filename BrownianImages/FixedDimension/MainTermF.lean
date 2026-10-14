@@ -1,3 +1,5 @@
+module
+
 /-
 The function `f(x) = (eˣ - 1)^{-s}` of the proof of `thm:main-term-derivative`, with
 `g(x) = x f'(x)`: positivity and monotonicity, the bounds `f ≤ x^{-s}` and
@@ -9,7 +11,9 @@ The function `f(x) = (eˣ - 1)^{-s}` of the proof of `thm:main-term-derivative`,
 * `mainF_le_rpow`, `mainF_le_exp`, `abs_mainG_le`: the pointwise bounds.
 * `tendsto_mainF`, `tendsto_mainG`: the decay.
 -/
-import BrownianImages.FixedDimension.System
+public import BrownianImages.FixedDimension.System
+
+@[expose] public section
 
 namespace BrownianImages
 

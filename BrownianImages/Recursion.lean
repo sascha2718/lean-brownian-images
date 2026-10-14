@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:renewal-recursion` of `sec:renewal`: the self-similar recursion of the correlation
 integral and its normalised profile, `eq:correlation-recursion` and `eq:g-recursion`,
@@ -23,8 +25,10 @@ rescale to `Φ(δ/r_i)`, and the off-diagonal blocks are `Φ_×`.
 * `phi_recursion`, `g_recursion`: the two recursions below the separation gap, which
   the homogeneous analysis of `sec:renewal` uses.
 -/
-import BrownianImages.SelfSimilar
-import BrownianImages.Frostman
+public import BrownianImages.SelfSimilar
+public import BrownianImages.Frostman
+
+@[expose] public section
 
 namespace BrownianImages
 

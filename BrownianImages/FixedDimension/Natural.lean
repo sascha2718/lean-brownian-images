@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:small-dimension`, the moment `M_p(s) = 𝔼 Z_p^{-s}` with `X`, `Y` independent of law
 `μ_p`: the Bernoulli measure with weights `p`, `q` is the code-space measure of the
@@ -8,7 +10,9 @@ fixed-dimension system, the law of the coded point is its natural measure `μ_p`
 * `map_fixedCode_twoBern`: the law of the coded point is `μ_p`, by Hutchinson uniqueness.
 * `fixedMoment_eq_natural`: `M_p(s)` against `μ_p`.
 -/
-import BrownianImages.FixedDimension.System
+public import BrownianImages.FixedDimension.System
+
+@[expose] public section
 
 namespace BrownianImages
 

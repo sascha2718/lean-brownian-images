@@ -11,6 +11,9 @@ Mathlib and one another, with no dependency on the rest of that project. They li
 `41c45c6d72e979419e46224bb7b4be5cee31f2b5`, with `Renewal/LICENSE`, the top-level
 `NOTICE`, and a provenance header in each file.
 
+The vendored sources use Lean's module system. Public imports and exposed public
+definitions preserve the interfaces used by this project.
+
 ```
 Basic.lean  →  Abel.lean  ┐
 Kernel.lean               ├→  Sinc.lean  →  Approx.lean  →  Equation.lean

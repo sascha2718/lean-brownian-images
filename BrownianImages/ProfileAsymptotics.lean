@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:smoothing` of `BrownianImagesComplete.tex`: the correlation-integral
 consequence of `eq:hb-asymptotic` with its constant named.
@@ -13,7 +15,9 @@ carries the renewal constant `C_B` of `eq:gb-limit` through all three conclusion
 * `ProfileAsymptotics.non_lattice_correlation_limit_const`: the `μ_B` conclusion of
   `eq:hb-asymptotic` with the limit named, `C ∫₀^∞ φ` rather than some `L > 0`.
 -/
-import BrownianImages.Endpoints
+public import BrownianImages.Endpoints
+
+@[expose] public section
 
 namespace BrownianImages
 

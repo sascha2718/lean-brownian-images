@@ -1,3 +1,5 @@
+module
+
 /-
 The telescoping bound on the level sums with the Lipschitz hypothesis on the kernel required
 only on a set `D` containing every coded point, as in the proof of
@@ -6,7 +8,9 @@ disc of fixed radius.
 
 * `norm_levelSum_succ_sub_le_of_mem`: `|Λ^{(m+1)} - Λ^{(m)}| ≤ 4 L B^{2m+2} ρ^m`.
 -/
-import BrownianImages.FixedDimension.LevelSums
+public import BrownianImages.FixedDimension.LevelSums
+
+@[expose] public section
 
 namespace BrownianImages
 

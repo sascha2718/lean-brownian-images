@@ -1,3 +1,5 @@
+module
+
 /-
 The lower-bound half of `thm:neighbourhood-moments`.
 
@@ -10,12 +12,14 @@ correlation estimate.  Integrability of the smoothed neighbourhood is kept expli
 it is precisely the `q = 1` upper-moment input supplied by the other half of
 `thm:neighbourhood-moments`.
 -/
-import BrownianImages.Minkowski.CorrelationLower
-import BrownianImages.Minkowski.OverlapTranslation
-import BrownianImages.AhlforsRegular
-import BrownianImages.StoppingGeometry
-import BrownianImages.Concentration
-import BrownianImages.Endpoints
+public import BrownianImages.Minkowski.CorrelationLower
+public import BrownianImages.Minkowski.OverlapTranslation
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.StoppingGeometry
+public import BrownianImages.Concentration
+public import BrownianImages.Endpoints
+
+@[expose] public section
 
 namespace BrownianImages
 

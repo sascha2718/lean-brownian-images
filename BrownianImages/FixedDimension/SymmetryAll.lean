@@ -1,3 +1,5 @@
+module
+
 /-
 The symmetry `M_p = M_{1-p}` and `H̄_s(p) = H̄_s(1-p)` of `sec:fixed-dimension-separation`,
 for every `p ∈ (0,1)`: reflection in `1/2` takes `μ_p` to `μ_{1-p}` and preserves
@@ -10,8 +12,10 @@ with constant `s (1 - a - b)^{-s-1}`, so the level sums of `p` and `1 - p` diffe
 * `norm_levelSum_one_sub_sub_le'`: the level sums of `p` and `1 - p`.
 * `fixedMoment_symm`, `fixedMean_symm`: the symmetry.
 -/
-import BrownianImages.FixedDimension.RealLevelSums
-import BrownianImages.FixedDimension.Symmetry
+public import BrownianImages.FixedDimension.RealLevelSums
+public import BrownianImages.FixedDimension.Symmetry
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:homometric-example` of `sec:obstruction`: two distinct strongly separated
 self-similar measures with identical correlation integrals.
@@ -13,7 +15,9 @@ difference systems.
 * `digitFunA`, `digitFunB`, `homSystem`, `homSystem_stronglySeparated`: the two systems.
 * `reflect`, `conv_reflect_eq_map_sub`: the signed convolution `σ * σ̃` as a difference law.
 -/
-import BrownianImages.SelfSimilar
+public import BrownianImages.SelfSimilar
+
+@[expose] public section
 
 namespace BrownianImages
 

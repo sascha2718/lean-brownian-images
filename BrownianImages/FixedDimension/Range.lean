@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:fixed-dimension-range`: for every `s ∈ (0,1)`, `p ↦ H̄_s(p)` is continuous and strictly
 positive on `(0,1)`, and `H̄_s(p) → 0` as `p ↓ 0`; consequently the family contains an
@@ -13,8 +15,10 @@ stays bounded as `p ↓ 0`, while `pq/h(p) ≤ 1/log(1/p) → 0`.
 * `tendsto_fixedMean_zero`: the limit.
 * `exists_uncountable_injOn_fixedMean`: the uncountable subfamily.
 -/
-import BrownianImages.FixedDimension.Analyticity
-import BrownianImages.FixedDimension.Monotone
+public import BrownianImages.FixedDimension.Analyticity
+public import BrownianImages.FixedDimension.Monotone
+
+@[expose] public section
 
 namespace BrownianImages
 

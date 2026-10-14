@@ -1,3 +1,5 @@
+module
+
 /-
 The improper integrals of the proof of `thm:main-term-derivative`, for `T > 0`:
 `∫_T^∞ |f'| = f(T)`, `∫_T^∞ x f'' = f(T) + |g(T)|`, `∫_T^∞ g = -T f(T) - ∫_T^∞ f`,
@@ -10,8 +12,10 @@ The improper integrals of the proof of `thm:main-term-derivative`, for `T > 0`:
   `integral_abs_mainG'_le`: the four integrals.
 * `mul_integral_mainF_le`: `s ∫_T^∞ f ≤ 2.3`.
 -/
-import BrownianImages.FixedDimension.MainTermF
-import BrownianImages.FixedDimension.RiemannSum
+public import BrownianImages.FixedDimension.MainTermF
+public import BrownianImages.FixedDimension.RiemannSum
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:obstruction`: the two homometric measures of `thm:homometric-example`.
 The paper denotes these source measures by `μ_{D_A}`, `μ_{D_B}`; the internal
@@ -35,9 +37,11 @@ identity and `Hutchinson.eq_of_selfSimilar` identifies them.
 * `homometric_example`: `thm:homometric-example`, the endpoint
   `audit_homometric_example`.
 -/
-import BrownianImages.AhlforsRegular
-import BrownianImages.Homometric
-import BrownianImages.Hutchinson
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.Homometric
+public import BrownianImages.Hutchinson
+
+@[expose] public section
 
 namespace BrownianImages
 

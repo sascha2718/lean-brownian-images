@@ -1,3 +1,5 @@
+module
+
 /-
 `eq:initial-symbol-decomposition` in integral form, for the proof of `thm:remainder-derivative`: with `N`
 the number of initial ones of the coding of `Y`, `Y = 1 - b^N + a b^N Y''`, so
@@ -11,7 +13,9 @@ level sum of the kernel `φ_n` at the real parameter `p` is the Bernoulli double
 * `levelSum_kernel_ofReal`, `tendsto_integral_kernel_codeSeq`: the level sums at `p` and
   their limit `g_n`.
 -/
-import BrownianImages.FixedDimension.Kernel
+public import BrownianImages.FixedDimension.Kernel
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,6 +1,8 @@
+module
+
 /-
-A Lean formalisation of "Correlation integrals and Minkowski reconstruction of planar
-Brownian images" (`BrownianImagesComplete.tex`).
+A Lean formalisation of "Distinguishing sets and measures from their planar Brownian
+images" (`BrownianImagesComplete.tex`).
 
 The library is organised along the paper.  `Solution.lean` carries the formal statement
 of every numbered result of the document, and `Challenge.lean` restates the headline
@@ -288,137 +290,139 @@ with `a = p^{1/s}`, `b = q^{1/s}` and `s` fixed:
 * `FixedDimension.Laws`: the singularity of the image-measure and compact-image laws for
   parameters with distinct means.
 -/
-import BrownianImages.Defs
-import BrownianImages.Occupation
-import BrownianImages.Empirical
-import BrownianImages.Frostman
-import BrownianImages.Kernel
-import BrownianImages.Periodic
-import BrownianImages.SelfSimilar
-import BrownianImages.Renewal
-import BrownianImages.RenewalBridge
-import BrownianImages.Homometric
-import BrownianImages.FourPoint
-import BrownianImages.Multiplier
-import BrownianImages.GaussianFourPoint
-import BrownianImages.WeakBorel
-import BrownianImages.Profile
-import BrownianImages.Recursion
-import BrownianImages.Asymptotics
-import BrownianImages.FourierMultiplier
-import BrownianImages.Smoothing
-import BrownianImages.UniformContinuity
-import BrownianImages.JointMeasurability
-import BrownianImages.Reduction
-import BrownianImages.AhlforsRegular
-import BrownianImages.OpenSet
-import BrownianImages.Schief
-import BrownianImages.IntervalColoring
-import BrownianImages.StoppingGeometry
-import BrownianImages.CrossPiece
-import BrownianImages.Hutchinson
-import BrownianImages.PairDifference
-import BrownianImages.HomogeneousNonconstancy
-import BrownianImages.ExceptionalParameters
-import BrownianImages.Rescaling
-import BrownianImages.FourPointBound
-import BrownianImages.BlockMass
-import BrownianImages.FourPointIntegral
-import BrownianImages.Concentration
-import BrownianImages.Endpoints
-import BrownianImages.VarianceCovariance
-import BrownianImages.MainTheorem
-import BrownianImages.BaseFive
-import BrownianImages.HomometricMeasures
-import BrownianImages.ProfileAsymptotics
-import BrownianImages.Separation
-import BrownianImages.CantorApplication
-import BrownianImages.KeyRenewalFourier
-import BrownianImages.NonLattice
-import BrownianImages.CompactImage
-import BrownianImages.Minkowski.System
-import BrownianImages.Minkowski.Tube
-import BrownianImages.Minkowski.TubeAlgebra
-import BrownianImages.Minkowski.Profile
-import BrownianImages.Minkowski.CorrelationLower
-import BrownianImages.Minkowski.BrownianScaling
-import BrownianImages.Minkowski.BrownianPieces
-import BrownianImages.Minkowski.BrownianCompactPieces
-import BrownianImages.Minkowski.Localization
-import BrownianImages.Minkowski.Cylinder
-import BrownianImages.Minkowski.CylinderConvergence
-import BrownianImages.Minkowski.OverlapTranslation
-import BrownianImages.Minkowski.GaussianIncrement
-import BrownianImages.Minkowski.OverlapProbability
-import BrownianImages.Minkowski.BrownianOverlapGeometry
-import BrownianImages.Minkowski.DefectExpectation
-import BrownianImages.Minkowski.TubeMeanLower
-import BrownianImages.Minkowski.TubeUpper
-import BrownianImages.Minkowski.BrownianMaximalReduction
-import BrownianImages.Minkowski.BrownianMaximalMoment
-import BrownianImages.Minkowski.Stopping
-import BrownianImages.Minkowski.StoppingTubeUpper
-import BrownianImages.Minkowski.TubeMeanContinuity
-import BrownianImages.Minkowski.TubeMomentAssembly
-import BrownianImages.Minkowski.TubeRenewal
-import BrownianImages.Minkowski.StoppingOverlap
-import BrownianImages.Minkowski.TubeRenewalLimit
-import BrownianImages.Minkowski.TubeRenewalAssembly
-import BrownianImages.Minkowski.L2Recurrence
-import BrownianImages.Minkowski.DefectL2
-import BrownianImages.Minkowski.ProfileL2
-import BrownianImages.Minkowski.AlmostSure
-import BrownianImages.Minkowski.StoppingConcentration
-import BrownianImages.Minkowski.Ratio
-import BrownianImages.Minkowski.TubeEndpointAssembly
-import BrownianImages.Minkowski.TubeArithmeticRenewal
-import BrownianImages.Minkowski.TubeDiscreteRenewal
-import BrownianImages.Minkowski.Limit
-import BrownianImages.Minkowski.LimitClassifier
-import BrownianImages.Minkowski.TubeConvergence
-import BrownianImages.Minkowski.Reconstruction
-import BrownianImages.Minkowski.Generation
-import BrownianImages.Minkowski.GenerationScaling
-import BrownianImages.Minkowski.GenerationRatio
-import BrownianImages.Minkowski.ReconstructionAssembly
-import BrownianImages.Minkowski.HomogeneousReconstruction
-import BrownianImages.Minkowski.FullEndpointAssembly
-import BrownianImages.Minkowski.CantorSetApplication
-import BrownianImages.Minkowski.BaseFiveApplication
-import BrownianImages.LatticeProfile
-import BrownianImages.LatticeNonconstancy
-import BrownianImages.Cesaro
-import BrownianImages.LatticeFourier
-import BrownianImages.BernoulliCoding
-import BrownianImages.FixedDimension.System
-import BrownianImages.FixedDimension.Natural
-import BrownianImages.FixedDimension.Entropy
-import BrownianImages.FixedDimension.RiemannSum
-import BrownianImages.FixedDimension.MainTermF
-import BrownianImages.FixedDimension.MainTermIntegrals
-import BrownianImages.FixedDimension.MainTerm
-import BrownianImages.FixedDimension.ComplexCoding
-import BrownianImages.FixedDimension.LevelSums
-import BrownianImages.FixedDimension.LevelSumsGeneral
-import BrownianImages.FixedDimension.LevelSumsExpectation
-import BrownianImages.FixedDimension.LevelSumsTheorem
-import BrownianImages.FixedDimension.Kernel
-import BrownianImages.FixedDimension.Decomposition
-import BrownianImages.FixedDimension.RemainderBound
-import BrownianImages.FixedDimension.RemainderSup
-import BrownianImages.FixedDimension.Remainder
-import BrownianImages.FixedDimension.SecondDerivative
-import BrownianImages.FixedDimension.Symmetry
-import BrownianImages.FixedDimension.Monotone
-import BrownianImages.FixedDimension.Section9Estimates
-import BrownianImages.FixedDimension.RealLevelSums
-import BrownianImages.FixedDimension.SymmetryAll
-import BrownianImages.FixedDimension.LevelSumsDomain
-import BrownianImages.FixedDimension.ParameterLipschitz
-import BrownianImages.FixedDimension.Analyticity
-import BrownianImages.FixedDimension.Range
-import BrownianImages.FixedDimension.Separation
-import BrownianImages.FixedDimension.Profiles
-import BrownianImages.FixedDimension.ProfilesLattice
-import BrownianImages.FixedDimension.Correlation
-import BrownianImages.FixedDimension.Laws
+public import BrownianImages.Defs
+public import BrownianImages.Occupation
+public import BrownianImages.Empirical
+public import BrownianImages.Frostman
+public import BrownianImages.Kernel
+public import BrownianImages.Periodic
+public import BrownianImages.SelfSimilar
+public import BrownianImages.Renewal
+public import BrownianImages.RenewalBridge
+public import BrownianImages.Homometric
+public import BrownianImages.FourPoint
+public import BrownianImages.Multiplier
+public import BrownianImages.GaussianFourPoint
+public import BrownianImages.WeakBorel
+public import BrownianImages.Profile
+public import BrownianImages.Recursion
+public import BrownianImages.Asymptotics
+public import BrownianImages.FourierMultiplier
+public import BrownianImages.Smoothing
+public import BrownianImages.UniformContinuity
+public import BrownianImages.JointMeasurability
+public import BrownianImages.Reduction
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.OpenSet
+public import BrownianImages.Schief
+public import BrownianImages.IntervalColoring
+public import BrownianImages.StoppingGeometry
+public import BrownianImages.CrossPiece
+public import BrownianImages.Hutchinson
+public import BrownianImages.PairDifference
+public import BrownianImages.HomogeneousNonconstancy
+public import BrownianImages.ExceptionalParameters
+public import BrownianImages.Rescaling
+public import BrownianImages.FourPointBound
+public import BrownianImages.BlockMass
+public import BrownianImages.FourPointIntegral
+public import BrownianImages.Concentration
+public import BrownianImages.Endpoints
+public import BrownianImages.VarianceCovariance
+public import BrownianImages.MainTheorem
+public import BrownianImages.BaseFive
+public import BrownianImages.HomometricMeasures
+public import BrownianImages.ProfileAsymptotics
+public import BrownianImages.Separation
+public import BrownianImages.CantorApplication
+public import BrownianImages.KeyRenewalFourier
+public import BrownianImages.NonLattice
+public import BrownianImages.CompactImage
+public import BrownianImages.Minkowski.System
+public import BrownianImages.Minkowski.Tube
+public import BrownianImages.Minkowski.TubeAlgebra
+public import BrownianImages.Minkowski.Profile
+public import BrownianImages.Minkowski.CorrelationLower
+public import BrownianImages.Minkowski.BrownianScaling
+public import BrownianImages.Minkowski.BrownianPieces
+public import BrownianImages.Minkowski.BrownianCompactPieces
+public import BrownianImages.Minkowski.Localization
+public import BrownianImages.Minkowski.Cylinder
+public import BrownianImages.Minkowski.CylinderConvergence
+public import BrownianImages.Minkowski.OverlapTranslation
+public import BrownianImages.Minkowski.GaussianIncrement
+public import BrownianImages.Minkowski.OverlapProbability
+public import BrownianImages.Minkowski.BrownianOverlapGeometry
+public import BrownianImages.Minkowski.DefectExpectation
+public import BrownianImages.Minkowski.TubeMeanLower
+public import BrownianImages.Minkowski.TubeUpper
+public import BrownianImages.Minkowski.BrownianMaximalReduction
+public import BrownianImages.Minkowski.BrownianMaximalMoment
+public import BrownianImages.Minkowski.Stopping
+public import BrownianImages.Minkowski.StoppingTubeUpper
+public import BrownianImages.Minkowski.TubeMeanContinuity
+public import BrownianImages.Minkowski.TubeMomentAssembly
+public import BrownianImages.Minkowski.TubeRenewal
+public import BrownianImages.Minkowski.StoppingOverlap
+public import BrownianImages.Minkowski.TubeRenewalLimit
+public import BrownianImages.Minkowski.TubeRenewalAssembly
+public import BrownianImages.Minkowski.L2Recurrence
+public import BrownianImages.Minkowski.DefectL2
+public import BrownianImages.Minkowski.ProfileL2
+public import BrownianImages.Minkowski.AlmostSure
+public import BrownianImages.Minkowski.StoppingConcentration
+public import BrownianImages.Minkowski.Ratio
+public import BrownianImages.Minkowski.TubeEndpointAssembly
+public import BrownianImages.Minkowski.TubeArithmeticRenewal
+public import BrownianImages.Minkowski.TubeDiscreteRenewal
+public import BrownianImages.Minkowski.Limit
+public import BrownianImages.Minkowski.LimitClassifier
+public import BrownianImages.Minkowski.TubeConvergence
+public import BrownianImages.Minkowski.Reconstruction
+public import BrownianImages.Minkowski.Generation
+public import BrownianImages.Minkowski.GenerationScaling
+public import BrownianImages.Minkowski.GenerationRatio
+public import BrownianImages.Minkowski.ReconstructionAssembly
+public import BrownianImages.Minkowski.HomogeneousReconstruction
+public import BrownianImages.Minkowski.FullEndpointAssembly
+public import BrownianImages.Minkowski.CantorSetApplication
+public import BrownianImages.Minkowski.BaseFiveApplication
+public import BrownianImages.LatticeProfile
+public import BrownianImages.LatticeNonconstancy
+public import BrownianImages.Cesaro
+public import BrownianImages.LatticeFourier
+public import BrownianImages.BernoulliCoding
+public import BrownianImages.FixedDimension.System
+public import BrownianImages.FixedDimension.Natural
+public import BrownianImages.FixedDimension.Entropy
+public import BrownianImages.FixedDimension.RiemannSum
+public import BrownianImages.FixedDimension.MainTermF
+public import BrownianImages.FixedDimension.MainTermIntegrals
+public import BrownianImages.FixedDimension.MainTerm
+public import BrownianImages.FixedDimension.ComplexCoding
+public import BrownianImages.FixedDimension.LevelSums
+public import BrownianImages.FixedDimension.LevelSumsGeneral
+public import BrownianImages.FixedDimension.LevelSumsExpectation
+public import BrownianImages.FixedDimension.LevelSumsTheorem
+public import BrownianImages.FixedDimension.Kernel
+public import BrownianImages.FixedDimension.Decomposition
+public import BrownianImages.FixedDimension.RemainderBound
+public import BrownianImages.FixedDimension.RemainderSup
+public import BrownianImages.FixedDimension.Remainder
+public import BrownianImages.FixedDimension.SecondDerivative
+public import BrownianImages.FixedDimension.Symmetry
+public import BrownianImages.FixedDimension.Monotone
+public import BrownianImages.FixedDimension.Section9Estimates
+public import BrownianImages.FixedDimension.RealLevelSums
+public import BrownianImages.FixedDimension.SymmetryAll
+public import BrownianImages.FixedDimension.LevelSumsDomain
+public import BrownianImages.FixedDimension.ParameterLipschitz
+public import BrownianImages.FixedDimension.Analyticity
+public import BrownianImages.FixedDimension.Range
+public import BrownianImages.FixedDimension.Separation
+public import BrownianImages.FixedDimension.Profiles
+public import BrownianImages.FixedDimension.ProfilesLattice
+public import BrownianImages.FixedDimension.Correlation
+public import BrownianImages.FixedDimension.Laws
+
+@[expose] public section

@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:neighbourhood-renewal`: the internal non-arithmetic renewal limit that gives
 asymptotic shift invariance of the mean Brownian tube profile. The paper places the
@@ -15,8 +17,10 @@ integrability of the cutoff forcing, which consists of a bounded boundary term o
 a finite interval and the negative expected multiple-counting defect on the tail.
 No renewal limit is asserted from integrability of the defect alone.
 -/
-import BrownianImages.KeyRenewalFourier
-import BrownianImages.Minkowski.TubeRenewal
+public import BrownianImages.KeyRenewalFourier
+public import BrownianImages.Minkowski.TubeRenewal
+
+@[expose] public section
 
 namespace BrownianImages
 

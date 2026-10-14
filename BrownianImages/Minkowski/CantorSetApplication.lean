@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:cantor-set-application`: almost-sure distinguishability of the compact Brownian
 image of the homogeneous attractor from that of any non-arithmetic attractor of the same
@@ -15,10 +17,12 @@ Borel reconstruction maps to singularity of the compact-image laws themselves.
 * `homogeneous_brownianImage_application_pair_unconditional`: its paired instance under
   `eq:non-lattice`, the endpoint `audit_cantor_set_application_pair`.
 -/
-import BrownianImages.Minkowski.HomogeneousReconstruction
-import BrownianImages.Minkowski.ReconstructionAssembly
-import BrownianImages.Minkowski.FullEndpointAssembly
-import BrownianImages.NonLattice
+public import BrownianImages.Minkowski.HomogeneousReconstruction
+public import BrownianImages.Minkowski.ReconstructionAssembly
+public import BrownianImages.Minkowski.FullEndpointAssembly
+public import BrownianImages.NonLattice
+
+@[expose] public section
 
 namespace BrownianImages
 

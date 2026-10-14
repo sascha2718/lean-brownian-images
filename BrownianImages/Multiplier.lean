@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:smoothing-injective` of `sec:smoothing`: the Fourier multipliers of the Gaussian
 smoothing operator `T`.
@@ -27,10 +29,12 @@ called `gammaMult` internally. The evaluation and non-vanishing are proved here.
 * `integral_kern_eq_Gamma`: `∫₀^∞ φ = 2^{-s} Γ(1-s)`, the multiplier at `k = 0`, which is
   the constant of `eq:fixed-dimension-mean`.
 -/
-import BrownianImages.Defs
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import BrownianImages.Defs
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+
+@[expose] public section
 
 namespace BrownianImages
 

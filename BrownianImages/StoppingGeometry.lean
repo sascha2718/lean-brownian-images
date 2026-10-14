@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:stopping-overlap` of `sec:renewal`: the geometry of a stopping family under the
 open set condition. The module also proves the classical Ahlfors regularity of the
@@ -20,11 +22,13 @@ stopped.  This module adds what the open set condition gives that tree.
 * `OpenSetCondition.exists_isFrostman`, `OpenSetCondition.exists_isAhlforsClosed`: the
   natural measure is `s`-Ahlfors regular, hence `s`-Frostman.
 -/
-import BrownianImages.OpenSet
-import BrownianImages.IntervalColoring
-import BrownianImages.AhlforsRegular
-import BrownianImages.Recursion
-import BrownianImages.Minkowski.Stopping
+public import BrownianImages.OpenSet
+public import BrownianImages.IntervalColoring
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.Recursion
+public import BrownianImages.Minkowski.Stopping
+
+@[expose] public section
 
 namespace BrownianImages
 

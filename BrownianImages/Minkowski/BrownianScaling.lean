@@ -1,4 +1,10 @@
-import BrownianImages.Defs
+module
+
+public import BrownianImages.Defs
+public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
+
+@[expose] public section
 
 namespace BrownianImages
 

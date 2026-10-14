@@ -1,3 +1,5 @@
+module
+
 /-
 The general analytic part of `thm:level-sums`, for an arbitrary holomorphic kernel
 on `U × D × D`. The derivative assumptions are converted to the Lipschitz estimate
@@ -8,8 +10,10 @@ used by the telescoping argument; the resulting limit is uniform on the whole of
 * `levelSums_holomorphic`: uniform convergence, holomorphy and the exact bound in
   `eq:level-sum-bound`, with no restriction to the kernels used later in the paper.
 -/
-import BrownianImages.FixedDimension.LevelSumsDomain
-import Mathlib.Analysis.Calculus.MeanValue
+public import BrownianImages.FixedDimension.LevelSumsDomain
+public import Mathlib.Analysis.Calculus.MeanValue
+
+@[expose] public section
 
 namespace BrownianImages
 

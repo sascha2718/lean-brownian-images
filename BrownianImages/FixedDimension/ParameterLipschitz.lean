@@ -1,3 +1,5 @@
+module
+
 /-
 The dependence of the contractions and of the coded points on the parameter, in the proof of
 `thm:fixed-dimension-analyticity`: on a disc `|z - p₀| ≤ r` around a real `p₀ ∈ (0,1)`, the
@@ -10,7 +12,9 @@ and every coded point moves by at most `C|z - p₀|`, `C = L(R+1)/(1-γ₀)`, `R
 * `norm_ca_le_gamma1`, `norm_cb_le_gamma1`: the moduli on the disc.
 * `norm_cpointSeq_sub_le`: `|x_w(z) - x_w(p₀)| ≤ C|z - p₀|`.
 -/
-import BrownianImages.FixedDimension.RealLevelSums
+public import BrownianImages.FixedDimension.RealLevelSums
+
+@[expose] public section
 
 namespace BrownianImages
 

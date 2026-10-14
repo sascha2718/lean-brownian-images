@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:introduction` and `sec:setup` of `BrownianImagesComplete.tex`: the objects the
 paper is phrased in, collected so that every later module speaks the same language.
@@ -41,10 +43,12 @@ The direct expected profile and the invariance predicates for the two named meas
 have their counterparts in `Solution.lean`, which proves their equivalence with the
 objects used by the library.
 -/
-import Mathlib.Probability.BrownianMotion.Basic
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Probability.BrownianMotion.Basic
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.NumberTheory.Real.Irrational
+
+@[expose] public section
 
 namespace BrownianImages
 

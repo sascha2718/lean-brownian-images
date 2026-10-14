@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:smoothing` of `BrownianImagesComplete.tex`, `thm:non-lattice-separation`: two
 non-arithmetic systems whose renewal constants of `eq:g-non-lattice-limit` differ have
@@ -19,8 +21,10 @@ mechanically.
 * `non_lattice_separation_of_main_of_limit`: `thm:non-lattice-separation`, on those two
   inputs.
 -/
-import BrownianImages.Asymptotics
-import BrownianImages.StoppingGeometry
+public import BrownianImages.Asymptotics
+public import BrownianImages.StoppingGeometry
+
+@[expose] public section
 
 namespace BrownianImages
 

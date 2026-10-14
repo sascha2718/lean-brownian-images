@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: localization of the
 normalized smoothed tube measure near a compact set.
@@ -12,7 +14,9 @@ appearing in the paper's bounded-Lipschitz argument.
 * `integral_tubeProbability_sub_anchor_le`: a Lipschitz test differs from its value
   at an anchor in the compact set by at most `K (r + diam F)` after tube averaging.
 -/
-import BrownianImages.Minkowski.TubeAlgebra
+public import BrownianImages.Minkowski.TubeAlgebra
+
+@[expose] public section
 
 namespace BrownianImages
 

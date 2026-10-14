@@ -1,3 +1,5 @@
+module
+
 /-
 Brownian scaling for arbitrary finite-generation cylinders.
 
@@ -7,8 +9,10 @@ the corresponding sum of half-logarithmic renewal delays, and the natural produc
 weight.  Its Brownian image therefore has the law of the full Brownian image at the
 delayed scale, multiplied by that weight after tube normalization.
 -/
-import BrownianImages.Minkowski.Generation
-import BrownianImages.Minkowski.TubeRenewal
+public import BrownianImages.Minkowski.Generation
+public import BrownianImages.Minkowski.TubeRenewal
+
+@[expose] public section
 
 namespace BrownianImages
 

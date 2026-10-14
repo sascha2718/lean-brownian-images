@@ -1,3 +1,5 @@
+module
+
 /-
 The countable exceptional set in `thm:cantor-application`.
 
@@ -7,7 +9,9 @@ The logarithmic ratio determines the similarity dimension on `(0,1)`: with
 `λ ↦ log 2 / log (1/λ)` is injective on `(0,1/2)`, so the corresponding parameter set
 is countable as well.
 -/
-import BrownianImages.SelfSimilar
+public import BrownianImages.SelfSimilar
+
+@[expose] public section
 
 namespace BrownianImages
 

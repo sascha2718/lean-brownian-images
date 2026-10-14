@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup` of `BrownianImagesComplete.tex`: the exact rescaling `eq:smoothing`,
 `S_μ(r) = r^{2s} H_μ^s(log(1/r))`.
@@ -21,12 +23,14 @@ followed by the dilation `η ↦ r²η`, and both are unconditional identities.
   `thm:profile-asymptotics` for `μ_A`, on `eq:smoothing` and the periodic profile
   `G̃_A` as explicit hypotheses.
 -/
-import BrownianImages.Profile
-import BrownianImages.Kernel
-import BrownianImages.Asymptotics
-import BrownianImages.Smoothing
-import BrownianImages.FourierMultiplier
-import Mathlib.MeasureTheory.Integral.Layercake
+public import BrownianImages.Profile
+public import BrownianImages.Kernel
+public import BrownianImages.Asymptotics
+public import BrownianImages.Smoothing
+public import BrownianImages.FourierMultiplier
+public import Mathlib.MeasureTheory.Integral.Layercake
+
+@[expose] public section
 
 namespace BrownianImages
 

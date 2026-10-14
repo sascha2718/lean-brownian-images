@@ -1,3 +1,5 @@
+module
+
 /-
 The singularity consequences of `sec:fixed-dimension-family` and
 `sec:fixed-dimension-separation`: two parameters of the fixed-dimension family with distinct
@@ -11,10 +13,12 @@ uncountable subfamily of pairwise singular laws.
 * `fixedSystem_occupationLaw_mutuallySingular`: `Law(BM_*μ_{p₁}) ⊥ Law(BM_*μ_{p₂})`.
 * `fixedSystem_brownianImageLaw_mutuallySingular`: `Law(BM(K_{p₁})) ⊥ Law(BM(K_{p₂}))`.
 -/
-import BrownianImages.FixedDimension.Profiles
-import BrownianImages.MainTheorem
-import BrownianImages.Minkowski.FullEndpointAssembly
-import BrownianImages.Cesaro
+public import BrownianImages.FixedDimension.Profiles
+public import BrownianImages.MainTheorem
+public import BrownianImages.Minkowski.FullEndpointAssembly
+public import BrownianImages.Cesaro
+
+@[expose] public section
 
 namespace BrownianImages
 

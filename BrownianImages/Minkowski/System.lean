@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: the deterministic data of the
 first-level pieces used by Minkowski reconstruction.
@@ -8,8 +10,10 @@ first-level pieces used by Minkowski reconstruction.
 * `System.halfLogRatio`, `System.tubeWeight`, `tubeExponent`: the quantities
   `α_i/2`, `p_i` and `2 - 2s` of `sec:reconstruction`.
 -/
-import BrownianImages.SelfSimilar
-import Mathlib.Topology.MetricSpace.Closeds
+public import BrownianImages.SelfSimilar
+public import Mathlib.Topology.MetricSpace.Closeds
+
+@[expose] public section
 
 namespace BrownianImages
 

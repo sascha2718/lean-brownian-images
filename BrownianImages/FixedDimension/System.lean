@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:fixed-dimension-family`: the two-contraction family of fixed dimension `s`, with
 contractions `λ₁ = p^{1/s}` and `λ₂ = q^{1/s}`, `q = 1 - p`, so that `λ₁^s + λ₂^s = 1`, and the
@@ -18,7 +20,9 @@ Internal comments using `Z_p` and `M_p(s)` denote this distance and `fixedMoment
 The paper introduces no such notation and uses `J(p)` in `sec:fixed-dimension-separation`.
 Its maps `S₁`, `S₂` and symbols `1`, `2` correspond to indices `0`, `1` of `Fin 2`.
 -/
-import BrownianImages.BernoulliCoding
+public import BrownianImages.BernoulliCoding
+
+@[expose] public section
 
 namespace BrownianImages
 

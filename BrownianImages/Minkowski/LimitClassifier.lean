@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: Borel classification of the
 limit of a measurable sequence without constructing the limit as a measurable map.
@@ -12,8 +14,10 @@ The proof is by Borel induction.  For an open set `U`, membership of the limit i
 is detected by eventual positive distance from `Uᶜ`.  Complements and countable
 unions become complements and countable unions of the classifiers.
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+@[expose] public section
 
 namespace BrownianImages
 

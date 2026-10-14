@@ -1,3 +1,5 @@
+module
+
 /-
 The deterministic translation identity behind the tube-overlap estimate.
 
@@ -8,8 +10,10 @@ translation parameter into the product of the two tube areas.  The final
 bounded-density estimate is the form used after conditioning on all random
 variables except the relative translation.
 -/
-import BrownianImages.Minkowski.Profile
-import Mathlib.Analysis.Convolution
+public import BrownianImages.Minkowski.Profile
+public import Mathlib.Analysis.Convolution
+
+@[expose] public section
 
 namespace BrownianImages
 

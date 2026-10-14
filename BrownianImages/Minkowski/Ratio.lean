@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: the final scalar ratio argument behind
 `eq:cylinder-neighbourhood-ratio`.
@@ -8,7 +10,9 @@ asymptotically equal, and the denominator mean stays uniformly positive, then th
 quotient tends to one.  This file isolates that argument from both renewal theory and
 Brownian scaling.
 -/
-import BrownianImages.Minkowski.Profile
+public import BrownianImages.Minkowski.Profile
+
+@[expose] public section
 
 namespace BrownianImages
 

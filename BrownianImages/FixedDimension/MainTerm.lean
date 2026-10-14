@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:main-term-derivative`: the main term `J₀(p) = ∑_{n≥0} p qⁿ (1 - b^{n+1})^{-s}` of
 `eq:main-term` equals `(e^{sT(p)} - 1) S(T(p))`, where `T(p) = log(1/b)`
@@ -15,8 +17,10 @@ and `T'(p)` explicit throughout.
 * `mainTerm_eq`, `hasDerivAt_mainTerm`: composition with `T(p) = fixedT s p`.
 * `exists_hasDerivAt_mainTerm`: the derivative bound of `thm:main-term-derivative`.
 -/
-import BrownianImages.FixedDimension.MainTermIntegrals
-import BrownianImages.FixedDimension.Entropy
+public import BrownianImages.FixedDimension.MainTermIntegrals
+public import BrownianImages.FixedDimension.Entropy
+
+@[expose] public section
 
 namespace BrownianImages
 

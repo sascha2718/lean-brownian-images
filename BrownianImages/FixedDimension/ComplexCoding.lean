@@ -1,3 +1,5 @@
+module
+
 /-
 Complex coded points for `thm:level-sums` and its applications in
 `thm:fixed-dimension-analyticity`, `thm:remainder-derivative` and
@@ -17,7 +19,9 @@ The paper's symbols `1`, `2` and maps `S₁`, `S₂` correspond to the internal
 * `sum_weightSeq`, `sum_norm_weightSeq`: `∑_u P_u = 1` and `∑_u |P_u| = (|z| + |1-z|)^m`.
 * `cpointSeq_ofReal`: for real parameters the complex coded point is the library's.
 -/
-import BrownianImages.FixedDimension.System
+public import BrownianImages.FixedDimension.System
+
+@[expose] public section
 
 namespace BrownianImages
 

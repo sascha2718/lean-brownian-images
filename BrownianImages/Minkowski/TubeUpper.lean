@@ -1,3 +1,5 @@
+module
+
 /-
 The deterministic and finite-moment assembly behind the upper half of
 `thm:neighbourhood-moments`.
@@ -18,9 +20,11 @@ Thus a later Brownian input only has to supply the individual oscillation
 moments and the stopping cover; no geometric or integration step remains
 hidden in that input.
 -/
-import BrownianImages.Minkowski.OverlapTranslation
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import BrownianImages.Minkowski.OverlapTranslation
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+
+@[expose] public section
 
 namespace BrownianImages
 

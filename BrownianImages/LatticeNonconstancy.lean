@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:lattice-nonconvergence` of `sec:renewal`, and with it the non-constancy of the
 periodic limit in the lattice branch of `thm:profile-asymptotics`.
@@ -28,9 +30,11 @@ more application of self-similarity inside the cross term turns the Lipschitz bo
 * `lattice_profile_asymptotics_nonconstant`: the lattice branch of
   `thm:profile-asymptotics`, with the non-constancy of the periodic limit.
 -/
-import BrownianImages.LatticeProfile
-import BrownianImages.FourierMultiplier
-import BrownianImages.HomogeneousNonconstancy
+public import BrownianImages.LatticeProfile
+public import BrownianImages.FourierMultiplier
+public import BrownianImages.HomogeneousNonconstancy
+
+@[expose] public section
 
 namespace BrownianImages
 

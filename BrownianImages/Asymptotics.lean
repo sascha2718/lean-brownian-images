@@ -1,3 +1,5 @@
+module
+
 /-
 The smoothing estimates of `sec:smoothing`: `eq:hb-asymptotic` in the non-lattice
 case and `eq:ha-asymptotic` for the homogeneous lattice system. The general lattice
@@ -16,10 +18,12 @@ Neither lattice statement needs a Frostman hypothesis on `μ_A`: boundedness of 
 from `hagree` above `log 3` and `Φ ≤ 1` below it, and measurability from monotonicity
 of `Φ`.
 -/
-import BrownianImages.Profile
-import BrownianImages.Kernel
-import BrownianImages.Periodic
-import BrownianImages.SelfSimilar
+public import BrownianImages.Profile
+public import BrownianImages.Kernel
+public import BrownianImages.Periodic
+public import BrownianImages.SelfSimilar
+
+@[expose] public section
 
 namespace BrownianImages
 

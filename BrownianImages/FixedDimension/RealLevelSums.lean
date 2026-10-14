@@ -1,3 +1,5 @@
+module
+
 /-
 The level sums at a real parameter, for every `p ∈ (0,1)` and `s ∈ (0,1)`: the cross kernel
 at coded points is bounded by `(1 - a - b)^{-s}`, the level sum `Λ^{(m)}(p)` is the double
@@ -10,7 +12,9 @@ measures converge weakly to `μ_p`" of `thm:fixed-dimension-analyticity`.
 * `levelSum_cross_ofReal'`: the level sum as a double integral.
 * `tendsto_levelSum_ofReal`: `Λ^{(m)}(p) → M_p(s)`.
 -/
-import BrownianImages.FixedDimension.SecondDerivative
+public import BrownianImages.FixedDimension.SecondDerivative
+
+@[expose] public section
 
 namespace BrownianImages
 

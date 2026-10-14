@@ -1,3 +1,5 @@
+module
+
 /-
 The symmetry `M_p = M_{1-p}` used in the proof of `thm:small-dimension-monotone`, in the form
 `M_{1/2}' = 0`.
@@ -14,7 +16,9 @@ derivative of the moment is the real part of a complex derivative that vanishes 
 * `crossLimit_one_sub`: `M_{1-z} = M_z` on the disc around `1/2`.
 * `deriv_fixedMoment_half`: `M_{1/2}' = 0`.
 -/
-import BrownianImages.FixedDimension.SecondDerivative
+public import BrownianImages.FixedDimension.SecondDerivative
+
+@[expose] public section
 
 namespace BrownianImages
 

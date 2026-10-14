@@ -1,3 +1,5 @@
+module
+
 /-
 The internal arithmetic renewal limit used for the shift relation in
 `thm:neighbourhood-renewal`.
@@ -9,10 +11,12 @@ the shifted discrete renewal limit, Tannery's theorem in the Banach space of
 continuous functions on one period gives uniform phase convergence.  The
 exponentially decaying tube defect supplies the summable lattice envelope.
 -/
-import BrownianImages.Minkowski.TubeRenewalLimit
-import BrownianImages.Periodic
-import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import BrownianImages.Minkowski.TubeRenewalLimit
+public import BrownianImages.Periodic
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+
+@[expose] public section
 
 namespace BrownianImages
 

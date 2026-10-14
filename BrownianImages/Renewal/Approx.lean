@@ -1,3 +1,5 @@
+module
+
 /-
 Vendored into `BrownianImages` from
   https://github.com/BennyAvelin/AbsorptionCutoff
@@ -14,7 +16,9 @@ Modifications to the vendored subset:
      `charFun_ne_one_of_nonlattice` and `norm_charFun_lt_one_of_nonlattice` remain
      for the proved comparison and the two-atom counterexample;
   3. unused helper declarations were removed from `Basic.lean`, `Equation.lean`
-     and `Kernel.lean`; related documentation was updated.
+     and `Kernel.lean`; related documentation was updated;
+  4. Lean module headers, public imports and exposed public definitions preserve
+     the retained interfaces under the module system.
 See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
@@ -22,7 +26,9 @@ Copyright (c) 2026 Benny Avelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benny Avelin
 -/
-import BrownianImages.Renewal.Sinc
+public import BrownianImages.Renewal.Sinc
+
+@[expose] public section
 
 /-!
 # Bandlimited approximation in the directly-Riemann-integrable norm

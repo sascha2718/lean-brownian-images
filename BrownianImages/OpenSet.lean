@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:introduction` and `sec:renewal` of `BrownianImagesComplete.tex`: the open set
 condition for a self-similar system on `[0,1]`.
@@ -18,7 +20,9 @@ stopping-family and cross-piece arguments of `sec:renewal` consume.
   set condition, with the `ρ/3`-neighbourhood of the attractor as feasible set.  This
   is how the two named systems of `sec:renewal` satisfy it.
 -/
-import BrownianImages.Hutchinson
+public import BrownianImages.Hutchinson
+
+@[expose] public section
 
 namespace BrownianImages
 

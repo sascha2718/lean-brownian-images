@@ -1,3 +1,5 @@
+module
+
 /-
 `eq:fixed-dimension-correlation` of `thm:fixed-dimension-profiles`: for the natural measure
 `μ_p` of the fixed-dimension system and every `r > 0`,
@@ -17,8 +19,10 @@ and `0 ≤ T ≤ 1` bounds the remainder by `∑_{j+k=m} C(m,j) p^{2j} q^{2k} = 
 * `sum_antidiagonal_succ_pascal`: the Pascal step on the antidiagonals.
 * `fixedSystem_correlation`: `eq:fixed-dimension-correlation`.
 -/
-import BrownianImages.FixedDimension.Profiles
-import BrownianImages.Reduction
+public import BrownianImages.FixedDimension.Profiles
+public import BrownianImages.Reduction
+
+@[expose] public section
 
 namespace BrownianImages
 

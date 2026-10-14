@@ -11,6 +11,14 @@ it is argued. [`../paper-correspondence.yaml`](../paper-correspondence.yaml) is 
 structured statement mapping used alongside the Palomar metadata. Its source hashes
 detect drift and do not establish mathematical equivalence.
 
+The current snapshot includes manuscript changes through commit `3b40222`, reviewed on
+14 October 2026 against the previous snapshot `93b440f`. All 32 numbered statements and
+their proofs are unchanged. The revised introduction adds background on correlation
+dimension and local density ratios, and comparisons with dynamical reconstruction and
+hitting-time statistics. These passages are outside the formalisation and have explicit
+prose entries in the manifest. The attribution, acknowledgements, AI disclosure and
+bibliography changes do not alter the nine headline claims.
+
 The paper uses `C_δ(μ)` for the correlation integral of the time measure as well as
 `C_r(ν)` for a planar measure. The library retains the internal names `Phi μ δ` and
 `corr ν r`, respectively. `Phi` uses a closed distance inequality, which agrees with
@@ -240,8 +248,10 @@ and compact-image separation; strict monotonicity also gives the occupation conc
 
 The older homogeneous, paired-example and countability endpoints remain proved in
 Solution as special cases and internal results. They are no longer Challenge endpoints.
-Run `./comparator-audit.sh` for the local development check. The separate Palomar
-preflight workflow uses the registry verifier on an immutable repository commit.
+Run `./comparator-audit.sh` on Linux for the sandboxed audit, or pass
+`--local-unsandboxed` for a macOS development check. Both use the project toolchain's
+Comparator and replay through Lean, NanoDa and con-ron. The separate Palomar preflight
+workflow uses the registry verifier on an immutable repository commit.
 
 **The correspondence is not one endpoint per theorem.** Several results appear both
 as a bundled endpoint carrying the paper's conclusion and as individual endpoints

@@ -1,3 +1,5 @@
+module
+
 /-
 Bernoulli measures on two-letter words, the coding measures of `sec:fixed-dimension-family`
 and `sec:small-dimension`: the letter law `(1-v)δ₀ + vδ₁`, the product measure on words,
@@ -15,8 +17,10 @@ consumes, in `eq:initial-symbol-decomposition` and in the level sums `Λ_n^{(m)}
 * `integrable_of_abs_le`, `iterated_integral_mono`: a bounded measurable function is
   integrable, and iterated integrals of bounded integrands are monotone.
 -/
-import BrownianImages.Hutchinson
-import Mathlib.MeasureTheory.Integral.Prod
+public import BrownianImages.Hutchinson
+public import Mathlib.MeasureTheory.Integral.Prod
+
+@[expose] public section
 
 namespace BrownianImages
 

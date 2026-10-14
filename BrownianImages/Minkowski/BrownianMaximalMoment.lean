@@ -1,3 +1,5 @@
+module
+
 /-
 Maximal moments of the Brownian image on the unit interval.
 
@@ -7,13 +9,15 @@ only almost everywhere measurable, so we use their canonical measurable
 versions.  The weak Markov property then identifies the conditional mean of
 each next increment with zero.
 -/
-import BrownianImages.Minkowski.BrownianMaximalReduction
-import Mathlib.Probability.BorelCantelli
-import Mathlib.Probability.Martingale.OptionalStopping
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.Analysis.SpecialFunctions.Pow.Integral
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import BrownianImages.Minkowski.BrownianMaximalReduction
+public import Mathlib.Probability.BorelCantelli
+public import Mathlib.Probability.Martingale.OptionalStopping
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.Analysis.SpecialFunctions.Pow.Integral
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
+@[expose] public section
 
 namespace BrownianImages
 

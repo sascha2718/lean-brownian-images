@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:renewal`: the continuous periodic extension `G̃_A`.
 
@@ -16,7 +18,9 @@ lattice case needs.
   identity supplies the endpoint condition and the extension agrees with the original
   function on the whole half line `[a, ∞)`.
 -/
-import BrownianImages.Defs
+public import BrownianImages.Defs
+
+@[expose] public section
 
 namespace BrownianImages
 

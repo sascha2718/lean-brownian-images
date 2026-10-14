@@ -22,7 +22,7 @@ related_formalizations:
     relationship: "adapts"
     note: "Six renewal-theory modules are vendored from commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5. The non-lattice hypothesis is weakened to the Feller condition used by the proofs; see NOTICE and docs/renewal-library.md."
 status:
-  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 136 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. The general level-sum lemma is proved for arbitrary holomorphic kernels, with uniform convergence, its exact bound and the natural-measure expectation identity. The explicit lattice periodisation formula in the renewal proof is not separately formalised. Counts exclude the nine intentional Challenge theorem holes."
+  scope: "All nine numbered results of Section 1 are independent Challenge endpoints with proofs in Solution. The wider Solution contains 136 audit declarations. No literature theorem is assumed as an axiom or as a hypothesis of these nine endpoints. The general level-sum lemma is proved for arbitrary holomorphic kernels, with uniform convergence, its exact bound and the natural-measure expectation identity. The explicit lattice periodisation formula in the renewal proof is not separately formalised. The introductory discussion of correlation dimension and local densities, and the comparisons with dynamical reconstruction and hitting-time statistics, are background outside the formalisation. Counts exclude the nine intentional Challenge theorem holes."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -90,17 +90,17 @@ automation:
     - method: "agent"
       models: ["GPT-6 (OpenAI)"]
       framework: "Codex"
-      tool_setup: "Proof development, Section 1 statement correspondence, challenge review and submission metadata."
+      tool_setup: "Proof development, Section 1 statement correspondence, challenge review, module-system migration and submission metadata."
     - method: "manual"
       tool_setup: "Mathematical arguments, author edits and review of statements."
   spend_usd: "not tracked"
-  notes: "The manuscript describes the use of Claude and Codex under the Leiden Declaration. No independent human review of the complete formal development is claimed here."
+  notes: "Claude and Codex assisted Lean development. The manuscript's Leiden Declaration disclosure records extensive LLM drafting of Lean code, light copy-editing, and calculations in the two-contraction section first obtained with LLMs and later checked using symbolic calculation software. No independent human review of the complete formal development is claimed here."
 fidelity:
   divergences: "The Challenge defines the expected profile by Brownian expectation and the two-contraction attractor and natural measure by their invariance equations. The solution proves that these choices are the library's objects and that their Cesàro means exist. Monotonicity between critical points is stated on each open interval without a critical point. Compact sets use the Hausdorff hyperspace, and the triangular cut-off measures use its Borel structure. The internal time-correlation integral uses a closed inequality, equivalent to the manuscript's strict inequality by atomlessness. Lean uses dyadic summation for the four-point bound and the sufficient numerical bound 0.754<0.88 instead of the manuscript's 0.62 in the small-parameter argument. Supporting-result qualifications are recorded in paper-correspondence.yaml and docs/correspondence.md."
 review:
   status: "agent-reviewed"
   reviewers: ["Codex (OpenAI, GPT-6 agent)"]
-  notes: "The nine Section 1 statements were compared with the manuscript. The wider mapping incorporates the existing correspondence notes and their qualifications. This records agent review, not independent human review or Palomar acceptance. Mechanical verification of an uploaded commit is a separate Palomar run."
+  notes: "The nine Section 1 statements were compared with the manuscript. On 2026-10-14, manuscript changes from 93b440f to 3b40222 were reviewed: all 32 numbered statements and the proofs were unchanged, while new introductory background is explicitly excluded in paper-correspondence.yaml. The wider mapping incorporates the existing correspondence notes and their qualifications. This records agent review, not independent human review or Palomar acceptance. Mechanical verification of an uploaded commit is a separate Palomar run."
 alignment:
   namespace: "BrownianImages"
   statements:

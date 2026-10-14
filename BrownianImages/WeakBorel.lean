@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:introduction`: the space `𝒫(ℝ²)` the paper takes laws on.
 
@@ -17,9 +19,11 @@ pseudo-metrisable, hence sequential, and
 Nothing here is special to `ℝ²`: the argument needs only second countability, pseudo
 metrisability, and `BorelSpace`.
 -/
-import BrownianImages.Defs
-import Mathlib.MeasureTheory.Measure.Portmanteau
-import Mathlib.Topology.Metrizable.Basic
+public import BrownianImages.Defs
+public import Mathlib.MeasureTheory.Measure.Portmanteau
+public import Mathlib.Topology.Metrizable.Basic
+
+@[expose] public section
 
 namespace BrownianImages
 

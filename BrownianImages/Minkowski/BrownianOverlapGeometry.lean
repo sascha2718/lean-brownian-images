@@ -1,3 +1,5 @@
+module
+
 /-
 Pathwise geometry relating actual affine Brownian cylinders to the centered
 configuration used in the Gaussian gap estimate.
@@ -7,7 +9,9 @@ centering the left cylinder at its right endpoint and the right cylinder at
 its left endpoint.  Common translation invariance then identifies that
 configuration exactly with the overlap of the original Brownian images.
 -/
-import BrownianImages.Minkowski.OverlapProbability
+public import BrownianImages.Minkowski.OverlapProbability
+
+@[expose] public section
 
 namespace BrownianImages
 

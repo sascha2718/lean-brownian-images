@@ -1,3 +1,5 @@
+module
+
 /-
 Continuity of the mean normalized Brownian tube profile.
 
@@ -7,8 +9,10 @@ whole normalized profile by a fixed multiple of one nearby profile value.
 Thus pointwise continuity passes through expectation as soon as the profile is
 integrable at every real logarithmic scale.
 -/
-import BrownianImages.Minkowski.Profile
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import BrownianImages.Minkowski.Profile
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 namespace BrownianImages
 

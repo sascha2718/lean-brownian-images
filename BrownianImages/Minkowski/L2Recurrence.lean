@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`, `thm:neighbourhood-concentration` of
 `BrownianImagesComplete.tex`: the Hilbert-space calculation behind
@@ -10,9 +12,11 @@
   `centeredL2Norm_eq_of_identDistrib`: the triangle inequality, the centring
   contraction, and invariance under almost sure equality and equality in law.
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Moments.Variance
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.Moments.Variance
+
+@[expose] public section
 
 namespace BrownianImages
 

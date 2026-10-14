@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: compactness and Borel
 detectability of convergence of the deterministic tube-probability sequence.
@@ -9,9 +11,12 @@ probability measures.  Consequently the sequence converges weakly exactly when
 its image in the compatible Levy--Prokhorov metric is Cauchy.  The latter is a
 Borel property of `F`, by the usual countable Cauchy criterion.
 -/
-import BrownianImages.CompactImage
-import BrownianImages.Minkowski.Tube
-import Mathlib.MeasureTheory.Measure.Prokhorov
+public import BrownianImages.CompactImage
+public import BrownianImages.Minkowski.Tube
+public import Mathlib.MeasureTheory.Measure.Prokhorov
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+
+@[expose] public section
 
 namespace BrownianImages
 

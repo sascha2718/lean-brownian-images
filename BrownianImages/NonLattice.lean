@@ -1,3 +1,5 @@
+module
+
 /-
 The results of `BrownianImagesComplete.tex` that rest on `thm:non-lattice-limit`, which
 `non_lattice_limit` of `KeyRenewalFourier` supplies.
@@ -8,12 +10,14 @@ The results of `BrownianImagesComplete.tex` that rest on `thm:non-lattice-limit`
 * `homogeneous_application`, `homogeneous_application_pair`: `thm:cantor-application`,
   in general and for the paired measure `μ_B`.
 -/
-import BrownianImages.KeyRenewalFourier
-import BrownianImages.ProfileAsymptotics
-import BrownianImages.Separation
-import BrownianImages.CantorApplication
-import BrownianImages.MainTheorem
-import BrownianImages.ExceptionalParameters
+public import BrownianImages.KeyRenewalFourier
+public import BrownianImages.ProfileAsymptotics
+public import BrownianImages.Separation
+public import BrownianImages.CantorApplication
+public import BrownianImages.MainTheorem
+public import BrownianImages.ExceptionalParameters
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup` and `sec:variance` of `BrownianImagesComplete.tex`.
 
@@ -14,8 +16,10 @@
   through `IsPlanarBrownian.map_increment`, `gaussian_prod_disc` and
   `integral_radial`.
 -/
-import BrownianImages.Frostman
-import BrownianImages.Occupation
+public import BrownianImages.Frostman
+public import BrownianImages.Occupation
+
+@[expose] public section
 
 namespace BrownianImages
 

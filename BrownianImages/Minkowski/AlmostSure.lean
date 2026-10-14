@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: the Borel--Cantelli passage used at the end of the
 Minkowski tube-concentration argument.
@@ -7,9 +9,11 @@ for the centred tube profile along every fixed grid phase.  This file records
 the exact probability-theoretic conclusion independently of how those bounds
 are obtained.
 -/
-import BrownianImages.Minkowski.Profile
-import Mathlib.Probability.BorelCantelli
-import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+public import BrownianImages.Minkowski.Profile
+public import Mathlib.Probability.BorelCantelli
+public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+
+@[expose] public section
 
 namespace BrownianImages
 

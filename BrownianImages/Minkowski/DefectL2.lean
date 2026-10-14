@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:neighbourhood-concentration` of `sec:reconstruction`: the interpolation that turns
 a first-moment and a third-moment bound for a non-negative random variable into an `L²`
@@ -6,7 +8,9 @@ error `F_{r,u}`, whose expectation decays and whose third moment stays bounded.
 
 * `memLp_two_and_lpNorm_le_of_first_third`: the interpolation.
 -/
-import BrownianImages.Minkowski.L2Recurrence
+public import BrownianImages.Minkowski.L2Recurrence
+
+@[expose] public section
 
 namespace BrownianImages
 

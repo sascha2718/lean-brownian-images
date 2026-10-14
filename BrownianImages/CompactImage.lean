@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: the compact Brownian image as a random point of the Hausdorff
 hyperspace.
@@ -6,9 +8,11 @@ For a nonempty compact set `K`, uniform perturbation of a continuous map moves i
 image by at most the same amount in Hausdorff distance.  This gives continuity, and
 hence measurability, of the map from a continuous path to its compact image.
 -/
-import BrownianImages.JointMeasurability
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.MetricSpace.Closeds
+public import BrownianImages.JointMeasurability
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.Topology.MetricSpace.Closeds
+
+@[expose] public section
 
 namespace BrownianImages
 
@@ -291,8 +295,8 @@ read through `Real.toNNReal`, as for `occupation`; away from continuous paths th
 value is the singleton `{0}`. -/
 noncomputable def brownianImage (W : ℝ≥0 → Ω → Plane)
     (K : NonemptyCompacts ℝ) (ω : Ω) : NonemptyCompacts Plane :=
-  compactImageProcess (T := K) (0 : Plane)
-    (fun t : K ↦ W t.1.toNNReal) ω
+  let f := ContinuousMap.mkD (fun t : K ↦ W t.1.toNNReal ω) (ContinuousMap.const K 0)
+  (⊤ : NonemptyCompacts K).map f f.continuous
 
 omit [MeasurableSpace Ω] in
 /-- On a continuous sample path, `brownianImage` is exactly the set-theoretic
@@ -301,8 +305,9 @@ theorem coe_brownianImage_of_continuous (K : NonemptyCompacts ℝ) {ω : Ω}
     (hω : Continuous (fun t : ℝ≥0 ↦ W t ω)) :
     (brownianImage W K ω : Set Plane) =
       (fun t : ℝ ↦ W t.toNNReal ω) '' K := by
-  rw [brownianImage, compactImageProcess,
-    coe_compactImageOfFunction_of_continuous]
+  change (compactImageOfFunction (T := K) (0 : Plane)
+    (fun t : K ↦ W t.1.toNNReal ω) : Set Plane) = _
+  rw [coe_compactImageOfFunction_of_continuous]
   · ext x
     constructor
     · rintro ⟨t, rfl⟩

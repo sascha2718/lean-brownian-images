@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:variance`: the deterministic geometry behind the four-point estimate.
 
@@ -13,7 +15,9 @@ lower bounds on a dyadic block `E_{β,η}` that `thm:endpoint-block-mass` feeds 
 * `varScale_div_tendsto_zero`: the last assertion of `thm:variance`, that each of the
   three variance scales `eq:variance-scale` is `o(r^{4s})`.
 -/
-import BrownianImages.Defs
+public import BrownianImages.Defs
+
+@[expose] public section
 
 namespace BrownianImages
 

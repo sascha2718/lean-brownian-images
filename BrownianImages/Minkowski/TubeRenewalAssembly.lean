@@ -1,3 +1,5 @@
+module
+
 /-
 The non-arithmetic mean-renewal conclusion assembled from the tube moments and
 the overlap estimate of `thm:neighbourhood-overlap`.
@@ -6,9 +8,11 @@ The only remaining hypothesis is the unit-interval Brownian maximal-moment
 input.  The cutoff, direct Riemann integrability, renewal equation, positivity,
 and exponential defect tail are all discharged by the imported modules.
 -/
-import BrownianImages.Minkowski.TubeMomentAssembly
-import BrownianImages.Minkowski.StoppingOverlap
-import BrownianImages.Minkowski.TubeRenewalLimit
+public import BrownianImages.Minkowski.TubeMomentAssembly
+public import BrownianImages.Minkowski.StoppingOverlap
+public import BrownianImages.Minkowski.TubeRenewalLimit
+
+@[expose] public section
 
 namespace BrownianImages
 

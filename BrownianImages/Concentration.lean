@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:concentration` of `BrownianImagesComplete.tex`: the tail of the concentration
 chain, from the variance bound of `thm:variance` to `thm:uniform-concentration` and
@@ -28,12 +30,14 @@ is not a random variable and no variance bound carries information.
   its measurability and the disjointness `eq:profile-separation` forces.
 * `main_of_uniform_concentration`: `thm:main`.
 -/
-import BrownianImages.Empirical
-import BrownianImages.Occupation
-import BrownianImages.UniformContinuity
-import BrownianImages.WeakBorel
-import Mathlib.Probability.Moments.Variance
-import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+public import BrownianImages.Empirical
+public import BrownianImages.Occupation
+public import BrownianImages.UniformContinuity
+public import BrownianImages.WeakBorel
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:concentration` of `BrownianImagesComplete.tex`: the chain that carries the
 four-point variance bound to the headline result, and `thm:main` itself.
@@ -11,9 +13,11 @@ measurability of the occupation law from `JointMeasurability`.
 * `uniform_concentration`: `thm:uniform-concentration`.
 * `main`: `thm:main`.
 -/
-import BrownianImages.VarianceCovariance
-import BrownianImages.Concentration
-import BrownianImages.JointMeasurability
+public import BrownianImages.VarianceCovariance
+public import BrownianImages.Concentration
+public import BrownianImages.JointMeasurability
+
+@[expose] public section
 
 namespace BrownianImages
 

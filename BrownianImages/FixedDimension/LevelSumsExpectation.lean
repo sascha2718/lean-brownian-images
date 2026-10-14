@@ -1,10 +1,14 @@
+module
+
 /-
 The real-parameter expectation identity in `thm:level-sums`, for an arbitrary
 continuous kernel with the stated coordinate Lipschitz bound. The open convex
 domain need only contain the finite coded points: it contains `[0,1)`, and the
 natural measure gives zero mass to the possibly missing endpoint `1`.
 -/
-import BrownianImages.FixedDimension.Profiles
+public import BrownianImages.FixedDimension.Profiles
+
+@[expose] public section
 
 namespace BrownianImages
 

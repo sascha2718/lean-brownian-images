@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:introduction`: the occupation measure `ν = W_*μ` as a random point of `𝒫(ℝ²)`.
 
@@ -14,7 +16,9 @@ with `IsBrownianReal`.
 * `IsPlanarBrownian.ae_isProbabilityMeasure_occupation`: almost surely the occupation
   measure of a probability measure has total mass one.
 -/
-import BrownianImages.Defs
+public import BrownianImages.Defs
+
+@[expose] public section
 
 namespace BrownianImages
 

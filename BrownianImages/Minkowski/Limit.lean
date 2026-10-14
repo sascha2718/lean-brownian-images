@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: measurability of the weak limit
 used to define the reconstruction map.
@@ -13,8 +15,10 @@ spaces applies to the weak limit.
 * `MinkowskiLimit.exists_common_measurable_reconstruction_of_ae_hasLimit`: use the sum
   of two laws to choose one map which is a limit under both.
 -/
-import BrownianImages.WeakBorel
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+public import BrownianImages.WeakBorel
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 The holomorphic remainder in the proof of `thm:remainder-derivative`: on the disc
 `|z - p| ≤ p/2`, the series
@@ -14,7 +16,9 @@ Here `discB p = 1 + p/5` majorises the paper's `B`, and
 * `differentiableOn_complexDelta`, `continuousOn_complexDelta`, `norm_complexDelta_le`,
   `norm_deriv_complexDelta_le`: holomorphy, the sup bound and Cauchy's estimate.
 -/
-import BrownianImages.FixedDimension.Kernel
+public import BrownianImages.FixedDimension.Kernel
+
+@[expose] public section
 
 namespace BrownianImages
 

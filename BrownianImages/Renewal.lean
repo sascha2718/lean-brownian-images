@@ -1,3 +1,5 @@
+module
+
 /-
 The renewal layer, vendored.
 
@@ -27,9 +29,11 @@ affine lattice.  Under `FellerNonlattice`, which `ϑ` satisfies exactly under
 `eq:non-lattice` (`System.nonArithmetic_iff_charFun_ne_one`), the theorem applies, and
 `KeyRenewalFourier` and `Minkowski.TubeRenewalLimit` consume it in that form.
 -/
-import BrownianImages.Renewal.Basic
-import BrownianImages.Renewal.Abel
-import BrownianImages.Renewal.Kernel
-import BrownianImages.Renewal.Sinc
-import BrownianImages.Renewal.Approx
-import BrownianImages.Renewal.Equation
+public import BrownianImages.Renewal.Basic
+public import BrownianImages.Renewal.Abel
+public import BrownianImages.Renewal.Kernel
+public import BrownianImages.Renewal.Sinc
+public import BrownianImages.Renewal.Approx
+public import BrownianImages.Renewal.Equation
+
+@[expose] public section

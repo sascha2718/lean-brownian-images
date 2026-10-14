@@ -1,3 +1,5 @@
+module
+
 /-
 Riemann-sum bounds used in `thm:main-term-derivative`: for a `C¹` function `h` on
 `[T, ∞)` with `h` and `h'` integrable, the sum `∑_{m≥1} T h(mT)` differs from `∫_T^∞ h`
@@ -10,7 +12,9 @@ by at most `T ∫_T^∞ |h'|`; for a non-negative antitone `h`, the sum lies bet
 * `abs_tsum_sub_integral_le`: the summed estimate, with the summability it needs.
 * `tsum_le_integral_add`: the antitone bounds.
 -/
-import Mathlib
+public import Mathlib
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 The consequence drawn after `thm:base-five-profiles` in `sec:examples`: the occupation
 laws of the two base-five natural measures are mutually singular by `thm:main`, and the
@@ -9,9 +11,11 @@ the Borel reconstruction map of `thm:minkowski-reconstruction`.
 * `baseFive_brownianImageLaw_mutuallySingular`: `Law(BM(K₁)) ⊥ Law(BM(K₂))`, the endpoint
   `audit_base_five_image_laws`.
 -/
-import BrownianImages.BaseFive
-import BrownianImages.MainTheorem
-import BrownianImages.Minkowski.FullEndpointAssembly
+public import BrownianImages.BaseFive
+public import BrownianImages.MainTheorem
+public import BrownianImages.Minkowski.FullEndpointAssembly
+
+@[expose] public section
 
 namespace BrownianImages
 

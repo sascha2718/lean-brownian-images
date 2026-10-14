@@ -1,3 +1,5 @@
+module
+
 /-
 `eq:neighbourhood-correlation-lower-bound`: deterministic ball-mass and correlation
 estimates behind the lower bound for the area of a compact set's tube.
@@ -6,9 +8,11 @@ The proof is kept first in `ENNReal`.  This makes Tonelli's theorem available
 without provisional integrability assumptions.  Finiteness is introduced only at
 the final conversion to the real-valued `tubeArea` used by the paper.
 -/
-import BrownianImages.Minkowski.Profile
-import Mathlib.MeasureTheory.Integral.MeanInequalities
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import BrownianImages.Minkowski.Profile
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+
+@[expose] public section
 
 namespace BrownianImages
 

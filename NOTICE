@@ -21,7 +21,9 @@ BrownianImages/Renewal/
       (3) unused helpers are omitted from Basic.lean, Equation.lean and Kernel.lean,
           including the discounted renewal-measure API and the upstream scalar
           limit and angular-reconstruction wrappers. Related documentation is
-          updated, including two corrections to comments on non-lattice laws.
+          updated, including two corrections to comments on non-lattice laws;
+      (4) sources use Lean's module system, with public imports and exposed public
+          definitions to preserve the retained library interfaces.
     Each file carries a provenance header. See docs/renewal-library.md for the
     retained mathematical interfaces and the non-lattice distinction.
 

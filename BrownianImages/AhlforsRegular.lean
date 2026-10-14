@@ -1,3 +1,5 @@
+module
+
 /-
 Internal proof infrastructure for `sec:renewal`: the natural measure of a strongly
 separated self-similar system is Ahlfors regular of its similarity dimension.
@@ -32,8 +34,10 @@ the support supplies.
 * `exists_isAhlfors_homogeneous_pair`: the corresponding result for `μ_A` and `μ_B`, the
   internal endpoint `audit_ahlfors_named`.
 -/
-import BrownianImages.SelfSimilar
-import BrownianImages.Frostman
+public import BrownianImages.SelfSimilar
+public import BrownianImages.Frostman
+
+@[expose] public section
 
 namespace BrownianImages
 

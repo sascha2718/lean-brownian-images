@@ -1,3 +1,5 @@
+module
+
 /-
 The probabilistic form of the deterministic translation-overlap identity.
 
@@ -6,12 +8,15 @@ their relative translation.  If the latter has a bounded Lebesgue density,
 the expected overlap is bounded by the density bound times the product of the
 two expected tube areas.
 -/
-import BrownianImages.Minkowski.OverlapTranslation
-import BrownianImages.Minkowski.BrownianPieces
-import BrownianImages.Minkowski.BrownianCompactPieces
-import BrownianImages.Minkowski.GaussianIncrement
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.Probability.Independence.Basic
+public import BrownianImages.Minkowski.OverlapTranslation
+public import BrownianImages.Minkowski.BrownianPieces
+public import Mathlib.Probability.Independence.Integration
+public import BrownianImages.Minkowski.BrownianCompactPieces
+public import BrownianImages.Minkowski.GaussianIncrement
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Probability.Independence.Basic
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: `eq:joint-return-bound` of
 `thm:gaussian-four-point`, the joint return probability of two planar Brownian increments.
@@ -22,9 +24,13 @@ its centre, because the density is at most `(2πv)⁻¹` and the disc has area `
   three forms of `eq:joint-return-bound`, behind the endpoints `audit_gaussian_four_point`,
   `audit_gaussian_four_point_ae` and `audit_thm_gaussian_four_point`.
 -/
-import BrownianImages.GaussianFourPoint
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
+public import BrownianImages.GaussianFourPoint
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
+public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
+
+@[expose] public section
 
 namespace BrownianImages
 

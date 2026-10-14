@@ -1,3 +1,5 @@
+module
+
 /-
 `eq:fourier-multiplier` of `sec:smoothing`: the Fourier identity
 `T̂g(k) = (∫₀^∞ φ(η) η^{-2πik/p} dη) ĝ(k)`.
@@ -13,9 +15,11 @@ exactly the character at `log η` and leaves a bracket independent of `η`; subs
 * `chr_shift`, `chr_double`: the two integral manipulations.
 * `fourierCoeffP_smoothOp`: the identity.
 -/
-import BrownianImages.Kernel
-import BrownianImages.Multiplier
-import BrownianImages.Smoothing
+public import BrownianImages.Kernel
+public import BrownianImages.Multiplier
+public import BrownianImages.Smoothing
+
+@[expose] public section
 
 namespace BrownianImages
 

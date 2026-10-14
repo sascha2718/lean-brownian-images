@@ -1,3 +1,5 @@
+module
+
 /-
 Final unconditional assembly of the renewal alternatives and Minkowski
 reconstruction for a finite self-similar system satisfying the strong open set
@@ -8,8 +10,10 @@ non-arithmetic branch uses the continuous key renewal theorem.  The Brownian
 moment, overlap, and concentration inputs are discharged by the endpoint
 assemblies imported below.
 -/
-import BrownianImages.Minkowski.TubeDiscreteRenewal
-import BrownianImages.Minkowski.ReconstructionAssembly
+public import BrownianImages.Minkowski.TubeDiscreteRenewal
+public import BrownianImages.Minkowski.ReconstructionAssembly
+
+@[expose] public section
 
 namespace BrownianImages
 

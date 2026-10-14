@@ -1,3 +1,5 @@
+module
+
 /-
 The period parameter `p` in this module is the paper's `ℓ`; the smoothed
 function has period `ℓ/2`.
@@ -19,11 +21,13 @@ smoothed profile, together with the analytic facts it rests on.
 * `smoothOp_gap`: the oscillation `d_A` is attained and positive, the endpoint
   `audit_lattice_gap`.
 -/
-import BrownianImages.Kernel
-import BrownianImages.Frostman
-import BrownianImages.Periodic
-import BrownianImages.Periodic
-import BrownianImages.Multiplier
+public import BrownianImages.Kernel
+public import BrownianImages.Frostman
+public import BrownianImages.Periodic
+public import BrownianImages.Periodic
+public import BrownianImages.Multiplier
+
+@[expose] public section
 
 namespace BrownianImages
 

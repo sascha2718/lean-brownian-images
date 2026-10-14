@@ -1,3 +1,5 @@
+module
+
 /-
 The bridge from self-similar systems to the key renewal theorem used for the paper's
 non-lattice profile limit.
@@ -17,8 +19,10 @@ the profile limit.
   `a + rℤ`. Every two-atom law is concentrated on such a lattice. The key renewal
   theorem instead uses `FellerNonlattice`, which allows non-arithmetic two-atom laws.
 -/
-import BrownianImages.SelfSimilar
-import BrownianImages.Renewal
+public import BrownianImages.SelfSimilar
+public import BrownianImages.Renewal
+
+@[expose] public section
 
 namespace BrownianImages
 

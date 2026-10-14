@@ -1,11 +1,15 @@
+module
+
 /-
 The complete general-kernel lemma `thm:level-sums`: the uniform holomorphic limit,
 the exact supremum bound `eq:level-sum-bound`, and the expectation under the natural
 measure at every real parameter. The kernel is only assumed holomorphic on its stated
 domain; its values outside that domain are irrelevant to the expectation.
 -/
-import BrownianImages.FixedDimension.LevelSumsGeneral
-import BrownianImages.FixedDimension.LevelSumsExpectation
+public import BrownianImages.FixedDimension.LevelSumsGeneral
+public import BrownianImages.FixedDimension.LevelSumsExpectation
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 Endpoint-facing assembly of the Brownian tube moments and the elementary
 consequences for the mean normalized tube profile.
@@ -7,8 +9,10 @@ already been discharged.  The only hypothesis left here is the classical
 fact that the unit-interval Brownian maximum has moments of every positive
 order.
 -/
-import BrownianImages.Minkowski.StoppingTubeUpper
-import BrownianImages.Minkowski.TubeMeanContinuity
+public import BrownianImages.Minkowski.StoppingTubeUpper
+public import BrownianImages.Minkowski.TubeMeanContinuity
+
+@[expose] public section
 
 namespace BrownianImages
 

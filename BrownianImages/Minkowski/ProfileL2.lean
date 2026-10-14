@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:neighbourhood-concentration` of `sec:reconstruction`: the `L²` input that
 `thm:neighbourhood-moments` provides.  The `q = 2` moment bound gives a bound for the
@@ -10,8 +12,10 @@ using the internal notation `Y_{r,u}`.
 * `IsNatural.exists_brownianTubeProfile_lpNorm_bound_of_tubeMomentsUpper`: the uniform
   `L²` bound.
 -/
-import BrownianImages.Minkowski.L2Recurrence
-import BrownianImages.Minkowski.Profile
+public import BrownianImages.Minkowski.L2Recurrence
+public import BrownianImages.Minkowski.Profile
+
+@[expose] public section
 
 namespace BrownianImages
 

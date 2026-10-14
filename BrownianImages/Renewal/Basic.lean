@@ -1,3 +1,5 @@
+module
+
 /-
 Vendored into `BrownianImages` from
   https://github.com/BennyAvelin/AbsorptionCutoff
@@ -14,7 +16,9 @@ Modifications to the vendored subset:
      `charFun_ne_one_of_nonlattice` and `norm_charFun_lt_one_of_nonlattice` remain
      for the proved comparison and the two-atom counterexample;
   3. unused helper declarations were removed from `Basic.lean`, `Equation.lean`
-     and `Kernel.lean`; related documentation was updated.
+     and `Kernel.lean`; related documentation was updated;
+  4. Lean module headers, public imports and exposed public definitions preserve
+     the retained interfaces under the module system.
 See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
@@ -22,19 +26,21 @@ Copyright (c) 2026 Benny Avelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benny Avelin
 -/
-import Mathlib.Analysis.Fourier.Inversion
-import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
-import Mathlib.MeasureTheory.Measure.Restrict
+public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
+public import Mathlib.MeasureTheory.Measure.Restrict
+
+@[expose] public section
 
 /-!
 # A renewal mini-library

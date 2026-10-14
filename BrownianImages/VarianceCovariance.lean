@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: the variance expansion that opens the
 proof of `thm:variance`.
@@ -29,7 +31,9 @@ and the null set it exposes is where the modification is traded back for `W`.
   constant depending only on `s` and `A` for every Frostman measure and Brownian law.
 * `variance_four_point`: the specialisation to a fixed measure and law used by concentration.
 -/
-import BrownianImages.Endpoints
+public import BrownianImages.Endpoints
+
+@[expose] public section
 
 namespace BrownianImages
 

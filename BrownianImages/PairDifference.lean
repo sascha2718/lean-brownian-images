@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:renewal`: the difference mass `pairDiff μ T = (μ × μ){(x,y) : x - y ∈ T}` of a
 measure on the line, the form in which `thm:homogeneous-nonconstancy` reads the
@@ -15,7 +17,9 @@ special case of a symmetric interval.
 * `prod_compl_square`, `ae_prod_mem_Icc`: the product measure is carried by the unit
   square, as a null set and as an almost-everywhere statement.
 -/
-import BrownianImages.Recursion
+public import BrownianImages.Recursion
+
+@[expose] public section
 
 namespace BrownianImages
 

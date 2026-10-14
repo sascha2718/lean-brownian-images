@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:introduction` of `BrownianImagesComplete.tex`: Schief's theorem, that the open set
 condition gives a feasible open set meeting the attractor, cited there and in the proof
@@ -30,9 +32,11 @@ Words are lists, `S_{[i₁,…,iₙ]} = S_{i₁} ∘ ⋯ ∘ S_{iₙ}`, so that 
 * `OpenSetCondition.strongOpenSetCondition`, `openSetCondition_iff_strongOpenSetCondition`:
   Schief's theorem.
 -/
-import Mathlib.Data.Set.Finite.List
-import BrownianImages.OpenSet
-import BrownianImages.StoppingGeometry
+public import Mathlib.Data.Set.Finite.List
+public import BrownianImages.OpenSet
+public import BrownianImages.StoppingGeometry
+
+@[expose] public section
 
 namespace BrownianImages
 

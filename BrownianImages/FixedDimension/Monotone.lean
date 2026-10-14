@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:small-dimension-monotone` and the monotone part of `thm:critical-set-finite`.
 
@@ -15,7 +17,9 @@ By `eq:log-derivative-mean`, the mean `H̄_s(p) = C_s pq M_p / h(p)` has derivat
 * `exists_strictMonoOn_fixedMean_small`: `thm:critical-set-finite`, the strict increase on
   `(0, p₀]` for `s ≤ 1/2`.
 -/
-import BrownianImages.FixedDimension.Symmetry
+public import BrownianImages.FixedDimension.Symmetry
+
+@[expose] public section
 
 namespace BrownianImages
 

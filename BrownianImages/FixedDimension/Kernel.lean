@@ -1,3 +1,5 @@
+module
+
 /-
 The kernel of the proof of `thm:remainder-derivative`: the complex contractions
 `λ₁(z) = z^{1/s}` and `λ₂(z) = (1 - z)^{1/s}`, and
@@ -16,8 +18,10 @@ The internal names `alphaP`, `betaP` represent the separate bounds
 * `differentiableOn_cpointSeq`, `differentiableOn_weightSeq`, `differentiableOn_levelSum`:
   holomorphy of the level sums of the kernel on the disc.
 -/
-import BrownianImages.FixedDimension.LevelSums
-import BrownianImages.FixedDimension.MainTerm
+public import BrownianImages.FixedDimension.LevelSums
+public import BrownianImages.FixedDimension.MainTerm
+
+@[expose] public section
 
 namespace BrownianImages
 

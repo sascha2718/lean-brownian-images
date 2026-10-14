@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:profile-uniform-continuity` of `BrownianImagesComplete.tex`: the expected profile
 `H_μ^s` is uniformly continuous on `ℝ`.
@@ -7,8 +9,10 @@
   logarithmic kernel.
 * `audit_profile_uniform_continuity`: the statement of `thm:profile-uniform-continuity`.
 -/
-import BrownianImages.Kernel
-import BrownianImages.Profile
+public import BrownianImages.Kernel
+public import BrownianImages.Profile
+
+@[expose] public section
 
 namespace BrownianImages
 

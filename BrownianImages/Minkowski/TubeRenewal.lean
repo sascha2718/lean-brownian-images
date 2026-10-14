@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`, `thm:neighbourhood-renewal`: the expectation-level renewal identity for
 the normalised Brownian tube profile.
@@ -8,9 +10,11 @@ multiple-counting defect, together with a bound for the latter.  In particular, 
 renewal limit is asserted without the moment, overlap, and renewal-theorem hypotheses
 which supply it in the paper.
 -/
-import BrownianImages.Minkowski.BrownianCompactPieces
-import BrownianImages.Minkowski.DefectExpectation
-import BrownianImages.Minkowski.Profile
+public import BrownianImages.Minkowski.BrownianCompactPieces
+public import BrownianImages.Minkowski.DefectExpectation
+public import BrownianImages.Minkowski.Profile
+
+@[expose] public section
 
 namespace BrownianImages
 

@@ -1,3 +1,5 @@
+module
+
 /-
 Level sums over words of length `m`, `thm:level-sums`, applied in
 `thm:fixed-dimension-analyticity`, `thm:remainder-derivative` and `thm:second-derivative-small-s`: `Λ^{(m)}(z) = ∑_{u,v} P_u(z) P_v(z) ψ_z(x_u(z), x_v(z))`,
@@ -15,8 +17,10 @@ The internal kernel argument `φ` represents the paper's `ψ`.
   a Bernoulli integral of a function of the first `m` letters is the weighted sum over the
   words of length `m`.
 -/
-import BrownianImages.FixedDimension.ComplexCoding
-import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import BrownianImages.FixedDimension.ComplexCoding
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+
+@[expose] public section
 
 namespace BrownianImages
 

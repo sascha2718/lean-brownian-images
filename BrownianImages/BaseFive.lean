@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:examples` of `BrownianImagesComplete.tex`, `thm:base-five-profiles`: the two
 base-five missing-digit sets with digit sets `D₁ = {0,1,4}` and `D₂ = {0,2,4}`.
@@ -22,11 +24,13 @@ smoothed limits, which `thm:smoothing-injective` keeps apart.
 * `phiA_recursion`, `phiB_recursion`, `phiA_five_pow`, `phiB_five_pow`:
   the internal recursions and `eq:base-five-correlation`.
 -/
-import BrownianImages.Schief
-import BrownianImages.Recursion
-import BrownianImages.Asymptotics
-import BrownianImages.FourierMultiplier
-import BrownianImages.Periodic
+public import BrownianImages.Schief
+public import BrownianImages.Recursion
+public import BrownianImages.Asymptotics
+public import BrownianImages.FourierMultiplier
+public import BrownianImages.Periodic
+
+@[expose] public section
 
 namespace BrownianImages
 

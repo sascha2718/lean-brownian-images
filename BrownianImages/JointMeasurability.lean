@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup`: joint measurability of the planar Brownian process, and the two facts about
 the occupation law it unlocks.
@@ -18,9 +20,11 @@ everywhere and the limit is measurable.
 * `IsPlanarBrownian.aemeasurable_occupationProb`: `audit_aemeasurable_occupation`.
 * `isProbabilityMeasure_occupationLaw`: `audit_isProbabilityMeasure_occupationLaw`.
 -/
-import BrownianImages.Occupation
-import Mathlib.MeasureTheory.Function.Floor
-import Mathlib.MeasureTheory.Measure.Prod
+public import BrownianImages.Occupation
+public import Mathlib.MeasureTheory.Function.Floor
+public import Mathlib.MeasureTheory.Measure.Prod
+
+@[expose] public section
 
 namespace BrownianImages
 

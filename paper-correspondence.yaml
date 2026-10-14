@@ -5,7 +5,7 @@
 version: 3
 source_version: "BrownianImagesComplete.tex"
 manuscript_files: ["BrownianImagesComplete.tex"]
-manuscript_sha256: {"BrownianImagesComplete.tex": "42e265b203aedf846ea6d3792cf09d8f3e667745a8f3c5109be5fd8651308c9c"}
+manuscript_sha256: {"BrownianImagesComplete.tex": "cdce80ffa5e89080dce2a36811401a3c8d9cc37cbb4e6cd1cfb9c62d7932118c"}
 entries:
   - source: "Separation by expected profiles"
     label: "thm:main"
@@ -295,3 +295,25 @@ entries:
     relation: "exact"
     headline: false
     note: "The formal endpoint includes existence and the bound for the second derivative."
+
+  - source: "Correlation dimension and local density ratios"
+    kind: "prose"
+    file: "BrownianImagesComplete.tex"
+    start: "For an $s$-Ahlfors regular time measure, $2s$ is thus the exact correlation dimension"
+    end: "about the original measure, and allows us to differentiate between different ones."
+    sha256: "3d1da2ea3ca3954f8d6f54c35c8637682307b133186bcc1dbb19e0fa0619b89a"
+    status: "intentionally_unformalized"
+    lean: []
+    headline: false
+    reason: "Introductory background and interpretation, including the displayed correlation-dimension claim and density-ratio identity. These are not separately formalised or used as hypotheses of the nine headline endpoints."
+
+  - source: "Dynamical reconstruction and hitting-time comparisons"
+    kind: "prose"
+    file: "BrownianImagesComplete.tex"
+    start: "In dynamical systems there also exist related inverse problems."
+    end: "neighbourhoods with respect to itself."
+    sha256: "ba431b8b851e1816519604a8993a5fb4b07cf42cbfa4ac37295ab971a44a053a"
+    status: "intentionally_unformalized"
+    lean: []
+    headline: false
+    reason: "Related-literature comparisons with Takens embedding, prediction from time-delay measurements and hitting-time statistics. These dynamical results are not formalised or assumed by the Brownian-image theorems."

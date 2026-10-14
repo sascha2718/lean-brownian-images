@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: Brownian cylinders indexed by arbitrary nonempty compact subsets of the
 unit time interval.
@@ -12,8 +14,10 @@ increments that `sec:reconstruction` uses when a similarity reverses orientation
 `IsPlanarBrownian.map_tubeMass_affineBrownianCompactPiece_orientCompact_eq` the resulting
 scaling law.
 -/
-import BrownianImages.Minkowski.BrownianPieces
-import BrownianImages.Minkowski.TubeAlgebra
+public import BrownianImages.Minkowski.BrownianPieces
+public import BrownianImages.Minkowski.TubeAlgebra
+
+@[expose] public section
 
 namespace BrownianImages
 

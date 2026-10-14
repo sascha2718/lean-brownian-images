@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:cross-piece-mass` of `sec:renewal`: under the strong open set condition, the mass
 of a first-level piece `μ_i = (S_i)_* μ` within distance `h` of another piece `K_j`
@@ -25,7 +27,9 @@ and each of the remaining blocks carries the factor `1 - p_v`.
   `eq:boundary-mass` and `eq:cross-piece-mass`, with one constant and one exponent
   `η ∈ (0, 1-s)` for every pair `i ≠ j`.
 -/
-import BrownianImages.StoppingGeometry
+public import BrownianImages.StoppingGeometry
+
+@[expose] public section
 
 namespace BrownianImages
 

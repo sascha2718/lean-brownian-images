@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:neighbourhood-overlap` of `sec:reconstruction`, under the strong open set
 condition: the expected overlap of the Brownian `r`-neighbourhoods of two distinct
@@ -33,11 +35,13 @@ sum over the gaps gives the bound.
 * `IsNatural.tubeOverlap_of_sosc`: `thm:neighbourhood-overlap`, using the exponent
   supplied by the cross-piece estimate under the strong open set condition.
 -/
-import BrownianImages.CrossPiece
-import BrownianImages.Minkowski.StoppingTubeUpper
-import BrownianImages.Minkowski.BrownianMaximalMoment
-import BrownianImages.Minkowski.BrownianOverlapGeometry
-import BrownianImages.Minkowski.TubeRenewal
+public import BrownianImages.CrossPiece
+public import BrownianImages.Minkowski.StoppingTubeUpper
+public import BrownianImages.Minkowski.BrownianMaximalMoment
+public import BrownianImages.Minkowski.BrownianOverlapGeometry
+public import BrownianImages.Minkowski.TubeRenewal
+
+@[expose] public section
 
 namespace BrownianImages
 

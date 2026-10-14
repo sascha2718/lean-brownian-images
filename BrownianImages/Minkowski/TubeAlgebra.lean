@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction`: deterministic algebra for smoothed planar neighbourhoods.
 
@@ -7,9 +9,11 @@ family of compact sets and proves the smoothed- and raw-overlap forms of
 `eq:neighbourhood-defect-elementary`.  An unordered-pair sum is represented as half of the symmetric
 ordered distinct-pair sum, avoiding an arbitrary order on the index type.
 -/
-import BrownianImages.Minkowski.Tube
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import BrownianImages.Minkowski.Tube
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+
+@[expose] public section
 
 namespace BrownianImages
 

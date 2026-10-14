@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:setup` of `BrownianImagesComplete.tex`: `thm:gaussian-reduction`,
 `eq:gaussian-reduction`.
@@ -16,7 +18,9 @@ against the Stieltjes measure `dΦ`.  The chain is the Fubini interchange
 * `expCorr_eq_integral_pairLaw`: the second.
 * `gaussian_reduction`: the two together, the shape of `thm:gaussian-reduction`.
 -/
-import BrownianImages.GaussianFourPoint
+public import BrownianImages.GaussianFourPoint
+
+@[expose] public section
 
 namespace BrownianImages
 

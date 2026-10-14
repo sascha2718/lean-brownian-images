@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:second-derivative-small-s`: for `0 < s ≤ 2·10⁻⁵` and `10⁻⁴ ≤ p ≤ 1/2`, the moment
 `M_p(s)` is twice differentiable at `p` with `|M_p''| ≤ 10¹¹ s γ`, `γ = (1 - 5·10⁻⁵)^{1/s}`.
@@ -14,7 +16,9 @@ at real parameters `M_z = M_x(s)`, and Cauchy's estimate bounds the second deriv
 * `crossLimit_ofReal`: `M_x = M_x(s)` at real parameters.
 * `fixedMoment_second_derivative`: the second-derivative bound.
 -/
-import BrownianImages.FixedDimension.Remainder
+public import BrownianImages.FixedDimension.Remainder
+
+@[expose] public section
 
 namespace BrownianImages
 

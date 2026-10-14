@@ -1,3 +1,5 @@
+module
+
 /-
 `thm:remainder-derivative`: for `0 < s ≤ 1/2` and `0 < p ≤ 1/50`, the moment `M_p(s)` is
 differentiable at `p` and `|M_p' - J₀'(p)| ≤ 3000 s (3p/2)^{1/s} p^{-2-s}`.
@@ -13,8 +15,10 @@ derivative of `M - J₀` at `p`.
 * `complexDelta_ofReal`: `Δ(x) = M_x(s) - J₀(x)`.
 * `exists_hasDerivAt_sub_mainTerm`, `exists_hasDerivAt_fixedMoment`: the derivative bounds.
 -/
-import BrownianImages.FixedDimension.RemainderSup
-import BrownianImages.FixedDimension.Decomposition
+public import BrownianImages.FixedDimension.RemainderSup
+public import BrownianImages.FixedDimension.Decomposition
+
+@[expose] public section
 
 namespace BrownianImages
 

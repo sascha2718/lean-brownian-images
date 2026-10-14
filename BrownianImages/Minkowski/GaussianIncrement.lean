@@ -1,3 +1,5 @@
+module
+
 /-
 The bounded-density law of a separating planar Brownian increment.
 
@@ -7,8 +9,10 @@ times are separated, that translation contains a non-degenerate Brownian
 increment.  This file records its exact planar Gaussian density and the
 uniform bound by the density at the origin.
 -/
-import BrownianImages.FourPointBound
-import BrownianImages.JointMeasurability
+public import BrownianImages.FourPointBound
+public import BrownianImages.JointMeasurability
+
+@[expose] public section
 
 namespace BrownianImages
 

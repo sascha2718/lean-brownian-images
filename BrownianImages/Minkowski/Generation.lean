@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:reconstruction` of `BrownianImagesComplete.tex`: deterministic generation
 cylinders for a finite self-similar system.
@@ -24,9 +26,11 @@ finite-word sum exactly the iterate of Hutchinson's test-function operator.
 * `System.IsNatural.tubeReconstructsOccupation_of_generation_tubeMassRatio`: pathwise
   reconstruction from the fixed-generation tube-mass ratios.
 -/
-import BrownianImages.Hutchinson
-import BrownianImages.Minkowski.Reconstruction
-import BrownianImages.Minkowski.System
+public import BrownianImages.Hutchinson
+public import BrownianImages.Minkowski.Reconstruction
+public import BrownianImages.Minkowski.System
+
+@[expose] public section
 
 namespace BrownianImages
 

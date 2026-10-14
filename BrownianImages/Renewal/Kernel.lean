@@ -1,3 +1,5 @@
+module
+
 /-
 Vendored into `BrownianImages` from
   https://github.com/BennyAvelin/AbsorptionCutoff
@@ -7,6 +9,8 @@ at commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5, under the Apache License 2.0
 
 Modified: two unused helper lemmas, `hasCompactSupport_triangle` and
 `integrable_ofReal_sincSq`, were removed. The remaining declarations are unchanged.
+The sources now use Lean module headers, public imports and exposed public
+definitions to preserve the retained interfaces.
 See `docs/renewal-library.md` and the top-level `NOTICE`.
 -/
 /-
@@ -14,10 +18,12 @@ Copyright (c) 2026 Benny Avelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benny Avelin
 -/
-import Mathlib.Analysis.Fourier.Convolution
-import Mathlib.Analysis.Fourier.Inversion
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Fourier.Convolution
+public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+
+@[expose] public section
 
 /-!
 # The smoothing kernel of the renewal mini-library

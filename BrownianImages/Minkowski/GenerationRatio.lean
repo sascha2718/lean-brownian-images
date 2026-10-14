@@ -1,3 +1,5 @@
+module
+
 /-
 The fixed-generation tube-mass ratio argument used by Minkowski reconstruction.
 
@@ -8,10 +10,12 @@ their deterministic means differ only by the cylinder weight and a fixed renewal
 delay, and the full mean stays uniformly positive.  The quotient therefore tends
 to the natural cylinder weight.
 -/
-import BrownianImages.Minkowski.AlmostSure
-import BrownianImages.Minkowski.GenerationScaling
-import BrownianImages.Minkowski.Ratio
-import BrownianImages.Periodic
+public import BrownianImages.Minkowski.AlmostSure
+public import BrownianImages.Minkowski.GenerationScaling
+public import BrownianImages.Minkowski.Ratio
+public import BrownianImages.Periodic
+
+@[expose] public section
 
 namespace BrownianImages
 

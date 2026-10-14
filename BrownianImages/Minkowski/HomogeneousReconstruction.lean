@@ -1,3 +1,5 @@
+module
+
 /-
 Minkowski reconstruction for the homogeneous two-map system without invoking the
 general arithmetic renewal theorem.
@@ -8,10 +10,12 @@ period by precisely the nonnegative multiple-counting defect.  The overlap estim
 makes that defect exponentially small.  Telescoping over a fixed generation gives
 the delayed-mean comparison required by the generation-cylinder quotient theorem.
 -/
-import BrownianImages.Minkowski.BrownianMaximalMoment
-import BrownianImages.Minkowski.GenerationRatio
-import BrownianImages.Minkowski.StoppingConcentration
-import BrownianImages.Minkowski.TubeMomentAssembly
+public import BrownianImages.Minkowski.BrownianMaximalMoment
+public import BrownianImages.Minkowski.GenerationRatio
+public import BrownianImages.Minkowski.StoppingConcentration
+public import BrownianImages.Minkowski.TubeMomentAssembly
+
+@[expose] public section
 
 namespace BrownianImages
 

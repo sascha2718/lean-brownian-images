@@ -1,3 +1,5 @@
+module
+
 /-
 The finite stopping tree used in the upper tube-moment estimate.
 
@@ -13,7 +15,9 @@ hard depth cutoff `n`.  It is a finite nonempty type rather than a finset.
 This makes the mass identity exact without any bookkeeping about duplicate
 finset unions.  Once `maxRatio S ^ n <= delta`, the cutoff is never premature.
 -/
-import BrownianImages.Minkowski.Generation
+public import BrownianImages.Minkowski.Generation
+
+@[expose] public section
 
 namespace BrownianImages
 

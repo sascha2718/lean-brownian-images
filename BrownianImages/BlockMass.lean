@@ -1,3 +1,5 @@
+module
+
 /-
 `sec:variance` of `BrownianImagesComplete.tex`: the dyadic block of ordered quadruples.
 
@@ -23,8 +25,10 @@ whose text is that of the endpoint `audit_gaussian_four_point`.
 * `endpoint_block_mass_of_four_point`, `endpoint_block_mass_dyadic_of_four_point`:
   `thm:endpoint-block-mass`, general and dyadic, conditional on `hfour`.
 -/
-import BrownianImages.FourPoint
-import BrownianImages.GaussianFourPoint
+public import BrownianImages.FourPoint
+public import BrownianImages.GaussianFourPoint
+
+@[expose] public section
 
 namespace BrownianImages
 

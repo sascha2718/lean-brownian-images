@@ -1,3 +1,5 @@
+module
+
 /-
 The endpoints of `BrownianImagesComplete.tex` that no single module proves: each is a
 composition of results from two or more of the modules above, in the statement shapes
@@ -18,14 +20,16 @@ used by `Solution.lean`.
   it: `eq:ha-asymptotic`, `thm:smoothing-injective` bundled, and the resulting oscillation
   of the normalised expected correlation integral for `μ_A`.
 -/
-import BrownianImages.Rescaling
-import BrownianImages.Reduction
-import BrownianImages.FourPointBound
-import BrownianImages.BlockMass
-import BrownianImages.FourPointIntegral
-import BrownianImages.AhlforsRegular
-import BrownianImages.PairDifference
-import BrownianImages.HomogeneousNonconstancy
+public import BrownianImages.Rescaling
+public import BrownianImages.Reduction
+public import BrownianImages.FourPointBound
+public import BrownianImages.BlockMass
+public import BrownianImages.FourPointIntegral
+public import BrownianImages.AhlforsRegular
+public import BrownianImages.PairDifference
+public import BrownianImages.HomogeneousNonconstancy
+
+@[expose] public section
 
 namespace BrownianImages
 
