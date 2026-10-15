@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 /-!
 # Distinguishing sets and measures from their planar Brownian images
 
-The nine results of Section 1 of arXiv:2610.16339. Expected correlation
+The nine results of Section 1 of arXiv:2610.16339v2. Expected correlation
 profiles distinguish Brownian occupation laws, and the compact image determines its
 occupation measure. The two-contraction family has finitely many possible exceptions
 to separation, with no exceptions for sufficiently small dimension.

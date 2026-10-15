@@ -1,7 +1,8 @@
 # Distinguishing sets and measures from their planar Brownian images
 
 Lean 4 formalisation of the paper *Distinguishing sets and measures from their planar Brownian images*
-by Sascha Troscheit (2026), [arXiv:2610.16339](https://arxiv.org/abs/2610.16339).
+by Sascha Troscheit (2026), [arXiv:2610.16339v2](https://arxiv.org/abs/2610.16339v2),
+with a [Palomar registry entry](https://palomar-registry.org/entry?id=PALOMAR-2026-10-15-000007).
 
 ## Scope
 Expected correlation profiles distinguish planar Brownian images of time measures with
@@ -38,7 +39,8 @@ for the self-similar laws used in the paper; only the minimal version necessary 
 been proved. In particularly, we do not prove the full Renewal theorem that we cite in the article.
 None of the background discussions have been formalised.
 
-[paper-correspondence.yaml](paper-correspondence.yaml) maps the numbered statements.
+[paper-correspondence.yaml](paper-correspondence.yaml) identifies the current manuscript revision
+and maps its numbered statements.
 [docs/correspondence.md](docs/correspondence.md) records scope and proof differences;
 [formalization.yaml](formalization.yaml) records authorship, sources, AI assistance and review.
 

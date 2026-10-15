@@ -4,7 +4,7 @@ project:
   name: "Distinguishing sets and measures from their planar Brownian images"
   description: >-
     Lean 4 formalisation of all 32 numbered statements of "Distinguishing sets and measures from
-    their planar Brownian images" (Sascha Troscheit, arXiv:2610.16339), which asks whether two
+    their planar Brownian images" (Sascha Troscheit, arXiv:2610.16339v2), which asks whether two
     deterministic time measures on the unit interval can be distinguished almost surely from a
     single planar Brownian image. Rescaled correlation integrals of the time measures determine
     expected correlation profiles of the image measures, and profiles that differ in the limit
@@ -30,18 +30,18 @@ classification:
 sources:
   - title: "Distinguishing sets and measures from their planar Brownian images"
     authors: ["Sascha Troscheit"]
-    id: "https://arxiv.org/abs/2610.16339"
+    id: "https://arxiv.org/abs/2610.16339v2"
     type: "paper"
     location: "BrownianImagesComplete.tex, Section 1 and supporting Sections 2–9"
     relationship: "formalizes"
     author_endorsement: "participated"
-    note: "Source snapshot and statement mapping: paper-correspondence.yaml."
+    note: "Source revision, fingerprint and statement mapping: paper-correspondence.yaml. Palomar: https://palomar-registry.org/entry?id=PALOMAR-2026-10-15-000007."
 related_formalizations:
   - id: "https://github.com/BennyAvelin/AbsorptionCutoff"
     relationship: "adapts"
     note: "Six modules from commit 41c45c6d72e979419e46224bb7b4be5cee31f2b5; modifications recorded in NOTICE and docs/renewal-library.md."
 status:
-  scope: "All 32 numbered statements of arXiv:2610.16339v1, with nine Section 1 challenge endpoints. Counts exclude the intentional Challenge holes."
+  scope: "All 32 numbered statements of arXiv:2610.16339v2, with nine Section 1 challenge endpoints. Counts exclude the intentional Challenge holes."
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -119,7 +119,6 @@ fidelity:
 review:
   status: "agent-reviewed"
   reviewers: ["Codex (OpenAI, GPT-6 agent)"]
-  notes: "Statement review and local build/axiom checks passed on 2026-10-14. No independent human review or Palomar acceptance."
 alignment:
   namespace: "BrownianImages"
   statements:

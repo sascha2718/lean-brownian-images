@@ -1,9 +1,11 @@
 # Correspondence with the paper
 
-All 32 numbered statements of [arXiv:2610.16339v1](https://arxiv.org/abs/2610.16339v1)
+All 32 numbered statements of
+[arXiv:2610.16339v2](https://arxiv.org/abs/2610.16339v2)
 are formalised with the paper's hypotheses and conclusions. The
 [README](../README.md) lists the nine headline endpoints;
-[paper-correspondence.yaml](../paper-correspondence.yaml) gives the full statement mapping.
+[paper-correspondence.yaml](../paper-correspondence.yaml) records the exact manuscript revision,
+source fingerprint and full statement mapping.
 
 The supporting renewal theory is proved for the self-similar laws used in the paper.
 The full generality of the quoted renewal theorem, its lattice renewal-series identity

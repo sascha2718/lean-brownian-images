@@ -1,13 +1,13 @@
 # All numbered statements. Source hashes detect drift, not mathematical equivalence.
 # Literature scope and proof differences: docs/correspondence.md.
 version: 3
-scope: "All 32 numbered statements of the paper."
-source_version: "BrownianImagesComplete.tex"
-arxiv_version: "2610.16339v1"
-arxiv_snapshot_revision: "93b440fb68e1ebc74b8df1b4998923eb0f11857e"
-arxiv_snapshot_sha256: "20c525cde125829d2a755ba4a615463017023ef8b23706039a997aab3fda5a77"
+scope: "All 32 numbered statements of arXiv:2610.16339v2."
+source_version: "BrownianImagesComplete.tex (arXiv:2610.16339v2)"
+arxiv_version: "2610.16339v2"
+source_revision: "853b26a985c02c3a79724b803a1181b3a1837131"
+source_url: "https://palomar-registry.org/entry?id=PALOMAR-2026-10-15-000007"
 manuscript_files: ["BrownianImagesComplete.tex"]
-manuscript_sha256: {"BrownianImagesComplete.tex": "e03cfac627117060cfd636d77c68d50ac8b0cce626ac44c0a9c52b0d4994fee9"}
+manuscript_sha256: {"BrownianImagesComplete.tex": "6b371c5d0f042e1e48056d158523db840bbf8b862163217255b4ed8c9129da44"}
 entries:
   - source: "Separation by expected profiles"
     label: "thm:main"
